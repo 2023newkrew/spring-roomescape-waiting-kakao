@@ -23,7 +23,7 @@ import java.time.LocalTime;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringWebApplication.class)
 public class ReservationExceptionTest {
 
-    private static final Theme THEME = new Theme("워너고홈", "병맛 어드벤처 회사 코믹물", 29000);
+    private static final Theme THEME = new Theme(null, "워너고홈", "병맛 어드벤처 회사 코믹물", 29000);
 
     @LocalServerPort
     int port;

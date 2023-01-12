@@ -29,7 +29,7 @@ public class ReservationController {
         var id = reservationDAO.addReservation(
                 new Reservation(
                         null, body.getDate(), body.getTime(), body.getName(),
-                        new Theme(body.getThemeName(), body.getThemeDesc(), body.getThemePrice())
+                        new Theme(null, body.getThemeName(), body.getThemeDesc(), body.getThemePrice())
                 )
         );
         if (id.isEmpty()) {

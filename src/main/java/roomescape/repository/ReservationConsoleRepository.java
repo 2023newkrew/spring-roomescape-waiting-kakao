@@ -42,6 +42,7 @@ public class ReservationConsoleRepository {
                 rset.getTime("time").toLocalTime(),
                 rset.getString("name"),
                 new Theme(
+                        null,
                         rset.getString("theme_name"),
                         rset.getString("theme_desc"),
                         rset.getInt("theme_price")

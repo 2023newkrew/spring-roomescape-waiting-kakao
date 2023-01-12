@@ -14,54 +14,59 @@
   종료: quit
   ```
   위와 같이 3개의 기능을 지원하며 각각 예약, 예약 조회, 예약 취소의 동작을 CLI 기반의 인터페이스로 수행 가능했다.
+- 시간이 지나면서 시스템에 확장 요구사항이 생겼다. 확장은 예약을 테마별로 가능하게 하며, 테마를 관리(추가,삭제) 가능하게 구성해야 한다.
 
 ## 요구사항
 
 - [X] 웹 요청 / 응답 처리로 입출력 추가
-    - [X] 예약 하기
-      ```
-      POST /reservations HTTP/1.1
-      Content-Type: application/json; charset=UTF-8
-      Host: localhost:8080
-      {
-        "date" : "2022-08-11",
-        "time" : "12:34:56",
-        "name" : "사람 이름",
-        "theme_name" : "테마 이름",
-        "theme_desc" : "테마 설명",
-        "theme_price" : "테마 가격",
-      }
-      ```
-
-      ```
-      HTTP/1.1 201 Created
-      Location: /reservations/1
-      ```
-    - [X] 예약 조회
-      ```
-      GET /reservations/1 HTTP/1.1
-      ```
-
-      ```
-      HTTP/1.1 200 
-      Content-Type: application/json
-      {
-        "id": 1,
-        "date": "2022-08-11",
-        "time": "13:00",
-        "name": "name",
-        "themeName": "워너고홈",영
-        "themeDesc": "병맛 어드벤처 회사 코믹물",
-        "themePrice": 29000
-      }
-      ```
-    - [X] 예약 취소
-      ```
-      DELETE /reservations/1 HTTP/1.1
-      ```
-      ```
-      HTTP/1.1 204 
-      ```
+    - [X] 테마
+        - [ ] 테마 생성
+        - [ ] 테마 목록
+        - [ ] 특정 테마 찾기
+        - [ ] 테마 삭제
+    - [X] 예약
+        - [X] 예약 하기
+          ```
+          POST /reservations HTTP/1.1
+          Content-Type: application/json; charset=UTF-8
+          Host: localhost:8080
+          {
+            "date" : "2022-08-11",
+            "time" : "12:34:56",
+            "name" : "사람 이름",
+            "theme_name" : "테마 이름",
+            "theme_desc" : "테마 설명",
+            "theme_price" : "테마 가격",
+          }
+          ```
+          ```
+          HTTP/1.1 201 Created
+          Location: /reservations/1
+          ```
+        - [X] 예약 조회
+          ```
+          GET /reservations/1 HTTP/1.1
+          ```
+          ```
+          HTTP/1.1 200 
+          Content-Type: application/json
+          {
+            "id": 1,
+            "date": "2022-08-11",
+            "time": "13:00",
+            "name": "name",
+            "themeName": "워너고홈",영
+            "themeDesc": "병맛 어드벤처 회사 코믹물",
+            "themePrice": 29000
+          }
+          ```
+        - [X] 예약 취소
+          ```
+          DELETE /reservations/1 HTTP/1.1
+          ```
+          ```
+          HTTP/1.1 204 
+          ```
 - [X] 예외 처리
     - [X] 예약 생성) content-type이 application/json이 아닌 경우 값을 받지 않는다.
     - [X] 예약 생성) 예약 생성 시 날짜와 시간이 똑같은 예약이 이미 있는 경우 예약을 생성할 수 없다.

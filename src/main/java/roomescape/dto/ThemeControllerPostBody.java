@@ -1,4 +1,4 @@
-package roomescape.entity;
+package roomescape.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,14 +11,11 @@ import javax.validation.constraints.PositiveOrZero;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Theme {
-    @NotNull
-    private Long id;
-    
+public class ThemeControllerPostBody {
     @NotBlank
     private String name;
 
-    @NotNull
+    @NotBlank
     private String desc;
 
     @NotNull

@@ -38,6 +38,7 @@ public class Reservation {
                 rs.getTime("time").toLocalTime(),
                 rs.getString("name"),
                 new Theme(
+                        null,
                         rs.getString("theme_name"),
                         rs.getString("theme_desc"),
                         rs.getInt("theme_price")

@@ -35,7 +35,7 @@ public class ReservationTest {
     private static final String THEME_NAME = "워너고홈";
     private static final String THEME_DESC = "병맛 어드벤처 회사 코믹물";
     private static final int THEME_PRICE = 29000;
-    private static final Theme THEME = new Theme("워너고홈", "병맛 어드벤처 회사 코믹물", 29000);
+    private static final Theme THEME = new Theme(null, "워너고홈", "병맛 어드벤처 회사 코믹물", 29000);
 
     @LocalServerPort
     int port;

@@ -54,7 +54,7 @@ public class ReservationDAOTest {
     @Test
     void addReservation() {
         Reservation reservation = new Reservation(null, LocalDate.parse("2022-08-02"),
-                LocalTime.parse("13:00"), "test", new Theme("워너고홈", "병맛 어드벤처 회사 코믹물", 29000));
+                LocalTime.parse("13:00"), "test", new Theme(null, "워너고홈", "병맛 어드벤처 회사 코믹물", 29000));
         reservationDAO.addReservation(reservation);
 
         Long count = jdbcTemplate.queryForObject("SELECT count(*) FROM RESERVATION", Long.class);
