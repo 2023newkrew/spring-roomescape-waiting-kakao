@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import roomescape.SpringWebApplication;
 import roomescape.dto.ThemeControllerPostBody;
+import roomescape.entity.Theme;
 
 import java.util.UUID;
 import java.util.random.RandomGenerator;
@@ -56,7 +57,7 @@ public class ThemeTest {
                 .contentType("application/json")
                 .body(expectedResult)
                 .post("/themes");
-
+        postResult.jsonPath().getList("exlist", Theme.class);
         RestAssured
                 .when()
                 .get(postResult.header("Location"))

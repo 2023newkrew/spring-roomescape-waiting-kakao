@@ -5,8 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ReservationControllerGetResponse;
 import roomescape.dto.ReservationsControllerPostBody;
-import roomescape.entity.Reservation;
-import roomescape.entity.Theme;
 import roomescape.exception.AlreadyExistReservationException;
 import roomescape.exception.NotExistReservationException;
 import roomescape.repository.ReservationRepository;
@@ -26,12 +24,7 @@ public class ReservationController {
 
     @PostMapping(value = "", produces = "application/json;charset=utf-8")
     public ResponseEntity<Object> createReservation(@Valid @RequestBody ReservationsControllerPostBody body) {
-        var id = reservationDAO.addReservation(
-                new Reservation(
-                        null, body.getDate(), body.getTime(), body.getName(),
-                        new Theme(null, body.getThemeName(), body.getThemeDesc(), body.getThemePrice())
-                )
-        );
+        var id = reservationDAO.insert(body.getName(), body.getDate(), body.getTime(), body.getThemeId());
         if (id.isEmpty()) {
             throw new AlreadyExistReservationException(body.getDate(), body.getTime());
         }
@@ -41,8 +34,8 @@ public class ReservationController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json;charset=utf-8")
-    public ResponseEntity<ReservationControllerGetResponse> showReservation(@PathVariable Long id) {
-        var reservation = reservationDAO.findReservation(id);
+    public ResponseEntity<ReservationControllerGetResponse> findReservation(@PathVariable Long id) {
+        var reservation = reservationDAO.selectById(id);
         if (reservation.isEmpty()) {
             throw new NotExistReservationException(id);
         }
@@ -53,6 +46,7 @@ public class ReservationController {
                                      getReservation.getDate(),
                                      getReservation.getTime(),
                                      getReservation.getName(),
+                                     getReservation.getTheme().getId(),
                                      getReservation.getTheme().getName(),
                                      getReservation.getTheme().getDesc(),
                                      getReservation.getTheme().getPrice()
@@ -61,7 +55,7 @@ public class ReservationController {
 
     @DeleteMapping(value = "/{id}", produces = "application/json;charset=utf-8")
     public ResponseEntity<Object> deleteReservation(@PathVariable Long id) {
-        var affectedRow = reservationDAO.deleteReservation(id);
+        var affectedRow = reservationDAO.delete(id);
         if (affectedRow == 0) {
             throw new NotExistReservationException(id);
         }

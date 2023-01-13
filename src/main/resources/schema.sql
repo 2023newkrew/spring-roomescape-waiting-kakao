@@ -18,5 +18,6 @@ create table reservation
     name        varchar(20)     not null                        ,
     theme_id    bigint          not null                        ,
     primary key (id),
+    unique (date, time),
     foreign key (theme_id) references theme(id)
 );

@@ -9,7 +9,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -30,16 +29,7 @@ public class ReservationsControllerPostBody {
     @NotBlank
     private String name;
 
-    @JsonProperty("theme_name")
-    @NotBlank
-    private String themeName;
-
-    @JsonProperty("theme_desc")
+    @JsonProperty("theme_id")
     @NotNull
-    private String themeDesc;
-
-    @JsonProperty("theme_price")
-    @NotNull
-    @PositiveOrZero
-    private Integer themePrice;
+    private Long themeId;
 }

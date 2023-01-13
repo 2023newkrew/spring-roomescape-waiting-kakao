@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ThemeControllerGetResponse;
 import roomescape.dto.ThemeControllerPostBody;
 import roomescape.dto.ThemeControllerPostResponse;
-import roomescape.entity.Theme;
 import roomescape.exception.NotExistThemeException;
 import roomescape.repository.ThemeRepository;
 
@@ -27,9 +26,7 @@ public class ThemeController {
 
     @PostMapping(value = "", produces = "application/json;charset=utf-8")
     public ResponseEntity<ThemeControllerPostResponse> createTheme(@Valid @RequestBody ThemeControllerPostBody body) {
-        var id = repository.insert(
-                new Theme(null, body.getName(), body.getDesc(), body.getPrice())
-        );
+        var id = repository.insert(body.getName(), body.getDesc(), body.getPrice());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                              .header("Location", String.format("/themes/%d", id))

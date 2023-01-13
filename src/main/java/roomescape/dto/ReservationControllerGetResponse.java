@@ -34,6 +34,10 @@ public class ReservationControllerGetResponse {
     @NotBlank
     private String name;
 
+    @JsonProperty("theme_id")
+    @NotBlank
+    private Long themeId;
+
     @JsonProperty("theme_name")
     @NotBlank
     private String themeName;

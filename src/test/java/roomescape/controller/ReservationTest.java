@@ -1,80 +1,68 @@
 package roomescape.controller;
 
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.SpringWebApplication;
 import roomescape.dto.ReservationsControllerPostBody;
-import roomescape.entity.Reservation;
 import roomescape.entity.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.UUID;
+import java.util.random.RandomGenerator;
 
 import static org.hamcrest.core.Is.is;
 
 
 @DisplayName("웹 요청 / 응답 처리로 입출력 추가")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(classes = {SpringWebApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ReservationTest {
-
-    private static final String ADD_SQL = "INSERT INTO reservation (date, time, name, theme_name, theme_desc, theme_price) VALUES (?, ?, ?, ?, ?, ?);";
-
-    private static final LocalDate DATE = LocalDate.parse("2022-08-01");
-    private static final LocalTime TIME = LocalTime.parse("13:00");
-    private static final String NAME = "test";
-    private static final String THEME_NAME = "워너고홈";
-    private static final String THEME_DESC = "병맛 어드벤처 회사 코믹물";
-    private static final int THEME_PRICE = 29000;
-    private static final Theme THEME = new Theme(null, "워너고홈", "병맛 어드벤처 회사 코믹물", 29000);
-
-    @LocalServerPort
-    int port;
+    @Value("${local.server.port}")
+    private int port;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationRepository reservationRepository;
 
-    @BeforeEach
-    void setUp() {
+    @Autowired
+    private ThemeRepository themeRepository;
+
+    private Theme targetTheme = null;
+
+    @BeforeAll
+    void setupTheme() {
+        var rand = RandomGenerator.getDefault();
         RestAssured.port = port;
-
-        jdbcTemplate.execute("DROP TABLE RESERVATION IF EXISTS");
-        jdbcTemplate.execute("CREATE TABLE RESERVATION("
-                + "id bigint not null auto_increment, date date, time time,"
-                + " name varchar(20), theme_name varchar(20), theme_desc  varchar(255),"
-                + " theme_price int, primary key (id));");
-
-        List<Object[]> split = List.<Object[]>of(
-                new Object[]{DATE, TIME, NAME, THEME_NAME, THEME_DESC, THEME_PRICE});
-
-        jdbcTemplate.batchUpdate(ADD_SQL, split);
+        targetTheme = themeRepository.selectById(themeRepository.insert(
+                UUID.randomUUID().toString().split("-")[0],
+                UUID.randomUUID().toString(),
+                rand.nextInt(0, 10000000)
+        )).get();
     }
 
     @DisplayName("예약 하기")
     @Test
     void createReservation() {
-        Reservation reservation = new Reservation(null, LocalDate.parse("2022-08-11"),
-                LocalTime.parse("13:00:00"), "name", THEME);
-
+        var rand = RandomGenerator.getDefault();
         RestAssured
                 .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new ReservationsControllerPostBody(
-                        LocalDate.parse("2022-08-11"),
-                        LocalTime.parse("13:00:00"),
-                        "name",
-                        THEME_NAME,
-                        THEME_DESC,
-                        THEME_PRICE
+                        LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
+                        LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0),
+                        UUID.randomUUID().toString().split("-")[0],
+                        targetTheme.getId()
                 ))
                 .when()
                 .post("/reservations")
@@ -85,25 +73,45 @@ public class ReservationTest {
     @DisplayName("예약 조회")
     @Test
     void showReservation() {
+        var rand = RandomGenerator.getDefault();
+        var targetReservation = reservationRepository.selectById(reservationRepository.insert(
+                UUID.randomUUID().toString().split("-")[0],
+                LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
+                LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0),
+                targetTheme.getId()
+        ).get()).get();
+
         RestAssured
                 .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get("/reservations/1")
+                .get(String.format("/reservations/%d", targetReservation.getId()))
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body("name", is(NAME))
-                .body("date", is(DATE.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
-                .body("time", is(TIME.format(DateTimeFormatter.ofPattern("HH:mm"))));
+                .body("name", is(targetReservation.getName()))
+                .body("date", is(targetReservation.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
+                .body("time", is(targetReservation.getTime().format(DateTimeFormatter.ofPattern("HH:mm"))))
+                .body("theme_id", is(targetReservation.getTheme().getId().intValue()))
+                .body("theme_name", is(targetReservation.getTheme().getName()))
+                .body("theme_desc", is(targetReservation.getTheme().getDesc()))
+                .body("theme_price", is(targetReservation.getTheme().getPrice()));
     }
 
     @DisplayName("예약 취소")
     @Test
     void deleteReservation() {
+        var rand = RandomGenerator.getDefault();
+        var targetReservation = reservationRepository.selectById(reservationRepository.insert(
+                UUID.randomUUID().toString().split("-")[0],
+                LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
+                LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0),
+                targetTheme.getId()
+        ).get()).get();
+
         RestAssured.given()
                    .accept(MediaType.APPLICATION_JSON_VALUE)
                    .when()
-                   .delete("/reservations/1")
+                   .delete(String.format("/reservations/%d", targetReservation.getId()))
                    .then().log().all()
                    .statusCode(HttpStatus.NO_CONTENT.value());
     }

@@ -33,12 +33,12 @@ public class ThemeRepository {
     }
 
 
-    public Long insert(Theme theme) {
+    public Long insert(String name, String desc, int price) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(INSERT, new MapSqlParameterSource(Map.ofEntries(
-                Map.entry("name", theme.getName()),
-                Map.entry("desc", theme.getDesc()),
-                Map.entry("price", theme.getPrice())
+                Map.entry("name", name),
+                Map.entry("desc", desc),
+                Map.entry("price", price)
         )), keyHolder);
         return keyHolder.getKeyAs(Long.class);
     }
@@ -61,6 +61,10 @@ public class ThemeRepository {
     }
 
     public int delete(long id) {
-        return jdbc.update(DELETE_THEME, Map.of("id", id));
+        try {
+            return jdbc.update(DELETE_THEME, Map.of("id", id));
+        } catch (DataAccessException sqlException) {
+            return 0;
+        }
     }
 }
