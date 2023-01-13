@@ -16,15 +16,15 @@ import javax.validation.Valid;
 @RequestMapping("/reservations")
 public class ReservationController {
 
-    private final ReservationRepository reservationDAO;
+    private final ReservationRepository repository;
 
-    public ReservationController(ReservationRepository reservationDAO) {
-        this.reservationDAO = reservationDAO;
+    public ReservationController(ReservationRepository repository) {
+        this.repository = repository;
     }
 
     @PostMapping(value = "", produces = "application/json;charset=utf-8")
     public ResponseEntity<Object> createReservation(@Valid @RequestBody ReservationsControllerPostBody body) {
-        var id = reservationDAO.insert(body.getName(), body.getDate(), body.getTime(), body.getThemeId());
+        var id = repository.insert(body.getName(), body.getDate(), body.getTime(), body.getThemeId());
         if (id.isEmpty()) {
             throw new AlreadyExistReservationException(body.getDate(), body.getTime());
         }
@@ -35,7 +35,7 @@ public class ReservationController {
 
     @GetMapping(value = "/{id}", produces = "application/json;charset=utf-8")
     public ResponseEntity<ReservationControllerGetResponse> findReservation(@PathVariable Long id) {
-        var reservation = reservationDAO.selectById(id);
+        var reservation = repository.selectById(id);
         if (reservation.isEmpty()) {
             throw new NotExistReservationException(id);
         }
@@ -55,7 +55,7 @@ public class ReservationController {
 
     @DeleteMapping(value = "/{id}", produces = "application/json;charset=utf-8")
     public ResponseEntity<Object> deleteReservation(@PathVariable Long id) {
-        var affectedRow = reservationDAO.delete(id);
+        var affectedRow = repository.delete(id);
         if (affectedRow == 0) {
             throw new NotExistReservationException(id);
         }
