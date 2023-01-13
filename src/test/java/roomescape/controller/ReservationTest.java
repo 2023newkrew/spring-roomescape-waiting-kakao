@@ -5,11 +5,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.SpringWebApplication;
 import roomescape.dto.ReservationsControllerPostBody;
 import roomescape.entity.Theme;
@@ -28,6 +31,7 @@ import static org.hamcrest.core.Is.is;
 @DisplayName("웹 요청 / 응답 처리로 입출력 추가")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(classes = {SpringWebApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles({"web"})
 public class ReservationTest {
     @Value("${local.server.port}")
     private int port;
@@ -114,5 +118,61 @@ public class ReservationTest {
                    .delete(String.format("/reservations/%d", targetReservation.getId()))
                    .then().log().all()
                    .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("content-type이 application/json이 아닌 경우 값을 받지 않는다.")
+    @ParameterizedTest
+    @ValueSource(strings = {
+            MediaType.TEXT_PLAIN_VALUE,
+            MediaType.TEXT_HTML_VALUE,
+            MediaType.TEXT_XML_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+    })
+    void notJson(String contentType) {
+        RestAssured.given().log().all().contentType(contentType).body("").when()
+                   .post("/reservations").then().log().all()
+                   .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
+    }
+
+    @DisplayName("예약 생성) 예약 생성 시 날짜와 시간이 똑같은 예약이 이미 있는 경우 예약을 생성할 수 없다.")
+    @Test
+    void failToCreateReservationAlreadyExist() {
+        var rand = RandomGenerator.getDefault();
+        var targetReservation = reservationRepository.selectById(reservationRepository.insert(
+                UUID.randomUUID().toString().split("-")[0],
+                LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
+                LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0),
+                targetTheme.getId()
+        ).get()).get();
+
+        RestAssured
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE).body(new ReservationsControllerPostBody(
+                        targetReservation.getDate(),
+                        targetReservation.getTime(),
+                        UUID.randomUUID().toString().split("-")[0],
+                        targetTheme.getId()
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @DisplayName("예약 조회) ID가 없는 경우 조회 불가")
+    @Test
+    void notExistID() {
+        RestAssured.given()
+                   .when().get("/reservations/-1")
+                   .then().log().all()
+                   .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("예약 삭제) ID가 없는 경우 삭제 불가")
+    @Test
+    void deleteNotExistId() {
+        RestAssured.given()
+                   .when().delete("/reservations/-1")
+                   .then().log().all()
+                   .statusCode(HttpStatus.NOT_FOUND.value());
     }
 }

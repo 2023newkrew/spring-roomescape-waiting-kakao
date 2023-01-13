@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.SpringWebApplication;
 import roomescape.dto.ThemeControllerPostBody;
 import roomescape.entity.Theme;
@@ -18,6 +19,7 @@ import static org.hamcrest.Matchers.is;
 
 @DisplayName("테마에 관련된 RESTful API 요청")
 @SpringBootTest(classes = {SpringWebApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles({"web"})
 public class ThemeTest {
     @Value("${local.server.port}")
     int port;

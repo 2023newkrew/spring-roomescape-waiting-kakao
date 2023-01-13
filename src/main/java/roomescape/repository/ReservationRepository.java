@@ -40,7 +40,6 @@ public class ReservationRepository {
     }
 
     /**
-     * @param reservation
      * @return unique 제약조건에 의해서 특정 상황에서 삽입 불가능할 수 있음 따라서 {@link Optional}타입
      */
     public Optional<Long> insert(String name, LocalDate date, LocalTime time, Long themeId) {
@@ -59,7 +58,7 @@ public class ReservationRepository {
     }
 
     public Optional<Reservation> selectById(long id) {
-        return Optional.ofNullable(jdbc.queryForObject(SELECT_BY_ID, Map.of("id", id), ROW_MAPPER));
+        return jdbc.queryForStream(SELECT_BY_ID, Map.of("id", id), ROW_MAPPER).findFirst();
     }
 
     public int delete(long id) {
