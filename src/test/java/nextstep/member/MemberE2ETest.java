@@ -65,7 +65,24 @@ public class MemberE2ETest {
                 .body("password", is(password));
     }
 
-//
+    @DisplayName("토큰정보가 없으면 에러가 발생한다.")
+    @Test
+    void noToken() {
+        RestAssured
+                // given
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(new Header("Authorization", ""))
+
+                // when
+                .when().get("/members/me")
+
+                // then
+                .then().log().all()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    //
 //    @DisplayName("테마 목록을 조회한다")
 //    @Test
 //    public void showThemes() {
