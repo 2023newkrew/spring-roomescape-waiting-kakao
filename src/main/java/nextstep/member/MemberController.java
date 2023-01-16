@@ -8,7 +8,7 @@ import java.net.URI;
 @RestController
 @RequestMapping("/members")
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -21,8 +21,8 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity me() {
-        Long id = 1L;
+    public ResponseEntity me(@RequestHeader("Authorization") String authorizationHeader) {
+        Long id = memberService.getPrincipal(authorizationHeader);
         Member member = memberService.findById(id);
         return ResponseEntity.ok(member);
     }
