@@ -21,8 +21,4 @@ public class MemberService {
         return memberDao.findById(id);
     }
 
-    public Long getPrincipal(String authorizationHeader){
-        Long id = Long.parseLong(jwtTokenProvider.getPrincipal(authorizationHeader.split(" ")[1]));
-        return id;
-    }
 }
