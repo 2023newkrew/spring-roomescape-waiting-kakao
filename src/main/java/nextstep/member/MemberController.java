@@ -1,5 +1,6 @@
 package nextstep.member;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +23,14 @@ public class MemberController {
 
     @GetMapping("/me")
     public ResponseEntity me(@RequestHeader("Authorization") String authorizationHeader) {
-        Long id = memberService.getPrincipal(authorizationHeader);
-        Member member = memberService.findById(id);
-        return ResponseEntity.ok(member);
+        try{
+            Long id = memberService.getPrincipal(authorizationHeader);
+            Member member = memberService.findById(id);
+            return ResponseEntity.ok(member);
+        }
+        catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
 }
