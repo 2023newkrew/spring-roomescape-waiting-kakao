@@ -75,7 +75,7 @@ class ReservationE2ETest {
 
         request = new ReservationRequest(
                 scheduleId,
-                "브라운"
+                body.getName()
         );
 
         var tokenResponse = RestAssured
@@ -145,6 +145,32 @@ class ReservationE2ETest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+
+    @DisplayName("예약자의 이름이 요청하는 사람과 다른 경우")
+    @Test
+    void deleteNotMine() {
+        var reservation = createReservation();
+
+        MemberRequest body = new MemberRequest("kane", "password", "davi", "010-1234-5678");
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(body)
+                .post("/members");
+        var token = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new TokenRequest(body.getUsername(), body.getPassword()))
+                .post("/login/token")
+                .as(TokenResponse.class).getAccessToken();
+        RestAssured
+                .given().log().all()
+                .header(new Header("Authorization", "Bearer " + token))
+                .when().delete(reservation.header("Location"))
+                .then().log().all()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
     @DisplayName("중복 예약을 생성한다")
