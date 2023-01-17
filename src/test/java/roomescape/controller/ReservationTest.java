@@ -22,8 +22,8 @@ import roomescape.repository.ThemeRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Random;
 import java.util.UUID;
-import java.util.random.RandomGenerator;
 
 import static org.hamcrest.core.Is.is;
 
@@ -46,7 +46,7 @@ public class ReservationTest {
 
     @BeforeAll
     void setupTheme() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         RestAssured.port = port;
         targetTheme = themeRepository.selectById(themeRepository.insert(
                 UUID.randomUUID().toString().split("-")[0],
@@ -58,7 +58,7 @@ public class ReservationTest {
     @DisplayName("예약 하기")
     @Test
     void createReservation() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         RestAssured
                 .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -77,7 +77,7 @@ public class ReservationTest {
     @DisplayName("예약 조회")
     @Test
     void showReservation() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         var targetReservation = reservationRepository.selectById(reservationRepository.insert(
                 UUID.randomUUID().toString().split("-")[0],
                 LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
@@ -104,7 +104,7 @@ public class ReservationTest {
     @DisplayName("예약 취소")
     @Test
     void deleteReservation() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         var targetReservation = reservationRepository.selectById(reservationRepository.insert(
                 UUID.randomUUID().toString().split("-")[0],
                 LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
@@ -137,7 +137,7 @@ public class ReservationTest {
     @DisplayName("예약 생성) 예약 생성 시 날짜와 시간이 똑같은 예약이 이미 있는 경우 예약을 생성할 수 없다.")
     @Test
     void failToCreateReservationAlreadyExist() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         var targetReservation = reservationRepository.selectById(reservationRepository.insert(
                 UUID.randomUUID().toString().split("-")[0],
                 LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),

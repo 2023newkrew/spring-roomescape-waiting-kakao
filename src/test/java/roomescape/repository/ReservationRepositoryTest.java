@@ -15,8 +15,8 @@ import roomescape.entity.Theme;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
-import java.util.random.RandomGenerator;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -38,7 +38,7 @@ public class ReservationRepositoryTest {
 
     @BeforeAll
     void setupTheme() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         targetTheme = themeRepository.selectById(themeRepository.insert(
                 UUID.randomUUID().toString().split("-")[0],
                 UUID.randomUUID().toString(),
@@ -51,7 +51,7 @@ public class ReservationRepositoryTest {
     @Test
     @Transactional
     void insert() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         var name = UUID.randomUUID().toString().split("-")[0];
         var date = LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28));
         var time = LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0);
@@ -76,7 +76,7 @@ public class ReservationRepositoryTest {
     @Test
     @Transactional
     void selectById() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         var name = UUID.randomUUID().toString().split("-")[0];
         var date = LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28));
         var time = LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0);
@@ -99,7 +99,7 @@ public class ReservationRepositoryTest {
     @Test
     @Transactional
     void delete() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         var name = UUID.randomUUID().toString().split("-")[0];
         var date = LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28));
         var time = LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0);

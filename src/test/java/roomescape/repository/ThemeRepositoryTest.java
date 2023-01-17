@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.SpringWebApplication;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
-import java.util.random.RandomGenerator;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -29,7 +29,7 @@ public class ThemeRepositoryTest {
     @Test
     @Transactional
     void insert() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         var name = UUID.randomUUID().toString().split("-")[0];
         var desc = UUID.randomUUID().toString();
         var price = rand.nextInt(1000, 100000000);
@@ -51,7 +51,7 @@ public class ThemeRepositoryTest {
     @Test
     @Transactional
     void selectById() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         var name = UUID.randomUUID().toString().split("-")[0];
         var desc = UUID.randomUUID().toString();
         var price = rand.nextInt(1000, 100000000);
@@ -71,7 +71,7 @@ public class ThemeRepositoryTest {
     @Test
     @Transactional
     void delete() {
-        var rand = RandomGenerator.getDefault();
+        var rand = new Random();
         var name = UUID.randomUUID().toString().split("-")[0];
         var desc = UUID.randomUUID().toString();
         var price = rand.nextInt(1000, 100000000);

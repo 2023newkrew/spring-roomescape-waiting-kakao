@@ -12,8 +12,8 @@ import roomescape.SpringWebApplication;
 import roomescape.dto.ThemeControllerPostBody;
 import roomescape.entity.Theme;
 
+import java.util.Random;
 import java.util.UUID;
-import java.util.random.RandomGenerator;
 
 import static org.hamcrest.Matchers.is;
 
@@ -38,7 +38,7 @@ public class ThemeTest {
                 .body(new ThemeControllerPostBody(
                         UUID.randomUUID().toString().split("-")[0],
                         UUID.randomUUID().toString(),
-                        RandomGenerator.getDefault().nextInt(0, 1000000)
+                        new Random().nextInt(0, 1000000)
                 ))
                 .when()
                 .post("/themes")
@@ -52,7 +52,7 @@ public class ThemeTest {
         var expectedResult = new ThemeControllerPostBody(
                 UUID.randomUUID().toString().split("-")[0],
                 UUID.randomUUID().toString(),
-                RandomGenerator.getDefault().nextInt(0, 1000000)
+                new Random().nextInt(0, 1000000)
         );
         var postResult = RestAssured
                 .given()
@@ -77,7 +77,7 @@ public class ThemeTest {
         var expectedResult = new ThemeControllerPostBody(
                 UUID.randomUUID().toString().split("-")[0],
                 UUID.randomUUID().toString(),
-                RandomGenerator.getDefault().nextInt(0, 1000000)
+                new Random().nextInt(0, 1000000)
         );
         var postResult = RestAssured
                 .given()
