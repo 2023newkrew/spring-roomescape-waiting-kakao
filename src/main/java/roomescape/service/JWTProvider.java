@@ -28,7 +28,7 @@ public class JWTProvider {
 
     public String getSubject(String token) {
         var claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-        if (!claims.getBody().getExpiration().before(new Date())) {
+        if (claims.getBody().getExpiration().before(new Date())) {
             throw new AuthorizationException();
         }
         return claims.getBody().getSubject();

@@ -158,6 +158,27 @@ public class ReservationTest {
                    .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
+    @DisplayName("소유자가 아니라 삭제 불가능한 경우")
+    @Test
+    void deleteReservationNotOwner() {
+        var rand = new Random();
+        var targetReservation = reservationRepository.selectById(reservationRepository.insert(
+                UUID.randomUUID().toString().split("-")[0],
+                LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
+                LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0),
+                targetTheme.getId(),
+                memberOwner.getId()
+        ).get()).get();
+
+        RestAssured.given()
+                   .header(new Header("Authorization", "Bearer " + memberOtherToken))
+                   .accept(MediaType.APPLICATION_JSON_VALUE)
+                   .when()
+                   .delete(String.format("/reservations/%d", targetReservation.getId()))
+                   .then().log().all()
+                   .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
     @DisplayName("content-type이 application/json이 아닌 경우 값을 받지 않는다.")
     @ParameterizedTest
     @ValueSource(strings = {
@@ -167,9 +188,13 @@ public class ReservationTest {
             MediaType.APPLICATION_XML_VALUE,
     })
     void notJson(String contentType) {
-        RestAssured.given().log().all().contentType(contentType).body("").when()
-                   .post("/reservations").then().log().all()
-                   .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
+        RestAssured
+                .given().log().all()
+                .header(new Header("Authorization", "Bearer " + memberOwnerToken))
+                .contentType(contentType).body("")
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
     }
 
     @DisplayName("예약 생성) 예약 생성 시 날짜와 시간이 똑같은 예약이 이미 있는 경우 예약을 생성할 수 없다.")
@@ -186,6 +211,7 @@ public class ReservationTest {
 
         RestAssured
                 .given()
+                .header(new Header("Authorization", "Bearer " + memberOwnerToken))
                 .contentType(MediaType.APPLICATION_JSON_VALUE).body(new ReservationsControllerPostBody(
                         targetReservation.getDate(),
                         targetReservation.getTime(),
@@ -210,6 +236,7 @@ public class ReservationTest {
     @Test
     void deleteNotExistId() {
         RestAssured.given()
+                   .header(new Header("Authorization", "Bearer " + memberOwnerToken))
                    .when().delete("/reservations/-1")
                    .then().log().all()
                    .statusCode(HttpStatus.NOT_FOUND.value());

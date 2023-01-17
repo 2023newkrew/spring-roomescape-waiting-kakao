@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.SpringWebApplication;
+import roomescape.entity.Member;
 import roomescape.entity.Theme;
 
 import java.time.LocalDate;
@@ -32,9 +33,14 @@ public class ReservationRepositoryTest {
     private ThemeRepository themeRepository;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+
+    @Autowired
     private NamedParameterJdbcTemplate jdbc;
 
     private Theme targetTheme = null;
+    private Member memberOwner = null;
 
     @BeforeAll
     void setupTheme() {
@@ -44,6 +50,12 @@ public class ReservationRepositoryTest {
                 UUID.randomUUID().toString(),
                 rand.nextInt(0, 10000000)
         )).get();
+        var memberOwnerUsername = UUID.randomUUID().toString().split("-")[0];
+        var memberOwnerPassword = UUID.randomUUID().toString().split("-")[0];
+        var memberOwnerId = memberRepository.insert(memberOwnerUsername, memberOwnerPassword, UUID.randomUUID()
+                                                                                                  .toString()
+                                                                                                  .split("-")[0], "010-1234-5678");
+        memberOwner = memberRepository.selectById(memberOwnerId);
     }
 
 
@@ -56,7 +68,7 @@ public class ReservationRepositoryTest {
         var date = LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28));
         var time = LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0);
         var themeId = targetTheme.getId();
-        var id = repository.insert(name, date, time, themeId);
+        var id = repository.insert(name, date, time, themeId, memberOwner.getId());
         assertThat(id).isPresent();
         assertThat(jdbc.queryForObject(
                 "select count(*) from reservation where id = :id and name = :name and date = :date and time = :time and theme_id = :themeId",
@@ -81,7 +93,7 @@ public class ReservationRepositoryTest {
         var date = LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28));
         var time = LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0);
         var themeId = targetTheme.getId();
-        var id = repository.insert(name, date, time, themeId);
+        var id = repository.insert(name, date, time, themeId, memberOwner.getId());
         assertThat(id).isPresent();
         assertThat(repository.selectById(id.get()))
                 .isPresent()
@@ -104,7 +116,7 @@ public class ReservationRepositoryTest {
         var date = LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28));
         var time = LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0);
         var themeId = targetTheme.getId();
-        var id = repository.insert(name, date, time, themeId);
+        var id = repository.insert(name, date, time, themeId, memberOwner.getId());
         assertThat(id).isPresent();
         assertThat(repository.selectById(id.get())).isPresent();
         assertThat(repository.delete(id.get())).isEqualTo(1);
