@@ -1,5 +1,16 @@
 drop table reservation if exists;
 drop table theme if exists;
+drop table member if exists;
+
+CREATE TABLE member
+(
+    id       bigint      not null auto_increment,
+    username varchar(20) not null,
+    password varchar(20) not null,
+    name     varchar(20) not null,
+    phone    varchar(20) not null,
+    primary key (id)
+);
 
 create table theme
 (
