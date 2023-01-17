@@ -28,7 +28,9 @@ create table reservation
     time        time            not null                        ,
     name        varchar(20)     not null                        ,
     theme_id    bigint          not null                        ,
+    member_id   bigint          not null                        ,
     primary key (id),
     unique (date, time),
-    foreign key (theme_id) references theme(id)
+    foreign key (theme_id) references theme(id),
+    foreign key (member_id) references member(id)
 );

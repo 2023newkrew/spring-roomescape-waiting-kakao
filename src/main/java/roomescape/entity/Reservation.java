@@ -27,5 +27,8 @@ public class Reservation {
     private String name;
 
     @NotNull
+    private Long memberId;
+
+    @NotNull
     private Theme theme;
 }
