@@ -9,6 +9,7 @@ import roomescape.dto.MemberControllerPostResponse;
 import roomescape.repository.MemberRepository;
 import roomescape.resolver.JWTBearerTokenSubject;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -22,7 +23,7 @@ public class MemberController {
     }
 
     @PostMapping(path = "", produces = "application/json;charset=utf-8")
-    public ResponseEntity<MemberControllerPostResponse> createMember(@RequestBody MemberControllerPostBody req) {
+    public ResponseEntity<MemberControllerPostResponse> createMember(@Valid @RequestBody MemberControllerPostBody req) {
         var id = repository.insert(req.getUsername(), req.getPassword(), req.getName(), req.getPhone());
         return ResponseEntity.status(HttpStatus.CREATED)
                              .location(URI.create("/members/" + id))

@@ -12,6 +12,7 @@ import roomescape.exception.AuthorizationException;
 import roomescape.repository.MemberRepository;
 import roomescape.service.JWTProvider;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -27,7 +28,7 @@ public class LoginController {
 
 
     @PostMapping("/token")
-    public ResponseEntity<LoginControllerTokenPostResponse> createToken(@RequestBody LoginControllerTokenPostBody request) {
+    public ResponseEntity<LoginControllerTokenPostResponse> createToken(@Valid @RequestBody LoginControllerTokenPostBody request) {
         var member = repository.selectByUsername(request.getUsername());
         if (!member.getPassword().equals(request.getPassword())) {
             throw new AuthorizationException();
