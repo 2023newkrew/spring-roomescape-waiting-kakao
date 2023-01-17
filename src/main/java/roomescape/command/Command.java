@@ -10,10 +10,11 @@ import picocli.CommandLine;
 public class Command {
     private final CommandLine commandLine;
 
-    public Command(ThemeCommand themeCommand, ReservationCommand reservationCommand) {
+    public Command(ThemeCommand themeCommand, ReservationCommand reservationCommand, AuthCommand authCommand) {
         commandLine = new CommandLine(this)
                 .addSubcommand(themeCommand)
                 .addSubcommand(reservationCommand)
+                .addSubcommand(authCommand)
         ;
     }
 

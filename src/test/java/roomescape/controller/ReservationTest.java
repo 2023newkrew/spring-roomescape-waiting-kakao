@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import io.restassured.RestAssured;
+import io.restassured.http.Header;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.SpringWebApplication;
+import roomescape.dto.LoginControllerTokenPostBody;
 import roomescape.dto.ReservationsControllerPostBody;
+import roomescape.entity.Member;
 import roomescape.entity.Theme;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
@@ -42,7 +46,15 @@ public class ReservationTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     private Theme targetTheme = null;
+    private Member memberOwner = null;
+    private String memberOwnerToken = null;
+    private Member memberOther = null;
+    private String memberOtherToken = null;
+
 
     @BeforeAll
     void setupTheme() {
@@ -53,6 +65,28 @@ public class ReservationTest {
                 UUID.randomUUID().toString(),
                 rand.nextInt(0, 10000000)
         )).get();
+        var memberOwnerUsername = UUID.randomUUID().toString().split("-")[0];
+        var memberOwnerPassword = UUID.randomUUID().toString().split("-")[0];
+        var memberOtherUsername = UUID.randomUUID().toString().split("-")[0];
+        var memberOtherPassword = UUID.randomUUID().toString().split("-")[0];
+        var memberOwnerId = memberRepository.insert(memberOwnerUsername, memberOwnerPassword, UUID.randomUUID()
+                                                                                                  .toString()
+                                                                                                  .split("-")[0], "010-1234-5678");
+        var memberOtherId = memberRepository.insert(memberOtherUsername, memberOtherPassword, UUID.randomUUID()
+                                                                                                  .toString()
+                                                                                                  .split("-")[0], "010-1234-5678");
+        memberOwner = memberRepository.selectById(memberOwnerId);
+        memberOther = memberRepository.selectById(memberOtherId);
+        memberOwnerToken = RestAssured.given()
+                                      .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                      .body(new LoginControllerTokenPostBody(memberOwnerUsername, memberOwnerPassword))
+                                      .post("/login/token")
+                                      .body().jsonPath().getString("access_token");
+        memberOtherToken = RestAssured.given()
+                                      .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                      .body(new LoginControllerTokenPostBody(memberOwnerUsername, memberOwnerPassword))
+                                      .post("/login/token")
+                                      .body().jsonPath().getString("access_token");
     }
 
     @DisplayName("예약 하기")
@@ -61,6 +95,7 @@ public class ReservationTest {
         var rand = new Random();
         RestAssured
                 .given()
+                .header(new Header("Authorization", "Bearer " + memberOwnerToken))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new ReservationsControllerPostBody(
                         LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
@@ -82,7 +117,8 @@ public class ReservationTest {
                 UUID.randomUUID().toString().split("-")[0],
                 LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
                 LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0),
-                targetTheme.getId()
+                targetTheme.getId(),
+                memberOwner.getId()
         ).get()).get();
 
         RestAssured
@@ -109,10 +145,12 @@ public class ReservationTest {
                 UUID.randomUUID().toString().split("-")[0],
                 LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
                 LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0),
-                targetTheme.getId()
+                targetTheme.getId(),
+                memberOwner.getId()
         ).get()).get();
 
         RestAssured.given()
+                   .header(new Header("Authorization", "Bearer " + memberOwnerToken))
                    .accept(MediaType.APPLICATION_JSON_VALUE)
                    .when()
                    .delete(String.format("/reservations/%d", targetReservation.getId()))
@@ -142,7 +180,8 @@ public class ReservationTest {
                 UUID.randomUUID().toString().split("-")[0],
                 LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
                 LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0),
-                targetTheme.getId()
+                targetTheme.getId(),
+                memberOwner.getId()
         ).get()).get();
 
         RestAssured

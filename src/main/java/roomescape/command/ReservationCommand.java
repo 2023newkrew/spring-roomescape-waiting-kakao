@@ -3,19 +3,25 @@ package roomescape.command;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
 @Component
 @Profile("console")
 @CommandLine.Command(name = "reservation", description = "예약을 추가/삭제/조회 할 수 있는 명령어입니다.")
 public class ReservationCommand {
+    private final AuthCommand authCommand;
+    private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationCommand(ReservationRepository reservationRepository) {
+    public ReservationCommand(ReservationRepository reservationRepository, AuthCommand authCommand, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
+        this.memberRepository = memberRepository;
+        this.authCommand = authCommand;
     }
 
 
@@ -26,9 +32,13 @@ public class ReservationCommand {
             @CommandLine.Parameters(index = "2") LocalTime time,
             @CommandLine.Parameters(index = "3") Long themeId
     ) {
-        reservationRepository.insert(name, date, time, themeId).ifPresentOrElse(
+        var memberId = authCommand.getCurrentMemberId();
+        if (memberId.isEmpty()) {
+            System.out.println("로그인해야 합니다.");
+            return;
+        }
+        reservationRepository.insert(name, date, time, themeId, memberId.get()).ifPresentOrElse(
                 (id) -> {
-
                     System.out.println("예약이 등록되었습니다.");
                     System.out.println("예약 번호: " + id);
                     System.out.println("예약 날짜: " + date);
@@ -68,13 +78,22 @@ public class ReservationCommand {
     public void delete(
             @CommandLine.Parameters(index = "0") Long id
     ) {
-
-        var affectedRows = reservationRepository.delete(id);
-        if (affectedRows == 0) {
+        var memberId = authCommand.getCurrentMemberId();
+        if (memberId.isEmpty()) {
+            System.out.println("로그인해야 합니다.");
+            return;
+        }
+        var reservation = reservationRepository.selectById(id);
+        if (reservation.isEmpty()) {
             System.out.println("예약을 취소할 수 없습니다.");
             System.out.println("사유 : 존재하지 않는 ID");
             return;
         }
+        if (!Objects.equals(reservation.get().getMemberId(), memberId.get())) {
+            System.out.println("예약자만 삭제할 수 있습니다.");
+            return;
+        }
+        reservationRepository.delete(id);
         System.out.println("예약이 취소되었습니다.");
     }
 
