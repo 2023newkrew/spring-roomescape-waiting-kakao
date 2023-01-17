@@ -130,4 +130,16 @@ public class MemberLoginTest {
                 .body("password", is(body.getPassword()))
         ;
     }
+
+    @DisplayName("토큰 없이 읽기 시도")
+    @Test
+    void invalidMeCall() {
+        RestAssured
+                .given()
+                .header(new Header("Authorization", "Bearer " + ""))
+                .when().get("/members/me")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+        ;
+    }
 }
