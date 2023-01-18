@@ -1,4 +1,4 @@
-package roomescape.resolver;
+package roomescape.annotation;
 
 
 import java.lang.annotation.ElementType;

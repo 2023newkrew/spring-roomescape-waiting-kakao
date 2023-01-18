@@ -3,11 +3,11 @@ package roomescape.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.annotation.JWTBearerTokenSubject;
 import roomescape.dto.MemberControllerGetResponse;
 import roomescape.dto.MemberControllerPostBody;
 import roomescape.dto.MemberControllerPostResponse;
 import roomescape.repository.MemberRepository;
-import roomescape.resolver.JWTBearerTokenSubject;
 
 import javax.validation.Valid;
 import java.net.URI;

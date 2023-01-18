@@ -3,13 +3,13 @@ package roomescape.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.annotation.JWTBearerTokenSubject;
 import roomescape.dto.ReservationControllerGetResponse;
 import roomescape.dto.ReservationsControllerPostBody;
 import roomescape.exception.AlreadyExistReservationException;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.NotExistReservationException;
 import roomescape.repository.ReservationRepository;
-import roomescape.resolver.JWTBearerTokenSubject;
 
 import javax.validation.Valid;
 
