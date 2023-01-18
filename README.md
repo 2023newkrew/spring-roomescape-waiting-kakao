@@ -1,4 +1,79 @@
-# Spring Basic - 예약 관리
+# Spring 방탈출
+
+## 상황 설명
+
+기존의 방탈출 예약 시스템에서 로그인 기능과 그에 따라 자기 자신의 예약만 취소 가능하고,
+로그인해야만 예약 가능한 등의 인증 기능이 필요하다.
+이를 위해 회원 관련 기능과 로그인 기능을 추가하고 기존의 몇몇 API를 수정해야 한다.
+
+## 요구사항
+
+- 사용자 등록 기능 구현
+    - 새로운 사용자가 등록될 수 있어야 한다.
+  > 예시
+  > ```http request
+  > POST http://localhost:8080/member
+  > Content-Type: application/json
+  > 
+  > {
+  >   "name": "이름",
+  >   "phone": "전화번호",
+  >   "username": "유저명",
+  >   "password": "비밀번호"
+  > }
+  > ```
+  > 결과
+  > ```
+  > HTTP/1.1 201 Created
+  > Content-Type: application/json
+  > Location: /login/token/<JWT 토큰>
+  > {
+  >   "id": <생성된 멤버 ID>
+  > }
+  > ```
+- 로그인 기능 구현
+    - JWT 토큰을 통한 인증 기능을 구현해야 한다.
+  > 예시
+  > ```http request
+  > POST http://localhost:8080/login/token
+  > Content-Type: application/json
+  > 
+  > {
+  >   "username": "유저명",
+  >   "password": "비밀번호"
+  > }
+  > ```
+  > 결과
+  > ```
+  > HTTP/1.1 201 Created
+  > Content-Type: application/json
+  > Location: /login/token/<JWT 토큰>
+  > {
+  >   "access_token": <JWT 토큰>
+  > }
+  > ```
+- 예약 API를 인증 기능과 연동 가능하도록 구성하여야 한다.
+  > 예시
+  > ```http request
+  > POST http://localhost:8080/reservations/
+  > Authorization: Bearer <JWT Token>
+  > Content-Type: application/json
+  > 
+  > {
+  >   "name": "테마입니다",
+  >   "desc": "설명입니다",
+  >   "price": 111000
+  > }
+  > ```
+- 예약 삭제 API를 인증 기능과 연동 가능하도록 구성하여야 한다.
+  > 예시
+  > ```http request
+  > DELETE http://localhost:8080/reservations/1
+  > Authorization: Bearer <JWT Token>
+  > ```
+
+--- 
+> Spring Basic 이전 기록
 
 ## 상황 설명
 
