@@ -14,7 +14,7 @@ import javax.validation.constraints.PositiveOrZero;
 public class Theme {
     @NotNull
     private Long id;
-    
+
     @NotBlank
     private String name;
 
