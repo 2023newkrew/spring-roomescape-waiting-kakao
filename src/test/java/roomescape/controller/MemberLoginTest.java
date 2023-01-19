@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("[로그인/유저]웹 요청 / 응답 처리로 입출력 추가")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -60,10 +61,12 @@ public class MemberLoginTest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
         var member = repository.selectById(res.jsonPath().getLong("id"));
-        assertThat(member.getName()).isEqualTo(body.getName());
-        assertThat(member.getPhone()).isEqualTo(body.getPhone());
-        assertThat(member.getUsername()).isEqualTo(body.getUsername());
-        assertThat(member.getPassword()).isEqualTo(body.getPassword());
+        assertAll(
+                () -> assertThat(member.getName()).isEqualTo(body.getName()),
+                () -> assertThat(member.getPhone()).isEqualTo(body.getPhone()),
+                () -> assertThat(member.getUsername()).isEqualTo(body.getUsername()),
+                () -> assertThat(member.getPassword()).isEqualTo(body.getPassword())
+        );
     }
 
     @DisplayName("로그인 토큰 확인")
