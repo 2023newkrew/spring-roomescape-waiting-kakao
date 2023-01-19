@@ -56,7 +56,7 @@ public class MemberLoginTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
                 .when()
-                .post("/members")
+                .post("/api/members")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
@@ -82,12 +82,12 @@ public class MemberLoginTest {
                 .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
-                .post("/members");
+                .post("/api/members");
         var res = RestAssured
                 .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new LoginControllerTokenPostBody(body.getUsername(), body.getPassword()))
-                .when().post("/login/token")
+                .when().post("/api/login/token")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
@@ -108,13 +108,13 @@ public class MemberLoginTest {
                 .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
-                .post("/members")
+                .post("/api/members")
                 .body().jsonPath().getLong("id");
         var token = RestAssured
                 .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new LoginControllerTokenPostBody(body.getUsername(), body.getPassword()))
-                .when().post("/login/token")
+                .when().post("/api/login/token")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
@@ -123,7 +123,7 @@ public class MemberLoginTest {
         RestAssured
                 .given()
                 .header(new Header("Authorization", "Bearer " + token))
-                .when().get("/members/me")
+                .when().get("/api/members/me")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("id", is(((int) memberId)))
@@ -140,7 +140,7 @@ public class MemberLoginTest {
         RestAssured
                 .given()
                 .header(new Header("Authorization", "Bearer " + ""))
-                .when().get("/members/me")
+                .when().get("/api/members/me")
                 .then()
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
         ;

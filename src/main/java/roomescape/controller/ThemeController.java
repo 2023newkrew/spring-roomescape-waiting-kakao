@@ -15,21 +15,21 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("/themes")
+@RequestMapping()
 @RequiredArgsConstructor
 public class ThemeController {
 
     private final ThemeService service;
 
-    @PostMapping(value = "", produces = "application/json;charset=utf-8")
+    @PostMapping(value = "/api/themes", produces = "application/json;charset=utf-8")
     public ResponseEntity<ThemeControllerPostResponse> createTheme(@Valid @RequestBody ThemeControllerPostBody body) {
         var id = service.createTheme(body);
         return ResponseEntity.status(HttpStatus.CREATED)
-                             .header("Location", String.format("/themes/%d", id))
+                             .header("Location", String.format("/api/themes/%d", id))
                              .body(new ThemeControllerPostResponse(id));
     }
 
-    @GetMapping(value = "", produces = "application/json;charset=utf-8")
+    @GetMapping(value = "/api/themes", produces = "application/json;charset=utf-8")
     public ResponseEntity<List<ThemeControllerGetResponse>> pageTheme(@RequestParam(defaultValue = "0") int page) {
         var themes = service.pageTheme(page);
         return ResponseEntity.status(HttpStatus.OK)
@@ -39,14 +39,14 @@ public class ThemeController {
                              );
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json;charset=utf-8")
+    @GetMapping(value = "/api/themes/{id}", produces = "application/json;charset=utf-8")
     public ResponseEntity<ThemeControllerGetResponse> getTheme(@PathVariable long id) {
         var theme = service.getTheme(id);
         return ResponseEntity.status(HttpStatus.OK)
                              .body(new ThemeControllerGetResponse(theme.getId(), theme.getName(), theme.getDesc(), theme.getPrice()));
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/api/themes/{id}")
     public ResponseEntity<Object> deleteTheme(@PathVariable long id) {
         service.deleteTheme(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
