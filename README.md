@@ -6,7 +6,24 @@
 로그인해야만 예약 가능한 등의 인증 기능이 필요하다.
 이를 위해 회원 관련 기능과 로그인 기능을 추가하고 기존의 몇몇 API를 수정해야 한다.
 
+또한 유저정보에 관리자 권한을 추가로 기록하고 몇몇 API는 이를 검증해야 한다.
+예를 들어 테마 생성, 삭제는 반드시 어드민만 가능해야 하고, 이 기능은 인터셉터를 이용해 구현되어야 한다.
+
 ## 요구사항
+
+- 관리자 전용 API 테마 추가 구현
+
+  > POST http://localhost:8080/theme -> POST http://localhost:8080/admin/theme
+  >
+  > 이 API는 반드시 `HTTP Authorization`헤더로 전달된 JWT 토큰의 claim에
+  > is_admin값을 `true`로 가지고 있어야 한다.
+
+- 관리자 전용 API 테마 삭제 구현
+
+  > DELETE http://localhost:8080/theme/1 -> DELETE http://localhost:8080/admin/theme/1
+  >
+  > 이 API는 반드시 `HTTP Authorization`헤더로 전달된 JWT 토큰의 claim에
+  > is_admin값을 `true`로 가지고 있어야 한다.
 
 - 사용자 등록 기능 구현
     - 새로운 사용자가 등록될 수 있어야 한다.
