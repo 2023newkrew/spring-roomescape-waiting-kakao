@@ -1,5 +1,6 @@
 package roomescape.command;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -13,16 +14,11 @@ import java.util.Objects;
 @Component
 @Profile("console")
 @CommandLine.Command(name = "reservation", description = "예약을 추가/삭제/조회 할 수 있는 명령어입니다.")
+@RequiredArgsConstructor
 public class ReservationCommand {
     private final AuthCommand authCommand;
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
-
-    public ReservationCommand(ReservationRepository reservationRepository, AuthCommand authCommand, MemberRepository memberRepository) {
-        this.reservationRepository = reservationRepository;
-        this.memberRepository = memberRepository;
-        this.authCommand = authCommand;
-    }
 
 
     @CommandLine.Command(name = "add", description = "예약을 추가합니다. 형식) <예약자> <예약일> <예약시각> <테마ID>, ex) reservation add 예약자 2023-01-01 13:00 1")

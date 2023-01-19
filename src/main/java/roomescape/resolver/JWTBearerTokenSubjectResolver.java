@@ -1,6 +1,7 @@
 package roomescape.resolver;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -12,12 +13,9 @@ import roomescape.exception.AuthorizationException;
 import roomescape.service.JWTProvider;
 
 @Component
+@RequiredArgsConstructor
 public class JWTBearerTokenSubjectResolver implements HandlerMethodArgumentResolver {
     private final JWTProvider jwtProvider;
-
-    public JWTBearerTokenSubjectResolver(JWTProvider jwtProvider) {
-        this.jwtProvider = jwtProvider;
-    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

@@ -10,24 +10,24 @@ import java.util.Date;
 
 @Service
 public class JWTProvider {
-    private static final String secretKey = "learning-test-spring";
-    private static final long validityInMilliseconds = 3600000;
+    private static final String SECRET_KEY = "learning-test-spring";
+    private static final long VALIDITY_IN_MILLISECONDS = 3600000;
 
     public String createToken(String subject) {
         Claims claims = Jwts.claims().setSubject(subject);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        Date validity = new Date(now.getTime() + VALIDITY_IN_MILLISECONDS);
 
         return Jwts.builder()
                    .setClaims(claims)
                    .setIssuedAt(now)
                    .setExpiration(validity)
-                   .signWith(SignatureAlgorithm.HS256, secretKey)
+                   .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                    .compact();
     }
 
     public String getSubject(String token) {
-        var claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+        var claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
         if (claims.getBody().getExpiration().before(new Date())) {
             throw new AuthorizationException();
         }

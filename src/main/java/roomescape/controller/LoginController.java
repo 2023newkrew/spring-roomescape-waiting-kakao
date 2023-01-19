@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,14 +18,10 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/login")
+@RequiredArgsConstructor
 public class LoginController {
     private final JWTProvider jwtProvider;
     private final MemberRepository repository;
-
-    public LoginController(JWTProvider jwtProvider, MemberRepository repository) {
-        this.jwtProvider = jwtProvider;
-        this.repository = repository;
-    }
 
 
     @PostMapping("/token")

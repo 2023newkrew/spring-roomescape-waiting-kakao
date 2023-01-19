@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -11,6 +12,7 @@ import roomescape.entity.Member;
 import java.util.Map;
 
 @Repository
+@RequiredArgsConstructor
 public class MemberRepository {
     private static final RowMapper<Member> rowMapper = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
@@ -20,10 +22,6 @@ public class MemberRepository {
             resultSet.getString("phone")
     );
     private final NamedParameterJdbcTemplate jdbc;
-
-    public MemberRepository(NamedParameterJdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
 
     public Long insert(String username, String password, String name, String phone) {
         KeyHolder keyHolder = new GeneratedKeyHolder();

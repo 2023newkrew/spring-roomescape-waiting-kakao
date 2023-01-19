@@ -1,6 +1,7 @@
 package roomescape.command;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -10,13 +11,10 @@ import roomescape.repository.ThemeRepository;
 @Component
 @Profile("console")
 @CommandLine.Command(name = "theme", description = "테마를 추가/삭제/조회 할 수 있는 명령어입니다.")
+@RequiredArgsConstructor
 public class ThemeCommand {
     private final ThemeRepository themeRepository;
-
-    public ThemeCommand(ThemeRepository themeRepository) {
-        this.themeRepository = themeRepository;
-    }
-
+    
     @CommandLine.Command(name = "add", description = "테마를 추가합니다. ex) theme add 새테마 새로운테마입니다. 1234000")
     public void add(
             @CommandLine.Parameters(index = "0") String name,
