@@ -19,7 +19,8 @@ public class MemberRepository {
             resultSet.getString("username"),
             resultSet.getString("password"),
             resultSet.getString("name"),
-            resultSet.getString("phone")
+            resultSet.getString("phone"),
+            resultSet.getBoolean("is_admin")
     );
     private final NamedParameterJdbcTemplate jdbc;
 
@@ -35,10 +36,10 @@ public class MemberRepository {
     }
 
     public Member selectById(Long id) {
-        return jdbc.queryForObject("select id, username, password, name, phone from member where id = :id", Map.of("id", id), rowMapper);
+        return jdbc.queryForObject("select id, username, password, name, phone, is_admin from member where id = :id", Map.of("id", id), rowMapper);
     }
 
     public Member selectByUsername(String username) {
-        return jdbc.queryForObject("select id, username, password, name, phone from member where username = :username", Map.of("username", username), rowMapper);
+        return jdbc.queryForObject("select id, username, password, name, phone, is_admin from member where username = :username", Map.of("username", username), rowMapper);
     }
 }

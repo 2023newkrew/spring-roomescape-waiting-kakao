@@ -9,6 +9,7 @@ CREATE TABLE member
     password varchar(20) not null,
     name     varchar(20) not null,
     phone    varchar(20) not null,
+    is_admin boolean     not null default false,
     primary key (id)
 );
 
@@ -34,3 +35,5 @@ create table reservation
     foreign key (theme_id) references theme (id),
     foreign key (member_id) references member (id)
 );
+
+insert into member ( name, phone, username, password, is_admin) values ('어드민', '010-1234-5678', 'admin', '1q2w3e4r!', true);

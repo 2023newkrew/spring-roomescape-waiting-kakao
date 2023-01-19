@@ -25,4 +25,7 @@ public class Member {
 
     @NotNull
     private String phone;
+
+    @NotNull
+    private Boolean isAdmin;
 }

@@ -1,8 +1,0 @@
-POST http://localhost:8080/themes/
-Content-Type: application/json
-
-{
-  "name": "테마입니다",
-  "desc": "설명입니다",
-  "price": 111000
-}

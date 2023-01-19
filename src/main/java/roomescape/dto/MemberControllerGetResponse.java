@@ -21,4 +21,6 @@ public class MemberControllerGetResponse {
     private String name;
     @NotBlank
     private String phone;
+    @NotNull
+    private Boolean isAdmin;
 }
