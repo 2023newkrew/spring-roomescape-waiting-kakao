@@ -21,7 +21,7 @@
 - 관리자 전용 API 테마 삭제 구현
 
   > DELETE http://localhost:8080/theme/1 -> DELETE http://localhost:8080/admin/theme/1
-  > 트
+  >
   > 이 API는 반드시 `HTTP Authorization`헤더로 전달된 JWT 토큰의 claim에
   > is_admin값을 `true`로 가지고 있어야 한다.
 
