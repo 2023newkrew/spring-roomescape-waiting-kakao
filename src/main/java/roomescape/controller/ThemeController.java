@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.annotation.Admin;
 import roomescape.dto.ThemeControllerGetResponse;
 import roomescape.dto.ThemeControllerPostBody;
 import roomescape.dto.ThemeControllerPostResponse;
@@ -21,6 +22,7 @@ public class ThemeController {
 
     private final ThemeService service;
 
+    @Admin
     @PostMapping(value = "/api/themes", produces = "application/json;charset=utf-8")
     public ResponseEntity<ThemeControllerPostResponse> createTheme(@Valid @RequestBody ThemeControllerPostBody body) {
         var id = service.createTheme(body);
@@ -28,7 +30,7 @@ public class ThemeController {
                              .header("Location", String.format("/api/themes/%d", id))
                              .body(new ThemeControllerPostResponse(id));
     }
-
+    
     @GetMapping(value = "/api/themes", produces = "application/json;charset=utf-8")
     public ResponseEntity<List<ThemeControllerGetResponse>> pageTheme(@RequestParam(defaultValue = "0") int page) {
         var themes = service.pageTheme(page);
@@ -46,6 +48,7 @@ public class ThemeController {
                              .body(new ThemeControllerGetResponse(theme.getId(), theme.getName(), theme.getDesc(), theme.getPrice()));
     }
 
+    @Admin
     @DeleteMapping(value = "/api/themes/{id}")
     public ResponseEntity<Object> deleteTheme(@PathVariable long id) {
         service.deleteTheme(id);

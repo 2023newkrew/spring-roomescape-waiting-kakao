@@ -37,7 +37,8 @@ public class MemberController {
                                      member.getUsername(),
                                      member.getPassword(),
                                      member.getName(),
-                                     member.getPhone()
+                                     member.getPhone(),
+                                     member.getIsAdmin()
                              ));
     }
 }

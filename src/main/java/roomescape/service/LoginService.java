@@ -17,6 +17,6 @@ public class LoginService {
         if (!member.getPassword().equals(body.getPassword())) {
             throw new AuthorizationException();
         }
-        return jwtProvider.createToken(member.getId().toString());
+        return jwtProvider.createToken(member.getId().toString(), member.getIsAdmin());
     }
 }

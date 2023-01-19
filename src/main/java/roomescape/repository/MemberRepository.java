@@ -14,7 +14,7 @@ import java.util.Map;
 @Repository
 @RequiredArgsConstructor
 public class MemberRepository {
-    private static final RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) -> new Member(
+    private static final RowMapper<Member> rowMapper = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
             resultSet.getString("username"),
             resultSet.getString("password"),
@@ -36,10 +36,10 @@ public class MemberRepository {
     }
 
     public Member selectById(Long id) {
-        return jdbc.queryForObject("select id, username, password, name, phone, is_admin from member where id = :id", Map.of("id", id), ROW_MAPPER);
+        return jdbc.queryForObject("select id, username, password, name, phone, is_admin from member where id = :id", Map.of("id", id), rowMapper);
     }
 
     public Member selectByUsername(String username) {
-        return jdbc.queryForObject("select id, username, password, name, phone, is_admin from member where username = :username", Map.of("username", username), ROW_MAPPER);
+        return jdbc.queryForObject("select id, username, password, name, phone, is_admin from member where username = :username", Map.of("username", username), rowMapper);
     }
 }
