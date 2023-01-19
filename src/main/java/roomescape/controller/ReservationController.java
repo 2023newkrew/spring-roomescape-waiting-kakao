@@ -7,45 +7,63 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.annotation.JWTBearerTokenSubject;
 import roomescape.dto.ReservationControllerGetResponse;
 import roomescape.dto.ReservationsControllerPostBody;
-import roomescape.service.ReservationService;
+import roomescape.exception.AlreadyExistReservationException;
+import roomescape.exception.AuthorizationException;
+import roomescape.exception.NotExistReservationException;
+import roomescape.repository.ReservationRepository;
 
 import javax.validation.Valid;
 
 
 @RestController
-@RequestMapping()
+@RequestMapping("/reservations")
 @RequiredArgsConstructor
 public class ReservationController {
 
-    private final ReservationService service;
+    private final ReservationRepository repository;
 
-    @PostMapping(value = "/api/reservations", produces = "application/json;charset=utf-8")
+    @PostMapping(value = "", produces = "application/json;charset=utf-8")
     public ResponseEntity<Object> createReservation(@JWTBearerTokenSubject String subject, @Valid @RequestBody ReservationsControllerPostBody body) {
-        var id = service.createReservation(Long.parseLong(subject), body);
+        var id = repository.insert(body.getName(), body.getDate(), body.getTime(), body.getThemeId(), Long.parseLong(subject));
+        if (id.isEmpty()) {
+            throw new AlreadyExistReservationException(body.getDate(), body.getTime());
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                             .header("Location", String.format("/api/reservations/%d", id))
+                             .header("Location", String.format("/reservations/%d", id.get()))
                              .build();
     }
 
-    @GetMapping(value = "/api/reservations/{id}", produces = "application/json;charset=utf-8")
+    @GetMapping(value = "/{id}", produces = "application/json;charset=utf-8")
     public ResponseEntity<ReservationControllerGetResponse> findReservation(@PathVariable Long id) {
-        var reservation = service.findReservation(id);
+        var reservation = repository.selectById(id);
+        if (reservation.isEmpty()) {
+            throw new NotExistReservationException(id);
+        }
+        var getReservation = reservation.get();
         return ResponseEntity.status(HttpStatus.OK)
                              .body(new ReservationControllerGetResponse(
-                                     reservation.getId(),
-                                     reservation.getDate(),
-                                     reservation.getTime(),
-                                     reservation.getName(),
-                                     reservation.getTheme().getId(),
-                                     reservation.getTheme().getName(),
-                                     reservation.getTheme().getDesc(),
-                                     reservation.getTheme().getPrice()
+                                     getReservation.getId(),
+                                     getReservation.getDate(),
+                                     getReservation.getTime(),
+                                     getReservation.getName(),
+                                     getReservation.getTheme().getId(),
+                                     getReservation.getTheme().getName(),
+                                     getReservation.getTheme().getDesc(),
+                                     getReservation.getTheme().getPrice()
                              ));
     }
 
-    @DeleteMapping(value = "/api/reservations/{id}", produces = "application/json;charset=utf-8")
+    @DeleteMapping(value = "/{id}", produces = "application/json;charset=utf-8")
     public ResponseEntity<Object> deleteReservation(@JWTBearerTokenSubject String subject, @PathVariable Long id) {
-        service.deleteReservation(Long.parseLong(subject), id);
+        var reservation = repository.selectById(id);
+        if (reservation.isEmpty()) {
+            throw new NotExistReservationException(id);
+        }
+        if (reservation.get().getMemberId() != Long.parseLong(subject)) {
+            throw new AuthorizationException();
+        }
+        repository.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                              .build();
     }

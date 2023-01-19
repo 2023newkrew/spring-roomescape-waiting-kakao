@@ -9,24 +9,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.LoginControllerTokenPostBody;
 import roomescape.dto.LoginControllerTokenPostResponse;
-import roomescape.service.LoginService;
+import roomescape.exception.AuthorizationException;
+import roomescape.repository.MemberRepository;
+import roomescape.service.JWTProvider;
 
 import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
-@RequestMapping()
+@RequestMapping("/login")
 @RequiredArgsConstructor
 public class LoginController {
-    private final LoginService service;
+    private final JWTProvider jwtProvider;
+    private final MemberRepository repository;
 
 
-    @PostMapping("/api/login/token")
-    public ResponseEntity<LoginControllerTokenPostResponse> createToken(@Valid @RequestBody LoginControllerTokenPostBody body) {
-        var token = service.createToken(body);
+    @PostMapping("/token")
+    public ResponseEntity<LoginControllerTokenPostResponse> createToken(@Valid @RequestBody LoginControllerTokenPostBody request) {
+        var member = repository.selectByUsername(request.getUsername());
+        if (!member.getPassword().equals(request.getPassword())) {
+            throw new AuthorizationException();
+        }
+        var token = jwtProvider.createToken(member.getId().toString());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .location(URI.create("/api/login/token/" + token))
+                .location(URI.create("/login/token/" + token))
                 .body(new LoginControllerTokenPostResponse(token));
     }
 }

@@ -8,37 +8,36 @@ import roomescape.annotation.JWTBearerTokenSubject;
 import roomescape.dto.MemberControllerGetResponse;
 import roomescape.dto.MemberControllerPostBody;
 import roomescape.dto.MemberControllerPostResponse;
-import roomescape.service.MemberService;
+import roomescape.repository.MemberRepository;
 
 import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
-@RequestMapping()
+@RequestMapping("/members")
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberService service;
+    private final MemberRepository repository;
 
-    @PostMapping(path = "/api/members", produces = "application/json;charset=utf-8")
-    public ResponseEntity<MemberControllerPostResponse> createMember(@Valid @RequestBody MemberControllerPostBody body) {
-        var id = service.createMember(body);
+    @PostMapping(path = "", produces = "application/json;charset=utf-8")
+    public ResponseEntity<MemberControllerPostResponse> createMember(@Valid @RequestBody MemberControllerPostBody req) {
+        var id = repository.insert(req.getUsername(), req.getPassword(), req.getName(), req.getPhone());
         return ResponseEntity.status(HttpStatus.CREATED)
-                             .location(URI.create("/api/members/" + id))
+                             .location(URI.create("/members/" + id))
                              .body(new MemberControllerPostResponse(id));
     }
 
-    @GetMapping(path = "/api/members/me", produces = "application/json;charset=utf-8")
+    @GetMapping(path = "/me", produces = "application/json;charset=utf-8")
     public ResponseEntity<MemberControllerGetResponse> me(@JWTBearerTokenSubject String subject) {
-        var member = service.me(Long.parseLong(subject));
+        var member = repository.selectById(Long.parseLong(subject));
         return ResponseEntity.status(HttpStatus.OK)
                              .body(new MemberControllerGetResponse(
                                      member.getId(),
                                      member.getUsername(),
                                      member.getPassword(),
                                      member.getName(),
-                                     member.getPhone(),
-                                     member.getIsAdmin()
+                                     member.getPhone()
                              ));
     }
 }
