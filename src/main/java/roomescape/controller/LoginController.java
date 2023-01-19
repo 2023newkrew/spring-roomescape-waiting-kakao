@@ -15,18 +15,18 @@ import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping()
 @RequiredArgsConstructor
 public class LoginController {
     private final LoginService service;
 
 
-    @PostMapping("/token")
+    @PostMapping("/api/login/token")
     public ResponseEntity<LoginControllerTokenPostResponse> createToken(@Valid @RequestBody LoginControllerTokenPostBody request) {
         var token = service.createToken(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .location(URI.create("/login/token/" + token))
+                .location(URI.create("/api/login/token/" + token))
                 .body(new LoginControllerTokenPostResponse(token));
     }
 }

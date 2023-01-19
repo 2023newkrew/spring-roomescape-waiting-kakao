@@ -80,12 +80,12 @@ public class ReservationTest {
         memberOwnerToken = RestAssured.given()
                                       .contentType(MediaType.APPLICATION_JSON_VALUE)
                                       .body(new LoginControllerTokenPostBody(memberOwnerUsername, memberOwnerPassword))
-                                      .post("/login/token")
+                                      .post("/api/login/token")
                                       .body().jsonPath().getString("access_token");
         memberOtherToken = RestAssured.given()
                                       .contentType(MediaType.APPLICATION_JSON_VALUE)
                                       .body(new LoginControllerTokenPostBody(memberOwnerUsername, memberOwnerPassword))
-                                      .post("/login/token")
+                                      .post("/api/login/token")
                                       .body().jsonPath().getString("access_token");
     }
 
@@ -104,7 +104,7 @@ public class ReservationTest {
                         targetTheme.getId()
                 ))
                 .when()
-                .post("/reservations")
+                .post("/api/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
     }
@@ -125,7 +125,7 @@ public class ReservationTest {
                 .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get(String.format("/reservations/%d", targetReservation.getId()))
+                .get(String.format("/api/reservations/%d", targetReservation.getId()))
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("name", is(targetReservation.getName()))
@@ -153,7 +153,7 @@ public class ReservationTest {
                    .header(new Header("Authorization", "Bearer " + memberOwnerToken))
                    .accept(MediaType.APPLICATION_JSON_VALUE)
                    .when()
-                   .delete(String.format("/reservations/%d", targetReservation.getId()))
+                   .delete(String.format("/api/reservations/%d", targetReservation.getId()))
                    .then().log().all()
                    .statusCode(HttpStatus.NO_CONTENT.value());
     }
@@ -174,7 +174,7 @@ public class ReservationTest {
                    .header(new Header("Authorization", "Bearer " + memberOtherToken))
                    .accept(MediaType.APPLICATION_JSON_VALUE)
                    .when()
-                   .delete(String.format("/reservations/%d", targetReservation.getId()))
+                   .delete(String.format("/api/reservations/%d", targetReservation.getId()))
                    .then().log().all()
                    .statusCode(HttpStatus.NO_CONTENT.value());
     }
@@ -192,7 +192,7 @@ public class ReservationTest {
                 .given().log().all()
                 .header(new Header("Authorization", "Bearer " + memberOwnerToken))
                 .contentType(contentType).body("")
-                .when().post("/reservations")
+                .when().post("/api/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
     }
@@ -218,7 +218,7 @@ public class ReservationTest {
                         UUID.randomUUID().toString().split("-")[0],
                         targetTheme.getId()
                 ))
-                .when().post("/reservations")
+                .when().post("/api/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.CONFLICT.value());
     }
@@ -227,7 +227,7 @@ public class ReservationTest {
     @Test
     void notExistID() {
         RestAssured.given()
-                   .when().get("/reservations/-1")
+                   .when().get("/api/reservations/-1")
                    .then().log().all()
                    .statusCode(HttpStatus.NOT_FOUND.value());
     }
@@ -237,7 +237,7 @@ public class ReservationTest {
     void deleteNotExistId() {
         RestAssured.given()
                    .header(new Header("Authorization", "Bearer " + memberOwnerToken))
-                   .when().delete("/reservations/-1")
+                   .when().delete("/api/reservations/-1")
                    .then().log().all()
                    .statusCode(HttpStatus.NOT_FOUND.value());
     }

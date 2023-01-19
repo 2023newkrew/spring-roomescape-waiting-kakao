@@ -41,7 +41,7 @@ public class ThemeTest {
                         new Random().nextInt(0, 1000000)
                 ))
                 .when()
-                .post("/themes")
+                .post("/api/themes")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
     }
@@ -58,7 +58,7 @@ public class ThemeTest {
                 .given()
                 .contentType("application/json")
                 .body(expectedResult)
-                .post("/themes");
+                .post("/api/themes");
         postResult.jsonPath().getList("exlist", Theme.class);
         RestAssured
                 .when()
@@ -83,7 +83,7 @@ public class ThemeTest {
                 .given()
                 .contentType("application/json")
                 .body(expectedResult)
-                .post("/themes");
+                .post("/api/themes");
 
         RestAssured
                 .when()
