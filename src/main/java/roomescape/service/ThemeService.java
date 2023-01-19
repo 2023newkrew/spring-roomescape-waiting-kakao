@@ -1,13 +1,11 @@
 package roomescape.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.controller.errors.ErrorCode;
 import roomescape.dto.ThemeControllerPostBody;
 import roomescape.entity.Theme;
+import roomescape.exception.NotExistThemeException;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.exception.ServiceException;
 
 import java.util.stream.Stream;
 
@@ -19,7 +17,7 @@ public class ThemeService {
     public Theme getTheme(long id) {
         var target = repository.selectById(id);
         if (target.isEmpty()) {
-            throw new ServiceException(ErrorCode.UNKNOWN_THEME_ID);
+            throw new NotExistThemeException(id);
         }
         return target.get();
     }
@@ -34,13 +32,9 @@ public class ThemeService {
     }
 
     public void deleteTheme(long id) {
-        try {
-            var affectedRows = repository.delete(id);
-            if (affectedRows == 0) {
-                throw new ServiceException(ErrorCode.UNKNOWN_THEME_ID);
-            }
-        } catch (DataIntegrityViolationException e) {
-            throw new ServiceException(ErrorCode.USING_THEME);
+        var affectedRows = repository.delete(id);
+        if (affectedRows == 0) {
+            throw new NotExistThemeException(id);
         }
     }
 }
