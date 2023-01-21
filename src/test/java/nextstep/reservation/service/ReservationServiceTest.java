@@ -6,6 +6,7 @@ import nextstep.etc.exception.ThemeException;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
 import nextstep.reservation.mapper.ReservationMapper;
+import nextstep.reservation.repository.FakeReservationRepository;
 import nextstep.reservation.repository.ReservationRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;

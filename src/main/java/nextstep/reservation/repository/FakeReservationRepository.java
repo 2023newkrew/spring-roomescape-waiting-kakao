@@ -1,7 +1,6 @@
-package nextstep.reservation.service;
+package nextstep.reservation.repository;
 
 import nextstep.reservation.domain.Reservation;
-import nextstep.reservation.repository.ReservationRepository;
 import nextstep.theme.domain.Theme;
 import org.springframework.dao.DataIntegrityViolationException;
 

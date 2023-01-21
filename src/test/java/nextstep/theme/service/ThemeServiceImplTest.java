@@ -6,6 +6,7 @@ import nextstep.theme.domain.Theme;
 import nextstep.theme.dto.ThemeRequest;
 import nextstep.theme.dto.ThemeResponse;
 import nextstep.theme.mapper.ThemeMapper;
+import nextstep.theme.repository.FakeThemeRepository;
 import nextstep.theme.repository.ThemeRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;

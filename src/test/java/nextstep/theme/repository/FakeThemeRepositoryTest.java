@@ -1,7 +1,6 @@
 package nextstep.theme.repository;
 
 import nextstep.theme.domain.Theme;
-import nextstep.theme.service.FakeThemeRepository;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.*;

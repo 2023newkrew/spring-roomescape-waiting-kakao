@@ -1,7 +1,6 @@
-package nextstep.theme.service;
+package nextstep.theme.repository;
 
 import nextstep.theme.domain.Theme;
-import nextstep.theme.repository.ThemeRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 
