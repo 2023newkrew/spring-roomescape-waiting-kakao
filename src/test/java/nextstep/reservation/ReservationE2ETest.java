@@ -5,9 +5,10 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
 import nextstep.domain.dto.ReservationRequest;
+import nextstep.domain.dto.ReservationResponse;
 import nextstep.domain.dto.ScheduleRequest;
-import nextstep.domain.persist.Reservation;
 import nextstep.domain.dto.ThemeRequest;
+import nextstep.domain.persist.Reservation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -104,6 +105,22 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(1);
+    }
+
+    @DisplayName("내 예약을 조회한다")
+    @Test
+    void showMine() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservationResponses.size()).isEqualTo(1);
     }
 
     @DisplayName("예약을 삭제한다")

@@ -1,7 +1,10 @@
 package nextstep.repository;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.domain.persist.*;
+import nextstep.domain.persist.Member;
+import nextstep.domain.persist.Schedule;
+import nextstep.domain.persist.Theme;
+import nextstep.domain.persist.Waiting;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,7 +21,7 @@ public class WaitingDao {
     public final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Waiting> rowMapper = (resultSet, rowNum) -> new Waiting(
-            resultSet.getLong("reservation.id"),
+            resultSet.getLong("waiting.id"),
             new Schedule(
                     resultSet.getLong("schedule.id"),
                     new Theme(
@@ -71,10 +74,11 @@ public class WaitingDao {
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
-                "from waiting " +
+                "FROM waiting " +
                 "inner join schedule on waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on waiting.member_id = member.id ";
+                "inner join member on waiting.member_id = member.id " +
+                "WHERE waiting.member_id = ?;";
         try {
             return jdbcTemplate.query(sql, rowMapper, id);
         } catch (Exception e) {
