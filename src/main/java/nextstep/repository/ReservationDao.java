@@ -1,5 +1,6 @@
 package nextstep.repository;
 
+import nextstep.domain.dto.ReservationResponse;
 import nextstep.domain.persist.Member;
 import nextstep.domain.persist.Reservation;
 import nextstep.domain.persist.Schedule;
