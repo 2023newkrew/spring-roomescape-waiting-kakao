@@ -9,6 +9,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -50,5 +52,43 @@ public class WaitingDao {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    public Long getPriority(Long scheduleId, Long waitingId) {
+        String sql = "SELECT COUNT(waiting.id)" +
+                "FROM waiting " +
+                "WHERE waiting.schedule_id = ? AND waiting.id <= ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, Long.class, scheduleId, waitingId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<Waiting> findAll(Long id) {
+        String sql = "SELECT " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on waiting.member_id = member.id ";
+        try {
+            return jdbcTemplate.query(sql, rowMapper, id);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM waiting WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public Waiting findById(Long id) {
+        String sql = "SELECT * FROM waiting WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 }
