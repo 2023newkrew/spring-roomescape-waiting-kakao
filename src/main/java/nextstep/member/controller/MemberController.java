@@ -1,6 +1,7 @@
 package nextstep.member.controller;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.auth.resolver.MemberId;
 import nextstep.member.dto.MemberRequest;
 import nextstep.member.dto.MemberResponse;
 import nextstep.member.service.MemberService;
@@ -20,7 +21,7 @@ public class MemberController {
     private final MemberService service;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody @Validated MemberRequest request) {
+    public ResponseEntity<Void> create(@RequestBody @Validated MemberRequest request) {
         MemberResponse member = service.create(request);
         URI location = URI.create(MEMBER_PATH + "/" + member.getId());
 
@@ -28,8 +29,13 @@ public class MemberController {
     }
 
     @GetMapping("/{member_id}")
-    public ResponseEntity<?> getById(@PathVariable("member_id") Long id) {
+    public ResponseEntity<MemberResponse> getById(@PathVariable("member_id") Long id) {
 
+        return ResponseEntity.ok(service.getById(id));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<MemberResponse> me(@MemberId Long id) {
         return ResponseEntity.ok(service.getById(id));
     }
 }

@@ -22,21 +22,21 @@ import static org.hamcrest.Matchers.equalTo;
 @SpringBootTest(classes = RoomEscapeApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public abstract class AbstractControllerTest {
 
-    <T> Response get(String path, Object... pathParams) {
-        return given()
+    <T> Response get(RequestSpecification given, String path, Object... pathParams) {
+        return given
                 .when()
                 .get(path, pathParams);
     }
 
-    <T> Response post(String path, T request, Object... pathParams) {
-        return given()
+    <T> Response post(RequestSpecification given, String path, T request, Object... pathParams) {
+        return given
                 .body(request)
                 .when()
                 .post(path, pathParams);
     }
 
-    <T> Response delete(String path, Object... pathParams) {
-        return given()
+    <T> Response delete(RequestSpecification given, String path, Object... pathParams) {
+        return given
                 .when()
                 .delete(path, pathParams);
     }
@@ -44,6 +44,11 @@ public abstract class AbstractControllerTest {
     RequestSpecification given() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
+    }
+
+    RequestSpecification givenWithToken(String token) {
+        return given()
+                .auth().oauth2(token);
     }
 
     ValidatableResponse then(Response response) {

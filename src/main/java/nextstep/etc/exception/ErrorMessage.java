@@ -13,7 +13,8 @@ public enum ErrorMessage {
     SCHEDULE_CONFLICT(HttpStatus.CONFLICT, "동일한 일정이 존재합니다."),
     INVALID_AUTH_TYPE(HttpStatus.UNAUTHORIZED, "유효하지 않은 인증 방식입니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
-    INVALID_MEMBER(HttpStatus.UNAUTHORIZED, "유저이름 또는 비밀번호가 올바르지 않습니다.");
+    INVALID_MEMBER(HttpStatus.UNAUTHORIZED, "유저이름 또는 비밀번호가 올바르지 않습니다."),
+    NOT_AUTHORIZED_MEMBER(HttpStatus.FORBIDDEN, "접근 권한이 없는 사용자입니다.");
 
     @Getter
     final HttpStatus httpStatus;

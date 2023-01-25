@@ -1,5 +1,7 @@
 package controller;
 
+import nextstep.auth.domain.TokenData;
+import nextstep.auth.provider.JwtTokenProvider;
 import nextstep.etc.exception.ErrorMessage;
 import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.theme.dto.ThemeRequest;
@@ -7,6 +9,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -18,10 +21,14 @@ public class ScheduleControllerTest extends AbstractControllerTest {
 
     static final String DEFAULT_PATH = "/schedules";
 
+    @Autowired
+    JwtTokenProvider provider;
+
     @BeforeEach
     void setUp() {
+        var token = provider.createToken(new TokenData(1L, "ADMIN"));
         var request = new ThemeRequest("theme", "theme", 10000);
-        post("/themes", request);
+        post(givenWithToken(token), "/admin/themes", request);
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -34,7 +41,7 @@ public class ScheduleControllerTest extends AbstractControllerTest {
             var request = createRequest();
 
 
-            var response = post(DEFAULT_PATH, request);
+            var response = post(given(), DEFAULT_PATH, request);
 
             then(response)
                     .statusCode(HttpStatus.CREATED.value())
@@ -47,8 +54,8 @@ public class ScheduleControllerTest extends AbstractControllerTest {
             var expectedException = ErrorMessage.SCHEDULE_CONFLICT;
             var request = createRequest();
 
-            post(DEFAULT_PATH, request);
-            var response = post(DEFAULT_PATH, request);
+            post(given(), DEFAULT_PATH, request);
+            var response = post(given(), DEFAULT_PATH, request);
 
             thenThrow(response, expectedException);
         }
@@ -60,7 +67,7 @@ public class ScheduleControllerTest extends AbstractControllerTest {
             var request = createRequest();
             request = new ScheduleRequest(request.getDate(), request.getTime(), 2L);
 
-            var response = post(DEFAULT_PATH, request);
+            var response = post(given(), DEFAULT_PATH, request);
 
             thenThrow(response, expectedException);
         }
@@ -70,7 +77,7 @@ public class ScheduleControllerTest extends AbstractControllerTest {
         @ParameterizedTest
         @MethodSource
         void should_throwException_when_invalidRequest(ScheduleRequest request) {
-            var response = post(DEFAULT_PATH, request);
+            var response = post(given(), DEFAULT_PATH, request);
 
             then(response)
                     .statusCode(HttpStatus.BAD_REQUEST.value());
@@ -99,13 +106,13 @@ public class ScheduleControllerTest extends AbstractControllerTest {
     @Nested
     class getById {
 
-        @DisplayName("멤버 조회 성공")
+        @DisplayName("스케줄 조회 성공")
         @Test
         void should_returnMember_when_memberExists() {
             var request = createRequest();
-            post(DEFAULT_PATH, request);
+            post(given(), DEFAULT_PATH, request);
 
-            var response = get(DEFAULT_PATH + "/1");
+            var response = get(given(), DEFAULT_PATH + "/1");
 
             then(response)
                     .statusCode(HttpStatus.OK.value())
@@ -115,10 +122,10 @@ public class ScheduleControllerTest extends AbstractControllerTest {
                     .body("theme.id", equalTo(1));
         }
 
-        @DisplayName("멤버가 없을 경우 빈 body 반환")
+        @DisplayName("스케줄이 없을 경우 빈 body 반환")
         @Test
         void should_returnNull_when_memberNotExists() {
-            var response = get(DEFAULT_PATH + "/1");
+            var response = get(given(), DEFAULT_PATH + "/1");
 
             then(response)
                     .statusCode(HttpStatus.OK.value())

@@ -28,7 +28,7 @@ public class MemberControllerTest extends AbstractControllerTest {
         void should_returnLocation_when_givenRequest() {
             var request = createRequest();
 
-            var response = post(DEFAULT_PATH, request);
+            var response = post(MemberControllerTest.this.given(), DEFAULT_PATH, request);
 
             then(response)
                     .statusCode(HttpStatus.CREATED.value())
@@ -41,8 +41,8 @@ public class MemberControllerTest extends AbstractControllerTest {
             var expectedException = ErrorMessage.MEMBER_CONFLICT;
             var request = createRequest();
 
-            post(DEFAULT_PATH, request);
-            var response = post(DEFAULT_PATH, request);
+            post(MemberControllerTest.this.given(), DEFAULT_PATH, request);
+            var response = post(MemberControllerTest.this.given(), DEFAULT_PATH, request);
 
             thenThrow(response, expectedException);
         }
@@ -51,7 +51,7 @@ public class MemberControllerTest extends AbstractControllerTest {
         @ParameterizedTest
         @MethodSource
         void should_throwException_when_invalidRequest(MemberRequest request) {
-            var response = post(DEFAULT_PATH, request);
+            var response = post(MemberControllerTest.this.given(), DEFAULT_PATH, request);
 
             then(response)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -90,9 +90,9 @@ public class MemberControllerTest extends AbstractControllerTest {
         @Test
         void should_returnMember_when_memberExists() {
             var request = createRequest();
-            post(DEFAULT_PATH, request);
+            post(MemberControllerTest.this.given(), DEFAULT_PATH, request);
 
-            var response = get(DEFAULT_PATH + "/1");
+            var response = get(MemberControllerTest.this.given(), DEFAULT_PATH + "/1");
 
             then(response)
                     .statusCode(HttpStatus.OK.value())
@@ -107,7 +107,7 @@ public class MemberControllerTest extends AbstractControllerTest {
         @DisplayName("멤버가 없을 경우 빈 body 반환")
         @Test
         void should_returnNull_when_memberNotExists() {
-            var response = get(DEFAULT_PATH + "/1");
+            var response = get(MemberControllerTest.this.given(), DEFAULT_PATH + "/1");
 
             then(response)
                     .statusCode(HttpStatus.OK.value())
