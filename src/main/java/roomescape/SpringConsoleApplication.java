@@ -38,7 +38,6 @@ public class SpringConsoleApplication implements CommandLineRunner {
         System.out.println("ex) reservation add help");
         System.out.println("ex) ...");
         while (true) {
-//            printHelp();
             var input = scanner.nextLine().split(" +");
             command.command().execute(input);
         }

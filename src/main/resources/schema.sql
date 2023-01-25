@@ -31,7 +31,7 @@ create table reservation
     theme_id  bigint      not null,
     member_id bigint      not null,
     primary key (id),
-    unique (date, time),
+    unique (theme_id, date, time),
     foreign key (theme_id) references theme (id),
     foreign key (member_id) references member (id)
 );
