@@ -40,7 +40,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Member getByUserName(String username) {
+    public Member getByUsername(String username) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectByUsername(connection, username),
                 resultSetParser::parseMember
