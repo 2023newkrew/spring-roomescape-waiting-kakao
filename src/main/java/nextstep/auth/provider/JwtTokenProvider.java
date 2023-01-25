@@ -59,7 +59,7 @@ public class JwtTokenProvider {
 
     public String getValidToken(String bearerToken) {
         if (isNullOrNotBearer(bearerToken)) {
-            throw new AuthenticationException(ErrorMessage.INVALID_AUTH_TYPE);
+            throw new AuthenticationException(ErrorMessage.NOT_LOGGED_IN);
         }
 
         var accessToken = bearerToken.substring(7);

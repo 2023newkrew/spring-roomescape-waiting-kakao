@@ -43,7 +43,7 @@ public class AdminInterceptor implements HandlerInterceptor {
     private void validateAdmin(String accessToken) {
         TokenData tokenData = provider.getTokenData(accessToken);
         if (!Objects.equals(tokenData.getRole(), "ADMIN")) {
-            throw new AuthenticationException(ErrorMessage.NOT_AUTHORIZED_MEMBER);
+            throw new AuthenticationException(ErrorMessage.NOT_ADMIN);
         }
     }
 }

@@ -28,7 +28,7 @@ public class AuthService {
     public TokenResponse createToken(TokenRequest tokenRequest) {
         MemberResponse member = memberService.getByUsername(tokenRequest.getUsername());
         if (isNullOrWrongPassword(member, tokenRequest.getPassword())) {
-            throw new AuthenticationException(ErrorMessage.INVALID_MEMBER);
+            throw new AuthenticationException(ErrorMessage.INVALID_USERNAME_OR_PASSWORD);
         }
         MemberRole role = member.getRole();
         TokenData tokenData = new TokenData(member.getId(), role.toString());
