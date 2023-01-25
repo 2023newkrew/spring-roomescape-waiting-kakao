@@ -1,6 +1,9 @@
 package nextstep.domain.persist;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
+
+import java.util.Objects;
 
 @Getter
 public class Waiting {
@@ -17,5 +20,9 @@ public class Waiting {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+    }
+
+    public boolean sameMember(Member member) {
+        return member != null && Objects.equals(this.member.getId(), member.getId());
     }
 }
