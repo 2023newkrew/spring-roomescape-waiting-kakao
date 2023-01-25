@@ -29,16 +29,14 @@ public class BaseException extends RuntimeException {
     public BaseException(Throwable throwable) {
         super(throwable.getMessage());
 
-        this.className = throwable.getClass()
-                .getSimpleName();
+        this.className = throwable.getClass().getSimpleName();
         this.httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
     public BaseException(MethodArgumentNotValidException e) {
         super(getErrorMessage(e));
 
-        this.className = e.getClass()
-                .getSimpleName();
+        this.className = e.getClass().getSimpleName();
         this.httpStatus = HttpStatus.BAD_REQUEST;
     }
 

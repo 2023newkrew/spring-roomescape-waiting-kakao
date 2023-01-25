@@ -1,75 +1,117 @@
-package e2e;
+package controller;
 
-import io.restassured.RestAssured;
+import nextstep.etc.exception.ErrorMessage;
 import nextstep.member.dto.MemberRequest;
-import nextstep.member.dto.MemberResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-public class MemberE2ETest extends AbstractE2ETest {
+import java.util.List;
 
-    @DisplayName("멤버를 생성한다")
-    @Test
-    public void create() {
-        var request = new MemberRequest(
+import static org.hamcrest.Matchers.*;
+
+public class MemberControllerTest extends AbstractControllerTest {
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class create {
+
+        @DisplayName("멤버 생성 성공")
+        @Test
+        void should_returnLocation_when_givenRequest() {
+            var request = createRequest();
+
+            var response = post("/members", request);
+
+            then(response)
+                    .statusCode(HttpStatus.CREATED.value())
+                    .header("Location", "/members/1");
+        }
+
+        @DisplayName("username이 중복될 경우 예외 발생")
+        @Test
+        void should_throwException_when_usernameDuplicate() {
+            var expectedException = ErrorMessage.MEMBER_CONFLICT;
+            var request = createRequest();
+
+            post("/members", request);
+            var response = post("/members", request);
+
+            then(response)
+                    .statusCode(expectedException.getHttpStatus().value())
+                    .body("message", equalTo(expectedException.getErrorMessage()));
+        }
+
+        @DisplayName("입력이 공백일 경우 예외 발생")
+        @ParameterizedTest
+        @MethodSource
+        void should_throwException_when_invalidRequest(MemberRequest request) {
+            var response = post("/members", request);
+
+            then(response)
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body(
+                            containsString("[username은 공백일 수 없습니다.]"),
+                            containsString("[name은 공백일 수 없습니다.]"),
+                            containsString("[password는 공백일 수 없습니다.]"),
+                            containsString("[phone은 공백일 수 없습니다.]")
+                    );
+        }
+
+
+        List<Arguments> should_throwException_when_invalidRequest() {
+            return List.of(
+                    Arguments.of(new MemberRequest()),
+                    Arguments.of(new MemberRequest("", "", "", "")),
+                    Arguments.of(new MemberRequest(" ", " ", " ", " "))
+            );
+        }
+    }
+
+    MemberRequest createRequest() {
+        return new MemberRequest(
                 "username",
                 "password",
-                "name",
-                "010-1234-5678"
-        );
-
-        var response = post("/members", request);
-
-        then(response)
-                .statusCode(HttpStatus.CREATED.value())
-                .header("Location", "/members/1");
-    }
-
-    @DisplayName("ID가 같은 멤버를 찾는다")
-    @Test
-    public void getById() {
-        MemberRequest request = new MemberRequest(
                 "username",
-                "password",
-                "name",
                 "010-1234-5678"
         );
-        var locations = createMember(request);
-
-        MemberResponse response = getMember(locations);
-
-        Assertions.assertThat(response)
-                .extracting(
-                        MemberResponse::getUsername,
-                        MemberResponse::getPassword,
-                        MemberResponse::getName,
-                        MemberResponse::getPhone
-                )
-                .contains(
-                        request.getUsername(),
-                        request.getPassword(),
-                        request.getName(),
-                        request.getPhone()
-                );
     }
 
-    private String createMember(MemberRequest request) {
-        return RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when().post("/members")
-                .getHeader("Location");
-    }
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class getById {
 
-    private MemberResponse getMember(String locations) {
-        return RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(locations)
-                .as(MemberResponse.class);
+        @DisplayName("멤버 조회 성공")
+        @Test
+        void should_returnMember_when_memberExists() {
+            var request = createRequest();
+            post("/members", request);
+
+            var response = get("/members/1");
+
+            then(response)
+                    .statusCode(HttpStatus.OK.value())
+                    .body("id", equalTo(1))
+                    .body("username", equalTo(request.getUsername()))
+                    .body("password", equalTo(request.getPassword()))
+                    .body("name", equalTo(request.getName()))
+                    .body("phone", equalTo(request.getPhone()))
+                    .body("role", equalTo("NORMAL"));
+        }
+
+        @DisplayName("멤버가 없을 경우 빈 body 반환")
+        @Test
+        void should_returnNull_when_memberNotExists() {
+            var response = get("/members/1");
+
+            then(response)
+                    .statusCode(HttpStatus.OK.value())
+                    .content(emptyString());
+        }
     }
 }

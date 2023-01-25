@@ -12,16 +12,16 @@ import javax.validation.constraints.NotBlank;
 @Setter(AccessLevel.NONE)
 public class MemberRequest {
 
-    @NotBlank(message = "유저이름은 공백일 수 없습니다.")
+    @NotBlank(message = "username은 공백일 수 없습니다.")
     private final String username;
 
-    @NotBlank(message = "비밀번호는 공백일 수 없습니다.")
+    @NotBlank(message = "password는 공백일 수 없습니다.")
     private final String password;
 
-    @NotBlank(message = "이름은 공백일 수 없습니다.")
+    @NotBlank(message = "name은 공백일 수 없습니다.")
     private final String name;
 
-    @NotBlank(message = "전화번호는 공백일 수 없습니다.")
+    @NotBlank(message = "phone은 공백일 수 없습니다.")
     private final String phone;
 
     public MemberRequest() {
