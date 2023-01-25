@@ -3,6 +3,7 @@ package nextstep.service;
 import auth.domain.persist.UserDetails;
 import auth.support.AuthenticationException;
 import nextstep.domain.dto.ReservationRequest;
+import nextstep.domain.dto.ReservationResponse;
 import nextstep.domain.persist.Member;
 import nextstep.repository.MemberDao;
 import nextstep.domain.persist.Reservation;
@@ -15,6 +16,7 @@ import nextstep.repository.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -59,6 +61,10 @@ public class ReservationService {
         }
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
+    }
+
+    public List<ReservationResponse> findAllByUserId(Long id) {
+        return reservationDao.findAllByUserId(id).stream().map(ReservationResponse::new).collect(Collectors.toList());
     }
 
     public void deleteById(UserDetails userDetails, Long id) {
