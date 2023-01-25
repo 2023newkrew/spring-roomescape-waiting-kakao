@@ -25,4 +25,6 @@ public class WaitingController {
         String location = waitingService.create(userDetails, waitingRequest);
         return ResponseEntity.created(URI.create(location)).build();
     }
+
+    
 }
