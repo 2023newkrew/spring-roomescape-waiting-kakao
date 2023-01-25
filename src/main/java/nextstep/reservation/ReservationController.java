@@ -2,6 +2,7 @@ package nextstep.reservation;
 
 import auth.AuthenticationException;
 import auth.LoginMember;
+import auth.UserDetails;
 import nextstep.member.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,13 +39,10 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
+    @PostMapping("/reservation-waitings")
+    public ResponseEntity<Void> createReservationWaiting(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.createReservationWaiting(userDetails.getId(), reservationRequest);
+        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
 }

@@ -15,12 +15,14 @@ import java.util.List;
 @Service
 public class ReservationService {
     public final ReservationDao reservationDao;
+    public final ReservationWaitingDao reservationWaitingDao;
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
+        this.reservationWaitingDao = reservationWaitingDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
@@ -69,4 +71,18 @@ public class ReservationService {
 
         reservationDao.deleteById(id);
     }
+
+    public Long createReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+        Member member = memberDao.findById(memberId);
+
+        if (!reservationDao.findByScheduleId(reservationRequest.getScheduleId()).isEmpty()) {
+            int waitNum = reservationWaitingDao.findMaxWaitNum(reservationRequest.getScheduleId()) + 1;
+            return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
+        }
+
+        return create(member, reservationRequest);
+    }
+
+
 }
