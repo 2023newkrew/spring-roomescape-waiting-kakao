@@ -1,7 +1,8 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
-import nextstep.auth.LoginMember;
+import auth.AuthenticationException;
+import auth.LoginMember;
+import auth.UserDetails;
 import nextstep.member.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,12 @@ public class ReservationController {
         return ResponseEntity.ok().body(results);
     }
 
+    @GetMapping("reservations/mine")
+    public ResponseEntity<List<ReservationResponse>> findMyReservations(@LoginMember UserDetails userDetails){
+        List<ReservationResponse> results = reservationService.findMyReservations(userDetails.getId());
+        return ResponseEntity.ok().body(results);
+    }
+
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
         reservationService.deleteById(member, id);
@@ -38,13 +45,22 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
+    @PostMapping("/reservation-waitings")
+    public ResponseEntity<Void> createReservationWaiting(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.createReservationWaiting(userDetails.getId(), reservationRequest);
+        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    @DeleteMapping("reservation-waitings/{id}")
+    public ResponseEntity<Void> deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long reservationWaitingId){
+        reservationService.deleteReservationWaitingById(userDetails.getId(), reservationWaitingId);
+        return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/reservation-waitings/mine")
+    public ResponseEntity findMyReservationsWaitings(@LoginMember UserDetails userDetails) {
+        List<ReservationWaitingResponse> reservationWaitings = reservationService.findMyReservationWaitings(userDetails.getId());
+        return ResponseEntity.ok(reservationWaitings);
+    }
+
 }

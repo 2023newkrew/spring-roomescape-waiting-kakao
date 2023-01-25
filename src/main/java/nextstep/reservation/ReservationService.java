@@ -1,6 +1,6 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -11,16 +11,19 @@ import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
     public final ReservationDao reservationDao;
+    public final ReservationWaitingDao reservationWaitingDao;
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
+        this.reservationWaitingDao = reservationWaitingDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
@@ -68,5 +71,44 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public Long createReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+        Member member = memberDao.findById(memberId);
+
+        if (!reservationDao.findByScheduleId(reservationRequest.getScheduleId()).isEmpty()) {
+            int waitNum = reservationWaitingDao.findMaxWaitNum(reservationRequest.getScheduleId()) + 1;
+            return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
+        }
+
+        return create(member, reservationRequest);
+    }
+
+    public void deleteReservationWaitingById(Long memberId, Long reservationWaitingId){
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId);
+        if(reservationWaiting == null) {
+            throw new NullPointerException();
+        }
+        if(!reservationWaiting.sameMember(memberId)) {
+            throw new AuthenticationException();
+        }
+
+        reservationWaitingDao.deleteById(reservationWaitingId);
+    }
+
+    public List<ReservationWaitingResponse> findMyReservationWaitings(Long memberId) {
+        return reservationWaitingDao.findReservationWaitingsByMemberId(memberId)
+                .stream()
+                .map(ReservationWaitingResponse::new)
+                .collect(Collectors.toList());
+    }
+
+
+    public List<ReservationResponse> findMyReservations(Long memberId) {
+        return reservationDao.findByMemberId(memberId)
+                .stream()
+                .map(ReservationResponse::new)
+                .collect(Collectors.toList());
     }
 }
