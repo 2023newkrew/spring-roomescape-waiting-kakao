@@ -124,7 +124,7 @@ public class MemberLoginTest {
                 .given()
                 .header(new Header("Authorization", "Bearer " + token))
                 .when().get("/api/members/me")
-                .then()
+                .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("id", is(((int) memberId)))
                 .body("name", is(body.getName()))

@@ -2,10 +2,11 @@ package roomescape.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.controller.errors.ErrorCode;
 import roomescape.dto.ThemeControllerPostBody;
 import roomescape.entity.Theme;
-import roomescape.exception.NotExistThemeException;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.exception.ServiceException;
 
 import java.util.stream.Stream;
 
@@ -17,7 +18,7 @@ public class ThemeService {
     public Theme getTheme(long id) {
         var target = repository.selectById(id);
         if (target.isEmpty()) {
-            throw new NotExistThemeException(id);
+            throw new ServiceException(ErrorCode.UNKNOWN_THEME_ID);
         }
         return target.get();
     }
@@ -34,7 +35,7 @@ public class ThemeService {
     public void deleteTheme(long id) {
         var affectedRows = repository.delete(id);
         if (affectedRows == 0) {
-            throw new NotExistThemeException(id);
+            throw new ServiceException(ErrorCode.UNKNOWN_THEME_ID);
         }
     }
 }

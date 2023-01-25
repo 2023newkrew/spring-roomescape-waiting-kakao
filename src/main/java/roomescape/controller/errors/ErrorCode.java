@@ -11,8 +11,7 @@ public enum ErrorCode {
     ALREADY_EXIST_RESERVATION_AT_TIME(HttpStatus.CONFLICT, "R-000", "이미 해당 시간대에 예약이 존재합니다."),
     UNKNOWN_RESERVATION_ID(HttpStatus.NOT_FOUND, "R-001", "해당 ID는 유효하지 않습니다."),
     // 테마 관련 에러
-    UNKNOWN_THEME_ID(HttpStatus.NOT_FOUND, "T-000", "알 수 없는 테마 ID입니다."),
-    USING_THEME(HttpStatus.CONFLICT, "T-001", "사용중인 테마입니다. 사용중 테마는 삭제 불가능합니다."),
+    UNKNOWN_THEME_ID(HttpStatus.NOT_FOUND, "T-001", "알 수 없는 테마 ID입니다."),
     // 인증, 권한 관련 에러
     REQUIRED_ADMIN(HttpStatus.UNAUTHORIZED, "A-000", "어드민만 해당 요청을 수행 가능합니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A-001", "만료된 토큰입니다."),
