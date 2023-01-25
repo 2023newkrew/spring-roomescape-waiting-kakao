@@ -9,8 +9,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.annotation.JWTBearerTokenSubject;
-import roomescape.exception.AuthorizationException;
+import roomescape.controller.errors.ErrorCode;
 import roomescape.service.JWTProvider;
+import roomescape.service.exception.ServiceException;
 
 @Component
 @RequiredArgsConstructor
@@ -25,12 +26,18 @@ public class JWTBearerTokenSubjectResolver implements HandlerMethodArgumentResol
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        try {
-            String authorizationHeader = webRequest.getHeader("Authorization");
-            return jwtProvider.getSubject(authorizationHeader.split(" ")[1]);
-        } catch (RuntimeException e) {
-            throw new AuthorizationException();
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+
+        var token = jwtProvider.getTokenFromAuthHeader(webRequest.getHeader("Authorization"));
+        if (token.isEmpty()) {
+            throw new ServiceException(ErrorCode.INVALID_BEARER);
         }
+        if (jwtProvider.isInvalidJWT(token.get())) {
+            throw new ServiceException(ErrorCode.INVALID_TOKEN);
+        }
+        if (jwtProvider.isExpired(token.get())) {
+            throw new ServiceException(ErrorCode.EXPIRED_TOKEN);
+        }
+        return jwtProvider.getSubject(token.get());
     }
 }

@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.SpringWebApplication;
+import roomescape.dto.LoginControllerTokenPostBody;
 import roomescape.dto.ThemeControllerPostBody;
 import roomescape.entity.Theme;
 
@@ -23,10 +25,16 @@ import static org.hamcrest.Matchers.is;
 public class ThemeTest {
     @Value("${local.server.port}")
     int port;
+    private String adminToken;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        adminToken = RestAssured.given()
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .body(new LoginControllerTokenPostBody("admin", "1q2w3e4r!"))
+                                .post("/api/login/token")
+                                .body().jsonPath().getString("access_token");
     }
 
     @DisplayName("테마 생성")
@@ -34,6 +42,7 @@ public class ThemeTest {
     public void createTheme() {
         RestAssured
                 .given()
+                .header("Authorization", "Bearer " + adminToken)
                 .contentType("application/json")
                 .body(new ThemeControllerPostBody(
                         UUID.randomUUID().toString().split("-")[0],
@@ -56,6 +65,7 @@ public class ThemeTest {
         );
         var postResult = RestAssured
                 .given()
+                .header("Authorization", "Bearer " + adminToken)
                 .contentType("application/json")
                 .body(expectedResult)
                 .post("/api/themes");
@@ -81,6 +91,7 @@ public class ThemeTest {
         );
         var postResult = RestAssured
                 .given()
+                .header("Authorization", "Bearer " + adminToken)
                 .contentType("application/json")
                 .body(expectedResult)
                 .post("/api/themes");
@@ -90,7 +101,12 @@ public class ThemeTest {
                 .get(postResult.header("Location"))
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
-        RestAssured.delete(postResult.header("Location"));
+        RestAssured
+                .given()
+                .header("Authorization", "Bearer " + adminToken)
+                .delete(postResult.header("Location"))
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
         RestAssured
                 .when()
                 .get(postResult.header("Location"))
