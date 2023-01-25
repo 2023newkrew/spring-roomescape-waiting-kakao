@@ -10,6 +10,13 @@ public class ReservationWaiting {
     private Schedule schedule;
     private int waitNum;
 
+    public ReservationWaiting(Long id, Member member, Schedule schedule, int waitNum) {
+        this.id = id;
+        this.member = member;
+        this.schedule = schedule;
+        this.waitNum = waitNum;
+    }
+
     public ReservationWaiting(Member member, Schedule schedule, int waitNum) {
         this.member = member;
         this.schedule = schedule;
@@ -30,5 +37,9 @@ public class ReservationWaiting {
 
     public int getWaitNum() {
         return waitNum;
+    }
+
+    public boolean sameMember(Long memberId){
+        return member.getId().equals(memberId);
     }
 }

@@ -84,5 +84,17 @@ public class ReservationService {
         return create(member, reservationRequest);
     }
 
+    public void deleteReservationWaitingById(Long memberId, Long reservationWaitingId){
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId);
+        if(reservationWaiting == null) {
+            throw new NullPointerException();
+        }
+        if(!reservationWaiting.sameMember(memberId)) {
+            throw new AuthenticationException();
+        }
+
+        reservationWaitingDao.deleteById(reservationWaitingId);
+    }
+
 
 }
