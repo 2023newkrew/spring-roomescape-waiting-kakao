@@ -5,9 +5,9 @@ import nextstep.reservation.dto.ReservationResponse;
 
 public interface ReservationService {
 
-    ReservationResponse create(ReservationRequest request);
+    ReservationResponse create(Long memberId, ReservationRequest request);
 
     ReservationResponse getById(Long id);
 
-    boolean deleteById(Long id);
+    boolean deleteById(Long memberId, Long id);
 }

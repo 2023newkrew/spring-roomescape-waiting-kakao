@@ -3,10 +3,9 @@ package nextstep.reservation.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import nextstep.theme.domain.Theme;
+import nextstep.member.domain.Member;
+import nextstep.schedule.domain.Schedule;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -17,22 +16,24 @@ public class Reservation {
     private Long id;
 
     @Getter
-    private final LocalDate date;
+    private final Member member;
 
     @Getter
-    private final LocalTime time;
+    private final Schedule schedule;
 
-    @Getter
-    private final String name;
-
-    @Getter
-    private final Theme theme;
-
-    public Long getThemeId() {
-        if (Objects.isNull(theme)) {
+    public Long getMemberId() {
+        if (Objects.isNull(member)) {
             return null;
         }
 
-        return theme.getId();
+        return member.getId();
+    }
+
+    public Long getScheduleId() {
+        if (Objects.isNull(schedule)) {
+            return null;
+        }
+
+        return schedule.getId();
     }
 }

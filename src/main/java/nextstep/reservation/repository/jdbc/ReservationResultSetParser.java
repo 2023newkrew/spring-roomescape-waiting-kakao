@@ -1,13 +1,14 @@
 package nextstep.reservation.repository.jdbc;
 
+import nextstep.member.domain.Member;
+import nextstep.member.domain.MemberRole;
 import nextstep.reservation.domain.Reservation;
+import nextstep.schedule.domain.Schedule;
 import nextstep.theme.domain.Theme;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 
 @Component
 public class ReservationResultSetParser {
@@ -17,24 +18,38 @@ public class ReservationResultSetParser {
             return null;
         }
 
-        Date date = resultSet.getDate("date");
-        Time time = resultSet.getTime("time");
-
         return new Reservation(
-                resultSet.getLong("id"),
-                date.toLocalDate(),
-                time.toLocalTime(),
-                resultSet.getString("name"),
+                resultSet.getLong("reservation.id"),
+                parseMember(resultSet), parseSchedule(resultSet)
+        );
+    }
+
+    private Member parseMember(ResultSet resultSet) throws SQLException {
+        return new Member(
+                resultSet.getLong("member.id"),
+                resultSet.getString("member.username"),
+                resultSet.getString("member.password"),
+                resultSet.getString("member.name"),
+                resultSet.getString("member.phone"),
+                MemberRole.valueOf(resultSet.getString("member.role"))
+        );
+    }
+
+    private Schedule parseSchedule(ResultSet resultSet) throws SQLException {
+        return new Schedule(
+                resultSet.getLong("schedule.id"),
+                resultSet.getDate("schedule.date").toLocalDate(),
+                resultSet.getTime("schedule.time").toLocalTime(),
                 parseTheme(resultSet)
         );
     }
 
     private Theme parseTheme(ResultSet resultSet) throws SQLException {
         return new Theme(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("theme_desc"),
-                resultSet.getInt("theme_price")
+                resultSet.getLong("theme.id"),
+                resultSet.getString("theme.name"),
+                resultSet.getString("theme.desc"),
+                resultSet.getInt("theme.price")
         );
     }
 

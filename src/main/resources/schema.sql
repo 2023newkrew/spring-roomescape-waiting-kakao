@@ -31,15 +31,10 @@ CREATE TABLE schedule
 
 CREATE TABLE reservation
 (
-    id       BIGINT      NOT NULL AUTO_INCREMENT,
---     member_id   BIGINT NOT NULL,
-    theme_id BIGINT      NOT NULL,
-    date     DATE        NOT NULL,
-    time     TIME        NOT NULL,
---     schedule_id BIGINT NOT NULL,
-    name     VARCHAR(20) NOT NULL,
+    id          BIGINT NOT NULL AUTO_INCREMENT,
+    member_id   BIGINT NOT NULL,
+    schedule_id BIGINT NOT NULL,
     PRIMARY KEY (id),
---     FOREIGN KEY (member_id) REFERENCES member (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
---     FOREIGN KEY (schedule_id) REFERENCES schedule (id)
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (schedule_id) REFERENCES schedule (id)
 );

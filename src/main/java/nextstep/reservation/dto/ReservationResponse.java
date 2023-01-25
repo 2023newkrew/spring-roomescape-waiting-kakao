@@ -4,10 +4,8 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import nextstep.theme.dto.ThemeResponse;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
+import nextstep.member.dto.MemberResponse;
+import nextstep.schedule.dto.ScheduleResponse;
 
 @RequiredArgsConstructor
 @Data
@@ -16,11 +14,7 @@ public class ReservationResponse {
 
     private final Long id;
 
-    private final LocalDate date;
+    private final MemberResponse member;
 
-    private final LocalTime time;
-
-    private final String name;
-
-    private final ThemeResponse theme;
+    private final ScheduleResponse schedule;
 }

@@ -3,15 +3,17 @@ package nextstep.reservation.service;
 import lombok.RequiredArgsConstructor;
 import nextstep.etc.exception.ErrorMessage;
 import nextstep.etc.exception.ReservationException;
-import nextstep.etc.exception.ThemeException;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
 import nextstep.reservation.mapper.ReservationMapper;
 import nextstep.reservation.repository.ReservationRepository;
-import org.springframework.dao.DataIntegrityViolationException;
+import nextstep.schedule.dto.ScheduleResponse;
+import nextstep.schedule.service.ScheduleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -20,23 +22,27 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository repository;
 
+    private final ScheduleService scheduleService;
+
     private final ReservationMapper mapper;
 
     @Transactional
     @Override
-    public ReservationResponse create(ReservationRequest request) {
-        Reservation reservation = mapper.fromRequest(request);
-        if (repository.existsByTimetable(reservation)) {
+    public ReservationResponse create(Long memberId, ReservationRequest request) {
+        ScheduleResponse schedule = scheduleService.getById(request.getScheduleId());
+        validateSchedule(schedule);
+        Reservation reservation = mapper.fromRequest(memberId, request);
+
+        return mapper.toResponse(repository.insert(reservation));
+    }
+
+    private void validateSchedule(ScheduleResponse schedule) {
+        if (Objects.isNull(schedule)) {
+            throw new ReservationException(ErrorMessage.SCHEDULE_NOT_EXISTS);
+        }
+        if (repository.existsByScheduleId(schedule.getId())) {
             throw new ReservationException(ErrorMessage.RESERVATION_CONFLICT);
         }
-        try {
-            reservation = repository.insert(reservation);
-        }
-        catch (DataIntegrityViolationException ignore) {
-            throw new ThemeException(ErrorMessage.THEME_NOT_EXISTS);
-        }
-
-        return mapper.toResponse(reservation);
     }
 
     @Override
@@ -48,7 +54,19 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Transactional
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(Long memberId, Long id) {
+        Reservation reservation = repository.getById(id);
+        validateReservation(reservation, memberId);
+
         return repository.deleteById(id);
+    }
+
+    private void validateReservation(Reservation reservation, Long memberId) {
+        if (Objects.isNull(reservation)) {
+            throw new ReservationException(ErrorMessage.RESERVATION_NOT_EXISTS);
+        }
+        if (!memberId.equals(reservation.getMemberId())) {
+            throw new ReservationException(ErrorMessage.NOT_RESERVER);
+        }
     }
 }

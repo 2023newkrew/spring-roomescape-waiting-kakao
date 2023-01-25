@@ -10,8 +10,9 @@ import org.mapstruct.Mapping;
 public interface ReservationMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "theme.id", source = "themeId")
-    Reservation fromRequest(ReservationRequest request);
+    @Mapping(target = "member.id", source = "memberId")
+    @Mapping(target = "schedule.id", source = "request.scheduleId")
+    Reservation fromRequest(Long memberId, ReservationRequest request);
 
     ReservationResponse toResponse(Reservation reservation);
 }
