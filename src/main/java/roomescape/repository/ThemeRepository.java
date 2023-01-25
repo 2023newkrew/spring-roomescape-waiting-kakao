@@ -58,10 +58,6 @@ public class ThemeRepository {
     }
 
     public int delete(long id) {
-        try {
-            return jdbc.update(DELETE_THEME, Map.of("id", id));
-        } catch (DataAccessException sqlException) {
-            return 0;
-        }
+        return jdbc.update(DELETE_THEME, Map.of("id", id));
     }
 }
