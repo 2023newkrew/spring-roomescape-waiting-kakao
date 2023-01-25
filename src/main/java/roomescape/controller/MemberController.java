@@ -21,8 +21,8 @@ public class MemberController {
     private final MemberService service;
 
     @PostMapping(path = "/api/members", produces = "application/json;charset=utf-8")
-    public ResponseEntity<MemberControllerPostResponse> createMember(@Valid @RequestBody MemberControllerPostBody request) {
-        var id = service.createMember(request);
+    public ResponseEntity<MemberControllerPostResponse> createMember(@Valid @RequestBody MemberControllerPostBody body) {
+        var id = service.createMember(body);
         return ResponseEntity.status(HttpStatus.CREATED)
                              .location(URI.create("/api/members/" + id))
                              .body(new MemberControllerPostResponse(id));

@@ -22,8 +22,8 @@ public class LoginController {
 
 
     @PostMapping("/api/login/token")
-    public ResponseEntity<LoginControllerTokenPostResponse> createToken(@Valid @RequestBody LoginControllerTokenPostBody request) {
-        var token = service.createToken(request);
+    public ResponseEntity<LoginControllerTokenPostResponse> createToken(@Valid @RequestBody LoginControllerTokenPostBody body) {
+        var token = service.createToken(body);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .location(URI.create("/api/login/token/" + token))
