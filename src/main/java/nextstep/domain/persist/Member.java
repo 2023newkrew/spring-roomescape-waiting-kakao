@@ -1,5 +1,7 @@
 package nextstep.domain.persist;
 
+import auth.domain.persist.UserDetails;
+
 public class Member {
     private Long id;
     private String username;
@@ -9,6 +11,15 @@ public class Member {
     private String role;
 
     public Member() {
+    }
+
+    public Member(UserDetails userDetails) {
+        this.id = userDetails.getId();
+        this.username = userDetails.getUsername();
+        this.password = userDetails.getPassword();
+        this.name = userDetails.getName();
+        this.phone = userDetails.getPhone();
+        this.role = userDetails.getRole();
     }
 
     public Member(Long id, String username, String password, String name, String phone, String role) {
@@ -50,9 +61,5 @@ public class Member {
 
     public String getRole() {
         return role;
-    }
-
-    public boolean checkWrongPassword(String password) {
-        return !this.password.equals(password);
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.controller;
 
+import auth.domain.persist.UserDetails;
 import auth.domain.template.LoginMember;
 import nextstep.domain.persist.Member;
 import nextstep.domain.dto.MemberRequest;
@@ -25,7 +26,7 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity me(@LoginMember Member member) {
-        return ResponseEntity.ok(member);
+    public ResponseEntity me(@LoginMember UserDetails userDetails) {
+        return ResponseEntity.ok(userDetails);
     }
 }
