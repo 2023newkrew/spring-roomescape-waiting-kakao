@@ -32,6 +32,12 @@ public class ReservationController {
         return ResponseEntity.ok().body(results);
     }
 
+    @GetMapping("reservations/mine")
+    public ResponseEntity<List<ReservationResponse>> findMyReservations(@LoginMember UserDetails userDetails){
+        List<ReservationResponse> results = reservationService.findMyReservations(userDetails.getId());
+        return ResponseEntity.ok().body(results);
+    }
+
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
         reservationService.deleteById(member, id);

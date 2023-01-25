@@ -105,4 +105,10 @@ public class ReservationService {
     }
 
 
+    public List<ReservationResponse> findMyReservations(Long memberId) {
+        return reservationDao.findByMemberId(memberId)
+                .stream()
+                .map(ReservationResponse::new)
+                .collect(Collectors.toList());
+    }
 }

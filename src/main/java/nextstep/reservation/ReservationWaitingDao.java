@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -107,9 +108,13 @@ public class ReservationWaitingDao {
                 "inner join schedule on reservation.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
-                "where reservation_waiting.id = ?;";
+                "where member.id = ?;";
 
-        return jdbcTemplate.query(sql, rowMapper, memberId);
+        try {
+            return jdbcTemplate.query(sql, rowMapper, memberId);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 
 }

@@ -1,6 +1,5 @@
 package nextstep.reservation;
 
-import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleResponse;
 
 public class ReservationWaitingResponse {
@@ -13,12 +12,6 @@ public class ReservationWaitingResponse {
         this.id = reservationWaiting.getId();
         this.scheduleResponse = new ScheduleResponse(reservationWaiting.getSchedule());
         this.waitNum = reservationWaiting.getWaitNum();
-    }
-
-    public ReservationWaitingResponse(Long id, ScheduleResponse scheduleResponse, int waitNum) {
-        this.id = id;
-        this.scheduleResponse = scheduleResponse;
-        this.waitNum = waitNum;
     }
 
     public Long getId() {
