@@ -52,7 +52,4 @@ public class Member {
         return role;
     }
 
-    public boolean checkWrongPassword(String password) {
-        return !this.password.equals(password);
-    }
 }

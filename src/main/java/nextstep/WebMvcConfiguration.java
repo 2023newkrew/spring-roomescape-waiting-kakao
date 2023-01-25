@@ -1,9 +1,10 @@
 package nextstep;
 
-import nextstep.auth.AdminInterceptor;
-import nextstep.auth.JwtTokenProvider;
-import nextstep.auth.LoginMemberArgumentResolver;
-import nextstep.auth.LoginService;
+import auth.AdminInterceptor;
+import auth.JwtTokenProvider;
+import auth.LoginMemberArgumentResolver;
+import auth.LoginService;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
+
     private LoginService loginService;
     private JwtTokenProvider jwtTokenProvider;
 
@@ -20,13 +22,23 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    @Bean
+    public AdminInterceptor adminInterceptor() {
+        return new AdminInterceptor(jwtTokenProvider);
+    }
+
+    @Bean
+    public LoginMemberArgumentResolver loginMemberArgumentResolver(){
+        return new LoginMemberArgumentResolver(loginService);
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider)).addPathPatterns("/admin/**");
+        registry.addInterceptor(adminInterceptor()).addPathPatterns("/admin/**");
     }
 
     @Override
     public void addArgumentResolvers(List argumentResolvers) {
-        argumentResolvers.add(new LoginMemberArgumentResolver(loginService));
+        argumentResolvers.add(loginMemberArgumentResolver());
     }
 }
