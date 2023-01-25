@@ -21,11 +21,12 @@ CREATE TABLE theme
 CREATE TABLE schedule
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
-    theme_id BIGINT NOT NULL,
     date     DATE   NOT NULL,
     time     TIME   NOT NULL,
+    theme_id BIGINT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    UNIQUE (date, time, theme_id)
 );
 
 CREATE TABLE reservation

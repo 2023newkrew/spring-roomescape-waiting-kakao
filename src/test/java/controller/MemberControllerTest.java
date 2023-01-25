@@ -1,30 +1,31 @@
 package e2e;
 
 import io.restassured.RestAssured;
-import nextstep.RoomEscapeApplication;
 import nextstep.member.dto.MemberRequest;
 import nextstep.member.dto.MemberResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@SpringBootTest(classes = RoomEscapeApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class MemberE2ETest {
+public class MemberE2ETest extends AbstractE2ETest {
 
     @DisplayName("멤버를 생성한다")
     @Test
     public void create() {
-        MemberRequest request = new MemberRequest(
+        var request = new MemberRequest(
                 "username",
                 "password",
                 "name",
                 "010-1234-5678"
         );
-        createMember(request);
+
+        var response = post("/members", request);
+
+        then(response)
+                .statusCode(HttpStatus.CREATED.value())
+                .header("Location", "/members/1");
     }
 
     @DisplayName("ID가 같은 멤버를 찾는다")
