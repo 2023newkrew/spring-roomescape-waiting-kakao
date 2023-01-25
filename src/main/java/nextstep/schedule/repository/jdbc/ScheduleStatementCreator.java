@@ -16,11 +16,11 @@ public class ScheduleStatementCreator {
 
     private static final String
             SELECT_BY_ID_SQL =
-            "SELECT schdule.id, schdule.date, schdule.time, theme.id, theme.name, theme.desc, theme.price FROM schedule INNER JOIN theme ON schedule.theme_id = theme.id WHERE schedule.id = ?;";
+            "SELECT schedule.id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price FROM schedule INNER JOIN theme ON schedule.theme_id = theme.id WHERE schedule.id = ?;";
 
     private static final String
             SELECT_BY_THEME_ID_AND_DATE_SQL =
-            "SELECT schdule.id, schdule.date, schdule.time, theme.id, theme.name, theme.desc, theme.price FROM schedule INNER JOIN theme ON schedule.theme_id = theme.id WHERE theme.id = ? AND schedule.date = ?;";
+            "SELECT schedule.id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price FROM schedule INNER JOIN theme ON schedule.theme_id = theme.id WHERE theme.id = ? AND schedule.date = ?;";
 
     private static final String
             DELETE_BY_ID_SQL =

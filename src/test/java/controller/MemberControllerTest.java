@@ -17,6 +17,8 @@ import static org.hamcrest.Matchers.*;
 
 public class MemberControllerTest extends AbstractControllerTest {
 
+    static final String DEFAULT_PATH = "/members";
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class create {
@@ -26,7 +28,7 @@ public class MemberControllerTest extends AbstractControllerTest {
         void should_returnLocation_when_givenRequest() {
             var request = createRequest();
 
-            var response = post("/members", request);
+            var response = post(DEFAULT_PATH, request);
 
             then(response)
                     .statusCode(HttpStatus.CREATED.value())
@@ -39,19 +41,17 @@ public class MemberControllerTest extends AbstractControllerTest {
             var expectedException = ErrorMessage.MEMBER_CONFLICT;
             var request = createRequest();
 
-            post("/members", request);
-            var response = post("/members", request);
+            post(DEFAULT_PATH, request);
+            var response = post(DEFAULT_PATH, request);
 
-            then(response)
-                    .statusCode(expectedException.getHttpStatus().value())
-                    .body("message", equalTo(expectedException.getErrorMessage()));
+            thenThrow(response, expectedException);
         }
 
         @DisplayName("입력이 공백일 경우 예외 발생")
         @ParameterizedTest
         @MethodSource
         void should_throwException_when_invalidRequest(MemberRequest request) {
-            var response = post("/members", request);
+            var response = post(DEFAULT_PATH, request);
 
             then(response)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -90,9 +90,9 @@ public class MemberControllerTest extends AbstractControllerTest {
         @Test
         void should_returnMember_when_memberExists() {
             var request = createRequest();
-            post("/members", request);
+            post(DEFAULT_PATH, request);
 
-            var response = get("/members/1");
+            var response = get(DEFAULT_PATH + "/1");
 
             then(response)
                     .statusCode(HttpStatus.OK.value())
@@ -107,7 +107,7 @@ public class MemberControllerTest extends AbstractControllerTest {
         @DisplayName("멤버가 없을 경우 빈 body 반환")
         @Test
         void should_returnNull_when_memberNotExists() {
-            var response = get("/members/1");
+            var response = get(DEFAULT_PATH + "/1");
 
             then(response)
                     .statusCode(HttpStatus.OK.value())

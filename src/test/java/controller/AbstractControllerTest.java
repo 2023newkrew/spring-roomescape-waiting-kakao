@@ -5,10 +5,13 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import nextstep.RoomEscapeApplication;
+import nextstep.etc.exception.ErrorMessage;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
+
+import static org.hamcrest.Matchers.equalTo;
 
 
 @SqlGroup(
@@ -45,5 +48,11 @@ public abstract class AbstractControllerTest {
 
     ValidatableResponse then(Response response) {
         return response.then().log().all();
+    }
+
+    void thenThrow(Response response, ErrorMessage expectedException) {
+        then(response)
+                .statusCode(expectedException.getHttpStatus().value())
+                .body("message", equalTo(expectedException.getErrorMessage()));
     }
 }
