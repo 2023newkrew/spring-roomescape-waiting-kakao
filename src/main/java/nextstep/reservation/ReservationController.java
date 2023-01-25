@@ -50,4 +50,11 @@ public class ReservationController {
         reservationService.deleteReservationWaitingById(userDetails.getId(), reservationWaitingId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/reservation-waitings/mine")
+    public ResponseEntity findMyReservationsWaitings(@LoginMember UserDetails userDetails) {
+        List<ReservationWaitingResponse> reservationWaitings = reservationService.findMyReservationWaitings(userDetails.getId());
+        return ResponseEntity.ok(reservationWaitings);
+    }
+
 }
