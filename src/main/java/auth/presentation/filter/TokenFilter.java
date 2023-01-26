@@ -1,7 +1,7 @@
-package auth.filter;
+package auth.presentation.filter;
 
-import auth.AuthenticationException;
-import auth.JwtTokenProvider;
+import auth.domain.JwtTokenProvider;
+import auth.exception.AuthenticationException;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

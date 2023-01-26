@@ -1,4 +1,4 @@
-package auth;
+package auth.dto.response;
 
 public class TokenResponse {
     private String accessToken;

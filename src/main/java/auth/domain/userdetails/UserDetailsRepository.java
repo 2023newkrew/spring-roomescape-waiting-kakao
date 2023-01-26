@@ -1,4 +1,4 @@
-package auth;
+package auth.domain.userdetails;
 
 public interface UserDetailsRepository {
     UserDetails findById(Long id);

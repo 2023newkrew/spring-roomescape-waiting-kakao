@@ -1,7 +1,7 @@
 package nextstep.service;
 
-import auth.AuthenticationException;
-import auth.AuthorizationException;
+import auth.exception.AuthenticationException;
+import auth.exception.AuthorizationException;
 import nextstep.domain.member.Member;
 import nextstep.domain.member.MemberDao;
 import nextstep.domain.reservation.Reservation;

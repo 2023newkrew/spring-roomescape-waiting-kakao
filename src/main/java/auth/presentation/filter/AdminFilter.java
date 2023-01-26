@@ -1,6 +1,6 @@
-package auth.filter;
+package auth.presentation.filter;
 
-import auth.AuthorizationException;
+import auth.exception.AuthorizationException;
 
 import javax.servlet.*;
 import java.io.IOException;

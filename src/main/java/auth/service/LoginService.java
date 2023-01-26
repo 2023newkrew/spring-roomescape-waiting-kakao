@@ -1,4 +1,11 @@
-package auth;
+package auth.service;
+
+import auth.domain.JwtTokenProvider;
+import auth.domain.userdetails.UserDetails;
+import auth.domain.userdetails.UserDetailsRepository;
+import auth.dto.request.TokenRequest;
+import auth.dto.response.TokenResponse;
+import auth.exception.AuthenticationException;
 
 public class LoginService {
     private UserDetailsRepository userDetailsRepository;

@@ -9,6 +9,9 @@ public class MemberRequest {
     private String phone;
     private String role;
 
+    public MemberRequest() {
+    }
+
     public MemberRequest(String username, String password, String name, String phone, String role) {
         this.username = username;
         this.password = password;

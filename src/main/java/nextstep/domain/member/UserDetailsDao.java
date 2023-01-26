@@ -1,7 +1,7 @@
 package nextstep.domain.member;
 
-import auth.UserDetails;
-import auth.UserDetailsRepository;
+import auth.domain.userdetails.UserDetails;
+import auth.domain.userdetails.UserDetailsRepository;
 import org.springframework.stereotype.Component;
 
 @Component

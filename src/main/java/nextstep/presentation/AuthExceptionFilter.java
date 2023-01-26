@@ -1,7 +1,7 @@
 package nextstep.presentation;
 
-import auth.AuthenticationException;
-import auth.AuthorizationException;
+import auth.exception.AuthenticationException;
+import auth.exception.AuthorizationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nextstep.error.ErrorCode;
 import nextstep.error.ErrorResponse;

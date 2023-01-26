@@ -1,12 +1,11 @@
 package nextstep.config;
 
-import auth.JwtTokenProvider;
-import auth.LoginController;
-import auth.LoginService;
-import auth.UserDetailsRepository;
+import auth.domain.JwtTokenProvider;
+import auth.domain.userdetails.UserDetailsRepository;
+import auth.presentation.LoginController;
+import auth.service.LoginService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.annotation.RestController;
 
 @Configuration
 public class AuthConfiguration {
@@ -18,13 +17,7 @@ public class AuthConfiguration {
 
     @Bean
     public LoginController loginController(LoginService loginService) {
-        @RestController
-        class ControllerBean extends LoginController {
-            ControllerBean(LoginService loginService) {
-                super(loginService);
-            }
-        }
-        return new ControllerBean(loginService);
+        return new LoginController(loginService);
     }
 
     @Bean

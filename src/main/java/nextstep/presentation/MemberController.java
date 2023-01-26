@@ -1,7 +1,7 @@
 package nextstep.presentation;
 
-import auth.LoginMember;
-import auth.UserDetails;
+import auth.domain.userdetails.UserDetails;
+import auth.presentation.LoginMember;
 import nextstep.domain.member.Member;
 import nextstep.dto.request.MemberRequest;
 import nextstep.service.MemberService;

@@ -1,4 +1,4 @@
-package auth;
+package auth.domain.userdetails;
 
 public class UserDetails {
 

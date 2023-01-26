@@ -1,10 +1,10 @@
 package nextstep.config;
 
-import auth.JwtTokenProvider;
-import auth.LoginMemberArgumentResolver;
-import auth.LoginService;
-import auth.filter.AdminFilter;
-import auth.filter.TokenFilter;
+import auth.domain.JwtTokenProvider;
+import auth.presentation.LoginMemberArgumentResolver;
+import auth.presentation.filter.AdminFilter;
+import auth.presentation.filter.TokenFilter;
+import auth.service.LoginService;
 import nextstep.presentation.AuthExceptionFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
