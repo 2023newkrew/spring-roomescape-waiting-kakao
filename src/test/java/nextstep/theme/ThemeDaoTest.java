@@ -1,13 +1,16 @@
 package nextstep.theme;
 
+import nextstep.member.MemberDao;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
+@Import(MemberDao.class)
 public class ThemeDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
