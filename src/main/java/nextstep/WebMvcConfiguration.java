@@ -1,10 +1,12 @@
 package nextstep;
 
 import auth.AdminInterceptor;
+import auth.AuthenticationProvider;
 import auth.JwtTokenProvider;
 import auth.LoginController;
 import auth.LoginMemberArgumentResolver;
 import auth.LoginService;
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +19,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 @PropertySource("classpath:application.properties")
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final MemberDao memberDao;
-
-    @Autowired
-    public WebMvcConfiguration(MemberDao memberDao) {
-        this.memberDao = memberDao;
-    }
+    private final AuthenticationProvider authenticationProvider;
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
@@ -34,7 +32,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Bean
     public LoginService loginService() {
-        return new LoginService(memberDao, jwtTokenProvider());
+        return new LoginService(authenticationProvider, jwtTokenProvider());
     }
 
     @Bean
