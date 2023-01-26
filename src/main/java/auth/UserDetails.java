@@ -1,5 +1,7 @@
 package auth;
 
+import java.util.Objects;
+
 public class UserDetails {
 
     private Long id;
@@ -19,7 +21,7 @@ public class UserDetails {
     }
 
     public boolean checkWrongPassword(String password) {
-        return this.password != password;
+        return !Objects.equals(this.password, password);
     }
 
     public Long getId() {
