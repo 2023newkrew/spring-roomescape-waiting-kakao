@@ -1,5 +1,6 @@
 package nextstep.etc.exception;
 
+import auth.exception.AuthenticationException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -38,6 +39,13 @@ public class BaseException extends RuntimeException {
 
         this.className = e.getClass().getSimpleName();
         this.httpStatus = HttpStatus.BAD_REQUEST;
+    }
+
+    public BaseException(AuthenticationException e) {
+        super(e.getMessage());
+
+        this.className = e.getClass().getSimpleName();
+        this.httpStatus = e.getHttpStatus();
     }
 
     private static String getErrorMessage(MethodArgumentNotValidException e) {

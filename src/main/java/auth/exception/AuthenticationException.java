@@ -6,11 +6,11 @@ import org.springframework.http.HttpStatus;
 public class AuthenticationException extends RuntimeException {
 
     @Getter
-    private final HttpStatus status;
+    private final HttpStatus httpStatus;
 
     public AuthenticationException(ErrorMessage errorMessage) {
         super(errorMessage.getErrorMessage());
 
-        this.status = errorMessage.httpStatus;
+        this.httpStatus = errorMessage.httpStatus;
     }
 }
