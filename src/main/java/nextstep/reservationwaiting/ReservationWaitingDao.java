@@ -69,8 +69,20 @@ public class ReservationWaitingDao {
         try {
             return jdbcTemplate.query(sql, rowMapper, memberId);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            return null;
+        }
+    }
+
+    public boolean existById(Long id, Long memberId) {
+        String sql = "SELECT " +
+                "1 " +
+                "from reservation_waiting " +
+                "where member_id = ? and id = ? " +
+                "LIMIT 1;";
+        try {
+            return jdbcTemplate.queryForObject(sql, Integer.class, memberId, id) == 1;
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -83,18 +95,6 @@ public class ReservationWaitingDao {
             return jdbcTemplate.queryForObject(sql, Long.class, scheduleId);
         } catch (Exception e) {
             return 0L;
-        }
-    }
-
-    public boolean existByScheduleId(Long scheduleId) {
-        String sql = "SELECT " +
-                "1 " +
-                "from reservation_waiting " +
-                "where reservation_waiting.schedule_id = ? LIMIT 1;";
-        try {
-            return jdbcTemplate.queryForObject(sql, Long.class, scheduleId) == 1L;
-        } catch (Exception e) {
-            return false;
         }
     }
 
