@@ -33,7 +33,7 @@ CREATE TABLE reservation
 (
     id          BIGINT NOT NULL AUTO_INCREMENT,
     member_id   BIGINT NOT NULL,
-    schedule_id BIGINT NOT NULL,
+    schedule_id BIGINT NOT NULL UNIQUE,
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (schedule_id) REFERENCES schedule (id)
@@ -47,5 +47,6 @@ CREATE TABLE waiting
     schedule_id BIGINT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id),
-    FOREIGN KEY (schedule_id) REFERENCES schedule (id)
+    FOREIGN KEY (schedule_id) REFERENCES schedule (id),
+    UNIQUE (member_id, schedule_id)
 );
