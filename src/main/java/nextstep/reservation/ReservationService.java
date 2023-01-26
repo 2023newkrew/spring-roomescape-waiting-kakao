@@ -70,4 +70,8 @@ public class ReservationService {
 
         reservationDao.deleteById(reservationId);
     }
+
+    public boolean existsByScheduleId(Long scheduleId) {
+        return !reservationDao.findByScheduleId(scheduleId).isEmpty();
+    }
 }

@@ -10,21 +10,24 @@ public class Schedule {
     private Theme theme;
     private LocalDate date;
     private LocalTime time;
+    private Long nextWaitingNumber;
 
     public Schedule() {
     }
 
-    public Schedule(Long id, Theme theme, LocalDate date, LocalTime time) {
+    public Schedule(Long id, Theme theme, LocalDate date, LocalTime time, Long nextWaitingNumber) {
         this.id = id;
         this.theme = theme;
         this.date = date;
         this.time = time;
+        this.nextWaitingNumber = nextWaitingNumber;
     }
 
     public Schedule(Theme theme, LocalDate date, LocalTime time) {
         this.theme = theme;
         this.date = date;
         this.time = time;
+        this.nextWaitingNumber = 1L;
     }
 
     public Long getId() {
@@ -41,5 +44,13 @@ public class Schedule {
 
     public LocalTime getTime() {
         return time;
+    }
+
+    public Long getNextWaitingNumber() {
+        return nextWaitingNumber;
+    }
+
+    public void increaseWaitingNumber() {
+        nextWaitingNumber++;
     }
 }
