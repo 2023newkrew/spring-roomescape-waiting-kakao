@@ -1,11 +1,12 @@
 package nextstep.waiting;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class WaitingRequestDTO {
-    private final Long scheduleId;
-
+    private Long scheduleId;
 }

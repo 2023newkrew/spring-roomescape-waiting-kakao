@@ -6,6 +6,7 @@ import auth.TokenMember;
 import nextstep.member.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -22,7 +23,7 @@ public class WaitingController {
     }
 
     @PostMapping("/reservation-waitings")
-    public ResponseEntity<Void> createWaiting(@LoginMember TokenMember member, WaitingRequestDTO waitingRequestDTO) {
+    public ResponseEntity<Void> createWaiting(@LoginMember TokenMember member, @RequestBody WaitingRequestDTO waitingRequestDTO) {
         if (member == null) {
             throw new AuthenticationException();
         }
