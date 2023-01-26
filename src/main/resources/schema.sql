@@ -38,3 +38,14 @@ CREATE TABLE reservation
     FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (schedule_id) REFERENCES schedule (id)
 );
+
+
+CREATE TABLE waiting
+(
+    id          BIGINT NOT NULL AUTO_INCREMENT,
+    member_id   BIGINT NOT NULL,
+    schedule_id BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (schedule_id) REFERENCES schedule (id)
+);
