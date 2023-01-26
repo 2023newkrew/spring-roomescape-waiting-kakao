@@ -1,8 +1,8 @@
 package app.nextstep.reservation;
 
 import app.auth.AuthenticationException;
-import app.auth.LoginMember;
-import app.nextstep.member.Member;
+import app.auth.AuthenticationPrincipal;
+import app.auth.UserDetail;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +20,8 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(member, reservationRequest);
+    public ResponseEntity createReservation(@AuthenticationPrincipal UserDetail userDetail, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.create(userDetail.getId(), reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -32,19 +32,19 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
-        reservationService.deleteById(member, id);
+    public ResponseEntity deleteReservation(@AuthenticationPrincipal UserDetail userDetail, @PathVariable Long id) {
+        reservationService.deleteById(userDetail.getId(), id);
 
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity onAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity onException(Exception e) {
+        return ResponseEntity.badRequest().build();
     }
 }
