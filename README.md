@@ -2,9 +2,9 @@
 
 ## 프로그래밍 요구사항
 - [] auth 패키지를 nextstep 패키지로부터 분리한다
-  - [] MemberDetails 구현
-  - [] MemberDetailsService 구현
-    - [] findByUsername 메서드 구현
+  - [x] MemberDetails 구현
+  - [x] MemberDetailsService 구현
+    - [x] findByUsername 메서드 구현
   - [x] accessToken에 id, username, role 저장
   - [] LoginService의 extractMember 메서드에서 findByUsername 재사용
 

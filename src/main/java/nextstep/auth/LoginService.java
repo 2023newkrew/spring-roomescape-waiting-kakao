@@ -6,21 +6,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LoginService {
-    private MemberDao memberDao;
+    private MemberDetailsService memberDetailsService;
     private JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
+    public LoginService(MemberDetailsService memberDetailsService, JwtTokenProvider jwtTokenProvider) {
+        this.memberDetailsService = memberDetailsService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        Member member = memberDao.findByUsername(tokenRequest.getUsername());
-        if (member == null || member.checkWrongPassword(tokenRequest.getPassword())) {
+        MemberDetails memberDetails = memberDetailsService.loadMemberDetailsByUsername(tokenRequest.getUsername());
+        if (memberDetails == null || !memberDetails.getPassword().equals(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
 
-        String accessToken = jwtTokenProvider.createToken(member.getId() + "", member.getUsername(), member.getRole());
+        String accessToken = jwtTokenProvider.createToken(memberDetails.getId() + "", memberDetails.getUsername(), memberDetails.getRole());
 
         return new TokenResponse(accessToken);
     }
