@@ -1,6 +1,8 @@
 package nextstep.waiting;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
@@ -48,7 +50,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
 
 
 
-    @DisplayName("해당 스케줄에 예약이 존재하지 않는 경우")
+    @DisplayName("예약을 순차적으로 시도해 예약 대기를 유도한다.")
     @Test
     void createNotExist() {
         var responseReservation = RestAssured
@@ -76,4 +78,64 @@ public class WaitingE2ETest extends AbstractE2ETest {
         assertThat(responseWaiting.header("Location")).startsWith("/reservation-waitings/");
     }
 
+    @DisplayName("예약 대기를 삭제한다")
+    @Test
+    void delete() {
+        var waiting = createWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete(waiting.header("Location"))
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("다른 사람이 예약 대기를 삭제한다")
+    @Test
+    void deleteWaitingOfOthers() {
+        createWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2("other-token")
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    private ExtractableResponse<Response> createWaiting() {
+        var scheduleResponse = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new ScheduleRequest(themeId, "2022-08-11", "13:00"))
+                .when().post("/admin/schedules")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+        String[] scheduleLocation = scheduleResponse.header("Location").split("/");
+        var scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(new WaitingRequestDTO(scheduleId))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all();
+
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(new WaitingRequestDTO(scheduleId))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+    }
 }
