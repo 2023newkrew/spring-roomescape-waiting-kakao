@@ -1,6 +1,9 @@
 package nextstep;
 
-import auth.*;
+import auth.AdminInterceptor;
+import auth.JwtTokenProvider;
+import auth.LoginMemberArgumentResolver;
+import auth.UserDetailsService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -9,10 +12,10 @@ import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private final LoginService loginService;
+    private final UserDetailsService loginService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
+    public WebMvcConfiguration(UserDetailsService loginService, JwtTokenProvider jwtTokenProvider) {
         this.loginService = loginService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
