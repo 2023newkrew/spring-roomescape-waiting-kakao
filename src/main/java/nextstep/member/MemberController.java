@@ -22,7 +22,7 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity me(@LoginMember Member member) {
-        return ResponseEntity.ok(member);
+    public ResponseEntity me(@LoginMember Long memberId) {
+        return ResponseEntity.ok(memberService.findById(memberId));
     }
 }

@@ -1,7 +1,8 @@
 package nextstep;
 
 import auth.*;
-import nextstep.member.MemberDao;
+import nextstep.member.LoginController;
+import nextstep.member.MemberService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -12,11 +13,12 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final MemberDao memberDao;
+    private final MemberService memberService;
 
-    public WebMvcConfiguration(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public WebMvcConfiguration(MemberService memberService) {
+        this.memberService = memberService;
     }
+
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
@@ -24,22 +26,23 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public LoginService loginService() {
-        return new LoginService(memberDao, jwtTokenProvider());
+    public AuthenticationProvider authenticationProvider() {
+        return new AuthenticationProvider(jwtTokenProvider());
     }
 
     @Bean
     public LoginController LoginController() {
-        return new LoginController(loginService());
+        return new LoginController(authenticationProvider(), memberService);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AdminInterceptor(jwtTokenProvider())).addPathPatterns("/admin/**");
+        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/reservations");
     }
 
     @Override
     public void addArgumentResolvers(List argumentResolvers) {
-        argumentResolvers.add(new LoginMemberArgumentResolver(loginService()));
+        argumentResolvers.add(new LoginMemberArgumentResolver(authenticationProvider()));
     }
 }
