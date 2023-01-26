@@ -2,9 +2,8 @@ package nextstep.reservation;
 
 import auth.AuthenticationException;
 import auth.LoginMember;
-import auth.UserDetails;
+import auth.MemberDetails;
 import nextstep.member.Member;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +21,9 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
-        checkValid(userDetails);
-        Long id = reservationService.create(Member.of(userDetails), reservationRequest);
+    public ResponseEntity createReservation(@LoginMember MemberDetails memberDetails, @RequestBody ReservationRequest reservationRequest) {
+        checkValid(memberDetails);
+        Long id = reservationService.create((Member) memberDetails, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -35,15 +34,15 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
-        checkValid(userDetails);
-        reservationService.deleteById(Member.of(userDetails), id);
+    public ResponseEntity deleteReservation(@LoginMember MemberDetails memberDetails, @PathVariable Long id) {
+        checkValid(memberDetails);
+        reservationService.deleteById((Member) memberDetails, id);
 
         return ResponseEntity.noContent().build();
     }
 
-    private static void checkValid(UserDetails userDetails) {
-        if(Objects.isNull(userDetails)){
+    private static void checkValid(MemberDetails memberDetails) {
+        if (Objects.isNull(memberDetails)) {
             throw new AuthenticationException();
         }
     }

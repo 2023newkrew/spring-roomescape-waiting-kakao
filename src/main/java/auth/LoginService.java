@@ -15,12 +15,12 @@ public class LoginService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetails userDetails = memberDao.findByUsername(tokenRequest.getUsername()).toUserDetails();
-        if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {
+        MemberDetails memberDetails = memberDao.findByUsername(tokenRequest.getUsername());
+        if (memberDetails == null || memberDetails.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
 
-        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
+        String accessToken = jwtTokenProvider.createToken(memberDetails.getId() + "", memberDetails.getRole());
 
         return new TokenResponse(accessToken);
     }
@@ -29,8 +29,8 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public UserDetails extractMember(String credential) {
+    public MemberDetails extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return memberDao.findById(id).toUserDetails();
+        return memberDao.findById(id);
     }
 }
