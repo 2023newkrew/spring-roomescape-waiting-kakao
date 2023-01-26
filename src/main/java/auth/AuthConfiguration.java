@@ -1,6 +1,5 @@
 package auth;
 
-import nextstep.member.MemberDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -11,10 +10,10 @@ import java.util.List;
 @Configuration
 public class AuthConfiguration implements WebMvcConfigurer {
 
-    private MemberDao memberDao;
+    private UserDetailsService userDetailsService;
 
-    public AuthConfiguration(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public AuthConfiguration(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 
     @Bean
@@ -24,7 +23,7 @@ public class AuthConfiguration implements WebMvcConfigurer {
 
     @Bean
     public LoginService loginService() {
-        return new LoginService(memberDao, jwtTokenProvider());
+        return new LoginService(userDetailsService, jwtTokenProvider());
     }
 
     @Bean
