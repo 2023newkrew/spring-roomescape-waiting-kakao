@@ -2,7 +2,7 @@ package roomescape.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.dto.MemberControllerPostBody;
+import roomescape.controller.dto.MemberControllerPostBody;
 import roomescape.entity.Member;
 import roomescape.repository.MemberRepository;
 

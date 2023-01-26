@@ -16,9 +16,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.SpringWebApplication;
-import roomescape.dto.LoginControllerTokenPostBody;
-import roomescape.dto.LoginControllerTokenPostResponse;
-import roomescape.dto.ReservationsControllerPostBody;
+import roomescape.controller.dto.LoginControllerTokenPostBody;
+import roomescape.controller.dto.LoginControllerTokenPostResponse;
+import roomescape.controller.dto.ReservationsControllerPostBody;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

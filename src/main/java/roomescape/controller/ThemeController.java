@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.annotation.Admin;
-import roomescape.dto.ThemeControllerGetResponse;
-import roomescape.dto.ThemeControllerPostBody;
-import roomescape.dto.ThemeControllerPostResponse;
+import roomescape.controller.dto.ThemeControllerGetResponse;
+import roomescape.controller.dto.ThemeControllerPostBody;
+import roomescape.controller.dto.ThemeControllerPostResponse;
 import roomescape.service.ThemeService;
 
 import javax.validation.Valid;
@@ -30,7 +30,7 @@ public class ThemeController {
                              .header("Location", String.format("/api/themes/%d", id))
                              .body(new ThemeControllerPostResponse(id));
     }
-    
+
     @GetMapping(value = "/api/themes", produces = "application/json;charset=utf-8")
     public ResponseEntity<List<ThemeControllerGetResponse>> pageTheme(@RequestParam(defaultValue = "0") int page) {
         var themes = service.pageTheme(page);

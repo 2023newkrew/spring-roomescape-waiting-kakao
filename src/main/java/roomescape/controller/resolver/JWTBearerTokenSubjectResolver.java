@@ -1,4 +1,4 @@
-package roomescape.resolver;
+package roomescape.controller.resolver;
 
 
 import lombok.RequiredArgsConstructor;

@@ -13,9 +13,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.SpringWebApplication;
-import roomescape.dto.LoginControllerTokenPostBody;
-import roomescape.dto.LoginControllerTokenPostResponse;
-import roomescape.dto.ThemeControllerPostBody;
+import roomescape.controller.dto.LoginControllerTokenPostBody;
+import roomescape.controller.dto.LoginControllerTokenPostResponse;
+import roomescape.controller.dto.ThemeControllerPostBody;
 
 import java.util.Random;
 import java.util.UUID;

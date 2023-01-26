@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.annotation.JWTBearerTokenSubject;
-import roomescape.dto.ReservationControllerGetResponse;
-import roomescape.dto.ReservationsControllerPostBody;
+import roomescape.controller.dto.ReservationControllerGetResponse;
+import roomescape.controller.dto.ReservationsControllerPostBody;
 import roomescape.service.ReservationService;
 
 import javax.validation.Valid;

@@ -1,4 +1,4 @@
-package roomescape.interceptor;
+package roomescape.controller.interceptor;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,23 +1,21 @@
-package roomescape.dto;
+package roomescape.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ThemeControllerGetResponse {
-    @NotNull
-    private Long id;
-
-    @NotNull
+public class ThemeControllerPostBody {
+    @NotBlank
     private String name;
 
-    @NotNull
+    @NotBlank
     private String desc;
 
     @NotNull
