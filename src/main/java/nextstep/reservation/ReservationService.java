@@ -1,11 +1,11 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import nextstep.exceptions.exception.DuplicatedReservationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class ReservationService {
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
+            throw new DuplicatedReservationException();
         }
 
         Reservation newReservation = new Reservation(
