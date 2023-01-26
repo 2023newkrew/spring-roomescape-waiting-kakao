@@ -1,6 +1,9 @@
 package nextstep.member;
 
+import auth.UserDetails;
+
 public class Member {
+
     private Long id;
     private String username;
     private String password;
@@ -26,6 +29,17 @@ public class Member {
         this.name = name;
         this.phone = phone;
         this.role = role;
+    }
+
+    public static Member from(UserDetails userDetails) {
+        return new Member(
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getPassword(),
+                userDetails.getName(),
+                userDetails.getPhone(),
+                userDetails.getRole()
+        );
     }
 
     public Long getId() {
