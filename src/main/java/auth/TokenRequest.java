@@ -1,8 +1,12 @@
 package auth;
 
 public class TokenRequest {
+
     private String username;
     private String password;
+
+    private TokenRequest() {
+    }
 
     public TokenRequest(String username, String password) {
         this.username = username;

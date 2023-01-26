@@ -1,11 +1,15 @@
 package nextstep.member;
 
 public class MemberRequest {
+
     private String username;
     private String password;
     private String name;
     private String phone;
     private String role;
+
+    private MemberRequest() {
+    }
 
     public MemberRequest(String username, String password, String name, String phone, String role) {
         this.username = username;
