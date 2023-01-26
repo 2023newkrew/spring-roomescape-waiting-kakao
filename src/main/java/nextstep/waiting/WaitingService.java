@@ -2,8 +2,11 @@ package nextstep.waiting;
 
 import auth.AuthenticationException;
 import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservation.Reservation;
+import nextstep.reservation.ReservationResponse;
 import nextstep.reservation.ReservationService;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
@@ -69,5 +72,19 @@ public class WaitingService {
         }
 
         waitingDao.deleteById(id);
+    }
+
+    private int getWaitingNumber(Waiting waiting){
+        return waitingDao.countWaitingNumber(waiting);
+    }
+
+    public List<WaitingResponse> findAllByMemberId(Long id) {
+        return changeToResponse(waitingDao.findByMemberId(id));
+    }
+
+    private List<WaitingResponse> changeToResponse(List<Waiting> waitings){
+        return waitings.stream()
+                .map(reservation -> new WaitingResponse(reservation, getWaitingNumber(reservation)))
+                .collect(Collectors.toList());
     }
 }

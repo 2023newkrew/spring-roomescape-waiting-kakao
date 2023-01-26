@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 import nextstep.member.Member;
+import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
 @Component
 public class WaitingDao {
@@ -115,5 +117,29 @@ public class WaitingDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM waiting where id = ?;";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<Waiting> findByMemberId(Long id) {
+        String sql = "SELECT " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on waiting.member_id = member.id " +
+                "where member.id = ?;";
+
+        try {
+            return jdbcTemplate.query(sql, rowMapper, id);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public int countWaitingNumber(Waiting waiting) {
+        String sql = "SELECT COUNT(*) FROM waiting WHERE schedule.id = ? AND id <= ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, waiting.getSchedule().getId(), waiting.getId());
     }
 }
