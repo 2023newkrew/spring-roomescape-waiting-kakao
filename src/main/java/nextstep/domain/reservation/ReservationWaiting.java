@@ -10,6 +10,9 @@ public class ReservationWaiting {
     private Schedule schedule;
     private int waitNum;
 
+    public ReservationWaiting() {
+    }
+
     public ReservationWaiting(Long id, Member member, Schedule schedule, int waitNum) {
         this.id = id;
         this.member = member;
