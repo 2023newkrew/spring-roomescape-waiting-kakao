@@ -3,6 +3,7 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservationwaiting.ReservationWaitingResponse;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -10,7 +11,9 @@ import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -46,6 +49,17 @@ public class ReservationService {
         );
 
         return reservationDao.save(newReservation);
+    }
+
+    public List<ReservationResponse> findMyReservations(Member member) {
+        try {
+            return reservationDao.findAllByMemberId(member.getId()).stream()
+                    .map(r -> new ReservationResponse(r.getId(), r.getSchedule()))
+                    .collect(Collectors.toList());
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
