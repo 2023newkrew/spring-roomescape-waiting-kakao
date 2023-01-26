@@ -1,10 +1,10 @@
-package nextstep.auth.service;
+package auth.service;
 
+import auth.domain.TokenData;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
+import auth.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.domain.TokenData;
-import nextstep.auth.dto.TokenRequest;
-import nextstep.auth.dto.TokenResponse;
-import nextstep.auth.provider.JwtTokenProvider;
 import nextstep.etc.exception.AuthenticationException;
 import nextstep.etc.exception.ErrorMessage;
 import nextstep.member.domain.MemberRole;

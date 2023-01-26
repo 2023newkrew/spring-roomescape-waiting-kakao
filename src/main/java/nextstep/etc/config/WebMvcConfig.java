@@ -1,7 +1,9 @@
 package nextstep.etc.config;
 
-import nextstep.auth.interceptor.AdminInterceptor;
-import nextstep.auth.resolver.MemberIdArgumentResolver;
+import auth.interceptor.AdminInterceptor;
+import auth.provider.JwtTokenProvider;
+import auth.resolver.MemberIdArgumentResolver;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -14,25 +16,30 @@ import java.util.List;
 @EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final MemberIdArgumentResolver memberIdArgumentResolver;
-
-    private final AdminInterceptor adminInterceptor;
-
-    public WebMvcConfig(MemberIdArgumentResolver memberIdArgumentResolver, AdminInterceptor adminInterceptor) {
-        this.memberIdArgumentResolver = memberIdArgumentResolver;
-        this.adminInterceptor = adminInterceptor;
+    @Bean
+    public JwtTokenProvider jwtTokenProvider() {
+        return new JwtTokenProvider();
     }
+
+    @Bean
+    public MemberIdArgumentResolver memberIdArgumentResolver() {
+        return new MemberIdArgumentResolver(jwtTokenProvider());
+    }
+
+    @Bean
+    public AdminInterceptor adminInterceptor() {
+        return new AdminInterceptor(jwtTokenProvider());
+    }
+
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
-        registry.addInterceptor(adminInterceptor)
+        registry.addInterceptor(adminInterceptor())
                 .addPathPatterns("/admin/**");
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-
-        argumentResolvers.add(memberIdArgumentResolver);
+        argumentResolvers.add(memberIdArgumentResolver());
     }
 }

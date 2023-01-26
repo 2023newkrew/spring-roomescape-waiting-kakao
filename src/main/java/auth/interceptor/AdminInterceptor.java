@@ -1,8 +1,8 @@
-package nextstep.auth.interceptor;
+package auth.interceptor;
 
+import auth.domain.TokenData;
+import auth.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.domain.TokenData;
-import nextstep.auth.provider.JwtTokenProvider;
 import nextstep.etc.exception.AuthenticationException;
 import nextstep.etc.exception.ErrorMessage;
 import org.springframework.beans.factory.annotation.Value;

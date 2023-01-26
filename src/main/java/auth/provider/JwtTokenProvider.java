@@ -1,7 +1,7 @@
-package nextstep.auth.provider;
+package auth.provider;
 
+import auth.domain.TokenData;
 import io.jsonwebtoken.*;
-import nextstep.auth.domain.TokenData;
 import nextstep.etc.exception.AuthenticationException;
 import nextstep.etc.exception.ErrorMessage;
 import org.springframework.beans.factory.annotation.Value;

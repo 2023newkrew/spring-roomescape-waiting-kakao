@@ -1,4 +1,4 @@
-package nextstep.auth.dto;
+package auth.dto;
 
 import lombok.*;
 

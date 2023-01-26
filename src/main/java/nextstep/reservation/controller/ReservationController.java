@@ -1,7 +1,7 @@
 package nextstep.reservation.controller;
 
+import auth.resolver.MemberId;
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.resolver.MemberId;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
 import nextstep.reservation.service.ReservationService;
