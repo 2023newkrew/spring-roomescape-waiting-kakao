@@ -1,4 +1,4 @@
-package nextstep.auth;
+package auth;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

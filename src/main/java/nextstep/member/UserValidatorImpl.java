@@ -1,8 +1,8 @@
 package nextstep.member;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.UserDetails;
-import nextstep.auth.UserValidator;
+import auth.UserDetails;
+import auth.UserValidator;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
