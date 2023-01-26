@@ -1,11 +1,15 @@
 package controller;
 
+import auth.domain.TokenData;
+import auth.provider.JwtTokenProvider;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import nextstep.RoomEscapeApplication;
 import nextstep.etc.exception.ErrorMessage;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -21,6 +25,16 @@ import static org.hamcrest.Matchers.equalTo;
         })
 @SpringBootTest(classes = RoomEscapeApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public abstract class AbstractControllerTest {
+
+    @Autowired
+    JwtTokenProvider provider;
+
+    String token;
+
+    @BeforeEach
+    void init() {
+        token = provider.createToken(new TokenData(1L, "ADMIN"));
+    }
 
     <T> Response get(RequestSpecification given, String path, Object... pathParams) {
         return given
@@ -46,7 +60,7 @@ public abstract class AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    RequestSpecification givenWithToken(String token) {
+    RequestSpecification authGiven() {
         return given()
                 .auth().oauth2(token);
     }

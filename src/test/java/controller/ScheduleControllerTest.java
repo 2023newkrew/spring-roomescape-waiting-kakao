@@ -1,6 +1,5 @@
 package controller;
 
-import auth.domain.TokenData;
 import auth.provider.JwtTokenProvider;
 import nextstep.etc.exception.ErrorMessage;
 import nextstep.schedule.dto.ScheduleRequest;
@@ -26,9 +25,8 @@ public class ScheduleControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        var token = provider.createToken(new TokenData(1L, "ADMIN"));
         var request = new ThemeRequest("theme", "theme", 10000);
-        post(givenWithToken(token), "/admin/themes", request);
+        post(authGiven(), "/admin/themes", request);
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)

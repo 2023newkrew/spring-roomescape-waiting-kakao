@@ -1,27 +1,53 @@
 package controller;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.TestInstance;
+import nextstep.member.dto.MemberRequest;
+import nextstep.schedule.dto.ScheduleRequest;
+import nextstep.theme.dto.ThemeRequest;
+import nextstep.waiting.dto.WaitingRequest;
+import org.junit.jupiter.api.*;
+import org.springframework.http.HttpStatus;
 
 public class WaitingControllerTest extends AbstractControllerTest {
 
     static final String DEFAULT_PATH = "/reservation-waitings";
 
+    @BeforeEach
+    void setUp() {
+        createMember();
+        createTheme();
+        createSchedule();
+    }
+
+    private void createTheme() {
+        var request = new ThemeRequest("theme", "theme", 10000);
+        post(authGiven(), "/admin/themes", request);
+    }
+
+    private void createMember() {
+        var request = new MemberRequest("member", "password", "member", "-");
+        post(given(), "/members", request);
+    }
+
+    private void createSchedule() {
+        var request = new ScheduleRequest("2021-01-01", "00:00", 1L);
+        post(given(), "/schedules", request);
+    }
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class create {
 
-        //        @DisplayName("멤버 생성 성공")
-        //        @Test
-        //        void should_returnLocation_when_givenRequest() {
-        //            var request = createRequest();
-        //
-        //            var response = post(WaitingControllerTest.this.given(), DEFAULT_PATH, request);
-        //
-        //            then(response)
-        //                    .statusCode(HttpStatus.CREATED.value())
-        //                    .header("Location", "/members/1");
-        //        }
+        @DisplayName("멤버 생성 성공")
+        @Test
+        void should_returnLocation_when_givenRequest() {
+            var request = createRequest();
+
+            var response = post(authGiven(), DEFAULT_PATH, request);
+
+            then(response)
+                    .statusCode(HttpStatus.CREATED.value())
+                    .header("Location", DEFAULT_PATH + "/1");
+        }
         //
         //        @DisplayName("username이 중복될 경우 예외 발생")
         //        @Test
@@ -61,14 +87,9 @@ public class WaitingControllerTest extends AbstractControllerTest {
         //        }
     }
 
-    //    MemberRequest createRequest() {
-    //        return new MemberRequest(
-    //                "username",
-    //                "password",
-    //                "username",
-    //                "010-1234-5678"
-    //        );
-    //    }
+    WaitingRequest createRequest() {
+        return new WaitingRequest(1L);
+    }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
