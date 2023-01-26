@@ -1,4 +1,4 @@
-package nextstep.reservation;
+package nextstep.reservation.domain;
 
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;

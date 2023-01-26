@@ -1,8 +1,11 @@
-package nextstep.reservation;
+package nextstep.reservation.service;
 
 import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.dao.ReservationDao;
+import nextstep.reservation.dto.ReservationRequest;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -68,5 +71,9 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public List<Reservation> lookUp(Member member) {
+        return reservationDao.findByMemberId(member.getId());
     }
 }
