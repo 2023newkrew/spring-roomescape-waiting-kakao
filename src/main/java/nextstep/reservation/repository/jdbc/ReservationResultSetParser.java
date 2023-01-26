@@ -1,7 +1,7 @@
 package nextstep.reservation.repository.jdbc;
 
+import auth.domain.UserRole;
 import nextstep.member.domain.Member;
-import nextstep.member.domain.MemberRole;
 import nextstep.reservation.domain.Reservation;
 import nextstep.schedule.domain.Schedule;
 import nextstep.theme.domain.Theme;
@@ -31,7 +31,7 @@ public class ReservationResultSetParser {
                 resultSet.getString("member.password"),
                 resultSet.getString("member.name"),
                 resultSet.getString("member.phone"),
-                MemberRole.valueOf(resultSet.getString("member.role"))
+                UserRole.valueOf(resultSet.getString("member.role"))
         );
     }
 

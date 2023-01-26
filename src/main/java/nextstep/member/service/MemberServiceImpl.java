@@ -1,10 +1,11 @@
 package nextstep.member.service;
 
+import auth.domain.UserRole;
+import auth.dto.UserDetailsResponse;
 import lombok.RequiredArgsConstructor;
 import nextstep.etc.exception.ErrorMessage;
 import nextstep.etc.exception.MemberException;
 import nextstep.member.domain.Member;
-import nextstep.member.domain.MemberRole;
 import nextstep.member.dto.MemberRequest;
 import nextstep.member.dto.MemberResponse;
 import nextstep.member.mapper.MemberMapper;
@@ -25,7 +26,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     @Override
     public MemberResponse create(MemberRequest request) {
-        Member member = mapper.fromRequest(request, MemberRole.NORMAL);
+        Member member = mapper.fromRequest(request, UserRole.NORMAL);
 
         return mapper.toResponse(tryInsert(member));
     }
@@ -45,7 +46,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberResponse getByUsername(String username) {
+    public UserDetailsResponse getByUsername(String username) {
         return mapper.toResponse(repository.getByUsername(username));
     }
 }

@@ -1,9 +1,9 @@
 package auth.provider;
 
 import auth.domain.TokenData;
+import auth.exception.AuthenticationException;
+import auth.exception.ErrorMessage;
 import io.jsonwebtoken.*;
-import nextstep.etc.exception.AuthenticationException;
-import nextstep.etc.exception.ErrorMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
