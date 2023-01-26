@@ -11,7 +11,9 @@ import nextstep.theme.ThemeDao;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationWaitingService {
@@ -43,5 +45,18 @@ public class ReservationWaitingService {
             e.printStackTrace();
         }
         return reservationWaitingDao.save(new ReservationWaiting(schedule, member));
+    }
+
+    public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {
+        try {
+            return reservationWaitingDao.findAllByMemberId(member.getId()).stream()
+                    .map(r -> {
+                        Long rank = reservationWaitingDao.getRank(r);
+                        return new ReservationWaitingResponse(r.getId(), r.getSchedule(), rank);
+                    }).collect(Collectors.toList());
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 }

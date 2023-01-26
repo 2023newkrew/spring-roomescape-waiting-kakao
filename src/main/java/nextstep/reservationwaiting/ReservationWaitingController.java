@@ -26,6 +26,12 @@ public class ReservationWaitingController {
         return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
+    @GetMapping("/mine")
+    public ResponseEntity findMyReservationWaitings(@LoginMember Member member) {
+        List<ReservationWaitingResponse> results = reservationWaitingService.findMyReservationWaitings(member);
+        return ResponseEntity.ok().body(results);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         return ResponseEntity.badRequest().build();
@@ -34,5 +40,10 @@ public class ReservationWaitingController {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity onAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity runtimeException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
