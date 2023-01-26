@@ -13,10 +13,10 @@ public class ReservationWaiting {
     public ReservationWaiting() {
     }
 
-    public ReservationWaiting(Schedule schedule, Member member, Long waitNum) {
+    public ReservationWaiting(Schedule schedule, Member member) {
         this.schedule = schedule;
         this.member = member;
-        this.waitNum = waitNum;
+        this.waitNum = schedule.getNextWaitingNumber();
     }
 
     public ReservationWaiting(Long id, Schedule schedule, Member member, Long waitNum) {
@@ -24,5 +24,21 @@ public class ReservationWaiting {
         this.schedule = schedule;
         this.member = member;
         this.waitNum = waitNum;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public Long getWaitNum() {
+        return waitNum;
     }
 }

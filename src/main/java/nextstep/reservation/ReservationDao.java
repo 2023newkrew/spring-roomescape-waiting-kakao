@@ -34,7 +34,8 @@ public class ReservationDao {
                             resultSet.getInt("theme.price")
                     ),
                     resultSet.getDate("schedule.date").toLocalDate(),
-                    resultSet.getTime("schedule.time").toLocalTime()
+                    resultSet.getTime("schedule.time").toLocalTime(),
+                    resultSet.getLong("schedule.next_wait_num")
             ),
             new Member(
                     resultSet.getLong("member.id"),
@@ -79,7 +80,7 @@ public class ReservationDao {
     public Reservation findById(Long id) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, schedule.next_wait_num, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
                 "from reservation " +
@@ -97,7 +98,7 @@ public class ReservationDao {
     public List<Reservation> findByScheduleId(Long id) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, schedule.next_wait_num, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
                 "from reservation " +

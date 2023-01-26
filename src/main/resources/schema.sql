@@ -17,10 +17,11 @@ CREATE TABLE theme
 
 CREATE TABLE schedule
 (
-    id       bigint not null auto_increment,
-    theme_id bigint not null,
-    date     date   not null,
-    time     time   not null,
+    id              bigint not null auto_increment,
+    theme_id        bigint not null,
+    date            date   not null,
+    time            time   not null,
+    next_wait_num   bigint not null,
     primary key (id)
 );
 
