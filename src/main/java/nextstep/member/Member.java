@@ -1,5 +1,7 @@
 package nextstep.member;
 
+import auth.UserDetails;
+
 public class Member {
     private Long id;
     private String username;
@@ -54,5 +56,14 @@ public class Member {
 
     public boolean checkWrongPassword(String password) {
         return !this.password.equals(password);
+    }
+
+    public UserDetails toUserDetails() {
+        return new UserDetails(id, username, password, name, phone, role);
+    }
+
+    public static Member of(UserDetails userDetails) {
+        return new Member(userDetails.getId(), userDetails.getName(), userDetails.getPassword(), userDetails.getName(), userDetails.getPhone(),
+                userDetails.getRole());
     }
 }
