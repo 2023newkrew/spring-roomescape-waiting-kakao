@@ -29,8 +29,8 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
+    public Long create(Long memberId, ReservationRequest reservationRequest) {
+        if (memberId == null) {
             throw new AuthenticationException();
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
@@ -45,7 +45,7 @@ public class ReservationService {
 
         Reservation newReservation = new Reservation(
                 schedule,
-                member
+                memberDao.findById(memberId)
         );
 
         return reservationDao.save(newReservation);
@@ -60,13 +60,13 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Member member, Long id) {
+    public void deleteById(Long memberId, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
             throw new NullPointerException();
         }
 
-        if (!reservation.sameMember(member)) {
+        if (!reservation.sameMember(memberId)) {
             throw new AuthenticationException();
         }
 
@@ -75,22 +75,22 @@ public class ReservationService {
 
     public Long createReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        Member member = memberDao.findById(memberId);
 
         if (!reservationDao.findByScheduleId(reservationRequest.getScheduleId()).isEmpty()) {
+            Member member = memberDao.findById(memberId);
             int waitNum = reservationWaitingDao.findMaxWaitNum(reservationRequest.getScheduleId()) + 1;
             return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
         }
 
-        return create(member, reservationRequest);
+        return create(memberId, reservationRequest);
     }
 
-    public void deleteReservationWaitingById(Long memberId, Long reservationWaitingId){
+    public void deleteReservationWaitingById(Long memberId, Long reservationWaitingId) {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId);
-        if(reservationWaiting == null) {
+        if (reservationWaiting == null) {
             throw new NullPointerException();
         }
-        if(!reservationWaiting.sameMember(memberId)) {
+        if (!reservationWaiting.sameMember(memberId)) {
             throw new AuthenticationException();
         }
 

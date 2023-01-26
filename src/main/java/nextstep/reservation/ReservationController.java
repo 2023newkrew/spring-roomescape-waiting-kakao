@@ -1,9 +1,8 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
 import auth.LoginMember;
 import auth.UserDetails;
-import nextstep.member.Member;
+import nextstep.support.DuplicateEntityException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +20,8 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(member, reservationRequest);
+    public ResponseEntity createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.create(userDetails.getId(), reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -33,14 +32,14 @@ public class ReservationController {
     }
 
     @GetMapping("reservations/mine")
-    public ResponseEntity<List<ReservationResponse>> findMyReservations(@LoginMember UserDetails userDetails){
+    public ResponseEntity<List<ReservationResponse>> findMyReservations(@LoginMember UserDetails userDetails) {
         List<ReservationResponse> results = reservationService.findMyReservations(userDetails.getId());
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
-        reservationService.deleteById(member, id);
+    public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+        reservationService.deleteById(userDetails.getId(), id);
 
         return ResponseEntity.noContent().build();
     }
@@ -52,7 +51,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("reservation-waitings/{id}")
-    public ResponseEntity<Void> deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long reservationWaitingId){
+    public ResponseEntity<Void> deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long reservationWaitingId) {
         reservationService.deleteReservationWaitingById(userDetails.getId(), reservationWaitingId);
         return ResponseEntity.noContent().build();
     }
@@ -63,4 +62,8 @@ public class ReservationController {
         return ResponseEntity.ok(reservationWaitings);
     }
 
+    @ExceptionHandler(DuplicateEntityException.class)
+    public ResponseEntity onAuthenticationException(DuplicateEntityException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 }
