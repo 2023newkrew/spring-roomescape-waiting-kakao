@@ -1,8 +1,6 @@
 package nextstep.reservationwaiting;
 
-import auth.AuthenticationException;
 import nextstep.member.Member;
-import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.ThemeDao;
@@ -42,7 +40,6 @@ public class ReservationWaitingService {
         if (!reservationWaitingDao.existById(id, member.getId())) {
             throw new NullPointerException();
         }
-
         reservationWaitingDao.deleteById(id);
     }
 }

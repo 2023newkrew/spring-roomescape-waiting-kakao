@@ -1,6 +1,5 @@
 package nextstep.reservationwaiting;
 
-import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
 public class ReservationWaiting {

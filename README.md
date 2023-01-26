@@ -37,11 +37,10 @@
 - [x] reservation-waiting table scheme 작성
 - [x] reservation-waiting repository 구현
 - [x] reservation-waiting service 구현
-- [ ] reservation-waiting controller 구현
-  - [ ] reservation-waiting post 구현
-    - [ ] 예약이 없는 스케쥴에 대해서 예약이 된다.
-  - [ ] reservation-waiting get 구현
-    - [ ] reservation-waiting 순번 조회 기능
-  - [ ] reservation-waiting delete 구현
-    - [ ] 자신의 reservation-waiting 이 아니면 취소가 불가능 하다.
-
+- [x] reservation-waiting controller 구현
+  - [x] reservation-waiting post 구현
+    - [x] 예약이 없는 스케쥴에 대해서 예약이 된다.
+  - [x] reservation-waiting get 구현
+    - [x] reservation-waiting 순번 조회 기능
+  - [x] reservation-waiting delete 구현
+    - [x] 자신의 reservation-waiting 이 아니면 취소가 불가능 하다.
