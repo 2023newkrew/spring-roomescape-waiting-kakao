@@ -1,4 +1,4 @@
-package nextstep;
+package nextstep.config;
 
 import auth.AdminInterceptor;
 import auth.JwtTokenProvider;
