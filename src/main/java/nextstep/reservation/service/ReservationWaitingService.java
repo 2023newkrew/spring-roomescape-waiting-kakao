@@ -2,6 +2,7 @@ package nextstep.reservation.service;
 
 import auth.AuthenticationException;
 import java.util.List;
+import java.util.Objects;
 import nextstep.member.Member;
 import nextstep.reservation.dao.ReservationDao;
 import nextstep.reservation.dao.ReservationWaitingDao;
@@ -27,16 +28,18 @@ public class ReservationWaitingService {
         this.reservationService = reservationService;
     }
 
-    public String create(Member member, ReservationRequest reservationRequest) {
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId()); // try -catch
+    public Long create(Member member, ReservationRequest reservationRequest) {
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+        if (Objects.isNull(schedule)) {
+            throw new RuntimeException("해당 ID의 스케줄이 존재하지 않습니다.");
+        }
         List<Reservation> reservationList = reservationDao.findByScheduleId(schedule.getId());
         if (reservationList.size() == 0) {
             reservationService.create(member, reservationRequest);
         }
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
-        reservationWaitingDao.save(new ReservationWaiting(schedule, member,
-                reservationWaitingList.get(reservationWaitingList.size() - 1).getWaitingNum() + 1));
-        return "Location: /reservation-waitings/" + reservationRequest.getScheduleId();
+        long waitNum = reservationWaitingList.isEmpty() ? 1 : reservationWaitingList.get(reservationWaitingList.size() - 1).getWaitingNum() + 1;
+        return reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
     }
 
 
@@ -46,6 +49,9 @@ public class ReservationWaitingService {
 
     public void delete(Member member, Long id) {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
+        if (reservationWaiting == null) {
+            throw new NullPointerException();
+        }
         if (!reservationWaiting.getMember().getId().equals(member.getId())) {
             throw new AuthenticationException("User does not match");
         }

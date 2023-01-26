@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import java.sql.SQLDataException;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -54,8 +55,11 @@ public class ScheduleDao {
                 "from schedule " +
                 "inner join theme on schedule.theme_id = theme.id " +
                 "where schedule.id = ?;";
-
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {

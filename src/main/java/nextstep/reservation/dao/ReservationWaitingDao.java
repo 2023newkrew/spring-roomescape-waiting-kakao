@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class ReservationWaitingDao {
 
     private static final String SELECT_SQL = "SELECT " +
-            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num " +
+            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
             "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
             "theme.id, theme.name, theme.desc, theme.price, " +
             "member.id, member.username, member.password, member.name, member.phone, member.role " +

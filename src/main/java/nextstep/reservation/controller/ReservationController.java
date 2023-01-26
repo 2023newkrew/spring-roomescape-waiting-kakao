@@ -2,18 +2,24 @@ package nextstep.reservation.controller;
 
 import auth.AuthenticationException;
 import auth.LoginMember;
-import nextstep.member.Member;
-import nextstep.reservation.domain.Reservation;
-import nextstep.reservation.domain.ReservationWaiting;
-import nextstep.reservation.dto.ReservationRequest;
-import nextstep.reservation.service.ReservationService;
-import nextstep.reservation.service.ReservationWaitingService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import auth.UserDetails;
 import java.net.URI;
 import java.util.List;
+import nextstep.member.Member;
+import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.dto.ReservationRequest;
+import nextstep.reservation.service.ReservationService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/reservations")
@@ -26,8 +32,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(member, reservationRequest);
+    public ResponseEntity createReservation(@LoginMember UserDetails member, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.create(new Member(member), reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -38,15 +44,15 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
-        reservationService.deleteById(member, id);
+    public ResponseEntity deleteReservation(@LoginMember UserDetails member, @PathVariable Long id) {
+        reservationService.deleteById(new Member(member), id);
 
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<Reservation>> lookUpReservationWaitingList(@LoginMember Member member) {
-        List<Reservation> reservationList = reservationService.lookUp(member);
+    public ResponseEntity<List<Reservation>> lookUpReservationWaitingList(@LoginMember UserDetails member) {
+        List<Reservation> reservationList = reservationService.lookUp(new Member(member));
         return ResponseEntity.ok().body(reservationList);
     }
 

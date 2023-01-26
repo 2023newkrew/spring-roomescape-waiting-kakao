@@ -25,7 +25,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
             return loginService.extractMember(credential);
         } catch (Exception e) {
-            return null;
+            throw new AuthenticationException("로그인이 필요합니다.");
         }
     }
 }
