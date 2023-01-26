@@ -2,8 +2,6 @@ package nextstep.reservation;
 
 import auth.LoginMember;
 import auth.UserDetails;
-import nextstep.support.DuplicateEntityException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,10 +58,5 @@ public class ReservationController {
     public ResponseEntity findMyReservationsWaitings(@LoginMember UserDetails userDetails) {
         List<ReservationWaitingResponse> reservationWaitings = reservationService.findMyReservationWaitings(userDetails.getId());
         return ResponseEntity.ok(reservationWaitings);
-    }
-
-    @ExceptionHandler(DuplicateEntityException.class)
-    public ResponseEntity onAuthenticationException(DuplicateEntityException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

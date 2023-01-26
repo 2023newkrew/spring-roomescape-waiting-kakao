@@ -1,11 +1,13 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import nextstep.error.ErrorCode;
+import nextstep.error.exception.DuplicateEntityException;
+import nextstep.error.exception.EntityNotFoundException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -40,7 +42,7 @@ public class ReservationService {
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
+            throw new DuplicateEntityException(ErrorCode.DUPLICATE_RESERVATION);
         }
 
         Reservation newReservation = new Reservation(
@@ -63,7 +65,7 @@ public class ReservationService {
     public void deleteById(Long memberId, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
-            throw new NullPointerException();
+            throw new EntityNotFoundException(ErrorCode.RESERVATION_NOT_FOUND);
         }
 
         if (!reservation.sameMember(memberId)) {
