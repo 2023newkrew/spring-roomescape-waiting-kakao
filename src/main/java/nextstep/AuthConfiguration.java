@@ -3,17 +3,19 @@ package nextstep;
 import auth.JwtTokenProvider;
 import auth.LoginController;
 import auth.LoginService;
+import auth.UserDetailsService;
 import nextstep.member.MemberDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 public class AuthConfiguration {
 
-    private final MemberDao memberDao;
+    private final JdbcTemplate jdbcTemplate;
 
-    public AuthConfiguration(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public AuthConfiguration(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Bean
@@ -28,7 +30,12 @@ public class AuthConfiguration {
 
     @Bean
     public LoginService loginService() {
-        return new LoginService(memberDao, jwtTokenProvider());
+        return new LoginService(userDetailsService(), jwtTokenProvider());
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsService(jdbcTemplate);
     }
 
 }
