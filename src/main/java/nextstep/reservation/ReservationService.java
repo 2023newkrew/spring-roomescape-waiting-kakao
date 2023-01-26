@@ -8,6 +8,7 @@ import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,8 +27,11 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
+    public Long create(Long memberId, ReservationRequest reservationRequest) {
+        Member member;
+        try {
+            member = memberDao.findById(memberId);
+        } catch (EmptyResultDataAccessException e) {
             throw new AuthenticationException();
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
@@ -57,7 +61,13 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Member member, Long id) {
+    public void deleteById(Long memberId, Long id) {
+        Member member;
+        try {
+            member = memberDao.findById(memberId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new AuthenticationException();
+        }
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
             throw new NullPointerException();

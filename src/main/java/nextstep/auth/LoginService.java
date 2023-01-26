@@ -1,26 +1,21 @@
 package nextstep.auth;
 
-import nextstep.member.Member;
-import nextstep.member.MemberDao;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class LoginService {
-    private MemberDao memberDao;
-    private JwtTokenProvider jwtTokenProvider;
-
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserValidator userValidator;
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        Member member = memberDao.findByUsername(tokenRequest.getUsername());
-        if (member == null || member.checkWrongPassword(tokenRequest.getPassword())) {
+        UserDetails userDetails = userValidator.validate(tokenRequest.getUsername(), tokenRequest.getPassword());
+
+        if (userDetails == null) {
             throw new AuthenticationException();
         }
-
-        String accessToken = jwtTokenProvider.createToken(member.getId() + "", member.getRole());
+        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
 
         return new TokenResponse(accessToken);
     }
@@ -29,8 +24,10 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public Member extractMember(String credential) {
+    public UserDetails extractUserDetails(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return memberDao.findById(id);
+        String role = jwtTokenProvider.getRole(credential);
+        return new UserDetails(id, role);
     }
+
 }
