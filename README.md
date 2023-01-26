@@ -35,7 +35,7 @@
 ### 구현 목록
 
 - [x] reservation-waiting table scheme 작성
-- [ ] reservation-waiting repository 구현
+- [x] reservation-waiting repository 구현
 - [ ] reservation-waiting service 구현
 - [ ] reservation-waiting controller 구현
   - [ ] reservation-waiting post 구현
