@@ -3,7 +3,9 @@ package nextstep.auth;
 import auth.*;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LoginService implements UserDetailsService {
 
     private final MemberDao memberDao;
