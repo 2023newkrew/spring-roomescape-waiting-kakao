@@ -1,7 +1,6 @@
 package nextstep.member.service;
 
 import auth.domain.UserRole;
-import auth.dto.UserDetailsResponse;
 import lombok.RequiredArgsConstructor;
 import nextstep.etc.exception.ErrorMessage;
 import nextstep.etc.exception.MemberException;
@@ -46,7 +45,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public UserDetailsResponse getByUsername(String username) {
+    public MemberResponse getByUsername(String username) {
         return mapper.toResponse(repository.getByUsername(username));
     }
 }

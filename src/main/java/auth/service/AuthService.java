@@ -1,10 +1,10 @@
 package auth.service;
 
 import auth.domain.TokenData;
+import auth.domain.UserDetails;
 import auth.domain.UserRole;
 import auth.dto.TokenRequest;
 import auth.dto.TokenResponse;
-import auth.dto.UserDetailsResponse;
 import auth.exception.AuthenticationException;
 import auth.exception.ErrorMessage;
 import auth.provider.JwtTokenProvider;
@@ -21,11 +21,11 @@ public class AuthService {
 
     private final JwtTokenProvider provider;
 
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsPrincipal userDetailsPrincipal;
 
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetailsResponse userDetails = userDetailsService.getByUsername(tokenRequest.getUsername());
+        UserDetails userDetails = userDetailsPrincipal.getByUsername(tokenRequest.getUsername());
         if (isNullOrWrongPassword(userDetails, tokenRequest.getPassword())) {
             throw new AuthenticationException(ErrorMessage.INVALID_USERNAME_OR_PASSWORD);
         }
@@ -35,7 +35,7 @@ public class AuthService {
         return new TokenResponse(provider.createToken(tokenData));
     }
 
-    private boolean isNullOrWrongPassword(UserDetailsResponse member, String password) {
-        return Objects.isNull(member) || !Objects.equals(member.getPassword(), password);
+    private boolean isNullOrWrongPassword(UserDetails member, String password) {
+        return Objects.isNull(member) || member.isWrongPassword(password);
     }
 }
