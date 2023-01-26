@@ -17,6 +17,7 @@ import nextstep.dto.response.ReservationWaitingResponse;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.DuplicateEntityException;
 import nextstep.error.exception.EntityNotFoundException;
+import nextstep.error.exception.NoReservationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -85,13 +86,13 @@ public class ReservationService {
     public Long createReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
 
-        if (!reservationDao.findByScheduleId(reservationRequest.getScheduleId()).isEmpty()) {
-            Member member = memberDao.findById(memberId);
-            int waitNum = reservationWaitingDao.findMaxWaitNum(reservationRequest.getScheduleId()) + 1;
-            return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
+        if (reservationDao.findByScheduleId(reservationRequest.getScheduleId()).isEmpty()) {
+            throw new NoReservationException();
         }
 
-        return create(memberId, reservationRequest);
+        Member member = memberDao.findById(memberId);
+        int waitNum = reservationWaitingDao.findMaxWaitNum(reservationRequest.getScheduleId()) + 1;
+        return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
     }
 
     public void deleteReservationWaitingById(Long memberId, Long reservationWaitingId) {

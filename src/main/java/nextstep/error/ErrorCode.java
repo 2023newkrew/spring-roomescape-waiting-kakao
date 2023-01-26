@@ -3,6 +3,7 @@ package nextstep.error;
 public enum ErrorCode {
     RESERVATION_NOT_FOUND(400, "해당 예약을 찾을 수 없습니다"),
     DUPLICATE_RESERVATION(400, "같은 시간에 예약이 존재합니다"),
+    NO_RESERVATION(400, "해당 시간에 예약이 존재하지 않아 대기를 생성할 수 없습니다"),
     AUTHENTICATION(401, "로그인 실패"),
     AUTHORIZATION(403, "권한 없음");
 
