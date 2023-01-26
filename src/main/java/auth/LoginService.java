@@ -23,7 +23,7 @@ public class LoginService {
         return new TokenResponse(accessToken);
     }
 
-    public UserDetails extractMember(String credential) {
+    public UserDetails extractUserDetails(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
         return userDetailsService.findById(id);
     }
