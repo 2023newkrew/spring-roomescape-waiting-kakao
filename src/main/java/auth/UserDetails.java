@@ -1,8 +1,6 @@
-package nextstep.member;
+package auth;
 
-import auth.UserDetails;
-
-public class Member{
+public class UserDetails {
     private Long id;
     private String username;
     private String password;
@@ -10,19 +8,11 @@ public class Member{
     private String phone;
     private String role;
 
-    public Member() {
+    public UserDetails() {
     }
 
-    public Member(Long id, String username, String password, String name, String phone, String role) {
+    public UserDetails(Long id, String username, String password, String name, String phone, String role) {
         this.id = id;
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.phone = phone;
-        this.role = role;
-    }
-
-    public Member(String username, String password, String name, String phone, String role) {
         this.username = username;
         this.password = password;
         this.name = name;
@@ -56,9 +46,5 @@ public class Member{
 
     public boolean checkWrongPassword(String password) {
         return !this.password.equals(password);
-    }
-
-    public UserDetails convertToUserDetails() {
-        return new UserDetails(id, username, password, name, phone, role);
     }
 }
