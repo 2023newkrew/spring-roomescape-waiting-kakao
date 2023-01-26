@@ -10,6 +10,6 @@
 ### 구현 목록
 - [x] Auth 패키지를 nextstep 외부로 이동
 - [x] member 의 의존성 제거 - 중간 객체 사용
-- [ ] memberDao 의 의존성 제거
+- [x] memberDao 의 의존성 제거
 - [ ] Configuration 사용해서 auth 패키지 내 컴포넌트들을 bean 으로 등록
 

@@ -1,5 +1,6 @@
 package nextstep.member;
 
+import auth.LoginMemberDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 
 @Component
-public class MemberDao {
+public class MemberDao implements LoginMemberDao {
     public final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
