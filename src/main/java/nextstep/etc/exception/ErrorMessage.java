@@ -11,6 +11,7 @@ public enum ErrorMessage {
     SCHEDULE_CONFLICT(HttpStatus.CONFLICT, "동일한 일정이 존재합니다."),
     SCHEDULE_NOT_EXISTS(HttpStatus.BAD_REQUEST, "일정이 존재하지 않습니다."),
     RESERVATION_CONFLICT(HttpStatus.CONFLICT, "이미 예약된 일정입니다."),
+    WAITING_CONFLICT(HttpStatus.CONFLICT, "이미 예약 대기된 일정입니다."),
     RESERVATION_NOT_EXISTS(HttpStatus.BAD_REQUEST, "존재하지 않는 예약입니다."),
     NOT_RESERVER(HttpStatus.FORBIDDEN, "예약한 사용자가 아닙니다.");
 

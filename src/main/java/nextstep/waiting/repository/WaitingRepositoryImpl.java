@@ -1,10 +1,12 @@
 package nextstep.waiting.repository;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.reservation.repository.jdbc.ReservationStatementCreator;
 import nextstep.waiting.domain.Waiting;
 import nextstep.waiting.repository.jdbc.WaitingResultSetParser;
+import nextstep.waiting.repository.jdbc.WaitingStatementCreator;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,13 +17,20 @@ public class WaitingRepositoryImpl implements WaitingRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final ReservationStatementCreator statementCreator;
+    private final WaitingStatementCreator statementCreator;
 
     private final WaitingResultSetParser resultSetParser;
 
     @Override
     public Waiting insert(Waiting waiting) {
-        return null;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(
+                connection -> statementCreator.createInsert(connection, waiting),
+                keyHolder
+        );
+        waiting.setId(keyHolder.getKeyAs(Long.class));
+
+        return waiting;
     }
 
     @Override

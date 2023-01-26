@@ -12,6 +12,10 @@ public class ReservationStatementCreator {
 
     private static final String SELECT_BY_SCHEDULE_ID_SQL = "SELECT * FROM reservation WHERE schedule_id = ?";
 
+    private static final String
+            SELECT_BY_MEMBER_ID_AND_SCHEDULE_ID_SQL =
+            "SELECT * FROM reservation WHERE member_id = ? AND schedule_id = ?";
+
     private static final String INSERT_SQL = "INSERT INTO reservation (member_id, schedule_id) VALUES (?, ?);";
 
     private static final String
@@ -32,6 +36,15 @@ public class ReservationStatementCreator {
             Connection connection, Long scheduleId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(SELECT_BY_SCHEDULE_ID_SQL);
         ps.setLong(1, scheduleId);
+
+        return ps;
+    }
+
+    public PreparedStatement selectByMemberIdAndScheduleId(
+            Connection connection, Long memberId, Long scheduleId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(SELECT_BY_MEMBER_ID_AND_SCHEDULE_ID_SQL);
+        ps.setLong(1, memberId);
+        ps.setLong(2, scheduleId);
 
         return ps;
     }
