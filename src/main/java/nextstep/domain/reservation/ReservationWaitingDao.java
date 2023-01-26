@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class ReservationWaitingDao {
@@ -44,11 +45,11 @@ public class ReservationWaitingDao {
                     resultSet.getDate("schedule.date").toLocalDate(),
                     resultSet.getTime("schedule.time").toLocalTime()
             ),
-            resultSet.getInt("reservation_waiting.waitNum")
+            resultSet.getInt("reservation_waiting.wait_num")
     );
 
     public Long save(ReservationWaiting reservationWaiting) {
-        String sql = "INSERT INTO reservation_waiting (member_id, schedule_id, waitNum) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO reservation_waiting (member_id, schedule_id, wait_num) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -67,7 +68,9 @@ public class ReservationWaitingDao {
         String sql = "SELECT MAX(wait_num) FROM reservation_waiting WHERE schedule_id = ?";
 
         try {
-            return jdbcTemplate.queryForObject(sql, Integer.class, scheduleId);
+            Integer result = jdbcTemplate.queryForObject(sql, Integer.class, scheduleId);
+            if (Objects.isNull(result)) return 0;
+            return result;
         } catch (EmptyResultDataAccessException e) {
             return 0;
         }
@@ -75,7 +78,7 @@ public class ReservationWaitingDao {
 
     public ReservationWaiting findById(Long id) {
         String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.waitNum, " +
+                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -100,7 +103,7 @@ public class ReservationWaitingDao {
 
     public List<ReservationWaiting> findReservationWaitingsByMemberId(Long memberId) {
         String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.waitNum, " +
+                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
