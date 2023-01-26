@@ -6,6 +6,7 @@ import auth.LoginService;
 import auth.UserDetailsRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RestController;
 
 @Configuration
 public class AuthConfiguration {
@@ -17,7 +18,13 @@ public class AuthConfiguration {
 
     @Bean
     public LoginController loginController(LoginService loginService) {
-        return new LoginController(loginService);
+        @RestController
+        class ControllerBean extends LoginController {
+            ControllerBean(LoginService loginService) {
+                super(loginService);
+            }
+        }
+        return new ControllerBean(loginService);
     }
 
     @Bean
