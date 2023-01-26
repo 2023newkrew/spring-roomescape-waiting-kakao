@@ -1,17 +1,19 @@
 package auth;
 
-import nextstep.member.Member;
-import nextstep.member.MemberDao;
-import org.springframework.jdbc.core.JdbcTemplate;
-
 public class UserDetails {
-    private MemberDao memberDao;
+    private final Long id;
+    private final String role;
 
-    public UserDetails() {
-        this.memberDao = new MemberDao(new JdbcTemplate());
+    public UserDetails(Long id, String role) {
+        this.id = id;
+        this.role = role;
     }
 
-    public Member findById(Long id) {
-        return memberDao.findById(id);
+    public Long getId() {
+        return id;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

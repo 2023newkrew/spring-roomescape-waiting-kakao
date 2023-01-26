@@ -2,7 +2,7 @@ package nextstep;
 
 import auth.*;
 import nextstep.member.MemberDao;
-import org.springframework.boot.SpringBootConfiguration;
+import nextstep.member.UserCheckerImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -12,17 +12,16 @@ import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-//    private LoginService loginService;
-//    private JwtTokenProvider jwtTokenProvider;
-//
-//    public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
-//        this.loginService = loginService;
-//        this.jwtTokenProvider = jwtTokenProvider;
-//    }
-    private MemberDao memberDao;
+
+    private final MemberDao memberDao;
 
     public WebMvcConfiguration(MemberDao memberDao) {
         this.memberDao = memberDao;
+    }
+
+    @Bean
+    public UserChecker userChecker() {
+        return new UserCheckerImpl(memberDao);
     }
 
     @Bean
@@ -32,7 +31,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Bean
     public LoginService loginService() {
-        return new LoginService(memberDao, jwtTokenProvider());
+        return new LoginService(jwtTokenProvider(), userChecker());
     }
 
     @Bean

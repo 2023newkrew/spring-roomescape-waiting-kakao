@@ -9,7 +9,7 @@ import java.net.URI;
 @RestController
 @RequestMapping("/members")
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -22,7 +22,7 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity me(@LoginMember Member member) {
-        return ResponseEntity.ok(member);
+    public ResponseEntity me(@LoginMember Long memberId) {
+        return ResponseEntity.ok(memberService.findById(memberId));
     }
 }
