@@ -5,7 +5,7 @@
   - [] MemberDetails 구현
   - [] MemberDetailsService 구현
     - [] findByUsername 메서드 구현
-  - [] accessToken에 id, username, role 저장
+  - [x] accessToken에 id, username, role 저장
   - [] LoginService의 extractMember 메서드에서 findByUsername 재사용
 
 - [] auth 패키지에서 nextstep로 의존하는 부분을 제거한다.

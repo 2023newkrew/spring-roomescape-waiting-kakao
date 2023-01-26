@@ -20,7 +20,7 @@ public class LoginService {
             throw new AuthenticationException();
         }
 
-        String accessToken = jwtTokenProvider.createToken(member.getId() + "", member.getRole());
+        String accessToken = jwtTokenProvider.createToken(member.getId() + "", member.getUsername(), member.getRole());
 
         return new TokenResponse(accessToken);
     }
