@@ -46,7 +46,7 @@ public class ReservationService {
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new EntityNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
@@ -65,7 +65,7 @@ public class ReservationService {
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
-            throw new NullPointerException();
+            throw new EntityNotFoundException(ErrorCode.THEME_NOT_FOUND);
         }
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
@@ -99,7 +99,7 @@ public class ReservationService {
     public void deleteReservationWaitingById(Long memberId, Long reservationWaitingId) {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId);
         if (reservationWaiting == null) {
-            throw new NullPointerException();
+            throw new EntityNotFoundException(ErrorCode.WAITING_NOT_FOUND);
         }
         if (!reservationWaiting.sameMember(memberId)) {
             throw new AuthorizationException();
