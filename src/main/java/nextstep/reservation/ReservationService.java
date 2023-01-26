@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -8,33 +9,30 @@ import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationService {
     public final ReservationDao reservationDao;
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
-
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
-        this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
-        this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
-    }
+    public final ReservationValidator reservationValidator;
 
     public Long create(Long memberId, ReservationRequest reservationRequest) {
-        Member member;
-        try {
-            member = memberDao.findById(memberId);
-        } catch (EmptyResultDataAccessException e) {
+        Member member = memberDao.findById(memberId);
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+
+        Reservation newReservation = new Reservation(
+                schedule,
+                member
+        );
+        if (member == null) {
             throw new AuthenticationException();
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
             throw new NullPointerException();
         }
@@ -43,11 +41,6 @@ public class ReservationService {
         if (!reservation.isEmpty()) {
             throw new DuplicateEntityException();
         }
-
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
 
         return reservationDao.save(newReservation);
     }
@@ -62,21 +55,12 @@ public class ReservationService {
     }
 
     public void deleteById(Long memberId, Long id) {
-        Member member;
-        try {
-            member = memberDao.findById(memberId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new AuthenticationException();
-        }
+        Member member = memberDao.findById(memberId);
         Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
-
-        if (!reservation.sameMember(member)) {
-            throw new AuthenticationException();
-        }
+        reservationValidator.validateDelete(member, reservation);
 
         reservationDao.deleteById(id);
+
+        //todo: event 발생을 통해 예약 대기 -> 예약 변경
     }
 }

@@ -45,7 +45,11 @@ public class MemberDao {
 
     public Member findById(Long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public Member findByUsername(String username) {
