@@ -6,7 +6,7 @@
   - [x] MemberDetailsService 구현
     - [x] findByUsername 메서드 구현
   - [x] accessToken에 id, username, role 저장
-  - [] LoginService의 extractMember 메서드에서 findByUsername 재사용
+  - [x] LoginService의 extractMember 메서드에서 findByUsername 재사용
 
 - [] auth 패키지에서 nextstep로 의존하는 부분을 제거한다.
 - [] auth 패키지 내에서 스프링 빈으로 사용되던 객체를 Component Scan이 아닌 Java Configuration으로 빈 등록한다.

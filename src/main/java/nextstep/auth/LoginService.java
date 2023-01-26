@@ -1,7 +1,5 @@
 package nextstep.auth;
 
-import nextstep.member.Member;
-import nextstep.member.MemberDao;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,8 +27,8 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public Member extractMember(String credential) {
-        Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return memberDao.findById(id);
+    public MemberDetails extractMemberDetails(String credential) {
+        String username = jwtTokenProvider.getUsername(credential);
+        return memberDetailsService.loadMemberDetailsByUsername(username);
     }
 }
