@@ -1,10 +1,10 @@
 package auth.interceptor;
 
 import auth.domain.TokenData;
+import auth.exception.AuthenticationException;
+import auth.exception.ErrorMessage;
 import auth.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.exception.AuthenticationException;
-import nextstep.etc.exception.ErrorMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;

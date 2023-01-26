@@ -1,25 +1,24 @@
 package nextstep.member.dto;
 
+import auth.domain.UserRole;
+import auth.dto.UserDetailsResponse;
 import lombok.AccessLevel;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.Setter;
-import nextstep.member.domain.MemberRole;
 
-@RequiredArgsConstructor
-@Data
+
 @Setter(AccessLevel.NONE)
-public class MemberResponse {
+public class MemberResponse extends UserDetailsResponse {
 
-    private final Long id;
-
-    private final String username;
-
-    private final String password;
-
+    @Getter
     private final String name;
 
+    @Getter
     private final String phone;
 
-    private final MemberRole role;
+    public MemberResponse(Long id, String username, String password, UserRole role, String name, String phone) {
+        super(id, username, password, role);
+        this.name = name;
+        this.phone = phone;
+    }
 }

@@ -1,7 +1,7 @@
 package nextstep.member.repository.jdbc;
 
+import auth.domain.UserRole;
 import nextstep.member.domain.Member;
-import nextstep.member.domain.MemberRole;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
@@ -21,7 +21,7 @@ public class MemberResultSetParser {
                 resultSet.getString("password"),
                 resultSet.getString("name"),
                 resultSet.getString("phone"),
-                MemberRole.valueOf(resultSet.getString("role"))
+                UserRole.valueOf(resultSet.getString("role"))
         );
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.member.domain;
 
+import auth.domain.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,5 +25,5 @@ public class Member {
     private final String phone;
 
     @Getter
-    private final MemberRole role;
+    private final UserRole role;
 }
