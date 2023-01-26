@@ -1,9 +1,6 @@
 package app.nextstep;
 
-import app.auth.AdminInterceptor;
-import app.auth.JwtTokenProvider;
-import app.auth.AuthenticationPrincipalArgumentResolver;
-import app.auth.LoginService;
+import app.auth.*;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -29,4 +26,5 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public void addArgumentResolvers(List argumentResolvers) {
         argumentResolvers.add(new AuthenticationPrincipalArgumentResolver(loginService));
     }
+
 }

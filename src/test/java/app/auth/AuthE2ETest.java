@@ -1,7 +1,6 @@
 package app.auth;
 
-import app.auth.TokenRequest;
-import app.auth.TokenResponse;
+import app.nextstep.RoomEscapeApplication;
 import io.restassured.RestAssured;
 import app.nextstep.member.MemberRequest;
 import app.nextstep.theme.ThemeRequest;
@@ -16,7 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = RoomEscapeApplication.class)
 public class AuthE2ETest {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
