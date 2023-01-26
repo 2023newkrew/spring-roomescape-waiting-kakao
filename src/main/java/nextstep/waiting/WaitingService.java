@@ -4,6 +4,7 @@ import auth.AuthenticationException;
 import java.util.List;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservation.ReservationService;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -34,17 +35,18 @@ public class WaitingService {
             throw new NullPointerException();
         }
 
-        List<Waiting> waiting = waitingDao.findByScheduleId(schedule.getId());
-        if (!waiting.isEmpty()) {
+        // 이미 예약이 되어 있는지 체크 -> 만약에 안돼있다면 Error(예약이 가능합니다.)
+        List<Waiting> waitings = waitingDao.findByScheduleId(schedule.getId());
+        if (waitings.isEmpty()) {
             throw new DuplicateEntityException();
         }
 
-        Waiting newWaiting = new Waiting(
+        Waiting waiting = new Waiting(
                 schedule,
                 member
         );
 
-        return waitingDao.save(newWaiting);
+        return waitingDao.save(waiting);
     }
 
     public List<Waiting> findAllByThemeIdAndDate(Long themeId, String date) {

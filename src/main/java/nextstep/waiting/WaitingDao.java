@@ -23,7 +23,7 @@ public class WaitingDao {
     }
 
     private final RowMapper<Waiting> rowMapper = (resultSet, rowNum) -> new Waiting(
-            resultSet.getLong("reservation.id"),
+            resultSet.getLong("waiting.id"),
             new Schedule(
                     resultSet.getLong("schedule.id"),
                     new Theme(
@@ -46,7 +46,7 @@ public class WaitingDao {
     );
 
     public Long save(Waiting waiting) {
-        String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
+        String sql = "INSERT INTO waiting (schedule_id, member_id) VALUES (?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -62,14 +62,14 @@ public class WaitingDao {
 
     public List<Waiting> findAllByThemeIdAndDate(Long themeId, String date) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
-                "from reservation " +
-                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "from waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation.member_id = member.id " +
+                "inner join member on waiting.member_id = member.id " +
                 "where theme.id = ? and schedule.date = ?;";
 
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(date));
@@ -77,15 +77,15 @@ public class WaitingDao {
 
     public Waiting findById(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
-                "from reservation " +
-                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "from waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation.member_id = member.id " +
-                "where reservation.id = ?;";
+                "inner join member on waiting.member_id = member.id " +
+                "where waiting.id = ?;";
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
         } catch (Exception e) {
@@ -95,14 +95,14 @@ public class WaitingDao {
 
     public List<Waiting> findByScheduleId(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
-                "from reservation " +
-                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "from waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation.member_id = member.id " +
+                "inner join member on waiting.member_id = member.id " +
                 "where schedule.id = ?;";
 
         try {
@@ -113,7 +113,7 @@ public class WaitingDao {
     }
 
     public void deleteById(Long id) {
-        String sql = "DELETE FROM reservation where id = ?;";
+        String sql = "DELETE FROM waiting where id = ?;";
         jdbcTemplate.update(sql, id);
     }
 }

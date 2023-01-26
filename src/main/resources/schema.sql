@@ -1,4 +1,4 @@
-CREATE TABLE waiting
+CREATE TABLE reservation
 (
     id          bigint not null auto_increment,
     schedule_id bigint not null,
