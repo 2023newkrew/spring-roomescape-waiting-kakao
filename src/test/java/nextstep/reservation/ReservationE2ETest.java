@@ -98,6 +98,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .given().log().all()
                 .param("themeId", themeId)
                 .param("date", DATE)
+                .auth().oauth2(token.getAccessToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .extract();
@@ -145,6 +146,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .given().log().all()
                 .param("themeId", themeId)
                 .param("date", DATE)
+                .auth().oauth2(token.getAccessToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .extract();
