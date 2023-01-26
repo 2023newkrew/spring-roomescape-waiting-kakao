@@ -4,7 +4,9 @@ import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JwtTokenProvider {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
