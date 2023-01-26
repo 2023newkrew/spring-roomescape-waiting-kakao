@@ -1,5 +1,11 @@
 package nextstep.schedule;
 
+import auth.AuthConfig;
+import auth.JwtTokenProvider;
+import auth.LoginMemberArgumentResolver;
+import nextstep.RoomEscapeApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

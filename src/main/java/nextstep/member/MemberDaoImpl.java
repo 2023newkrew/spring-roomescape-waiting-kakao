@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 
 @Component
-public class MemberDao {
+public class MemberDaoImpl implements MemberDao {
     public final JdbcTemplate jdbcTemplate;
 
-    public MemberDao(JdbcTemplate jdbcTemplate) {
+    public MemberDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -45,11 +45,11 @@ public class MemberDao {
 
     public Member findById(Long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return jdbcTemplate.queryForObject(sql, rowMapper, id).toMemberDetail();
     }
 
     public Member findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username);
+        return jdbcTemplate.queryForObject(sql, rowMapper, username).toMemberDetail();
     }
 }

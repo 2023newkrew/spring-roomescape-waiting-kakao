@@ -1,5 +1,6 @@
-package nextstep.auth;
+package auth;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -7,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
+@Lazy
 public class AdminInterceptor implements HandlerInterceptor {
     private JwtTokenProvider jwtTokenProvider;
 
