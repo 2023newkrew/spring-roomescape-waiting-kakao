@@ -2,8 +2,8 @@ package nextstep.theme;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
+import auth.TokenRequest;
+import auth.TokenResponse;
 import nextstep.member.MemberRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
