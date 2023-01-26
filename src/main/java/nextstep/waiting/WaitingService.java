@@ -1,5 +1,6 @@
 package nextstep.waiting;
 
+import auth.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
@@ -35,5 +36,19 @@ public class WaitingService {
                 member
         );
         return "/reservations/" + reservationDao.save(newReservation);
+    }
+
+
+    public void deleteById(Member member, Long id) {
+        Waiting waiting = waitingDao.findById(id);
+        if (waiting == null) {
+            throw new NullPointerException();
+        }
+
+        if (!waiting.isSameMember(member)) {
+            throw new AuthenticationException();
+        }
+
+        reservationDao.deleteById(id);
     }
 }

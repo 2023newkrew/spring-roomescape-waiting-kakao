@@ -4,10 +4,9 @@ import auth.AuthenticationException;
 import auth.LoginMember;
 import auth.TokenMember;
 import nextstep.member.MemberService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -29,5 +28,25 @@ public class WaitingController {
         }
         String location = waitingService.create(memberService.findById(member.getId()), waitingRequestDTO);
         return ResponseEntity.created(URI.create(location)).build();
+    }
+
+    @DeleteMapping("/reservation-waitings/{id}")
+    public ResponseEntity<Void> deleteWaiting(@LoginMember TokenMember member, @PathVariable Long id) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+        waitingService.deleteById(memberService.findById(member.getId()), id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity onException(Exception e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity onAuthenticationException(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
