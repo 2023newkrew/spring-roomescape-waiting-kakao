@@ -1,6 +1,8 @@
 package controller;
 
+import nextstep.etc.exception.ErrorMessage;
 import nextstep.member.dto.MemberRequest;
+import nextstep.reservation.dto.ReservationRequest;
 import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.theme.dto.ThemeRequest;
 import nextstep.waiting.dto.WaitingRequest;
@@ -37,7 +39,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
     @Nested
     class create {
 
-        @DisplayName("멤버 생성 성공")
+        @DisplayName("예약 대기 생성 성공")
         @Test
         void should_returnLocation_when_givenRequest() {
             var request = createRequest();
@@ -48,43 +50,31 @@ public class WaitingControllerTest extends AbstractControllerTest {
                     .statusCode(HttpStatus.CREATED.value())
                     .header("Location", DEFAULT_PATH + "/1");
         }
-        //
-        //        @DisplayName("username이 중복될 경우 예외 발생")
-        //        @Test
-        //        void should_throwException_when_usernameDuplicate() {
-        //            var expectedException = ErrorMessage.MEMBER_CONFLICT;
-        //            var request = createRequest();
-        //
-        //            post(WaitingControllerTest.this.given(), DEFAULT_PATH, request);
-        //            var response = post(WaitingControllerTest.this.given(), DEFAULT_PATH, request);
-        //
-        //            thenThrow(response, expectedException);
-        //        }
-        //
-        //        @DisplayName("입력이 공백일 경우 예외 발생")
-        //        @ParameterizedTest
-        //        @MethodSource
-        //        void should_throwException_when_invalidRequest(MemberRequest request) {
-        //            var response = post(WaitingControllerTest.this.given(), DEFAULT_PATH, request);
-        //
-        //            then(response)
-        //                    .statusCode(HttpStatus.BAD_REQUEST.value())
-        //                    .body(
-        //                            containsString("[username은 공백일 수 없습니다.]"),
-        //                            containsString("[name은 공백일 수 없습니다.]"),
-        //                            containsString("[password는 공백일 수 없습니다.]"),
-        //                            containsString("[phone은 공백일 수 없습니다.]")
-        //                    );
-        //        }
-        //
-        //
-        //        List<Arguments> should_throwException_when_invalidRequest() {
-        //            return List.of(
-        //                    Arguments.of(new MemberRequest()),
-        //                    Arguments.of(new MemberRequest("", "", "", "")),
-        //                    Arguments.of(new MemberRequest(" ", " ", " ", " "))
-        //            );
-        //        }
+
+        @DisplayName("같은 멤버, 스케줄의 예약 대기 생성 실패")
+        @Test
+        void should_throwException_when_duplicated() {
+            var expectedException = ErrorMessage.WAITING_CONFLICT;
+            var request = createRequest();
+
+            post(authGiven(), DEFAULT_PATH, request);
+            var response = post(authGiven(), DEFAULT_PATH, request);
+
+            thenThrow(response, expectedException);
+        }
+
+        @DisplayName("예약과 동일한 예약 대기 생성 실패")
+        @Test
+        void should_throwException_when_reservationExists() {
+            var expectedException = ErrorMessage.RESERVATION_CONFLICT;
+            var request = createRequest();
+            var reservationRequest = new ReservationRequest(request.getScheduleId());
+
+            post(authGiven(), "/reservations", reservationRequest);
+            var response = post(authGiven(), DEFAULT_PATH, request);
+
+            thenThrow(response, expectedException);
+        }
     }
 
     WaitingRequest createRequest() {

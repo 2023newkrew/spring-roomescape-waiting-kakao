@@ -31,7 +31,16 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public ReservationEntity insert(ReservationEntity reservation) {
+    public boolean existsByMemberIdAndScheduleId(Long memberId, Long scheduleId) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.query(
+                        connection -> statementCreator.selectByMemberIdAndScheduleId(connection, memberId, scheduleId),
+                        ResultSet::next
+                ));
+    }
+
+    @Override
+    public Reservation insert(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> statementCreator.createInsert(connection, reservation),

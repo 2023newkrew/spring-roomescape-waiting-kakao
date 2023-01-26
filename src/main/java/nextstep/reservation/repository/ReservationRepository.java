@@ -6,7 +6,9 @@ public interface ReservationRepository {
 
     boolean existsByScheduleId(Long scheduleId);
 
-    ReservationEntity insert(ReservationEntity reservation);
+    boolean existsByMemberIdAndScheduleId(Long momberId, Long scheduleId);
+
+    Reservation insert(Reservation reservation);
 
     ReservationEntity getById(Long id);
 
