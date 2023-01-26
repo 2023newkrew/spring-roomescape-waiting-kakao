@@ -1,25 +1,21 @@
 package auth;
 
-import nextstep.member.Member;
-import nextstep.member.MemberDao;
-import org.springframework.stereotype.Service;
-
 public class LoginService {
-    private MemberDao memberDao;
+    private UserDao userDao;
     private JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
+    public LoginService(UserDao userDao, JwtTokenProvider jwtTokenProvider) {
+        this.userDao = userDao;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        Member member = memberDao.findByUsername(tokenRequest.getUsername());
-        if (member == null || member.checkWrongPassword(tokenRequest.getPassword())) {
+        UserDetails userDetails = userDao.findByUsername(tokenRequest.getUsername());
+        if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
 
-        String accessToken = jwtTokenProvider.createToken(member.getId() + "", member.getRole());
+        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
 
         return new TokenResponse(accessToken);
     }
@@ -28,8 +24,8 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public Member extractMember(String credential) {
+    public UserDetails extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return memberDao.findById(id);
+        return userDao.findById(id);
     }
 }
