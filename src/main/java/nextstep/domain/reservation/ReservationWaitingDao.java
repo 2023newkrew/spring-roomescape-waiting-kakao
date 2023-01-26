@@ -85,7 +85,7 @@ public class ReservationWaitingDao {
                 "from reservation_waiting " +
                 "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation_waiting_waiting.member_id = member.id " +
+                "inner join member on reservation_waiting.member_id = member.id " +
                 "where reservation_waiting.id = ?;";
 
         try {

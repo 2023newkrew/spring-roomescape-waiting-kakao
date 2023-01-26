@@ -237,6 +237,36 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservations).hasSize(1);
     }
 
+    @DisplayName("다른 사람이 예약 대기 삭제")
+    @Test
+    void InvalidDeleteWaiting() {
+        createReservation();
+        createReservationWaiting();
+
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().delete("/reservation-waitings/1")
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @DisplayName("예약 대기 삭제")
+    @Test
+    void deleteWaiting() {
+        createReservation();
+        createReservationWaiting();
+
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(userToken.getAccessToken())
+                .when().delete("/reservation-waitings/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
     private ExtractableResponse<Response> createReservationWaiting() {
         return RestAssured
                 .given().log().all()

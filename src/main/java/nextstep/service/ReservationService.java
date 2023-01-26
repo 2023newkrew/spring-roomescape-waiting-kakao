@@ -1,6 +1,7 @@
 package nextstep.service;
 
 import auth.AuthenticationException;
+import auth.AuthorizationException;
 import nextstep.domain.member.Member;
 import nextstep.domain.member.MemberDao;
 import nextstep.domain.reservation.Reservation;
@@ -101,7 +102,7 @@ public class ReservationService {
             throw new NullPointerException();
         }
         if (!reservationWaiting.sameMember(memberId)) {
-            throw new AuthenticationException();
+            throw new AuthorizationException();
         }
 
         reservationWaitingDao.deleteById(reservationWaitingId);
