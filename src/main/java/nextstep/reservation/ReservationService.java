@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import java.util.stream.Collectors;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -68,5 +69,15 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public List<ReservationResponse> findAllByMemberId(Long memberId) {
+        return changeToResponse(reservationDao.findByMemberId(memberId));
+    }
+
+    private List<ReservationResponse> changeToResponse(List<Reservation> reservations){
+        return reservations.stream()
+                .map(ReservationResponse::new)
+                .collect(Collectors.toList());
     }
 }
