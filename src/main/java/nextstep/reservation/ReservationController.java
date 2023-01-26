@@ -3,6 +3,7 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import auth.LoginMember;
 import auth.LoginService;
+import auth.TokenMember;
 import nextstep.member.Member;
 import nextstep.member.MemberService;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember LoginService.TokenMember member, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity createReservation(@LoginMember TokenMember member, @RequestBody ReservationRequest reservationRequest) {
         if(member == null){
             throw new AuthenticationException();
         }
@@ -38,7 +39,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember LoginService.TokenMember member, @PathVariable Long id) {
+    public ResponseEntity deleteReservation(@LoginMember TokenMember member, @PathVariable Long id) {
         if(member == null){
             throw new AuthenticationException();
         }

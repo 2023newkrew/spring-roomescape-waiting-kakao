@@ -32,14 +32,14 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                     if(member.checkWrongPassword(password)){
                         return null;
                     }
-                    return new LoginService.TokenMember(
+                    return new TokenMember(
                             member.getId(),
                             member.getRole()
                     );
                 },
                 (id)->{
                     Member member = memberDao.findById(id);
-                    return new LoginService.TokenMember(
+                    return new TokenMember(
                             member.getId(),
                             member.getRole()
                     );

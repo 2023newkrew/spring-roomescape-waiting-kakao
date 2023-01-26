@@ -4,23 +4,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class LoginService {
-    public static class TokenMember{
-        private Long id;
-        private String role;
-
-        public TokenMember(Long id, String role) {
-            this.id = id;
-            this.role = role;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public String getRole() {
-            return role;
-        }
-    }
     // private MemberDao memberDao;
     private BiFunction<String, String, TokenMember> findByUsernameCheckPassword;
     private Function<Long, TokenMember> findById;
