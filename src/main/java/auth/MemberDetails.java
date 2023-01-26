@@ -1,4 +1,4 @@
-package nextstep.auth;
+package auth;
 
 public class MemberDetails {
     private Long id;

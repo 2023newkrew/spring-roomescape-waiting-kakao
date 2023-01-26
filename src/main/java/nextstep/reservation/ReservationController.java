@@ -1,8 +1,8 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
-import nextstep.auth.LoginMember;
-import nextstep.auth.MemberDetails;
+import auth.AuthenticationException;
+import auth.LoginMember;
+import auth.MemberDetails;
 import nextstep.member.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package nextstep.member;
 
-import nextstep.auth.MemberDetails;
+import auth.MemberDetails;
 
 public class Member {
     private Long id;

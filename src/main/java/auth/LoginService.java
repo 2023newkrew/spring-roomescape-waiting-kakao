@@ -1,4 +1,4 @@
-package nextstep.auth;
+package auth;
 
 import org.springframework.stereotype.Service;
 
