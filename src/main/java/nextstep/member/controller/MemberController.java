@@ -1,7 +1,7 @@
 package nextstep.member.controller;
 
+import auth.resolver.MemberId;
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.resolver.MemberId;
 import nextstep.member.dto.MemberRequest;
 import nextstep.member.dto.MemberResponse;
 import nextstep.member.service.MemberService;

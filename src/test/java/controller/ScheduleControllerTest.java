@@ -1,7 +1,7 @@
 package controller;
 
-import nextstep.auth.domain.TokenData;
-import nextstep.auth.provider.JwtTokenProvider;
+import auth.domain.TokenData;
+import auth.provider.JwtTokenProvider;
 import nextstep.etc.exception.ErrorMessage;
 import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.theme.dto.ThemeRequest;

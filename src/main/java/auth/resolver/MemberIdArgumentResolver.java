@@ -1,8 +1,8 @@
-package nextstep.auth.resolver;
+package auth.resolver;
 
+import auth.domain.TokenData;
+import auth.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.domain.TokenData;
-import nextstep.auth.provider.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
