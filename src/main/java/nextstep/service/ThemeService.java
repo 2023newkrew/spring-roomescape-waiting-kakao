@@ -3,9 +3,12 @@ package nextstep.service;
 import nextstep.domain.theme.Theme;
 import nextstep.domain.theme.ThemeDao;
 import nextstep.dto.request.ThemeRequest;
+import nextstep.error.ApplicationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static nextstep.error.ErrorType.THEME_NOT_FOUND;
 
 @Service
 public class ThemeService {
@@ -26,7 +29,7 @@ public class ThemeService {
     public void delete(Long id) {
         Theme theme = themeDao.findById(id);
         if (theme == null) {
-            throw new NullPointerException();
+            throw new ApplicationException(THEME_NOT_FOUND);
         }
 
         themeDao.delete(id);

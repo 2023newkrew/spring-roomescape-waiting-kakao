@@ -6,6 +6,7 @@ import auth.presentation.argumentresolver.AuthenticationPrincipalArgumentResolve
 import auth.service.LoginService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -20,6 +21,14 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
         this.loginService = loginService;
         this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @Bean
+    public ResourceBundleMessageSource messageSource() {
+        ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+        source.setBasenames("messages/message");
+        source.setDefaultEncoding("UTF-8");
+        return source;
     }
 
     @Bean

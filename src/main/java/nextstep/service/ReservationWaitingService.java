@@ -1,6 +1,5 @@
 package nextstep.service;
 
-import auth.support.AuthenticationException;
 import nextstep.domain.member.Member;
 import nextstep.domain.member.MemberDao;
 import nextstep.domain.reservationwaiting.ReservationWaiting;
@@ -9,10 +8,14 @@ import nextstep.domain.schedule.Schedule;
 import nextstep.domain.schedule.ScheduleDao;
 import nextstep.dto.request.ReservationRequest;
 import nextstep.dto.response.ReservationWaitingResponse;
+import nextstep.error.ApplicationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.error.ErrorType.RESERVATION_WAITING_NOT_FOUND;
+import static nextstep.error.ErrorType.UNAUTHORIZED_ERROR;
 
 @Service
 public class ReservationWaitingService {
@@ -44,10 +47,10 @@ public class ReservationWaitingService {
     public void deleteReservationWaitingById(Long memberId, Long reservationWaitingId){
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId);
         if(reservationWaiting == null) {
-            throw new NullPointerException();
+            throw new ApplicationException(RESERVATION_WAITING_NOT_FOUND);
         }
         if(!reservationWaiting.sameMember(memberId)) {
-            throw new AuthenticationException();
+            throw new ApplicationException(UNAUTHORIZED_ERROR);
         }
 
         reservationWaitingDao.deleteById(reservationWaitingId);
