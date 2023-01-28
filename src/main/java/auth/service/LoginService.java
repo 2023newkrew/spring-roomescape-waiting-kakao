@@ -2,6 +2,7 @@ package auth.service;
 
 import auth.domain.UserDetails;
 import auth.domain.UserDetailsRepository;
+import auth.dto.request.LoginMember;
 import auth.dto.request.TokenRequest;
 import auth.dto.response.TokenResponse;
 import auth.support.AuthenticationException;
@@ -31,8 +32,8 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public UserDetails extractMember(String credential) {
+    public LoginMember extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return userDetailsRepository.findById(id);
+        return new LoginMember(id);
     }
 }

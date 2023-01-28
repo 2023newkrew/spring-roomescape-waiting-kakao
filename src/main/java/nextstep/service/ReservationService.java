@@ -36,7 +36,8 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
+    public Long create(Long memberId, ReservationRequest reservationRequest) {
+        Member member = memberDao.findById(memberId);
         if (member == null) {
             throw new AuthenticationException();
         }
@@ -67,8 +68,10 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
+    public void deleteById(Long memberId, Long reservationId) {
+        Member member = memberDao.findById(memberId);
+        Reservation reservation = reservationDao.findById(reservationId);
+
         if (reservation == null) {
             throw new NullPointerException();
         }
@@ -77,19 +80,19 @@ public class ReservationService {
             throw new AuthenticationException();
         }
 
-        reservationDao.deleteById(id);
+        reservationDao.deleteById(reservationId);
     }
 
     public Long createReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        Member member = memberDao.findById(memberId);
 
         if (!reservationDao.findByScheduleId(reservationRequest.getScheduleId()).isEmpty()) {
+            Member member = memberDao.findById(memberId);
             int waitNum = reservationWaitingDao.findMaxWaitNum(reservationRequest.getScheduleId()) + 1;
             return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
         }
 
-        return create(member, reservationRequest);
+        return create(memberId, reservationRequest);
     }
 
     public void deleteReservationWaitingById(Long memberId, Long reservationWaitingId){

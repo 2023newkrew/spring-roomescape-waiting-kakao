@@ -1,7 +1,7 @@
 package nextstep.presentation;
 
-import auth.presentation.argumentresolver.LoginMember;
-import auth.domain.UserDetails;
+import auth.dto.request.LoginMember;
+import auth.presentation.argumentresolver.AuthenticationPricipal;
 import nextstep.domain.member.Member;
 import nextstep.dto.request.MemberRequest;
 import nextstep.service.MemberService;
@@ -26,8 +26,8 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity me(@LoginMember UserDetails userDetails) {
-        Member member = memberService.findById(userDetails.getId());
+    public ResponseEntity me(@AuthenticationPricipal LoginMember loginMember) {
+        Member member = memberService.findById(loginMember.getId());
         return ResponseEntity.ok(member);
     }
 }
