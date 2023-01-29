@@ -15,8 +15,8 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private LoginService loginService;
-    private JwtTokenProvider jwtTokenProvider;
+    private final LoginService loginService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
         this.loginService = loginService;
@@ -43,7 +43,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(adminInterceptor()).addPathPatterns("/admin/**");
+        registry.addInterceptor(adminInterceptor())
+                .addPathPatterns("/admin/**");
     }
 
     @Override

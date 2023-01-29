@@ -9,8 +9,9 @@ import auth.support.AuthenticationException;
 import auth.support.JwtTokenProvider;
 
 public class LoginService {
-    private UserDetailsRepository userDetailsRepository;
-    private JwtTokenProvider jwtTokenProvider;
+
+    private final UserDetailsRepository userDetailsRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public LoginService(UserDetailsRepository userDetailsRepository, JwtTokenProvider jwtTokenProvider) {
         this.userDetailsRepository = userDetailsRepository;
@@ -18,22 +19,21 @@ public class LoginService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetails userDetails = userDetailsRepository.findByUsername(tokenRequest.getUsername());
-        if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {
+        UserDetails userDetails = findByUsername(tokenRequest.getUsername());
+        if (userDetails.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
 
-        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
-
-        return new TokenResponse(accessToken);
-    }
-
-    public Long extractPrincipal(String credential) {
-        return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
+        return new TokenResponse(jwtTokenProvider.createToken(String.valueOf(userDetails.getId()), userDetails.getRole()));
     }
 
     public LoginMember extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
         return new LoginMember(id);
+    }
+
+    private UserDetails findByUsername(String username) {
+        return userDetailsRepository.findByUsername(username)
+                .orElseThrow(AuthenticationException::new);
     }
 }

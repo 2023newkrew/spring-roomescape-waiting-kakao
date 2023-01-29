@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class ScheduleResponse {
+
     private Long id;
     private ThemeResponse themeResponse;
     private LocalDate date;

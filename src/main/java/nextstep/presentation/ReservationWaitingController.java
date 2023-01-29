@@ -24,18 +24,23 @@ public class ReservationWaitingController {
     @PostMapping
     public ResponseEntity<Void> createReservationWaiting(@AuthenticationPricipal LoginMember loginMember, @RequestBody ReservationRequest reservationRequest) {
         Long id = reservationWaitingService.createReservationWaiting(loginMember.getId(), reservationRequest);
-        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
+
+        return ResponseEntity.created(URI.create("/reservation-waitings/" + id))
+                .build();
     }
 
     @DeleteMapping("/{reservationWaitingId}")
     public ResponseEntity<Void> deleteReservationWaiting(@AuthenticationPricipal LoginMember loginMember, @PathVariable Long reservationWaitingId){
         reservationWaitingService.deleteReservationWaitingById(loginMember.getId(), reservationWaitingId);
-        return ResponseEntity.noContent().build();
+
+        return ResponseEntity.noContent()
+                .build();
     }
 
     @GetMapping("/mine")
     public ResponseEntity findMyReservationsWaitings(@AuthenticationPricipal LoginMember loginMember) {
         List<ReservationWaitingResponse> reservationWaitings = reservationWaitingService.findMyReservationWaitings(loginMember.getId());
+
         return ResponseEntity.ok(reservationWaitings);
     }
 

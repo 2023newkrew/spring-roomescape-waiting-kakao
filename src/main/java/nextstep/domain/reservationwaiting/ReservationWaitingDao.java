@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ReservationWaitingDao {
@@ -40,10 +41,10 @@ public class ReservationWaitingDao {
                             resultSet.getString("theme.name"),
                             resultSet.getString("theme.desc"),
                             resultSet.getInt("theme.price")
-                                    ),
+                    ),
                     resultSet.getDate("schedule.date").toLocalDate(),
                     resultSet.getTime("schedule.time").toLocalTime()
-                            ),
+            ),
             resultSet.getInt("reservation_waiting.waitNum")
     );
 
@@ -73,7 +74,7 @@ public class ReservationWaitingDao {
         }
     }
 
-    public ReservationWaiting findById(Long id) {
+    public Optional<ReservationWaiting> findById(Long id) {
         String sql = "SELECT " +
                 "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.waitNum, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -86,9 +87,9 @@ public class ReservationWaitingDao {
                 "where reservation_waiting.id = ?;";
 
         try {
-            return jdbcTemplate.queryForObject(sql,rowMapper,id);
+            return Optional.of(jdbcTemplate.queryForObject(sql,rowMapper,id));
         } catch (EmptyResultDataAccessException e){
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -98,7 +99,7 @@ public class ReservationWaitingDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public List<ReservationWaiting> findReservationWaitingsByMemberId(Long memberId) {
+    public List<ReservationWaiting> findByMemberId(Long memberId) {
         String sql = "SELECT " +
                 "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.waitNum, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -112,7 +113,7 @@ public class ReservationWaitingDao {
 
         try {
             return jdbcTemplate.query(sql, rowMapper, memberId);
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
     }

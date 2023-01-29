@@ -1,5 +1,7 @@
 package nextstep.domain.member;
 
+import java.util.Objects;
+
 public class Member {
     private Long id;
     private String username;
@@ -26,6 +28,10 @@ public class Member {
         this.name = name;
         this.phone = phone;
         this.role = role;
+    }
+
+    public boolean hasSameId(Long memberId) {
+        return Objects.equals(id, memberId);
     }
 
     public Long getId() {

@@ -4,6 +4,8 @@ import auth.domain.UserDetails;
 import auth.domain.UserDetailsRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class UserDetailsDao implements UserDetailsRepository {
 
@@ -14,13 +16,11 @@ public class UserDetailsDao implements UserDetailsRepository {
     }
 
     @Override
-    public UserDetails findById(Long id){
-        return createUserDetails(memberDao.findById(id));
-    }
-
-    @Override
-    public UserDetails findByUsername(String username){
-        return createUserDetails(memberDao.findByUsername(username));
+    public Optional<UserDetails> findByUsername(String username){
+        return Optional.ofNullable(memberDao.findByUsername(username)
+                .map(this::createUserDetails)
+                .orElseGet(() -> null)
+        );
     }
 
     private UserDetails createUserDetails(Member member){

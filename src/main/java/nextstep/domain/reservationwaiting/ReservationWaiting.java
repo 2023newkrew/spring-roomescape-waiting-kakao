@@ -40,6 +40,6 @@ public class ReservationWaiting {
     }
 
     public boolean sameMember(Long memberId){
-        return member.getId().equals(memberId);
+        return member.hasSameId(memberId);
     }
 }

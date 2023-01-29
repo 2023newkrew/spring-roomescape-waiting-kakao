@@ -3,6 +3,7 @@ package nextstep.domain.reservation;
 import nextstep.domain.member.Member;
 import nextstep.domain.schedule.Schedule;
 import nextstep.domain.theme.Theme;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,6 +14,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ReservationDao {
@@ -73,10 +75,14 @@ public class ReservationDao {
                 "inner join member on reservation.member_id = member.id " +
                 "where theme.id = ? and schedule.date = ?;";
 
-        return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(date));
+        try {
+            return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(date));
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
     }
 
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -88,9 +94,9 @@ public class ReservationDao {
                 "inner join member on reservation.member_id = member.id " +
                 "where reservation.id = ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
-            return null;
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
     }
 
@@ -108,7 +114,7 @@ public class ReservationDao {
 
         try {
             return jdbcTemplate.query(sql, rowMapper, id);
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
     }
@@ -132,7 +138,7 @@ public class ReservationDao {
 
         try {
             return jdbcTemplate.query(sql, rowMapper, memberId);
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
     }

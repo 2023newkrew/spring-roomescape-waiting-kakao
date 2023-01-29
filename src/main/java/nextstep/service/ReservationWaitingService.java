@@ -1,15 +1,14 @@
 package nextstep.service;
 
 import nextstep.domain.member.Member;
-import nextstep.domain.member.MemberDao;
 import nextstep.domain.reservationwaiting.ReservationWaiting;
 import nextstep.domain.reservationwaiting.ReservationWaitingDao;
 import nextstep.domain.schedule.Schedule;
-import nextstep.domain.schedule.ScheduleDao;
 import nextstep.dto.request.ReservationRequest;
 import nextstep.dto.response.ReservationWaitingResponse;
 import nextstep.error.ApplicationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,23 +19,24 @@ import static nextstep.error.ErrorType.UNAUTHORIZED_ERROR;
 @Service
 public class ReservationWaitingService {
 
-    private final MemberDao memberDao;
-    private final ScheduleDao scheduleDao;
     private final ReservationWaitingDao reservationWaitingDao;
+    private final MemberService memberService;
+    private final ScheduleService scheduleService;
     private final ReservationService reservationService;
 
-    public ReservationWaitingService(MemberDao memberDao, ScheduleDao scheduleDao, ReservationWaitingDao reservationWaitingDao, ReservationService reservationService) {
-        this.memberDao = memberDao;
-        this.scheduleDao = scheduleDao;
+    public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, MemberService memberService, ScheduleService scheduleService, ReservationService reservationService) {
         this.reservationWaitingDao = reservationWaitingDao;
+        this.memberService = memberService;
+        this.scheduleService = scheduleService;
         this.reservationService = reservationService;
     }
 
+    @Transactional
     public Long createReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+        Schedule schedule = scheduleService.findById(reservationRequest.getScheduleId());
 
         if (!reservationService.findByScheduleId(reservationRequest.getScheduleId()).isEmpty()) {
-            Member member = memberDao.findById(memberId);
+            Member member = memberService.findById(memberId);
             int waitNum = reservationWaitingDao.findMaxWaitNum(reservationRequest.getScheduleId()) + 1;
             return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
         }
@@ -44,11 +44,10 @@ public class ReservationWaitingService {
         return reservationService.create(memberId, reservationRequest);
     }
 
+    @Transactional
     public void deleteReservationWaitingById(Long memberId, Long reservationWaitingId){
-        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId);
-        if(reservationWaiting == null) {
-            throw new ApplicationException(RESERVATION_WAITING_NOT_FOUND);
-        }
+        ReservationWaiting reservationWaiting = findById(reservationWaitingId);
+
         if(!reservationWaiting.sameMember(memberId)) {
             throw new ApplicationException(UNAUTHORIZED_ERROR);
         }
@@ -56,11 +55,17 @@ public class ReservationWaitingService {
         reservationWaitingDao.deleteById(reservationWaitingId);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationWaitingResponse> findMyReservationWaitings(Long memberId) {
-        return reservationWaitingDao.findReservationWaitingsByMemberId(memberId)
+        return reservationWaitingDao.findByMemberId(memberId)
                 .stream()
                 .map(ReservationWaitingResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    private ReservationWaiting findById(Long reservationWaitingId) {
+        return reservationWaitingDao.findById(reservationWaitingId)
+                .orElseThrow(() -> new ApplicationException(RESERVATION_WAITING_NOT_FOUND));
     }
 
 }

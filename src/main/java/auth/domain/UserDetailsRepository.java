@@ -1,7 +1,8 @@
 package auth.domain;
 
-public interface UserDetailsRepository {
-    UserDetails findById(Long id);
+import java.util.Optional;
 
-    UserDetails findByUsername(String username);
+public interface UserDetailsRepository {
+
+    Optional<UserDetails> findByUsername(String username);
 }
