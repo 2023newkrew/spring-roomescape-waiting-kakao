@@ -3,7 +3,7 @@ package nextstep;
 import auth.*;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.MemberDao;
-import nextstep.member.UserValidatorImpl;
+import nextstep.member.UserAuthenticatorImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -17,8 +17,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     private final MemberDao memberDao;
 
     @Bean
-    public UserValidator userValidator() {
-        return new UserValidatorImpl(memberDao);
+    public UserAuthenticator userValidator() {
+        return new UserAuthenticatorImpl(memberDao);
     }
 
     @Bean

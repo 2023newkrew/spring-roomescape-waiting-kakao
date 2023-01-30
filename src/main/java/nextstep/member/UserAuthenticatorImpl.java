@@ -1,17 +1,17 @@
 package nextstep.member;
 
-import lombok.RequiredArgsConstructor;
+import auth.UserAuthenticator;
 import auth.UserDetails;
-import auth.UserValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class UserValidatorImpl implements UserValidator {
+public class UserAuthenticatorImpl implements UserAuthenticator {
     private final MemberDao memberDao;
 
     @Override
-    public UserDetails validate(String username, String password) {
+    public UserDetails authenticate(String username, String password) {
         Member member = memberDao.findByUsername(username);
         if (member == null || member.checkWrongPassword(password)) {
             return null;

@@ -18,12 +18,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
-    public final ReservationValidator reservationValidator;
-
+    private final ReservationDao reservationDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final MemberDao memberDao;
+    private final ReservationValidator reservationValidator;
     private final ApplicationEventPublisher publisher;
 
     public Long create(Long memberId, ReservationRequest reservationRequest) {

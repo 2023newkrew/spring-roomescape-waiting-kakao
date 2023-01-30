@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LoginService {
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserValidator userValidator;
+    private final UserAuthenticator userValidator;
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetails userDetails = userValidator.validate(tokenRequest.getUsername(), tokenRequest.getPassword());
+        UserDetails userDetails = userValidator.authenticate(tokenRequest.getUsername(), tokenRequest.getPassword());
 
         if (userDetails == null) {
             throw new AuthenticationException();
@@ -21,11 +21,4 @@ public class LoginService {
     public Long extractPrincipal(String credential) {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
-
-    public UserDetails extractUserDetails(String credential) {
-        Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        String role = jwtTokenProvider.getRole(credential);
-        return new UserDetails(id, role);
-    }
-
 }

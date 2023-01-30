@@ -180,8 +180,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     void showEmptyReservations() {
         var response = RestAssured
                 .given().log().all()
-                .param("themeId", themeId)
-                .param("date", DATE)
+                .auth().oauth2(token.getAccessToken())
                 .when().get("/reservation-waitings/mine")
                 .then().log().all()
                 .extract();
