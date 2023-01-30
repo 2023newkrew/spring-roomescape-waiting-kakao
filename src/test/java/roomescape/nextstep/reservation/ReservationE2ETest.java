@@ -21,6 +21,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     public static final String TIME = "13:00";
 
     private ReservationRequest request;
+    private ReservationWaitingRequest waitingRequest;
     private Long themeId;
     private Long scheduleId;
 
@@ -54,6 +55,10 @@ class ReservationE2ETest extends AbstractE2ETest {
         scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
         request = new ReservationRequest(
+                scheduleId
+        );
+
+        waitingRequest = new ReservationWaitingRequest(
                 scheduleId
         );
     }
@@ -188,5 +193,34 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
+    }
+
+    /**
+     * POST /reservation-waitings HTTP/1.1
+     * authorization: Bearer 토큰~~
+     * content-type: application/json; charset=UTF-8
+     * host: localhost:8080
+     * {
+     * "scheduleId": 1
+     * }
+     * ---
+     * HTTP/1.1 201 Created
+     * Location: /reservation-waitings/1
+     * <p>
+     * 1) 예약이 이미 있을 때 예약 대기 신청
+     * 2) 예약이 없을 때 예약 대기 신청 - 예약 신청이 됨
+     */
+    @DisplayName("예약이 없을 때 예약 대기 신청")
+    @Test
+    void reservationWaiting() {
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(waitingRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservations-waitings")
+                .then().log().all()
+                .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 }
