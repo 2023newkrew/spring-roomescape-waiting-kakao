@@ -3,12 +3,14 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import nextstep.config.annotation.LoginMember;
 import nextstep.member.Member;
+import nextstep.reservation.dto.response.ReservationResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ReservationController {
@@ -44,8 +46,18 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
+    @GetMapping("/reservations/mine")
+    public ResponseEntity<List<ReservationResponseDto>> getReservations(@LoginMember Member member) {
+        List<ReservationResponseDto> reservations = reservationService.getReservationsByMember(member)
+                .stream()
+                .map(ReservationResponseDto::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(reservations);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 

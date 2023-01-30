@@ -20,10 +20,11 @@ public class Reservation {
         this.member = member;
     }
 
-    public Reservation(Long id, Schedule schedule, Member member) {
+    public Reservation(Long id, Schedule schedule, Member member, Long waitNumber) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+        this.waitNumber = waitNumber;
     }
 
     public Long getId() {

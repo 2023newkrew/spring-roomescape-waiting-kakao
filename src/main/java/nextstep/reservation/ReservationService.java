@@ -10,7 +10,10 @@ import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -86,5 +89,28 @@ public class ReservationService {
         );
 
         return reservationDao.save(newReservation);
+    }
+
+    public List<Reservation> getReservationsByMember(Member member) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+        List<Reservation> reservations = reservationDao.findByMemberId(member.getId());
+        List<Reservation> reservationsNotWaiting = reservations.stream()
+                .map(Reservation::getSchedule)
+                .map(Schedule::getId)
+                .map(reservationDao::findByScheduleId)
+                .map(reservationsBySchedule -> reservationsBySchedule.stream()
+                        .min(Comparator.comparing(Reservation::getWaitNumber))
+                        .orElseThrow())
+                .collect(Collectors.toList());
+
+        List<Reservation> result = new ArrayList<>();
+        for (int i = 0; i < reservations.size(); i++) {
+            if (reservations.get(i).getWaitNumber() == reservationsNotWaiting.get(i).getWaitNumber()) {
+                result.add(reservations.get(i));
+            }
+        }
+        return result;
     }
 }
