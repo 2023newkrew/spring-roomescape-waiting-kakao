@@ -3,13 +3,13 @@ package nextstep.reservation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import nextstep.schedule.Schedule;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public class MyReservation {
-    private Long id;
-    private Schedule schedule;
+    private final Long id;
+    private final Schedule schedule;
 
 }

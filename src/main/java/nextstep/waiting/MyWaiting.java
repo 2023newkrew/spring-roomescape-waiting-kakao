@@ -1,15 +1,13 @@
 package nextstep.waiting;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import nextstep.schedule.Schedule;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public class MyWaiting {
-    private Long id;
-    private Schedule schedule;
-    private Integer waitNum;
+    private final Long id;
+    private final Schedule schedule;
+    private final Integer waitNum;
 }
