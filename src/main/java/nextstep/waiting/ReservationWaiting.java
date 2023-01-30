@@ -17,4 +17,20 @@ public class ReservationWaiting {
         this.member = member;
         this.waitingNumber = waitingNumber;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getWaitingNumber() {
+        return waitingNumber;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public Member getMember() {
+        return member;
+    }
 }

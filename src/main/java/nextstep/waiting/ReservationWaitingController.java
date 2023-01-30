@@ -33,4 +33,11 @@ public class ReservationWaitingController {
 
         return ResponseEntity.ok(reservationWaitings);
     }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity removeReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+        reservationWaitingProxyService.deleteById(Member.of(userDetails).getId(), id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

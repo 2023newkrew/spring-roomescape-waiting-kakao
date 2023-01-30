@@ -33,4 +33,8 @@ public class ReservationWaitingProxyService {
     public List<ReservationWaiting> getReservationWaitings(Member member) {
         return waitingService.findByMemberId(member.getId());
     }
+
+    public void deleteById(Long memberId, Long waitingId) {
+        waitingService.deleteById(memberId, waitingId);
+    }
 }

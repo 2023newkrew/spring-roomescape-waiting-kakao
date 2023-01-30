@@ -1,6 +1,6 @@
 package auth;
 
-import nextstep.support.EntityNotFound;
+import nextstep.support.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +15,7 @@ public class LoginService {
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
         UserDetails userDetails = authDao.findUserDetailsByUserName(tokenRequest.getUsername())
-                .orElseThrow(EntityNotFound::new);
+                .orElseThrow(EntityNotFoundException::new);
 
         validatePassword(userDetails, tokenRequest);
 
@@ -39,7 +39,7 @@ public class LoginService {
         }
 
         return authDao.findUserDetailsById(id)
-                .orElseThrow(EntityNotFound::new);
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     public Long extractPrincipal(String credential) {

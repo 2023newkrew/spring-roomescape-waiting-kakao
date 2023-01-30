@@ -1,6 +1,7 @@
 package nextstep.waiting;
 
 import nextstep.member.Member;
+import nextstep.support.PermissionDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,5 +20,13 @@ public class ReservationWaitingService {
 
     public List<ReservationWaiting> findByMemberId(Long memberId) {
         return reservationWaitingDao.findByMemberId(memberId);
+    }
+
+    public void deleteById(Long memberId, Long id) {
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
+        if (reservationWaiting.getMember().getId() != memberId) {
+            throw new PermissionDeniedException();
+        }
+        reservationWaitingDao.deleteById(id);
     }
 }

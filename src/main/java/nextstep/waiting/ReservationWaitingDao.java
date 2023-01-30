@@ -47,6 +47,7 @@ public class ReservationWaitingDao {
     );
 
     public Long save(Long memberId, Long scheduleId) {
+        Long waitingNumber = findLastByScheduleId(scheduleId) + 1;
         String sql = "INSERT INTO reservation_waiting (schedule_id, member_id, waiting_number) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -54,6 +55,7 @@ public class ReservationWaitingDao {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, scheduleId);
             ps.setLong(2, memberId);
+            ps.setLong(3, waitingNumber);
             return ps;
 
         }, keyHolder);
@@ -83,5 +85,25 @@ public class ReservationWaitingDao {
         } catch (Exception e) {
             return Collections.emptyList();
         }
+    }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM reservation_waiting where id = ?;";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public ReservationWaiting findById(Long id) {
+        String sql = "SELECT " +
+                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.waiting_number " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from reservation_waiting " +
+                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation_waiting.member_id = member.id " +
+                "where reservation_waiting.id = ?;";
+
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 }
