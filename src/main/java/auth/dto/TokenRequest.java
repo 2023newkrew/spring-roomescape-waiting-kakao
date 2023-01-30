@@ -6,7 +6,6 @@ public class TokenRequest {
     private final String username;
     private final String password;
 
-    @JsonCreator
     public TokenRequest(String username, String password) {
         this.username = username;
         this.password = password;
