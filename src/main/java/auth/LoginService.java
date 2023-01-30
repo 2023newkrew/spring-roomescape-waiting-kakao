@@ -28,8 +28,9 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public Member extractMember(String credential) {
+    public UserDetails extractUserDetails(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return memberDao.findById(id);
+        String role = jwtTokenProvider.getRole(credential);
+        return new UserDetails(id, role);
     }
 }
