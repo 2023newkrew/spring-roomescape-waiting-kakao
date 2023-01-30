@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+
 class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     public static final String DATE = "2022-08-11";
@@ -132,6 +134,31 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .when().delete("/reservation-waitings/" + id)
                 // then
                 .then().statusCode(HttpStatus.FORBIDDEN.value()).extract();
+    }
+
+    @DisplayName("자신의 예약 대기 목록을 조회할 수 있다.")
+    @Test
+    void selectWaitingList() {
+        // given
+        createReservation();
+        createWaiting();
+        createWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(token.getAccessToken())
+
+        // when
+                .when().get("/reservation-waitings/mine")
+
+        // then
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        List<ReservationWaiting> reservationWaitings = response.jsonPath().getList(".", ReservationWaiting.class);
+        Assertions.assertThat(reservationWaitings.size()).isEqualTo(2);
     }
 
     private ExtractableResponse<Response> createWaiting() {
