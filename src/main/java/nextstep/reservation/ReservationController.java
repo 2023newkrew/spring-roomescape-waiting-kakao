@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ReservationController {
@@ -32,6 +33,17 @@ public class ReservationController {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
+
+    @GetMapping("/reservations/mine")
+    public ResponseEntity readMyReservations(@LoginMember UserDetails userDetails) {
+        List<ReservationResponse> results = reservationService.findAllByMemberId(Member.of(userDetails).getId())
+                .stream()
+                .map(ReservationResponse::of)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(results);
+    }
+
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
