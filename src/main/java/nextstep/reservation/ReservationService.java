@@ -26,7 +26,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
+    public Reservation create(Member member, ReservationRequest reservationRequest) {
         if (member == null) {
             throw new AuthenticationException();
         }
