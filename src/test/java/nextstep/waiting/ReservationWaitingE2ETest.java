@@ -7,11 +7,14 @@ import nextstep.AbstractE2ETest;
 import nextstep.reservation.ReservationRequest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.regex.Matcher;
 
 class ReservationWaitingE2ETest extends AbstractE2ETest {
 
@@ -63,8 +66,9 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
     @DisplayName("예약이 없는 경우 예약 대기를 생성하면 바로 예약된다.")
     @Test
     void createWaitingWithoutReservation() {
+
         // given
-        RestAssured
+        var response =  RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -73,13 +77,31 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
         // when
                 .when().post("/reservation-waitings")
         // then
-                .then().statusCode(HttpStatus.CREATED.value());
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value()).extract();
+        Assertions.assertThat(response.header("Location").startsWith("/reservations/"))
+                .isTrue();
     }
 
 
     @DisplayName("예약이 있는 경우 예약 대기를 생성한다.")
     @Test
     void creatingWaiting() {
+        createReservation();
+
+        // given
+        var response =  RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(reservationWaitingRequest)
+
+                // when
+                .when().post("/reservation-waitings")
+                // then
+                .then().statusCode(HttpStatus.CREATED.value()).extract();
+        Assertions.assertThat(response.header("Location").startsWith("/reservation-waitings/"))
+                .isTrue();
     }
 
     private ExtractableResponse<Response> createReservation() {
