@@ -44,3 +44,4 @@
     - [x] reservation-waiting 순번 조회 기능
   - [x] reservation-waiting delete 구현
     - [x] 자신의 reservation-waiting 이 아니면 취소가 불가능 하다.
+- [x] 통합테스트 작성

@@ -1,13 +1,15 @@
 package nextstep.reservationwaiting;
 
-import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 
 public class ReservationWaitingResponse {
 
-    private final Long id;
-    private final Schedule schedule;
-    private final Long waitNum;
+    private Long id;
+    private Schedule schedule;
+    private Long waitNum;
+
+    public ReservationWaitingResponse() {
+    }
 
     public ReservationWaitingResponse(ReservationWaiting reservationWaiting) {
         this.id = reservationWaiting.getId();

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class ReservationWaitingDao {
@@ -88,7 +89,7 @@ public class ReservationWaitingDao {
                 "from reservation_waiting " +
                 "where reservation_waiting.schedule_id = ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, Long.class, scheduleId);
+            return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Long.class, scheduleId));
         } catch (Exception e) {
             return 0L;
         }

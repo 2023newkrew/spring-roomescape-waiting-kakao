@@ -12,9 +12,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController("/reservation-waitings")
+@RestController
+@RequestMapping("/reservation-waitings")
 public class ReservationWaitingController {
-
     private final ReservationWaitingService reservationWaitingService;
     private final ReservationService reservationService;
 
@@ -48,6 +48,4 @@ public class ReservationWaitingController {
         reservationWaitingService.deleteById(member, id);
         return ResponseEntity.noContent().build();
     }
-
-
 }
