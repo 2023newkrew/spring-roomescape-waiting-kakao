@@ -19,7 +19,9 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        var handlerMethod = (HandlerMethod) handler;
+        if (!(handler instanceof HandlerMethod handlerMethod)) {
+            return true;
+        }
         var auth = handlerMethod.getMethodAnnotation(Admin.class);
         if (auth == null) {
             return true;
