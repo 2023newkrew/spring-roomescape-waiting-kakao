@@ -2,7 +2,7 @@ package roomescape.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ReservationsControllerPostBody;
 import roomescape.controller.errors.ErrorCode;
 import roomescape.entity.Reservation;
@@ -15,7 +15,7 @@ public class ReservationService {
 
     private final ReservationRepository repository;
 
-
+    @Transactional
     public long createReservation(long callerId, ReservationsControllerPostBody body) {
         var id = repository.insert(body.getName(), body.getDate(), body.getTime(), body.getThemeId(), callerId);
         if (id.isEmpty()) {
@@ -25,7 +25,7 @@ public class ReservationService {
     }
 
 
-    public Reservation findReservation(@PathVariable Long id) {
+    public Reservation findReservation(Long id) {
         var reservation = repository.selectById(id);
         if (reservation.isEmpty()) {
             throw new ServiceException(ErrorCode.UNKNOWN_RESERVATION_ID);
@@ -33,6 +33,7 @@ public class ReservationService {
         return reservation.get();
     }
 
+    @Transactional
     public void deleteReservation(long callerId, Long id) {
         var reservation = repository.selectById(id);
         if (reservation.isEmpty()) {

@@ -16,14 +16,14 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping()
+@RequestMapping("/api/themes")
 @RequiredArgsConstructor
 public class ThemeController {
 
     private final ThemeService service;
 
     @Admin
-    @PostMapping(value = "/api/themes", produces = "application/json;charset=utf-8")
+    @PostMapping(value = "/", produces = "application/json;charset=utf-8")
     public ResponseEntity<ThemeControllerPostResponse> createTheme(@Valid @RequestBody ThemeControllerPostBody body) {
         var id = service.createTheme(body);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -31,7 +31,7 @@ public class ThemeController {
                              .body(new ThemeControllerPostResponse(id));
     }
 
-    @GetMapping(value = "/api/themes", produces = "application/json;charset=utf-8")
+    @GetMapping(value = "/", produces = "application/json;charset=utf-8")
     public ResponseEntity<List<ThemeControllerGetResponse>> pageTheme(@RequestParam(defaultValue = "0") int page) {
         var themes = service.pageTheme(page);
         return ResponseEntity.status(HttpStatus.OK)
@@ -41,7 +41,7 @@ public class ThemeController {
                              );
     }
 
-    @GetMapping(value = "/api/themes/{id}", produces = "application/json;charset=utf-8")
+    @GetMapping(value = "/{id}", produces = "application/json;charset=utf-8")
     public ResponseEntity<ThemeControllerGetResponse> getTheme(@PathVariable long id) {
         var theme = service.getTheme(id);
         return ResponseEntity.status(HttpStatus.OK)
@@ -49,7 +49,7 @@ public class ThemeController {
     }
 
     @Admin
-    @DeleteMapping(value = "/api/themes/{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> deleteTheme(@PathVariable long id) {
         service.deleteTheme(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)

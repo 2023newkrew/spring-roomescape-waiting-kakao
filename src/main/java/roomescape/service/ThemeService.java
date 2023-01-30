@@ -3,6 +3,7 @@ package roomescape.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ThemeControllerPostBody;
 import roomescape.controller.errors.ErrorCode;
 import roomescape.entity.Theme;
@@ -24,6 +25,7 @@ public class ThemeService {
         return target.get();
     }
 
+    @Transactional
     public long createTheme(ThemeControllerPostBody body) {
         return repository.insert(body.getName(), body.getDesc(), body.getPrice());
     }
@@ -33,6 +35,7 @@ public class ThemeService {
                          .stream();
     }
 
+    @Transactional
     public void deleteTheme(long id) {
         try {
             var affectedRows = repository.delete(id);

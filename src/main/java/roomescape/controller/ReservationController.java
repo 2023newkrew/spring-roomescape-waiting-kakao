@@ -13,13 +13,13 @@ import javax.validation.Valid;
 
 
 @RestController
-@RequestMapping()
+@RequestMapping("/api/reservations")
 @RequiredArgsConstructor
 public class ReservationController {
 
     private final ReservationService service;
 
-    @PostMapping(value = "/api/reservations", produces = "application/json;charset=utf-8")
+    @PostMapping(value = "/", produces = "application/json;charset=utf-8")
     public ResponseEntity<Object> createReservation(@JWTBearerTokenSubject String subject, @Valid @RequestBody ReservationsControllerPostBody body) {
         var id = service.createReservation(Long.parseLong(subject), body);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -27,7 +27,7 @@ public class ReservationController {
                              .build();
     }
 
-    @GetMapping(value = "/api/reservations/{id}", produces = "application/json;charset=utf-8")
+    @GetMapping(value = "/{id}", produces = "application/json;charset=utf-8")
     public ResponseEntity<ReservationControllerGetResponse> findReservation(@PathVariable Long id) {
         var reservation = service.findReservation(id);
         return ResponseEntity.status(HttpStatus.OK)
@@ -43,7 +43,7 @@ public class ReservationController {
                              ));
     }
 
-    @DeleteMapping(value = "/api/reservations/{id}", produces = "application/json;charset=utf-8")
+    @DeleteMapping(value = "/{id}", produces = "application/json;charset=utf-8")
     public ResponseEntity<Object> deleteReservation(@JWTBearerTokenSubject String subject, @PathVariable Long id) {
         service.deleteReservation(Long.parseLong(subject), id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)

@@ -14,13 +14,13 @@ import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
-@RequestMapping()
+@RequestMapping("/api/members")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService service;
 
-    @PostMapping(path = "/api/members", produces = "application/json;charset=utf-8")
+    @PostMapping(path = "/", produces = "application/json;charset=utf-8")
     public ResponseEntity<MemberControllerPostResponse> createMember(@Valid @RequestBody MemberControllerPostBody body) {
         var id = service.createMember(body);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -28,7 +28,7 @@ public class MemberController {
                              .body(new MemberControllerPostResponse(id));
     }
 
-    @GetMapping(path = "/api/members/me", produces = "application/json;charset=utf-8")
+    @GetMapping(path = "/me", produces = "application/json;charset=utf-8")
     public ResponseEntity<MemberControllerGetResponse> me(@JWTBearerTokenSubject String subject) {
         var member = service.me(Long.parseLong(subject));
         return ResponseEntity.status(HttpStatus.OK)
