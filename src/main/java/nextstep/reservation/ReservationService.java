@@ -45,6 +45,10 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
+    public List<Reservation> findAllByMemberId(Long id) {
+        return reservationDao.findAllByMemberId(id);
+    }
+
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {

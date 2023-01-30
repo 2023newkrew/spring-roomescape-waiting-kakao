@@ -151,6 +151,34 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservations.size()).isEqualTo(0);
     }
 
+    @DisplayName("내 예약 목록을 조회한다")
+    @Test
+    void showMyReservations() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        assertThat(reservations).hasSize(1);
+    }
+
+    @DisplayName("내 예약 목록 조회를 토큰 없이 하면 401을 반환한다.")
+    @Test
+    void showMyReservationsWithoutToken() {
+        var response = RestAssured
+                .given().log().all()
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
     @DisplayName("없는 예약을 삭제한다")
     @Test
     void createNotExistReservation() {

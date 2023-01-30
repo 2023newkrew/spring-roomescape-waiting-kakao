@@ -18,19 +18,25 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<Reservation> createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
         Reservation reservation = reservationService.create(member, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).build();
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<List<Reservation>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
 
+    @GetMapping("/reservations/mine")
+    public ResponseEntity<List<Reservation>> readMyReservations(@LoginMember Member member) {
+        List<Reservation> results = reservationService.findAllByMemberId(member.getId());
+        return ResponseEntity.ok().body(results);
+    }
+
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@LoginMember Member member, @PathVariable Long id) {
         reservationService.deleteById(member, id);
 
         return ResponseEntity.noContent().build();
