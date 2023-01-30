@@ -98,6 +98,25 @@ public class ReservationDao {
         }
     }
 
+    public Reservation findWaitingById(Long id) {
+        String sql = "SELECT " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role, " +
+                "reservation.wait_num " +
+                "from reservation " +
+                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation.member_id = member.id " +
+                "where reservation.id = ? and reservation.wait_num > 0;";
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public List<Reservation> findByScheduleId(Long id) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, " +
@@ -110,7 +129,44 @@ public class ReservationDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
                 "where schedule.id = ?;";
+        try {
+            return jdbcTemplate.query(sql, rowMapper, id);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
 
+    public List<Reservation> findByMemberId(Long id) {
+        String sql = "SELECT " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role, " +
+                "reservation.wait_num " +
+                "from reservation " +
+                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation.member_id = member.id " +
+                "where member.id = ? and reservation.wait_num = 0;";
+        try {
+            return jdbcTemplate.query(sql, rowMapper, id);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Reservation> findWaitingByMemberId(Long id) {
+        String sql = "SELECT " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role, " +
+                "reservation.wait_num " +
+                "from reservation " +
+                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation.member_id = member.id " +
+                "where member.id = ? and reservation.wait_num > 0;";
         try {
             return jdbcTemplate.query(sql, rowMapper, id);
         } catch (Exception e) {
@@ -121,5 +177,15 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation where id = ? and reservation.wait_num = 0;";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void deleteWaitingById(Long id) {
+        String sql = "DELETE FROM reservation where id = ? and reservation.wait_num > 0;";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public void adjustWaitingNumByScheduleIdAndBaseNum(Long id, Long num){
+        String sql = "UPDATE reservation set wait_num = wait_num - 1 where schedule_id = ? and wait_num > ?";
+        jdbcTemplate.update(sql, id, num);
     }
 }
