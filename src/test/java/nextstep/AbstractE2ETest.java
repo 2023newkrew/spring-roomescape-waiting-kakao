@@ -20,7 +20,25 @@ public class AbstractE2ETest {
 
     @BeforeEach
     protected void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        saveMember(USERNAME, PASSWORD);
+        token = createToken(USERNAME, PASSWORD);
+    }
+
+    protected TokenResponse createToken(String username, String password) {
+        TokenRequest tokenBody = new TokenRequest(username, password);
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(tokenBody)
+                .when().post("/login/token")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(TokenResponse.class);
+    }
+
+    protected void saveMember(String username, String password) {
+        MemberRequest memberBody = new MemberRequest(username, password, "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -28,17 +46,5 @@ public class AbstractE2ETest {
                 .when().post("/members")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
-
-        TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
-        var response = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(tokenBody)
-                .when().post("/login/token")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        token = response.as(TokenResponse.class);
     }
 }
