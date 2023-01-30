@@ -3,7 +3,6 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import auth.LoginMember;
 import auth.UserDetails;
-import nextstep.member.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
