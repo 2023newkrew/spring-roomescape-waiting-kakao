@@ -14,12 +14,26 @@ import java.util.List;
 @Configuration
 @AllArgsConstructor
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private LoginService loginService;
-    private JwtTokenProvider jwtTokenProvider;
+    private MemberDao memberDao;
 
-    public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
-        this.loginService = loginService;
-        this.jwtTokenProvider = jwtTokenProvider;
+    @Bean
+    public UserDetailsFactory userDetailsFactory() {
+        return new UserDetailsFactoryImpl(memberDao);
+    }
+
+    @Bean
+    public JwtTokenProvider jwtTokenProvider() {
+        return new JwtTokenProvider();
+    }
+
+    @Bean
+    public LoginService loginService() {
+        return new LoginService(jwtTokenProvider(), userDetailsFactory());
+    }
+
+    @Bean
+    public LoginController loginController() {
+        return new LoginController(loginService());
     }
 
     @Override
