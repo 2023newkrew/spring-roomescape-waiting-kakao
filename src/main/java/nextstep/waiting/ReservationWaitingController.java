@@ -4,12 +4,10 @@ import auth.LoginMember;
 import auth.UserDetails;
 import nextstep.member.Member;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/reservation-waitings")
@@ -29,5 +27,10 @@ public class ReservationWaitingController {
         return ResponseEntity.created(URI.create("/reservation_waitings/" + response.getId())).build();
     }
 
+    @GetMapping
+    ResponseEntity getReservationWaitings(@LoginMember UserDetails userDetails) {
+        List<ReservationWaiting> reservationWaitings = reservationWaitingProxyService.getReservationWaitings(Member.of(userDetails));
 
+        return ResponseEntity.ok(reservationWaitings);
+    }
 }

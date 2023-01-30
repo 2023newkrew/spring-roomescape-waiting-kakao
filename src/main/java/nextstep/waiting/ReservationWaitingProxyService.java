@@ -7,6 +7,8 @@ import nextstep.schedule.Schedule;
 import nextstep.support.DuplicateEntityException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ReservationWaitingProxyService {
     private ReservationService reservationService;
@@ -26,6 +28,9 @@ public class ReservationWaitingProxyService {
             Long id = waitingService.create(member, scheduleId);
             return new ReservationWaitingResponse(id, true);
         }
+    }
 
+    public List<ReservationWaiting> getReservationWaitings(Member member) {
+        return waitingService.findByMemberId(member.getId());
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class ReservationWaitingDao {
@@ -63,5 +65,23 @@ public class ReservationWaitingDao {
         String sql = "SELECT waiting_number from reservation_waiting where schedule_id = ? order by waiting_number desc";
 
         return jdbcTemplate.queryForObject(sql, new Object[] { scheduleId }, Long.class);
+    }
+
+    public List<ReservationWaiting> findByMemberId(Long memberId) {
+        String sql = "SELECT " +
+                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.waiting_number " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from reservation_waiting " +
+                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation_waiting.member_id = member.id " +
+                "where member.id = ?;";
+        try {
+            return jdbcTemplate.query(sql, rowMapper, memberId);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 }
