@@ -36,7 +36,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
 
     @DisplayName("스케줄을 생성한다")
     @Test
-    public void createSchedule() {
+    public void Should_ResponseCreated_When_ValidRequest() {
         ScheduleRequest body = new ScheduleRequest(themeId, "2022-08-11", "13:00");
         RestAssured
                 .given().log().all()

@@ -6,6 +6,7 @@ import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
 import nextstep.DatabaseCleaner;
 import nextstep.domain.dto.request.MemberRequest;
+import nextstep.domain.dto.request.ScheduleRequest;
 import nextstep.domain.dto.request.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +42,6 @@ public class ThemeE2ETest extends AbstractE2ETest {
     @DisplayName("어드민이 아닌 사람이 테마를 생성한다")
     @Test
     public void createFromNormalUser() {
-
         MemberRequest memberBody = new MemberRequest(USERNAME+1, PASSWORD, "name", "010-1234-5678", "");
         RestAssured
                 .given().log().all()
@@ -117,4 +117,5 @@ public class ThemeE2ETest extends AbstractE2ETest {
                 .extract().header("Location");
         return Long.parseLong(location.split("/")[2]);
     }
+
 }
