@@ -2,6 +2,8 @@ package nextstep.reservation.repository;
 
 import nextstep.reservation.domain.Reservation;
 
+import java.util.List;
+
 public interface ReservationRepository {
 
     boolean existsByScheduleId(Long scheduleId);
@@ -11,6 +13,8 @@ public interface ReservationRepository {
     Reservation insert(Reservation reservation);
 
     Reservation getById(Long id);
+    
+    List<Reservation> getByMemberId(Long memberId);
 
     boolean deleteById(Long id);
 }

@@ -9,9 +9,23 @@ import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Component
 public class ReservationResultSetParser {
+
+    public List<Reservation> parseReservations(ResultSet resultSet) throws SQLException {
+        List<Reservation> reservations = new ArrayList<>();
+        Reservation reservation = parseReservation(resultSet);
+        while (Objects.nonNull(reservation)) {
+            reservations.add(reservation);
+            reservation = parseReservation(resultSet);
+        }
+
+        return reservations;
+    }
 
     public Reservation parseReservation(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {

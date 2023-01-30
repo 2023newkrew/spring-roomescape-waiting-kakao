@@ -13,7 +13,9 @@ import nextstep.schedule.service.ScheduleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -50,6 +52,14 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = repository.getById(id);
 
         return mapper.toResponse(reservation);
+    }
+
+    @Override
+    public List<ReservationResponse> getByMemberId(Long memberId) {
+        return repository.getByMemberId(memberId)
+                .stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Transactional
