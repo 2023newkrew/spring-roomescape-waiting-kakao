@@ -39,13 +39,13 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity onException(Exception e) {
+//        return ResponseEntity.badRequest().build();
+//    }
+//
+//    @ExceptionHandler(AuthenticationException.class)
+//    public ResponseEntity onAuthenticationException(AuthenticationException e) {
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//    }
 }

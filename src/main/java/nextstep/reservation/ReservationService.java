@@ -3,6 +3,7 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservationwaiting.ReservationWaiting;
 import nextstep.reservationwaiting.ReservationWaitingDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
@@ -21,11 +22,12 @@ public class ReservationService {
     public final MemberDao memberDao;
     private final ReservationWaitingDao reservationWaitingDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, ReservationWaitingDao reservationWaitingDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.reservationWaitingDao = reservationWaitingDao;
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
@@ -70,5 +72,15 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findByScheduleId(reservation.getSchedule().getId());
+
+        if (reservationWaiting == null) {
+            return;
+        }
+
+        reservationWaitingDao.deleteById(reservationWaiting.getId());
+
+        reservationDao.save(Reservation.of(reservationWaiting));
     }
 }

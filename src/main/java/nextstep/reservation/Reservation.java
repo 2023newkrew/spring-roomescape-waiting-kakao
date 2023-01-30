@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import nextstep.member.Member;
+import nextstep.reservationwaiting.ReservationWaiting;
 import nextstep.schedule.Schedule;
 
 import java.util.Objects;
@@ -22,6 +23,13 @@ public class Reservation {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+    }
+
+    public static Reservation of(ReservationWaiting reservationWaiting){
+        return new Reservation(
+                reservationWaiting.getSchedule(),
+                reservationWaiting.getMember()
+        );
     }
 
     public Long getId() {

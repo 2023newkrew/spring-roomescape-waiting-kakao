@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
+import nextstep.reservationwaiting.ReservationWaitingRequest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     public static final String TIME = "13:00";
 
     private ReservationRequest request;
+    private ReservationWaitingRequest reservationWaitingRequest;
     private Long themeId;
     private Long scheduleId;
 
@@ -54,6 +56,9 @@ class ReservationE2ETest extends AbstractE2ETest {
         scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
         request = new ReservationRequest(
+                scheduleId
+        );
+        reservationWaitingRequest = new ReservationWaitingRequest(
                 scheduleId
         );
     }
@@ -104,9 +109,25 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservations.size()).isEqualTo(1);
     }
 
-    @DisplayName("예약을 삭제한다")
+    @DisplayName("예약 대기가 있을 때 예약을 삭제한다")
     @Test
-    void delete() {
+    void deleteWithWaiting() {
+        var reservation = createReservation();
+        createReservationWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete(reservation.header("Location"))
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("예약 대기가 없을 때 예약을 삭제한다")
+    @Test
+    void deleteWithNoWaiting() {
         var reservation = createReservation();
 
         var response = RestAssured
@@ -114,6 +135,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .auth().oauth2(token.getAccessToken())
                 .when().delete(reservation.header("Location"))
                 .then().log().all()
+
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -186,6 +208,17 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> createReservationWaiting() {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(reservationWaitingRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
                 .then().log().all()
                 .extract();
     }
