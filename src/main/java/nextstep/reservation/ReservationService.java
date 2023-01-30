@@ -74,4 +74,8 @@ public class ReservationService {
     public boolean existsByScheduleId(Long scheduleId) {
         return !reservationDao.findByScheduleId(scheduleId).isEmpty();
     }
+
+    public List<Reservation> findByMemberId(Long memberId) {
+        return reservationDao.findByMemberId(memberId);
+    }
 }
