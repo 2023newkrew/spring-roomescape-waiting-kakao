@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class Default {
-    @GetMapping(value = "/")
+    @GetMapping
     public ResponseEntity<String> findReservation() {
         return ResponseEntity.status(HttpStatus.OK)
                              .body("Hello, world!");

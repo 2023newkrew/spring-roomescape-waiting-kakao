@@ -20,7 +20,7 @@ public class ReservationController {
 
     private final ReservationService service;
 
-    @PostMapping(value = "/", produces = "application/json;charset=utf-8")
+    @PostMapping(produces = "application/json;charset=utf-8")
     public ResponseEntity<Object> createReservation(@JWTBearerTokenSubject String subject, @Valid @RequestBody ReservationsControllerPostBody body) {
         var id = service.createReservation(Long.parseLong(subject), body);
         return ResponseEntity.status(HttpStatus.CREATED)

@@ -20,7 +20,7 @@ public class MemberController {
 
     private final MemberService service;
 
-    @PostMapping(path = "/", produces = "application/json;charset=utf-8")
+    @PostMapping(produces = "application/json;charset=utf-8")
     public ResponseEntity<MemberControllerPostResponse> createMember(@Valid @RequestBody MemberControllerPostBody body) {
         var id = service.createMember(body);
         return ResponseEntity.status(HttpStatus.CREATED)

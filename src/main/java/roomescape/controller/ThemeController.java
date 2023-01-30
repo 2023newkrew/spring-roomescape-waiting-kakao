@@ -23,7 +23,7 @@ public class ThemeController {
     private final ThemeService service;
 
     @Admin
-    @PostMapping(value = "/", produces = "application/json;charset=utf-8")
+    @PostMapping(produces = "application/json;charset=utf-8")
     public ResponseEntity<ThemeControllerPostResponse> createTheme(@Valid @RequestBody ThemeControllerPostBody body) {
         var id = service.createTheme(body);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -31,7 +31,7 @@ public class ThemeController {
                              .body(new ThemeControllerPostResponse(id));
     }
 
-    @GetMapping(value = "/", produces = "application/json;charset=utf-8")
+    @GetMapping(produces = "application/json;charset=utf-8")
     public ResponseEntity<List<ThemeControllerGetResponse>> pageTheme(@RequestParam(defaultValue = "0") int page) {
         var themes = service.pageTheme(page);
         return ResponseEntity.status(HttpStatus.OK)
