@@ -1,5 +1,6 @@
 package auth;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -7,12 +8,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private LoginService loginService;
-
-    public LoginMemberArgumentResolver(LoginService loginService) {
-        this.loginService = loginService;
-    }
+    private final LoginService loginService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

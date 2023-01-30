@@ -21,21 +21,22 @@ public class ReservationWaitingController {
             @LoginMember MemberDetail member,
             @RequestBody ReservationWaitingRequest reservationWaitingRequest
     ) {
-        String location = reservationWaitingService.create(member.toMember(), reservationWaitingRequest);
-        return ResponseEntity.created(URI.create(location)).build();
+        URI locationUri = reservationWaitingService.create(member.toMember(), reservationWaitingRequest);
+        return ResponseEntity.created(locationUri).build();
     }
 
     @GetMapping("/mine")
     public ResponseEntity<List<ReservationWaitingResponse>> readMyReservationWaiting(@LoginMember MemberDetail member) {
         List<ReservationWaitingResponse> results = reservationWaitingService.readMine(member.toMember());
-
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationWaiting(@LoginMember MemberDetail member, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservationWaiting(
+            @LoginMember MemberDetail member,
+            @PathVariable Long id
+    ) {
         reservationWaitingService.deleteById(member.toMember(), id);
-
         return ResponseEntity.noContent().build();
     }
 }

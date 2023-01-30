@@ -152,9 +152,11 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 삭제하면 예약 대기를 예약으로 변경한다.")
     @Test
     void deleteWhenReservationWaitingExists() {
+        //given
         var reservation = createReservation(request);
         sendReservationWaiting(new ReservationWaitingRequest(request.getScheduleId()));
 
+        //when
         var reservationsResponse = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -179,6 +181,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
+        //then
         assertThat(reservationsResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         List<ReservationWaitingResponse> responses = reservationWaitingsResponse.jsonPath().getList(".", ReservationWaitingResponse.class);

@@ -1,18 +1,15 @@
 package auth;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RequestMapping("/login")
 public class LoginController {
-    private LoginService loginService;
-
-    public LoginController(LoginService loginService) {
-        this.loginService = loginService;
-    }
+    private final LoginService loginService;
 
     @PostMapping("/token")
     public ResponseEntity<TokenResponse> loginToken(@RequestBody TokenRequest tokenRequest) {

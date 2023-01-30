@@ -3,7 +3,6 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
-import nextstep.member.MemberDaoImpl;
 import nextstep.reservation_waiting.ReservationWaiting;
 import nextstep.reservation_waiting.ReservationWaitingDao;
 import nextstep.schedule.Schedule;
@@ -23,7 +22,6 @@ public class ReservationService {
     private final ReservationWaitingDao reservationWaitingDao;
     private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
-    private final MemberDaoImpl memberDao;
 
     public Long create(Member member, ReservationRequest reservationRequest) {
         if (member == null) {
@@ -61,18 +59,26 @@ public class ReservationService {
         if (reservation == null) {
             throw new NonExistEntityException();
         }
-        if (!reservation.sameMember(member)) {
+        if (!reservation.getMember().equals(member)) {
             throw new AuthenticationException();
         }
-        List<ReservationWaiting> reservationWaitings = reservationWaitingDao.findAllByScheduleIdOrderByDesc(reservation.getSchedule().getId());
+
+        convertWaitingToReservationIfWaitingExist(reservation.getSchedule().getId());
+
+        reservationDao.deleteById(id);
+    }
+
+    private void convertWaitingToReservationIfWaitingExist(Long scheduleId){
+        List<ReservationWaiting> reservationWaitings =
+                reservationWaitingDao.findAllByScheduleIdOrderByDesc(scheduleId);
+
         if (!reservationWaitings.isEmpty()) {
             ReservationWaiting reservationWaiting = reservationWaitings.get(reservationWaitings.size() - 1);
             Reservation toSave = Reservation.fromReservationWaiting(reservationWaiting);
+
             reservationDao.save(toSave);
             reservationWaitingDao.deleteById(reservationWaiting.getId());
         }
-
-        reservationDao.deleteById(id);
     }
 
     public List<Reservation> findAllByMember(Member member) {

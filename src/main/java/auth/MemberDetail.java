@@ -7,7 +7,6 @@ import nextstep.member.Member;
 @Getter
 @AllArgsConstructor
 public class MemberDetail {
-
     private Long id;
     private String username;
     private String password;
