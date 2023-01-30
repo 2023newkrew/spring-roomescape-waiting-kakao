@@ -1,7 +1,7 @@
 package roomescape.auth;
 
 public interface UserDetailsDao {
-    UserDetails findByUsername2(String username);
+    UserDetails findByUsername(String username);
 
     UserDetails findById(Long id);
 }
