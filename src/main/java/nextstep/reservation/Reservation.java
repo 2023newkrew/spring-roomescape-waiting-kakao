@@ -1,10 +1,12 @@
 package nextstep.reservation;
 
+import lombok.Getter;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
 import java.util.Objects;
 
+@Getter
 public class Reservation {
     private Long id;
     private Schedule schedule;
@@ -22,18 +24,6 @@ public class Reservation {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Schedule getSchedule() {
-        return schedule;
-    }
-
-    public Member getMember() {
-        return member;
     }
 
     public boolean sameMember(Member member) {

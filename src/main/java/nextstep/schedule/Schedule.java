@@ -1,10 +1,12 @@
 package nextstep.schedule;
 
+import lombok.Getter;
 import nextstep.theme.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Getter
 public class Schedule {
     private Long id;
     private Theme theme;
@@ -25,21 +27,5 @@ public class Schedule {
         this.theme = theme;
         this.date = date;
         this.time = time;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public LocalTime getTime() {
-        return time;
     }
 }
