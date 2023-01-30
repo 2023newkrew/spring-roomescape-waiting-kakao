@@ -11,6 +11,7 @@ import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -45,8 +46,12 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
-    public List<Reservation> findAllByMemberId(Long id) {
-        return reservationDao.findAllByMemberId(id);
+    public List<MyReservationResponse> findAllByMemberId(Long id) {
+        List<Reservation> myReservations = reservationDao.findAllByMemberId(id);
+
+        return myReservations.stream()
+                .map(MyReservationResponse::from)
+                .collect(Collectors.toList());
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {

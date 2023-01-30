@@ -30,8 +30,8 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations/mine")
-    public ResponseEntity<List<Reservation>> readMyReservations(@LoginMember Member member) {
-        List<Reservation> results = reservationService.findAllByMemberId(member.getId());
+    public ResponseEntity<List<MyReservationResponse>> readMyReservations(@LoginMember Member member) {
+        List<MyReservationResponse> results = reservationService.findAllByMemberId(member.getId());
         return ResponseEntity.ok().body(results);
     }
 
