@@ -5,10 +5,17 @@ values (1, '어드민', '010-1234-5678', 'admin', '1q2w3e4r!', true),
 
 insert into theme(id, name, desc, price)
 values (1, '기본테마', '테마설명', 1234000),
-       (2, '삭제확인테마', '테마설명', 40000);
+       (2, '삭제확인테마', '테마설명', 40000),
+       (3, '더미테마', '테마설명', 41000);
 
 insert into reservation(id, date, time, name, theme_id, member_id)
-values (1, '1970-01-01', '12:00', '예약예약', 1, 2);
+values (1, '1970-01-01', '12:00', '예약예약0', 1, 2);
+
+
+insert into waiting(id, date, time, name, theme_id, member_id)
+values (1, '1970-01-01', '12:00', '대기대기0', 3, 1),
+       (2, '1970-01-01', '12:00', '대기대기1', 1, 2),
+       (3, '1970-01-01', '12:00', '대기대기2', 1, 2);
 --
 alter table member
     alter column id restart with 10;

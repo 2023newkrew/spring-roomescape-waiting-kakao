@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,18 +22,18 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Random;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
+import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-@DisplayName("웹 요청 / 응답 처리로 입출력 추가")
+@DisplayName("예약 대기열 기능 확인")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(classes = {SpringWebApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @ActiveProfiles({"web"})
-public class ReservationTest {
+public class WaitingTest {
     private final ObjectMapper mapper = new ObjectMapper()
             .registerModule(new JavaTimeModule());
 
@@ -44,7 +42,6 @@ public class ReservationTest {
 
     private String ownerToken;
     private String otherToken;
-
 
     @BeforeAll
     void setup() throws Exception {
@@ -72,135 +69,111 @@ public class ReservationTest {
                            .getAccessToken();
     }
 
-    @DisplayName("예약 하기")
+
+    @DisplayName("대기 가능한 예약 하기")
     @Transactional
     @Test
-    void createReservation() throws Exception {
+    void createWaiting() throws Exception {
         var rand = new Random();
-        mvc.perform(post("/api/reservations")
+        var date = LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28));
+        var time = LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0);
+        mvc.perform(post("/api/waiting")
                    .header("Authorization", "Bearer " + ownerToken)
                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                    .content(mapper.writeValueAsString(new ReservationsControllerPostBody(
-                           LocalDate.of(rand.nextInt(2000, 2200), rand.nextInt(1, 12), rand.nextInt(1, 28)),
-                           LocalTime.of(rand.nextInt(0, 24), rand.nextInt(0, 60), 0),
+                           date,
+                           time,
                            UUID.randomUUID().toString().split("-")[0],
                            1L
                    )))
            )
-           .andExpect(status().isCreated());
-    }
+           .andExpect(status().isCreated())
+           .andExpect(header().string("Location", matchesPattern(Pattern.compile("^/api/reservations/.+$"))))
+        ;
 
-    @DisplayName("예약 조회")
-    @Test
-    void showReservation() throws Exception {
-        mvc.perform(get("/api/reservations/1"))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("예약예약0"))
-           .andExpect(jsonPath("$.date").value("1970-01-01"))
-           .andExpect(jsonPath("$.time").value("12:00"))
-           .andExpect(jsonPath("$.theme_id").value(1L))
-           .andExpect(jsonPath("$.theme_name").value("기본테마"))
-           .andExpect(jsonPath("$.theme_desc").value("테마설명"))
-           .andExpect(jsonPath("$.theme_price").value(1234000))
+        mvc.perform(post("/api/waiting")
+                   .header("Authorization", "Bearer " + otherToken)
+                   .contentType(MediaType.APPLICATION_JSON_VALUE)
+                   .content(mapper.writeValueAsString(new ReservationsControllerPostBody(
+                           date,
+                           time,
+                           UUID.randomUUID().toString().split("-")[0],
+                           1L
+                   )))
+           )
+           .andExpect(status().isCreated())
+           .andExpect(header().string("Location", matchesPattern(Pattern.compile("^/api/waiting/.+$"))))
         ;
     }
 
-    @DisplayName("내 예약 조회")
+    @DisplayName("내 대기목록 조회")
     @Test
-    void showMyReservation() throws Exception {
+    void showMyWaiting() throws Exception {
+        mvc.perform(get("/api/waiting/mine")
+                   .header("Authorization", "Bearer " + ownerToken)
+           )
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.items.size()").value(2))
+           .andExpect(jsonPath("$.items[0].name").value("대기대기1"))
+           .andExpect(jsonPath("$.items[0].date").value("1970-01-01"))
+           .andExpect(jsonPath("$.items[0].time").value("12:00"))
+           .andExpect(jsonPath("$.items[0].theme_id").value(1L))
+           .andExpect(jsonPath("$.items[0].theme_name").value("기본테마"))
+           .andExpect(jsonPath("$.items[0].theme_desc").value("테마설명"))
+           .andExpect(jsonPath("$.items[0].theme_price").value(1234000))
+           .andExpect(jsonPath("$.items[0].wait_number").value(1))
+           .andExpect(jsonPath("$.items[1].name").value("대기대기2"))
+           .andExpect(jsonPath("$.items[1].date").value("1970-01-01"))
+           .andExpect(jsonPath("$.items[1].time").value("12:00"))
+           .andExpect(jsonPath("$.items[1].theme_id").value(1L))
+           .andExpect(jsonPath("$.items[1].theme_name").value("기본테마"))
+           .andExpect(jsonPath("$.items[1].theme_desc").value("테마설명"))
+           .andExpect(jsonPath("$.items[1].theme_price").value(1234000))
+           .andExpect(jsonPath("$.items[1].wait_number").value(2))
+        ;
+    }
+
+    @DisplayName("예약 대기 취소")
+    @Transactional
+    @Test
+    void deleteMyWaiting() throws Exception {
+        mvc.perform(delete("/api/waiting/2")
+                   .header("Authorization", "Bearer " + ownerToken)
+           )
+           .andExpect(status().isNoContent());
+    }
+
+    @DisplayName("다른 사람 예약 대기 취소")
+    @Transactional
+    @Test
+    void deleteNotMyWaiting() throws Exception {
+        mvc.perform(delete("/api/waiting/1")
+                   .header("Authorization", "Bearer " + otherToken)
+           )
+           .andExpect(status().isForbidden());
+    }
+
+    @DisplayName("예약 취소시 자동으로 대기중인 요소를 예약시킨다.")
+    @Transactional
+    @Test
+    void autoWaitingUpdate() throws Exception {
+        mvc.perform(delete("/api/reservations/1")
+                   .header("Authorization", "Bearer " + ownerToken)
+           )
+           .andExpect(status().isNoContent());
+        mvc.perform(get("/api/waiting/mine")
+                   .header("Authorization", "Bearer " + ownerToken)
+           )
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.items.size()").value(1))
+           .andExpect(jsonPath("$.items[0].name").value("대기대기2"))
+           .andExpect(jsonPath("$.items[0].wait_number").value(1))
+        ;
         mvc.perform(get("/api/reservations/mine")
                    .header("Authorization", "Bearer " + ownerToken)
            )
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.items.size()").value(1))
         ;
-    }
-
-    @DisplayName("내 예약이 아닌 경우에 대한 조회")
-    @Test
-    void showNotMyReservation() throws Exception {
-        mvc.perform(get("/api/reservations/mine")
-                   .header("Authorization", "Bearer " + otherToken)
-           )
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$.items.size()").value(0))
-        ;
-    }
-
-    @DisplayName("예약 취소")
-    @Transactional
-    @Test
-    void deleteReservation() throws Exception {
-        mvc.perform(delete("/api/reservations/1")
-                   .header("Authorization", "Bearer " + ownerToken)
-           )
-           .andExpect(status().isNoContent());
-    }
-
-    //
-    @DisplayName("소유자가 아니라 삭제 불가능한 경우")
-    @Transactional
-    @Test
-    void deleteReservationNotOwner() throws Exception {
-        mvc.perform(delete("/api/reservations/1")
-                   .header("Authorization", "Bearer " + otherToken)
-           )
-           .andExpect(status().isForbidden());
-    }
-
-    //
-    @DisplayName("content-type이 application/json이 아닌 경우 값을 받지 않는다.")
-    @Transactional
-    @ParameterizedTest
-    @ValueSource(strings = {
-            MediaType.TEXT_PLAIN_VALUE,
-            MediaType.TEXT_HTML_VALUE,
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-    })
-    void notJson(String contentType) throws Exception {
-        mvc.perform(post("/api/reservations")
-                   .header("Authorization", "Bearer " + ownerToken)
-                   .contentType(contentType)
-                   .content("")
-           )
-           .andExpect(status().isUnsupportedMediaType());
-    }
-
-    //
-    @DisplayName("예약 생성) 예약 생성 시 날짜와 시간이 똑같은 예약이 이미 있는 경우 예약을 생성할 수 없다.")
-    @Transactional
-    @Test
-    void failToCreateReservationAlreadyExist() throws Exception {
-        mvc.perform(post("/api/reservations")
-                   .header("Authorization", "Bearer " + ownerToken)
-                   .contentType(MediaType.APPLICATION_JSON_VALUE)
-                   .content(mapper.writeValueAsString(new ReservationsControllerPostBody(
-                           LocalDate.of(1970, 1, 1),
-                           LocalTime.of(12, 0, 0),
-                           UUID.randomUUID().toString().split("-")[0],
-                           1L
-                   )))
-           )
-           .andExpect(status().isConflict());
-    }
-
-    //
-    @DisplayName("예약 조회) ID가 없는 경우 조회 불가")
-    @Test
-    void notExistID() throws Exception {
-        mvc.perform(get("/api/reservations/0"))
-           .andExpect(status().isNotFound());
-    }
-
-    //
-    @DisplayName("예약 삭제) ID가 없는 경우 삭제 불가")
-    @Transactional
-    @Test
-    void deleteNotExistId() throws Exception {
-        mvc.perform(delete("/api/reservations/0")
-                   .header("Authorization", "Bearer " + ownerToken)
-           )
-           .andExpect(status().isNotFound());
     }
 }
