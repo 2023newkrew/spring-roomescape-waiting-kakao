@@ -1,8 +1,9 @@
 package nextstep.service;
 
+import nextstep.domain.dto.request.ThemeRequest;
 import nextstep.domain.persist.Theme;
 import nextstep.repository.ThemeDao;
-import nextstep.domain.dto.request.ThemeRequest;
+import nextstep.support.exception.api.NoSuchThemeException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class ThemeService {
     public void delete(Long id) {
         Theme theme = themeDao.findById(id);
         if (theme == null) {
-            throw new NullPointerException();
+            throw new NoSuchThemeException();
         }
 
         themeDao.delete(id);

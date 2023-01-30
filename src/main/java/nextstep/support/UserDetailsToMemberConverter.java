@@ -6,7 +6,6 @@ import org.springframework.core.convert.converter.Converter;
 
 @Deprecated
 public class UserDetailsToMemberConverter implements Converter<UserDetails, Member> {
-
     @Override
     public Member convert(UserDetails userDetails) {
         return new Member(

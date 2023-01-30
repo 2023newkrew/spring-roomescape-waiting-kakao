@@ -1,11 +1,11 @@
 package auth.service;
 
-import auth.domain.persist.UserDetails;
-import auth.repository.UserDetailsRepository;
-import auth.support.AuthenticationException;
-import auth.support.JwtTokenProvider;
 import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
+import auth.domain.persist.UserDetails;
+import auth.repository.UserDetailsRepository;
+import auth.support.AuthorizationException;
+import auth.support.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ public class LoginService {
     public TokenResponse createToken(TokenRequest tokenRequest) {
         UserDetails userDetails = userDetailsRepository.findByUsername(tokenRequest.getUsername());
         if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {
-            throw new AuthenticationException();
+            throw new AuthorizationException();
         }
 
         String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());

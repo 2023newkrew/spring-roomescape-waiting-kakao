@@ -1,13 +1,11 @@
 package nextstep.controller;
 
 import auth.domain.persist.UserDetails;
-import auth.support.AuthenticationException;
 import auth.domain.template.LoginMember;
+import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
 import nextstep.domain.persist.Reservation;
-import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.service.ReservationService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,13 +46,4 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
 }

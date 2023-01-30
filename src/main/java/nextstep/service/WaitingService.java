@@ -1,7 +1,6 @@
 package nextstep.service;
 
 import auth.domain.persist.UserDetails;
-import auth.support.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.WaitingRequest;
 import nextstep.domain.dto.response.WaitingResponse;
@@ -11,6 +10,8 @@ import nextstep.domain.persist.Waiting;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.WaitingDao;
+import nextstep.support.exception.api.NoSuchWaitingException;
+import nextstep.support.exception.api.NotWaitingOwnerException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,11 +61,11 @@ public class WaitingService {
         Waiting waiting = waitingDao.findById(id);
 
         if (waiting == null) {
-            throw new NullPointerException();
+            throw new NoSuchWaitingException();
         }
 
         if (!waiting.sameMember(new Member(userDetails))) {
-            throw new AuthenticationException();
+            throw new NotWaitingOwnerException();
         }
 
         waitingDao.deleteById(id);

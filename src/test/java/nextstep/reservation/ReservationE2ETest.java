@@ -149,7 +149,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("없는 예약을 삭제한다")
     @Test
-    void Should_ThrowBadRequest_When_IfAttemptToDeleteNotExists() {
+    void Should_ThrowNotFound_When_IfAttemptToDeleteNotExists() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -157,7 +157,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("다른 사람이 예약을 삭제한다")
