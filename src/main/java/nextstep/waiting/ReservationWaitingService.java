@@ -7,6 +7,8 @@ import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.support.ReservationNotFoundException;
+import nextstep.support.ScheduleNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,7 +34,7 @@ public class ReservationWaitingService {
 
         Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new ScheduleNotFoundException();
         }
 
         ReservationWaiting reservationWaiting = new ReservationWaiting(
@@ -48,7 +50,7 @@ public class ReservationWaitingService {
     public void deleteById(Long memberId, Long reservationWaitingId) {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId);
         if (reservationWaiting == null) {
-            throw new NullPointerException();
+            throw new ReservationNotFoundException();
         }
 
         if (!reservationWaiting.sameMember(memberId)) {

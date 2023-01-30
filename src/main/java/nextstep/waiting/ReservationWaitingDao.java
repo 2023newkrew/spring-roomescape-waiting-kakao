@@ -102,7 +102,6 @@ public class ReservationWaitingDao {
             return jdbcTemplate.query(sql, rowMapper, memberId);
         }
         catch (RuntimeException e) {
-            e.printStackTrace();
             return Collections.emptyList();
         }
     }
