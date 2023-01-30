@@ -3,6 +3,7 @@ package nextstep;
 import auth.*;
 import nextstep.member.MemberDao;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -19,10 +20,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    private final MemberDao memberDao;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public WebMvcConfiguration(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public WebMvcConfiguration(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -42,7 +43,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Bean
     public LoginService loginService() {
-        return new LoginService(memberDao, jwtTokenProvider());
+        return new LoginService(eventPublisher, jwtTokenProvider());
     }
 
     @Bean

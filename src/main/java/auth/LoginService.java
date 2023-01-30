@@ -1,24 +1,23 @@
 package auth;
 
-import nextstep.member.Member;
-import nextstep.member.MemberDao;
+import org.springframework.context.ApplicationEventPublisher;
 
 public class LoginService {
-    private MemberDao memberDao;
-    private JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
+    private final ApplicationEventPublisher eventPublisher;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public LoginService(ApplicationEventPublisher eventPublisher, JwtTokenProvider jwtTokenProvider) {
+        this.eventPublisher = eventPublisher;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        Member member = memberDao.findByUsername(tokenRequest.getUsername());
-        if (member == null || member.checkWrongPassword(tokenRequest.getPassword())) {
-            throw new AuthenticationException();
-        }
+        LoginRequestEvent loginRequestEvent = new LoginRequestEvent(tokenRequest.getUsername(), tokenRequest.getPassword());
 
-        String accessToken = jwtTokenProvider.createToken(member.getId() + "", member.getRole());
+        eventPublisher.publishEvent(loginRequestEvent);
+
+        String accessToken = jwtTokenProvider.createToken(loginRequestEvent.getId() + "", loginRequestEvent.getRole());
 
         return new TokenResponse(accessToken);
     }
