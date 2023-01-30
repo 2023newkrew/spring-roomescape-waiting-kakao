@@ -1,10 +1,7 @@
 package nextstep.reservation_waiting;
 
-import auth.TokenRequest;
-import auth.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.member.MemberRequest;
 import nextstep.reservation.ReservationRequest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,26 +26,22 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     @Test
     @DisplayName("예약 대기를 생성한다. (해당 스케줄에 예약이 없을 경우)")
-    void createReservationWaitingWhenReservationAlreadyExists() {
-        ReservationWaitingRequest request = new ReservationWaitingRequest(
-                1L
-        );
-        var response = sendReservationWaiting(request);
+    void createReservationWaitingNoReservation() {
+        ReservationWaitingRequest request = new ReservationWaitingRequest(1L);
+        String location = createReservationWaiting(request);
 
-        assertThat(response.header("Location").startsWith("/reservations/")).isTrue();
+        assertThat(location.startsWith("/reservations/")).isTrue();
     }
 
     @Test
     @DisplayName("예약 대기를 생성한다. (해당 스케줄에 예약이 이미 있을 경우)")
-    void createReservationWaiting() {
+    void createReservationWaitingExistReservation() {
         createReservation(1L);
 
-        ReservationWaitingRequest request = new ReservationWaitingRequest(
-                1L
-        );
-        var response = sendReservationWaiting(request);
+        ReservationWaitingRequest request = new ReservationWaitingRequest(1L);
+        var location = createReservationWaiting(request);
 
-        assertThat(response.header("Location").startsWith("/reservation-waitings/")).isTrue();
+        assertThat(location.startsWith("/reservation-waitings/")).isTrue();
     }
 
     private void createReservation(Long scheduleId) {
@@ -71,8 +64,9 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     void findMyReservationWaitings() {
         createReservation(1L);
         createReservation(2L);
-        sendReservationWaiting(new ReservationWaitingRequest(1L));
-        sendReservationWaiting(new ReservationWaitingRequest(2L));
+        createReservationWaiting(new ReservationWaitingRequest(1L));
+        createReservationWaiting(new ReservationWaitingRequest(2L));
+
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -90,7 +84,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     @DisplayName("자신의 예약 대기를 취소할 수 있다.")
     void deleteMyReservationWaiting() {
         createReservation(1L);
-        String location = sendReservationWaiting(new ReservationWaitingRequest(1L)).header("Location");
+        String location = createReservationWaiting(new ReservationWaitingRequest(1L));
         RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -105,7 +99,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     @DisplayName("자신의 예약 대기가 아니면 취소할 수 없다.")
     void deleteOtherReservationWaiting() {
         createReservation(1L);
-        String location = sendReservationWaiting(new ReservationWaitingRequest(1L)).header("Location");
+        String location = createReservationWaiting(new ReservationWaitingRequest(1L));
 
         String anotherToken = createAnotherMember();
 
@@ -117,29 +111,6 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .extract();
-    }
-
-    private String createAnotherMember() {
-        MemberRequest memberBody = new MemberRequest("AnotherUser", "AnotherUser", "user", "010-4321-5678", "USER");
-        RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(memberBody)
-                .when().post("/members")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-
-        TokenRequest tokenBody = new TokenRequest("AnotherUser", "AnotherUser");
-        var response = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(tokenBody)
-                .when().post("/login/token")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        return response.as(TokenResponse.class).getAccessToken();
     }
 
     @Test

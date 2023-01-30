@@ -1,8 +1,6 @@
 package nextstep.reservation;
 
 import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
 import nextstep.reservation_waiting.ReservationWaitingRequest;
 import nextstep.reservation_waiting.ReservationWaitingResponse;
@@ -27,7 +25,6 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     private ReservationRequest request;
     private Long themeId;
-    private Long scheduleId;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -59,7 +56,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
         String[] scheduleLocation = scheduleResponse.header("Location").split("/");
-        scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
+        Long scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
         request = new ReservationRequest(
                 scheduleId
@@ -137,12 +134,12 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 삭제한다")
     @Test
     void delete() {
-        var reservation = createReservation(request);
+        var reservationLocation = createReservation(request);
 
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete(reservation.header("Location"))
+                .when().delete(reservationLocation)
                 .then().log().all()
                 .extract();
 
@@ -152,15 +149,16 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 삭제하면 예약 대기를 예약으로 변경한다.")
     @Test
     void deleteWhenReservationWaitingExists() {
-        var reservation = createReservation(request);
-        sendReservationWaiting(new ReservationWaitingRequest(request.getScheduleId()));
+        var reservationLocation = createReservation(request);
+        createReservationWaiting(new ReservationWaitingRequest(request.getScheduleId()));
 
         var reservationsResponse = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete(reservation.header("Location"))
+                .when().delete(reservationLocation)
                 .then().log().all()
                 .extract();
+        assertThat(reservationsResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         var reservationWaitingsResponse = RestAssured
                 .given().log().all()
@@ -170,6 +168,8 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
+        List<ReservationWaitingResponse> responses = reservationWaitingsResponse.jsonPath().getList(".", ReservationWaitingResponse.class);
+        assertThat(responses.size()).isEqualTo(0);
 
         var reservationResponseAfterDeleteResponse = RestAssured
                 .given().log().all()
@@ -178,12 +178,6 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().get("/reservations/mine")
                 .then().log().all()
                 .extract();
-
-        assertThat(reservationsResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
-        List<ReservationWaitingResponse> responses = reservationWaitingsResponse.jsonPath().getList(".", ReservationWaitingResponse.class);
-        assertThat(responses.size()).isEqualTo(0);
-
         List<Reservation> reservations = reservationResponseAfterDeleteResponse.jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(1);
     }
@@ -246,16 +240,5 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-    }
-
-    private ExtractableResponse<Response> createReservation(ReservationRequest request) {
-        return RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .auth().oauth2(token.getAccessToken())
-                .body(request)
-                .when().post("/reservations")
-                .then().log().all()
-                .extract();
     }
 }
