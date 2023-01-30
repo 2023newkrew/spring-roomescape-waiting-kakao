@@ -199,12 +199,12 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2("other-token")
+                .auth().oauth2(otherPersonToken.getAccessToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     private ExtractableResponse<Response> createReservation() {

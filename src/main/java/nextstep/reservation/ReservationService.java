@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import auth.ForbiddenException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -70,7 +71,7 @@ public class ReservationService {
         }
 
         if (!reservation.sameMember(member)) {
-            throw new AuthenticationException();
+            throw new ForbiddenException();
         }
 
         reservationDao.deleteById(id);
