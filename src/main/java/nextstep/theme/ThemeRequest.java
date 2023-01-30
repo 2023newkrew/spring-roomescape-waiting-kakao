@@ -5,6 +5,9 @@ public class ThemeRequest {
     private String desc;
     private int price;
 
+    public ThemeRequest() {
+    }
+
     public ThemeRequest(String name, String desc, int price) {
         this.name = name;
         this.desc = desc;
