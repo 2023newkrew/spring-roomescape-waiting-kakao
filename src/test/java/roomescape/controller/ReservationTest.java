@@ -105,6 +105,28 @@ public class ReservationTest {
         ;
     }
 
+    @DisplayName("내 예약 조회")
+    @Test
+    void showMyReservation() throws Exception {
+        mvc.perform(get("/api/reservations/mine")
+                   .header("Authorization", "Bearer " + ownerToken)
+           )
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.items.size()").value(1))
+        ;
+    }
+
+    @DisplayName("내 예약이 아닌 경우에 대한 조회")
+    @Test
+    void showNotMyReservation() throws Exception {
+        mvc.perform(get("/api/reservations/mine")
+                   .header("Authorization", "Bearer " + otherToken)
+           )
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.items.size()").value(0))
+        ;
+    }
+
     @DisplayName("예약 취소")
     @Transactional
     @Test
