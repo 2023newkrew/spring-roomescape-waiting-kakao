@@ -16,7 +16,7 @@ public class LoginService {
 
     public UserDetails extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        String role = jwtTokenProvider.getRole(credential);
+        Role role = jwtTokenProvider.getRole(credential);
         return new UserDetails(id, role);
     }
 }

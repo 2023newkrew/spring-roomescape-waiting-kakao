@@ -1,5 +1,7 @@
 package nextstep.reservation;
 
+import auth.Role;
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
@@ -15,13 +17,10 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ReservationDao {
 
     public final JdbcTemplate jdbcTemplate;
-
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation.id"),
@@ -42,7 +41,7 @@ public class ReservationDao {
                     resultSet.getString("member.password"),
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
-                    resultSet.getString("member.role")
+                    Role.valueOf(resultSet.getString("member.role"))
             )
     );
 

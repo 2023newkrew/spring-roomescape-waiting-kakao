@@ -1,5 +1,6 @@
 package nextstep.member;
 
+import auth.Role;
 import io.restassured.RestAssured;
 import auth.TokenRequest;
 import auth.TokenResponse;
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class MemberE2ETest {
+class MemberE2ETest {
 
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
@@ -23,7 +24,7 @@ public class MemberE2ETest {
 
     @BeforeEach
     void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", Role.ADMIN);
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -47,8 +48,8 @@ public class MemberE2ETest {
 
     @DisplayName("멤버를 생성한다")
     @Test
-    public void create() {
-        MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", "ADMIN");
+    void create() {
+        MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", Role.ADMIN);
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +61,7 @@ public class MemberE2ETest {
 
     @DisplayName("내 정보를 조회한다")
     @Test
-    public void showThemes() {
+    void showThemes() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())

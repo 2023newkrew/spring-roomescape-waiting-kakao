@@ -15,6 +15,6 @@ public class MemberService {
     }
 
     public Member findById(Long id) {
-        return memberDao.findById(id);
+        return memberDao.findById(id).orElseThrow(AssertionError::new); // 논리적으로 불가능한 상황. InternalServerError 던지도록 처리
     }
 }

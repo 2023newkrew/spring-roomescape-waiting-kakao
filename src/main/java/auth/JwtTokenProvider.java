@@ -19,7 +19,7 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(String principal, String role) {
+    public String createToken(String principal, Role role) {
         Claims claims = Jwts.claims().setSubject(principal);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -37,8 +37,8 @@ public class JwtTokenProvider {
         return extractBody(token).getSubject();
     }
 
-    public String getRole(String token) {
-        return extractBody(token).get("role", String.class);
+    public Role getRole(String token) {
+        return Role.valueOf(extractBody(token).get("role", String.class));
     }
 
     private Claims extractBody(String token) {

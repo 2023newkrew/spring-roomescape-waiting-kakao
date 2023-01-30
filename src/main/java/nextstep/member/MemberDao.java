@@ -1,5 +1,7 @@
 package nextstep.member;
 
+import auth.Role;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -22,7 +24,7 @@ public class MemberDao {
             resultSet.getString("password"),
             resultSet.getString("name"),
             resultSet.getString("phone"),
-            resultSet.getString("role")
+            Role.valueOf(resultSet.getString("role"))
     );
 
     public Long save(Member member) {
@@ -35,7 +37,7 @@ public class MemberDao {
             ps.setString(2, member.getPassword());
             ps.setString(3, member.getName());
             ps.setString(4, member.getPhone());
-            ps.setString(5, member.getRole());
+            ps.setString(5, member.getRole().name());
             return ps;
 
         }, keyHolder);
@@ -43,13 +45,13 @@ public class MemberDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Member findById(Long id) {
+    public Optional<Member> findById(Long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
     }
 
-    public Member findByUsername(String username) {
+    public Optional<Member> findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, username));
     }
 }

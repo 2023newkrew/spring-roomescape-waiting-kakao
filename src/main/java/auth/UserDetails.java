@@ -8,5 +8,5 @@ import lombok.Getter;
 public class UserDetails {
 
     private Long id;
-    private String role;
+    private Role role;
 }

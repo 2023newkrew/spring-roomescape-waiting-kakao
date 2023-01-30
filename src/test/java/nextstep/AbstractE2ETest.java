@@ -1,5 +1,6 @@
 package nextstep;
 
+import auth.Role;
 import io.restassured.RestAssured;
 import auth.TokenRequest;
 import auth.TokenResponse;
@@ -20,7 +21,7 @@ public class AbstractE2ETest {
 
     @BeforeEach
     protected void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", Role.ADMIN);
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

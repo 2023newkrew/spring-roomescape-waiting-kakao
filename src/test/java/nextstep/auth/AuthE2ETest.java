@@ -1,5 +1,6 @@
 package nextstep.auth;
 
+import auth.Role;
 import auth.TokenRequest;
 import auth.TokenResponse;
 import io.restassured.RestAssured;
@@ -21,14 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class AuthE2ETest {
+class AuthE2ETest {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     private Long memberId;
 
     @BeforeEach
     void setUp() {
-        MemberRequest body = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        MemberRequest body = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", Role.ADMIN);
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +41,7 @@ public class AuthE2ETest {
 
     @DisplayName("토큰을 생성한다")
     @Test
-    public void create() {
+    void create() {
         TokenRequest body = new TokenRequest(USERNAME, PASSWORD);
         var response = RestAssured
                 .given().log().all()

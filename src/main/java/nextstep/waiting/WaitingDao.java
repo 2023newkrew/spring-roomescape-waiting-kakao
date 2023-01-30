@@ -1,11 +1,11 @@
 package nextstep.waiting;
 
+import auth.Role;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 import nextstep.member.Member;
-import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
 @Component
 public class WaitingDao {
@@ -43,7 +42,7 @@ public class WaitingDao {
                     resultSet.getString("member.password"),
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
-                    resultSet.getString("member.role")
+                    resultSet.getObject("member.role", Role.class)
             )
     );
 
