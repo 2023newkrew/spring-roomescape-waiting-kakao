@@ -6,6 +6,8 @@ import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ReservationWaitingsService {
 
@@ -20,8 +22,11 @@ public class ReservationWaitingsService {
     public long create(Member member, ReservationWaitingRequest request) {
         Schedule schedule = scheduleDao.findById(request.getScheduleId());
         long waitNum = reservationWaitingsDao.findWaitNumByScheduleId(schedule.getId());
-        ReservationWaitings reservationWaitings = new ReservationWaitings(member, schedule, waitNum);
+        ReservationWaitings reservationWaitings = new ReservationWaitings(member, schedule, waitNum + 1);
         return reservationWaitingsDao.create(reservationWaitings);
     }
 
+    public List<ReservationWaitings> findMyReservationWaitings(Member member) {
+        return reservationWaitingsDao.findMyReservationWaitings(member.getId());
+    }
 }
