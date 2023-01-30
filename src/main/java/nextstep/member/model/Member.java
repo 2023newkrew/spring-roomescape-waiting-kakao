@@ -29,8 +29,4 @@ public class Member {
 
     public Member() {
     }
-
-    public MemberRequest toDto(){
-        return new MemberRequest(this.memberName, this.password, this.name, this.phone);
-    }
 }

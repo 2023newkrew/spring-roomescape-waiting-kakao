@@ -20,7 +20,7 @@ class MemberE2ETest {
     @DisplayName("존재하지 않는 memberName으로 멤버를 생성할 수 있다.")
     @Test
     void test1() {
-        MemberRequest memberRequest = MemberTestUtil.NOT_EXIST_MEMBER.toDto();
+        MemberRequest memberRequest = new MemberRequest(MemberTestUtil.NOT_EXIST_MEMBER);
 
         MemberTestUtil.createMemberAndGetValidatableResponse(memberRequest)
                 .statusCode(HttpStatus.CREATED.value());
@@ -29,7 +29,7 @@ class MemberE2ETest {
     @DisplayName("이미 존재하는 memberName으로는 멤버를 생성할 수 없다.")
     @Test
     void test2() {
-        MemberRequest memberRequest = MemberTestUtil.RESERVATION_EXIST_MEMBER_1.toDto();
+        MemberRequest memberRequest = new MemberRequest(MemberTestUtil.RESERVATION_EXIST_MEMBER_1);
 
         MemberTestUtil.createMemberAndGetValidatableResponse(memberRequest)
                 .statusCode(HttpStatus.BAD_REQUEST.value());
