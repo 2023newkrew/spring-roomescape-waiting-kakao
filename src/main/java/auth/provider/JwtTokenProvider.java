@@ -1,27 +1,46 @@
 package auth.provider;
 
-import auth.domain.TokenData;
+import auth.domain.UserDetails;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
 import auth.exception.AuthenticationException;
 import auth.exception.ErrorMessage;
-import io.jsonwebtoken.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import auth.service.AuthenticationPrincipal;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 
 import java.util.Date;
+import java.util.Objects;
 
-@Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    private final String secretKey;
 
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final long validityInMilliseconds;
 
-    public String createToken(TokenData tokenData) {
+    private final AuthenticationPrincipal principal;
+
+    public TokenResponse createToken(TokenRequest request) {
+        UserDetails userDetails = principal.getByUsername(request.getUsername());
+        validatePassword(userDetails, request.getPassword());
+
+        return new TokenResponse(createToken(userDetails));
+    }
+
+    private void validatePassword(UserDetails userDetails, String password) {
+        if (Objects.isNull(userDetails) || userDetails.isWrongPassword(password)) {
+            throw new AuthenticationException(ErrorMessage.INVALID_USERNAME_OR_PASSWORD);
+        }
+    }
+
+    private String createToken(UserDetails userDetails) {
         Claims claims = Jwts.claims();
-        claims.put("id", tokenData.getId());
-        claims.put("role", tokenData.getRole());
+        claims.put("username", userDetails.getUsername());
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -33,46 +52,46 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public TokenData getTokenData(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
+    public UserDetails getUserDetails(String bearerToken) {
+        Claims body = getValidBody(bearerToken);
 
-        return new TokenData(claims.get("id", Long.class), claims.get("role", String.class));
+        return principal.getByUsername(body.get("username", String.class));
     }
 
-    public boolean validateToken(String token) {
-        try {
-            Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token);
-
-            return !claims.getBody()
-                    .getExpiration()
-                    .before(new Date());
-        }
-        catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    public String getValidToken(String bearerToken) {
-        if (isNullOrNotBearer(bearerToken)) {
+    private Claims getValidBody(String bearerToken) {
+        if (isBlankOrNotBearer(bearerToken)) {
             throw new AuthenticationException(ErrorMessage.NOT_LOGGED_IN);
         }
+        String accessToken = bearerToken.substring(7);
 
-        var accessToken = bearerToken.substring(7);
-
-        if (!validateToken(accessToken)) {
-            throw new AuthenticationException(ErrorMessage.INVALID_TOKEN);
-        }
-
-        return accessToken;
-
+        return parseBody(accessToken);
     }
 
-    private boolean isNullOrNotBearer(String bearerToken) {
-        return bearerToken == null || !bearerToken.startsWith("Bearer ");
+    private boolean isBlankOrNotBearer(String bearerToken) {
+        return Strings.isBlank(bearerToken) || !bearerToken.startsWith("Bearer ");
+    }
+
+    private Claims parseBody(String accessToken) {
+        try {
+            return Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(accessToken)
+                    .getBody();
+        }
+        catch (ExpiredJwtException e) {
+            throw new AuthenticationException(ErrorMessage.EXPIRED_TOKEN);
+        }
+        catch (Exception e) {
+            throw new AuthenticationException(ErrorMessage.INVALID_TOKEN);
+        }
+    }
+
+    public void validateAdmin(UserDetails userDetails) {
+        if (Objects.isNull(userDetails)) {
+            throw new AuthenticationException(ErrorMessage.NOT_LOGGED_IN);
+        }
+        if (userDetails.isNotAdmin()) {
+            throw new AuthenticationException(ErrorMessage.NOT_ADMIN);
+        }
     }
 }

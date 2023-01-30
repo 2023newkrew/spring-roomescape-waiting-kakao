@@ -1,19 +1,19 @@
 package nextstep.member.service;
 
 import auth.domain.UserDetails;
-import auth.service.UserDetailsPrincipal;
+import auth.service.AuthenticationPrincipal;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.Member;
 import nextstep.member.repository.MemberRepository;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-public class MemberPrincipal implements UserDetailsPrincipal {
+@Component
+public class MemberPrincipal implements AuthenticationPrincipal {
 
     private final MemberRepository repository;
 
     @Override
     public UserDetails getByUsername(String username) {
-        Member member = repository.getByUsername(username);
-        return new UserDetails(member.getId(), member.getUsername(), member.getPassword(), member.getRole());
+        return repository.getByUsername(username);
     }
 }

@@ -43,9 +43,4 @@ public class MemberServiceImpl implements MemberService {
     public MemberResponse getById(Long id) {
         return mapper.toResponse(repository.getById(id));
     }
-
-    @Override
-    public MemberResponse getByUsername(String username) {
-        return mapper.toResponse(repository.getByUsername(username));
-    }
 }

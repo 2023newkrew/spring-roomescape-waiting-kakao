@@ -1,7 +1,11 @@
 package nextstep.member.controller;
 
-import auth.resolver.MemberId;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
+import auth.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import nextstep.etc.resolver.LoginUser;
+import nextstep.member.domain.Member;
 import nextstep.member.dto.MemberRequest;
 import nextstep.member.dto.MemberResponse;
 import nextstep.member.service.MemberService;
@@ -17,6 +21,8 @@ import java.net.URI;
 public class MemberController {
 
     private static final String MEMBER_PATH = "/members";
+
+    private final JwtTokenProvider provider;
 
     private final MemberService service;
 
@@ -34,8 +40,13 @@ public class MemberController {
         return ResponseEntity.ok(service.getById(id));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> login(@RequestBody @Validated TokenRequest tokenRequest) {
+        return ResponseEntity.ok(provider.createToken(tokenRequest));
+    }
+
     @GetMapping("/me")
-    public ResponseEntity<MemberResponse> me(@MemberId Long id) {
-        return ResponseEntity.ok(service.getById(id));
+    public ResponseEntity<MemberResponse> me(@LoginUser Member member) {
+        return ResponseEntity.ok(service.getById(member.getId()));
     }
 }

@@ -1,22 +1,14 @@
 package auth.domain;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+public interface UserDetails {
 
-import java.util.Objects;
+    String getUsername();
 
-@RequiredArgsConstructor
-@Data
-@Setter(AccessLevel.NONE)
-public class UserDetails {
-    private final Long id;
-    private final String username;
-    private final String password;
-    private final UserRole role;
+    String getPassword();
 
-    public boolean isWrongPassword(String password) {
-        return !Objects.equals(this.password, password);
-    }
+    UserRole getRole();
+
+    boolean isWrongPassword(String password);
+
+    boolean isNotAdmin();
 }

@@ -1,7 +1,8 @@
 package nextstep.reservation.controller;
 
-import auth.resolver.MemberId;
 import lombok.RequiredArgsConstructor;
+import nextstep.etc.resolver.LoginUser;
+import nextstep.member.domain.Member;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
 import nextstep.reservation.service.ReservationService;
@@ -21,9 +22,9 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<Void> createReservation(
-            @MemberId Long memberId,
+            @LoginUser Member member,
             @RequestBody ReservationRequest request) {
-        ReservationResponse reservation = service.create(memberId, request);
+        ReservationResponse reservation = service.create(member.getId(), request);
         URI location = URI.create(RESERVATION_PATH + reservation.getId());
 
         return ResponseEntity.created(location).build();
@@ -36,8 +37,8 @@ public class ReservationController {
 
     @DeleteMapping("/{reservation_id}")
     public ResponseEntity<Boolean> deleteReservation(
-            @MemberId Long memberId,
+            @LoginUser Member member,
             @PathVariable("reservation_id") Long reservationId) {
-        return ResponseEntity.ok(service.deleteById(memberId, reservationId));
+        return ResponseEntity.ok(service.deleteById(member.getId(), reservationId));
     }
 }

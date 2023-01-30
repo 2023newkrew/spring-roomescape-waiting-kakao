@@ -8,6 +8,4 @@ public interface MemberService {
     MemberResponse create(MemberRequest request);
 
     MemberResponse getById(Long id);
-
-    MemberResponse getByUsername(String username);
 }
