@@ -3,6 +3,9 @@ package nextstep;
 import auth.TokenRequest;
 import auth.TokenResponse;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
 import nextstep.member.MemberRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,5 +43,36 @@ public class AbstractE2ETest {
                 .extract();
 
         token = response.as(TokenResponse.class);
+    }
+
+    protected RequestSpecification given() {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE);
+    }
+
+    protected RequestSpecification givenWithAuth() {
+        return given()
+                .auth().oauth2(token.getAccessToken());
+    }
+
+    protected <T> Response post(RequestSpecification given, String path, T request, Object... pathParams) {
+        return given
+                .body(request)
+                .when().post(path, pathParams);
+    }
+
+    protected <T> Response get(RequestSpecification given, String path, Object... pathParams) {
+        return given
+                .when().get(path, pathParams);
+    }
+
+    protected <T> Response delete(RequestSpecification given, String path, Object... pathParams) {
+        return given
+                .when().delete(path, pathParams);
+    }
+
+    protected ValidatableResponse then(Response response) {
+        return response.then().log().all();
     }
 }

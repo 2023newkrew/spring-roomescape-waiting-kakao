@@ -34,8 +34,11 @@
 
 ### 구현 목록
 
+* Pair Programming
 - [x] reservation-waiting table scheme 작성
+  - [x] ReservationWaiting 단위테스트 작성
 - [x] reservation-waiting repository 구현
+  - [x] jdbc test 작성
 - [x] reservation-waiting service 구현
 - [x] reservation-waiting controller 구현
   - [x] reservation-waiting post 구현
@@ -45,3 +48,13 @@
   - [x] reservation-waiting delete 구현
     - [x] 자신의 reservation-waiting 이 아니면 취소가 불가능 하다.
 - [x] 통합테스트 작성
+
+* 개인 refactoring
+- [x] 테스트 코드 정리
+  - [x] 유지보수 관련 변수 정리
+  - [x] 테스트 설명 추가
+  - [x] 중복코드 분리
+- [ ] 적용되지 않은 예외 상황들 생각해보기
+  - [ ] 다른 사람의 예약 대기를 취소하려 하는 경우 예외처리가 잘 되어있나?
+- [ ] 예약 대기를 추가하면서 달라져야 하는 부분 생각해보기
+  - [ ] 기존의 예약을 취소하는 경우에 해당 스케줄에 예약 대기가 있으면 예약처리 
