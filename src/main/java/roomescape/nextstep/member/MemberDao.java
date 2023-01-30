@@ -26,12 +26,6 @@ public class MemberDao implements UserDetailsDao {
             resultSet.getString("role")
     );
 
-    private final RowMapper<Member> userDetailRowMapper = (resultSet, rowNum) -> new Member(
-            resultSet.getString("username"),
-            resultSet.getString("password"),
-            resultSet.getString("role")
-    );
-
     public Long save(Member member) {
         String sql = "INSERT INTO member (username, password, name, phone, role) VALUES (?, ?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -58,10 +52,5 @@ public class MemberDao implements UserDetailsDao {
     public Member findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, username);
-    }
-
-    public Member findByUsername2(String username) {
-        String sql = "SELECT username, password, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, userDetailRowMapper, username);
     }
 }
