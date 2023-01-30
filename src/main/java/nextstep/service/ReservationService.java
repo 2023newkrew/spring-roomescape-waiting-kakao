@@ -20,6 +20,7 @@ import nextstep.error.exception.DuplicateEntityException;
 import nextstep.error.exception.EntityNotFoundException;
 import nextstep.error.exception.NoReservationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
+    @Transactional
     public Long create(Long memberId, ReservationRequest reservationRequest) {
         if (memberId == null) {
             throw new AuthenticationException();
@@ -62,6 +64,7 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
@@ -71,6 +74,7 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
+    @Transactional
     public void deleteById(Long memberId, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
@@ -84,6 +88,7 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
+    @Transactional
     public Long createReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
 
@@ -96,6 +101,7 @@ public class ReservationService {
         return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
     }
 
+    @Transactional
     public void deleteReservationWaitingById(Long memberId, Long reservationWaitingId) {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId);
         if (reservationWaiting == null) {
@@ -108,6 +114,7 @@ public class ReservationService {
         reservationWaitingDao.deleteById(reservationWaitingId);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationWaitingResponse> findMyReservationWaitings(Long memberId) {
         return reservationWaitingDao.findReservationWaitingsByMemberId(memberId)
                 .stream()
@@ -115,7 +122,7 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-
+    @Transactional(readOnly = true)
     public List<ReservationResponse> findMyReservations(Long memberId) {
         return reservationDao.findByMemberId(memberId)
                 .stream()
