@@ -1,13 +1,12 @@
 package nextstep.waiting;
 
-import auth.LoginMember;
-import auth.UserDetails;
+import auth.dto.LoginMember;
+import auth.dto.UserDetails;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberService;
-import nextstep.reservation.ReservationResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

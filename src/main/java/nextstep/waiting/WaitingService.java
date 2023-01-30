@@ -1,16 +1,12 @@
 package nextstep.waiting;
 
-import auth.AuthenticationException;
+import auth.utils.AuthenticationException;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
-import nextstep.reservation.Reservation;
-import nextstep.reservation.ReservationResponse;
-import nextstep.reservation.ReservationService;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
 import nextstep.support.NotExistException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;

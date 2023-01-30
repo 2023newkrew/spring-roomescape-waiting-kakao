@@ -1,6 +1,6 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
+import auth.utils.AuthenticationException;
 import java.util.stream.Collectors;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;

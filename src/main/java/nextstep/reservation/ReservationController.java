@@ -1,8 +1,8 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
-import auth.LoginMember;
-import auth.UserDetails;
+import auth.utils.AuthenticationException;
+import auth.dto.LoginMember;
+import auth.dto.UserDetails;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberService;

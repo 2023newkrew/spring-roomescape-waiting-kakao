@@ -1,4 +1,4 @@
-package auth;
+package auth.dto;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
