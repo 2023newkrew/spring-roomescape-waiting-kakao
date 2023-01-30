@@ -1,8 +1,11 @@
 package nextstep.reservationwaiting;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.AbstractE2ETest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
@@ -13,15 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 class ReservationWaitingControllerTest extends AbstractE2ETest {
 
     @Autowired
     public ReservationWaitingController reservationWaitingController;
-
 
     public static final String DATE = "2022-08-11";
     public static final String TIME = "13:00";

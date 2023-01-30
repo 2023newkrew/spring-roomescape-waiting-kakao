@@ -1,12 +1,11 @@
 package nextstep.member;
 
 import auth.config.LoginMemberDao;
+import java.sql.PreparedStatement;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-
-import java.sql.PreparedStatement;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,14 +16,12 @@ public class MemberDao implements LoginMemberDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Member> rowMapper = (resultSet, rowNum) -> new Member(
-            resultSet.getLong("id"),
-            resultSet.getString("username"),
-            resultSet.getString("password"),
-            resultSet.getString("name"),
-            resultSet.getString("phone"),
-            resultSet.getString("role")
-    );
+    private final RowMapper<Member> rowMapper = (resultSet, rowNum) -> Member.giveId(Member.builder()
+            .phone(resultSet.getString("phone"))
+            .name(resultSet.getString("name"))
+            .role(resultSet.getString("role"))
+            .username(resultSet.getString("username"))
+            .password(resultSet.getString("password")).build(), resultSet.getLong("id"));
 
     public Long save(Member member) {
         String sql = "INSERT INTO member (username, password, name, phone, role) VALUES (?, ?, ?, ?, ?);";

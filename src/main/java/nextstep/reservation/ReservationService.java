@@ -1,16 +1,15 @@
 package nextstep.reservation;
 
 import auth.exception.AuthenticationException;
+import java.util.List;
+import nextstep.exception.DuplicateEntityException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ReservationService {
@@ -19,7 +18,8 @@ public class ReservationService {
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao,
+                              MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
@@ -37,7 +37,7 @@ public class ReservationService {
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
+            throw new DuplicateEntityException(schedule.getId().toString(), "중복되는 예약이 존재합니다.");
         }
 
         Reservation newReservation = new Reservation(

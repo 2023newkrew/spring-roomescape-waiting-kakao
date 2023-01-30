@@ -1,5 +1,9 @@
 package nextstep.reservation;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.util.Collections;
+import java.util.List;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
@@ -7,14 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.util.Collections;
-import java.util.List;
-
-@Component
+@Repository
 public class ReservationDao {
 
     public final JdbcTemplate jdbcTemplate;
@@ -36,14 +35,12 @@ public class ReservationDao {
                     resultSet.getDate("schedule.date").toLocalDate(),
                     resultSet.getTime("schedule.time").toLocalTime()
             ),
-            new Member(
-                    resultSet.getLong("member.id"),
-                    resultSet.getString("member.username"),
-                    resultSet.getString("member.password"),
-                    resultSet.getString("member.name"),
-                    resultSet.getString("member.phone"),
-                    resultSet.getString("member.role")
-            )
+            Member.giveId(Member.builder()
+                    .phone(resultSet.getString("phone"))
+                    .name(resultSet.getString("name"))
+                    .role(resultSet.getString("role"))
+                    .username(resultSet.getString("username"))
+                    .password(resultSet.getString("password")).build(), resultSet.getLong("id"))
     );
 
     public Long save(Reservation reservation) {
