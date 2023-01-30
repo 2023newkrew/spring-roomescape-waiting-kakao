@@ -13,3 +13,10 @@
       - [ ] 예약과 예약 대기를 나눠서 조회한다.
       - [ ] 예약은 reservation을 조회하고 예약 대기는 reservation-wating을 조회한다.
       - [ ] 예약 대기의 경우 대기 순번도 함께 조회할 수 있다.
+  
+- DB 설계
+  - Table. Schedule, member_id, priority
+    - Table. ADD Schedule, member_id, (GET MAX priority in Scedule ++)
+    - Table. DELETE Schedule, member_id
+    - 예약 취소 시 예약 대기 순번이 가장 빠른 예약 대기를 예약으로 전환한다.
+    - 예약 대기 순번은 현재까지 발급된 대기 순번 다음 번호로 발급되며 고정된다(ex. 은행 대기번호).
