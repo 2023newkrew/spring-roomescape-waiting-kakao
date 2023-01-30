@@ -32,6 +32,12 @@ public class ReservationController {
         return ResponseEntity.ok().body(results);
     }
 
+    @GetMapping()
+    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
+        List<ReservationResponse> results = reservationService.findAllByThemeIdAndDate(themeId, date);
+        return ResponseEntity.ok().body(results);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
         reservationService.deleteById(member, id);

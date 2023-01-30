@@ -18,4 +18,11 @@ public class ReservationResponse {
     public Schedule getSchedule() {
         return schedule;
     }
+
+    public static ReservationResponse from(Reservation reservation) {
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getSchedule()
+        );
+    }
 }

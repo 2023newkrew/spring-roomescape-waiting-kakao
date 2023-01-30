@@ -62,13 +62,15 @@ public class ReservationService {
         }
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
             throw new NullPointerException();
         }
 
-        return reservationDao.findAllByThemeIdAndDate(themeId, date);
+        return reservationDao.findAllByThemeIdAndDate(themeId, date).stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Member member, Long id) {
