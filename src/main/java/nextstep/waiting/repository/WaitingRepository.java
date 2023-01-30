@@ -10,6 +10,8 @@ public interface WaitingRepository {
 
     Waiting getById(Long id);
 
+    Waiting getFirstByScheduleId(Long scheduleId);
+
     List<Waiting> getByMemberId(Long memberId);
 
     boolean deleteById(Long id);

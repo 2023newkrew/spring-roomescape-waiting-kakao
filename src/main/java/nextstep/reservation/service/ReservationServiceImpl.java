@@ -10,6 +10,8 @@ import nextstep.schedule.domain.ScheduleEntity;
 import nextstep.schedule.exception.ScheduleErrorMessage;
 import nextstep.schedule.exception.ScheduleException;
 import nextstep.schedule.service.ScheduleService;
+import nextstep.waiting.domain.Waiting;
+import nextstep.waiting.repository.WaitingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository repository;
+
+    private final WaitingRepository waitingRepository;
 
     private final ScheduleService scheduleService;
 
@@ -62,8 +66,13 @@ public class ReservationServiceImpl implements ReservationService {
     public boolean deleteById(Long memberId, Long id) {
         ReservationEntity reservation = repository.getById(id);
         validateReservation(reservation, memberId);
+        Waiting waiting = waitingRepository.getFirstByScheduleId(reservation.getScheduleId());
+        if (Objects.isNull(waiting)) {
+            return repository.deleteById(id);
+        }
+        waitingRepository.deleteById(waiting.getId());
 
-        return repository.deleteById(id);
+        return repository.updateById(id, waiting.getMemberId());
     }
 
     private void validateReservation(ReservationEntity reservation, Long memberId) {

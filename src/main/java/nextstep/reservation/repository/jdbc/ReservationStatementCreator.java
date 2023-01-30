@@ -42,6 +42,8 @@ public class ReservationStatementCreator {
                     "inner join theme on schedule.theme_id = theme.id " +
                     "where reservation.member_id = ?;";
 
+    private static final String UPDATE_BY_ID_SQL = "UPDATE reservation SET member_id = ? WHERE id = ?";
+    
     private static final String DELETE_BY_ID_SQL = "DELETE FROM reservation WHERE id = ?";
 
     public PreparedStatement createSelectByScheduleId(
@@ -79,6 +81,14 @@ public class ReservationStatementCreator {
 
     public PreparedStatement createSelectByMemberId(Connection connection, Long memberId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(SELECT_BY_MEMBER_ID_SQL);
+        ps.setLong(1, memberId);
+
+        return ps;
+    }
+
+    public PreparedStatement createUpdateById(Connection connection, Long id, Long memberId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(UPDATE_BY_ID_SQL);
+        ps.setLong(2, id);
         ps.setLong(1, memberId);
 
         return ps;
