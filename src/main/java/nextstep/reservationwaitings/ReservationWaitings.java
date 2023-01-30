@@ -5,10 +5,12 @@ import nextstep.schedule.Schedule;
 
 public class ReservationWaitings {
 
-    private final Long id;
-    private final Member member;
-    private final Schedule schedule;
-    private final Long waitNum;
+    private Long id;
+    private Member member;
+    private Schedule schedule;
+    private Long waitNum;
+
+    public ReservationWaitings() {}
 
     public ReservationWaitings(Member member, Schedule schedule, long waitNum) {
         this(null, member, schedule, waitNum);
