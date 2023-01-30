@@ -8,6 +8,9 @@ public class ReservationWaitingResponse {
     private ScheduleResponse scheduleResponse;
     private int waitNum;
 
+    public ReservationWaitingResponse() {
+    }
+
     public ReservationWaitingResponse(ReservationWaiting reservationWaiting) {
         this.id = reservationWaiting.getId();
         this.scheduleResponse = new ScheduleResponse(reservationWaiting.getSchedule());
@@ -18,7 +21,7 @@ public class ReservationWaitingResponse {
         return id;
     }
 
-    public ScheduleResponse getSchedule() {
+    public ScheduleResponse getScheduleResponse() {
         return scheduleResponse;
     }
 

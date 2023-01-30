@@ -12,6 +12,9 @@ public class ScheduleResponse {
     private LocalDate date;
     private LocalTime time;
 
+    public ScheduleResponse() {
+    }
+
     public ScheduleResponse(Schedule schedule) {
         this.id = schedule.getId();
         this.themeResponse = new ThemeResponse(schedule.getTheme());
@@ -19,18 +22,11 @@ public class ScheduleResponse {
         this.time = schedule.getTime();
     }
 
-    public ScheduleResponse(Long id, ThemeResponse themeResponse, LocalDate date, LocalTime time) {
-        this.id = id;
-        this.themeResponse = themeResponse;
-        this.date = date;
-        this.time = time;
-    }
-
     public Long getId() {
         return id;
     }
 
-    public ThemeResponse getTheme() {
+    public ThemeResponse getThemeResponse() {
         return themeResponse;
     }
 
