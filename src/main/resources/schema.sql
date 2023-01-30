@@ -6,7 +6,7 @@ CREATE TABLE reservation
     primary key (id)
 );
 
-CREATE TABLE reservation_waiting
+CREATE TABLE waiting
 (
     id          bigint not null auto_increment,
     schedule_id bigint not null,

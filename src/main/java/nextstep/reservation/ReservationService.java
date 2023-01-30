@@ -11,7 +11,6 @@ import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import nextstep.waiting.Waiting;
 import nextstep.waiting.WaitingDao;
-import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -89,5 +88,15 @@ public class ReservationService {
             reservationDao.save(nextReservation);
             waitingDao.deleteById(waiting.getId());
         }
+    }
+
+    public List<ReservationResponse> findAllOfMember(UserDetails userDetails) {
+        Member member = memberDao.findById(userDetails.getId());
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+
+        List<Reservation> reservations = reservationDao.findByMemberId(member.getId());
+        return ReservationResponse.toList(reservations);
     }
 }

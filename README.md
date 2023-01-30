@@ -13,8 +13,8 @@
 - [x] 예약이 취소되었을 경우, 예약 대기 중 가장 빠른 예약 대기를 예약으로 변경한다
 - [x] 예약 대기 취소를 할 수 있다
   - [x] 자신의 예약대기만을 취소할 수 있다
-- [ ] 나의 예약 목록을 조회할 수 있다
-  - [ ] 나의 예약을 조회할 수 있다.
+- [x] 나의 예약 목록을 조회할 수 있다
+  - [x] 나의 예약을 조회할 수 있다.
   ```http request
   GET /reservations/mine HTTP/1.1
   authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjYzMjk4NTkwLCJleHAiOjE2NjMzMDIxOTAsInJvbGUiOiJBRE1JTiJ9.-OO1QxEpcKhmC34HpmuBhlnwhKdZ39U8q91QkTdH9i0
