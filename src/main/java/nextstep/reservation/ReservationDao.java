@@ -43,8 +43,8 @@ public class ReservationDao {
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
-            )
-            ,resultSet.getLong("reservation.wait_num")
+            ),
+            resultSet.getLong("reservation.wait_num")
     );
 
     public Long save(Reservation reservation) {
@@ -184,7 +184,7 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public void adjustWaitingNumByScheduleIdAndBaseNum(Long id, Long num){
+    public void adjustWaitingNumByScheduleIdAndBaseNum(Long id, Long num) {
         String sql = "UPDATE reservation set wait_num = wait_num - 1 where schedule_id = ? and wait_num > ?";
         jdbcTemplate.update(sql, id, num);
     }

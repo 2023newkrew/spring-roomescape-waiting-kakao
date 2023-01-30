@@ -14,24 +14,24 @@ import java.util.List;
 @PropertySource("classpath:application.properties")
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final Environment environment;
-    private final UserDetailsDAO userDetailsDAO;
+    private final UserDetailsDao userDetailsDao;
 
-    public WebMvcConfiguration(Environment environment, UserDetailsDAO userDetailsDAO) {
+    public WebMvcConfiguration(Environment environment, UserDetailsDao userDetailsDao) {
         this.environment = environment;
-        this.userDetailsDAO = userDetailsDAO;
+        this.userDetailsDao = userDetailsDao;
     }
 
     @Bean
-    public JwtTokenProvider jwtTokenProvider(){
+    public JwtTokenProvider jwtTokenProvider() {
       return new JwtTokenProvider(
               environment.getProperty("security.jwt.token.secret-key"),
               Long.parseLong(environment.getProperty("security.jwt.token.expire-length"))
       );
-    };
+    }
 
     @Bean
     public LoginService loginService(){
-        return new LoginService(userDetailsDAO,jwtTokenProvider());
+        return new LoginService(userDetailsDao,jwtTokenProvider());
     }
 
     @Bean

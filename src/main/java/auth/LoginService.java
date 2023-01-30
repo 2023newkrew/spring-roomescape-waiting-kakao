@@ -1,21 +1,19 @@
 package auth;
 
-import nextstep.member.Member;
-import nextstep.member.MemberDao;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LoginService {
-    private UserDetailsDAO userDetailsDAO;
+    private UserDetailsDao userDetailsDao;
     private JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(UserDetailsDAO userDetailsDAO, JwtTokenProvider jwtTokenProvider) {
-        this.userDetailsDAO = userDetailsDAO;
+    public LoginService(UserDetailsDao userDetailsDao, JwtTokenProvider jwtTokenProvider) {
+        this.userDetailsDao = userDetailsDao;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetails userDetails = userDetailsDAO.findUserByUsername(tokenRequest.getUsername());
+        UserDetails userDetails = userDetailsDao.findUserByUsername(tokenRequest.getUsername());
         if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
@@ -31,6 +29,6 @@ public class LoginService {
 
     public UserDetails extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return userDetailsDAO.findUserById(id);
+        return userDetailsDao.findUserById(id);
     }
 }
