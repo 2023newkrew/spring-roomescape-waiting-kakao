@@ -2,6 +2,7 @@ package nextstep.member;
 
 import auth.LoginMember;
 import auth.UserDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,12 +10,10 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/members")
+@RequiredArgsConstructor
 public class MemberController {
-    private MemberService memberService;
 
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
-    }
+    private final MemberService memberService;
 
     @PostMapping
     public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {

@@ -15,7 +15,8 @@ public class MemberAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public UserDetails getUserDetails(TokenRequest tokenRequest){
-        Member member = memberDao.findByUsername(tokenRequest.getUsername()).orElseThrow(IllegalArgumentException::new);
+        Member member = memberDao.findByUsername(tokenRequest.getUsername())
+                .orElseThrow(IllegalArgumentException::new);
         if (member == null || !member.doesPasswordMatch(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }

@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
@@ -19,32 +21,33 @@ public class WaitingDao {
 
     public final JdbcTemplate jdbcTemplate;
 
-    public WaitingDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+
+    public WaitingDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    private final RowMapper<Waiting> rowMapper = (resultSet, rowNum) -> new Waiting(
-            resultSet.getLong("waiting.id"),
-            new Schedule(
-                    resultSet.getLong("schedule.id"),
-                    new Theme(
-                            resultSet.getLong("theme.id"),
-                            resultSet.getString("theme.name"),
-                            resultSet.getString("theme.desc"),
-                            resultSet.getInt("theme.price")
-                    ),
-                    resultSet.getDate("schedule.date").toLocalDate(),
-                    resultSet.getTime("schedule.time").toLocalTime()
-            ),
-            new Member(
-                    resultSet.getLong("member.id"),
-                    resultSet.getString("member.username"),
-                    resultSet.getString("member.password"),
-                    resultSet.getString("member.name"),
-                    resultSet.getString("member.phone"),
-                    resultSet.getObject("member.role", Role.class)
-            )
-    );
+    private final RowMapper<Waiting> rowMapper = (resultSet, rowNum) -> Waiting.builder()
+            .id(resultSet.getLong("waiting.id"))
+            .schedule(Schedule.builder()
+                    .id(resultSet.getLong("schedule.id"))
+                    .theme(Theme.builder()
+                            .id(resultSet.getLong("theme.id"))
+                            .name(resultSet.getString("theme.name"))
+                            .desc(resultSet.getString("theme.desc"))
+                            .price(resultSet.getInt("theme.price"))
+                            .build())
+                    .date(resultSet.getDate("schedule.date").toLocalDate())
+                    .time(resultSet.getTime("schedule.time").toLocalTime())
+                    .build())
+            .member(Member.builder()
+                    .id(resultSet.getLong("member.id"))
+                    .username(resultSet.getString("member.username"))
+                    .password(resultSet.getString("member.password"))
+                    .name(resultSet.getString("member.name"))
+                    .phone(resultSet.getString("member.phone"))
+                    .role(Role.valueOf(resultSet.getString("member.role")))
+                    .build())
+            .build();
 
     public Long save(Waiting waiting) {
         String sql = "INSERT INTO waiting (schedule_id, member_id) VALUES (?, ?);";
@@ -76,7 +79,7 @@ public class WaitingDao {
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(date));
     }
 
-    public Waiting findById(Long id) {
+    public Optional<Waiting> findById(Long id) {
         String sql = "SELECT " +
                 "waiting.id, waiting.schedule_id, waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -88,9 +91,9 @@ public class WaitingDao {
                 "inner join member on waiting.member_id = member.id " +
                 "where waiting.id = ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (Exception e) {
-            return null;
+            return Optional.empty();
         }
     }
 

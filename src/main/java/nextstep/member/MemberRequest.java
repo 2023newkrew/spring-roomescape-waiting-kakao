@@ -1,11 +1,12 @@
 package nextstep.member;
 
 import auth.Role;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 public class MemberRequest {
@@ -16,6 +17,12 @@ public class MemberRequest {
     private Role role;
 
     public Member toEntity() {
-        return new Member(username, password, name, phone, role);
+        return Member.builder()
+                .username(username)
+                .password(password)
+                .name(name)
+                .phone(phone)
+                .role(role)
+                .build();
     }
 }

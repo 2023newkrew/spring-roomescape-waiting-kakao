@@ -2,6 +2,7 @@ package nextstep.member;
 
 import auth.Role;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,18 +15,19 @@ import java.sql.PreparedStatement;
 public class MemberDao {
     public final JdbcTemplate jdbcTemplate;
 
-    public MemberDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public MemberDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    private final RowMapper<Member> rowMapper = (resultSet, rowNum) -> new Member(
-            resultSet.getLong("id"),
-            resultSet.getString("username"),
-            resultSet.getString("password"),
-            resultSet.getString("name"),
-            resultSet.getString("phone"),
-            Role.valueOf(resultSet.getString("role"))
-    );
+    private final RowMapper<Member> rowMapper = (resultSet, rowNum) ->
+            Member.builder()
+                    .id(resultSet.getLong("id"))
+                    .username(resultSet.getString("username"))
+                    .password(resultSet.getString("password"))
+                    .name(resultSet.getString("name"))
+                    .phone(resultSet.getString("phone"))
+                    .role(Role.valueOf(resultSet.getString("role")))
+                    .build();
 
     public Long save(Member member) {
         String sql = "INSERT INTO member (username, password, name, phone, role) VALUES (?, ?, ?, ?, ?);";
@@ -39,7 +41,6 @@ public class MemberDao {
             ps.setString(4, member.getPhone());
             ps.setString(5, member.getRole().name());
             return ps;
-
         }, keyHolder);
 
         return keyHolder.getKey().longValue();

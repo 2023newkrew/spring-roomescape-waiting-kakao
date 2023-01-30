@@ -1,28 +1,30 @@
 package nextstep.theme;
 
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-
 import java.sql.PreparedStatement;
 import java.util.List;
+import javax.sql.DataSource;
 
 @Component
 public class ThemeDao {
+
     private JdbcTemplate jdbcTemplate;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ThemeDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("desc"),
-            resultSet.getInt("price")
-    );
+    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> Theme.builder()
+            .id(resultSet.getLong("id"))
+            .name(resultSet.getString("name"))
+            .desc(resultSet.getString("desc"))
+            .price(resultSet.getInt("price"))
+            .build();
 
     public Long save(Theme theme) {
         String sql = "INSERT INTO theme (name, desc, price) VALUES (?, ?, ?);";
@@ -34,15 +36,14 @@ public class ThemeDao {
             ps.setString(2, theme.getDesc());
             ps.setInt(3, theme.getPrice());
             return ps;
-
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
     }
 
-    public Theme findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, desc, price from theme where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
     }
 
     public List<Theme> findAll() {

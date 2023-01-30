@@ -1,10 +1,12 @@
 package nextstep.member;
 
 import auth.Role;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Member {
     private Long id;
@@ -14,14 +16,7 @@ public class Member {
     private String phone;
     private Role role;
 
-    public Member(String username, String password, String name, String phone, Role role) {
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.phone = phone;
-        this.role = role;
-    }
-
+    @Builder
     public Member(Long id, String username, String password, String name, String phone, Role role) {
         this.id = id;
         this.username = username;
