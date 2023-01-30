@@ -10,7 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
@@ -32,6 +35,39 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("예약 대기 목록을 조회한다.")
+    @Test
+    void getReservationWaitings() {
+        long themeId1 = createTheme("테마이름1", "테마설명1", 22000);
+        long themeId2 = createTheme("테마이름2","테마설명2", 44000);
+
+        long scheduleId1 = createSchedule(themeId1, "2018-10-22", "13:00");
+        long scheduleId2 = createSchedule(themeId2, "2018-10-22", "13:00");
+        createReservation(scheduleId1);
+        createReservation(scheduleId2);
+
+        long waitingId1 = createReservationWaiting(scheduleId1);
+        long waitingId2 = createReservationWaiting(scheduleId1);
+        long waitingId3 = createReservationWaiting(scheduleId2);
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationWaitings> reservationWaitings = response.jsonPath().getList(".", ReservationWaitings.class);
+        assertThat(reservationWaitings)
+                .extracting(ReservationWaitings::getId, r -> r.getSchedule().getId(), ReservationWaitings::getWaitNum)
+                .hasSize(3)
+                .containsExactlyInAnyOrder(
+                        tuple(waitingId1, scheduleId1, 1L),
+                        tuple(waitingId2, scheduleId1, 2L),
+                        tuple(waitingId3, scheduleId2, 1L)
+                );
     }
 
     private long createTheme(String themeName, String themeDesc, int themePrice) {
@@ -77,5 +113,20 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .extract();
         String[] reservationLocation = response.header("Location").split("/");
         return Long.parseLong(reservationLocation[reservationLocation.length - 1]);
+    }
+
+    private long createReservationWaiting(long scheduleId) {
+        var request = new ReservationWaitingRequest(scheduleId);
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+        String[] location = response.header("Location").split("/");
+        return Long.parseLong(location[location.length - 1]);
     }
 }
