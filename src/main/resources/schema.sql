@@ -3,6 +3,7 @@ CREATE TABLE reservation
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
+    waiting_seq bigint not null,
     primary key (id)
 );
 
