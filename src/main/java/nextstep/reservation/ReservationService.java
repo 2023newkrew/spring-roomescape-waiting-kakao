@@ -61,6 +61,14 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
+    public List<Reservation> findAllByMemberId(Member member) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+
+        return reservationDao.findAllByMemberId(member.getId());
+    }
+
     public void deleteById(Member member, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
