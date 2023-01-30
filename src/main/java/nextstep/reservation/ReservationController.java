@@ -3,7 +3,6 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import auth.LoginMember;
 import auth.UserDetails;
-import nextstep.member.Member;
 import nextstep.member.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +31,12 @@ public class ReservationController {
     @GetMapping("/reservations")
     public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
+        return ResponseEntity.ok().body(results);
+    }
+
+    @GetMapping("/reservations/mine")
+    public ResponseEntity readMyReservations(@LoginMember UserDetails userDetails) {
+        List<Reservation> results = reservationService.findByMemberId(userDetails.getId());
         return ResponseEntity.ok().body(results);
     }
 

@@ -69,4 +69,8 @@ public class ReservationService {
 
         reservationDao.deleteById(id);
     }
+
+    public List<Reservation> findByMemberId(Long memberId) {
+        return reservationDao.findByMemberId(memberId);
+    }
 }
