@@ -1,11 +1,10 @@
 package nextstep.member;
 
-import auth.UserDetails;
 import auth.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LoginMemberService implements UserDetailsService {
+public class LoginMemberService implements UserDetailsService<Member, Long> {
     private final MemberDao memberDao;
 
     public LoginMemberService(MemberDao memberDao) {
@@ -13,12 +12,12 @@ public class LoginMemberService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails findByUsername(String username) {
+    public Member findByUsername(String username) {
         return memberDao.findByUsername(username);
     }
 
     @Override
-    public UserDetails findById(Long id) {
+    public Member findById(Long id) {
         return memberDao.findById(id);
     }
 }
