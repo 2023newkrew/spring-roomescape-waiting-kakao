@@ -1,5 +1,8 @@
 package nextstep.member;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class MemberRequest {
     private String username;
     private String password;
@@ -7,7 +10,12 @@ public class MemberRequest {
     private String phone;
     private String role;
 
-    public MemberRequest(String username, String password, String name, String phone, String role) {
+    @JsonCreator
+    public MemberRequest(@JsonProperty(value = "username") String username,
+                         @JsonProperty(value = "password") String password,
+                         @JsonProperty(value = "name") String name,
+                         @JsonProperty(value = "phone") String phone,
+                         @JsonProperty(value = "role") String role) {
         this.username = username;
         this.password = password;
         this.name = name;
