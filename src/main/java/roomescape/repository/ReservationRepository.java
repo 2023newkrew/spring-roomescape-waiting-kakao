@@ -13,13 +13,26 @@ import roomescape.entity.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class ReservationRepository {
-    private static final String SELECT_BY_ID = "select r.id, r.date, r.time, r.name, r.member_id, r.theme_id, t.name, t.desc, t.price from reservation r inner join theme t on t.id = r.theme_id where r.id = :id";
+    private static final String SELECT_BY_ID = """
+            select r.id, r.date, r.time, r.name, r.member_id, r.theme_id, t.name, t.desc, t.price
+            from reservation r
+            inner join theme t on t.id = r.theme_id
+            where r.id = :id
+            """;
+    private static final String SELECT_BY_MEMBER_ID = """
+            select r.id, r.date, r.time, r.name, r.member_id, r.theme_id, t.name, t.desc, t.price
+            from reservation r
+            inner join theme t on t.id = r.theme_id
+            where r.member_id = :member_id
+            """;
     private static final String INSERT = "insert into reservation (date, time, name, theme_id, member_id) values (:date, :time, :name, :theme_id, :member_id)";
     private static final String DELETE = "delete from reservation where id = :id";
     private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> new Reservation(
@@ -59,6 +72,12 @@ public class ReservationRepository {
 
     public Optional<Reservation> selectById(long id) {
         return jdbc.queryForStream(SELECT_BY_ID, Map.of("id", id), ROW_MAPPER).findFirst();
+    }
+
+
+    public List<Reservation> selectByMemberId(long id) {
+        return jdbc.queryForStream(SELECT_BY_MEMBER_ID, Map.of("member_id", id), ROW_MAPPER)
+                   .collect(Collectors.toList());
     }
 
     public int delete(long id) {

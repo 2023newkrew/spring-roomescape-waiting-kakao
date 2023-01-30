@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.annotation.JWTBearerTokenSubject;
+import roomescape.controller.dto.ReservationControllerGetMineResponse;
 import roomescape.controller.dto.ReservationControllerGetResponse;
 import roomescape.controller.dto.ReservationsControllerPostBody;
 import roomescape.service.ReservationService;
@@ -41,6 +42,13 @@ public class ReservationController {
                                      reservation.getTheme().getDesc(),
                                      reservation.getTheme().getPrice()
                              ));
+    }
+
+    @GetMapping(value = "/mine", produces = "application/json;charset=utf-8")
+    public ResponseEntity<ReservationControllerGetMineResponse> findMyReservation(@JWTBearerTokenSubject String subject) {
+        var reservations = service.findMyReservation(Long.parseLong(subject));
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(ReservationControllerGetMineResponse.from(reservations));
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json;charset=utf-8")

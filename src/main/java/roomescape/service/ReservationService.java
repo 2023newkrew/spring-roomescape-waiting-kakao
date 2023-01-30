@@ -9,6 +9,8 @@ import roomescape.entity.Reservation;
 import roomescape.repository.ReservationRepository;
 import roomescape.service.exception.ServiceException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
@@ -31,6 +33,10 @@ public class ReservationService {
             throw new ServiceException(ErrorCode.UNKNOWN_RESERVATION_ID);
         }
         return reservation.get();
+    }
+
+    public List<Reservation> findMyReservation(Long memberId) {
+        return repository.selectByMemberId(memberId);
     }
 
     @Transactional
