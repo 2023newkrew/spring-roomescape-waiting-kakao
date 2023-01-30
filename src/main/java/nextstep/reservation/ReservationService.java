@@ -43,23 +43,19 @@ public class ReservationService {
 
         Reservation newReservation = new Reservation(
                 schedule,
-                member,
-                0L
+                member
         );
 
         return reservationDao.save(newReservation);
     }
 
-    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
+    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
             throw new NullPointerException();
         }
 
-        List<Reservation> reservations = reservationDao.findAllByThemeIdAndDate(themeId, date);
-        return reservations.stream()
-                .map(Reservation::toResponse)
-                .collect(Collectors.toList());
+        return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
     public void deleteById(Member member, Long id) {

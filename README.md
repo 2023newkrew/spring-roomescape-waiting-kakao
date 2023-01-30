@@ -33,4 +33,3 @@
   - [x] waiting_seq 필드 추가
     - [x] 0이면 활성화된 예약, 1 이상이면 대기 중인 예약
   - [x] 조회/수정/삭제 시 waiting_seq = 0 조건 추가
-  - ReservationResponse DTO 추가

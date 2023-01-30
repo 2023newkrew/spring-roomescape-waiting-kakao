@@ -9,22 +9,19 @@ public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
-    private Long waitingSeq;
 
     public Reservation() {
     }
 
-    public Reservation(Schedule schedule, Member member, Long waitingSeq) {
+    public Reservation(Schedule schedule, Member member) {
         this.schedule = schedule;
         this.member = member;
-        this.waitingSeq = waitingSeq;
     }
 
-    public Reservation(Long id, Schedule schedule, Member member, Long waitingSeq) {
+    public Reservation(Long id, Schedule schedule, Member member) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
-        this.waitingSeq = waitingSeq;
     }
 
     public Long getId() {
@@ -39,15 +36,7 @@ public class Reservation {
         return member;
     }
 
-    public Long getWaitingSeq() {
-        return waitingSeq;
-    }
-
     public boolean sameMember(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
-    }
-
-    public ReservationResponse toResponse() {
-        return new ReservationResponse(id, schedule, member);
     }
 }
