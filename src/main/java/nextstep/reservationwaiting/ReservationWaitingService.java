@@ -3,8 +3,6 @@ package nextstep.reservationwaiting;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
-import nextstep.reservation.ReservationDao;
-import nextstep.reservation.ReservationService;
 import nextstep.reservation.ReservationValidator;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
@@ -20,10 +18,7 @@ public class ReservationWaitingService {
 
     private final MemberDao memberDao;
     private final ScheduleDao scheduleDao;
-    private final ReservationDao reservationDao;
     private final ReservationWaitingDao reservationWaitingDao;
-    private final ReservationService reservationService;
-
     private final ReservationValidator reservationValidator;
 
     public List<ReservationWaitingResponse> findByMemberId(Long memberId) {
@@ -56,6 +51,6 @@ public class ReservationWaitingService {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
         reservationValidator.validateDelete(member, reservationWaiting.toReservation());
 
-        reservationDao.deleteById(id);
+        reservationWaitingDao.deleteById(id);
     }
 }

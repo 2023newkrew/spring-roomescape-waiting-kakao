@@ -9,6 +9,7 @@ import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public class ReservationService {
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
     public final ReservationValidator reservationValidator;
+
+    private final ApplicationEventPublisher publisher;
 
     public Long create(Long memberId, ReservationRequest reservationRequest) {
         Member member = memberDao.findById(memberId);
@@ -61,6 +64,6 @@ public class ReservationService {
 
         reservationDao.deleteById(id);
 
-        //todo: event 발생을 통해 예약 대기 -> 예약 변경
+        publisher.publishEvent(new ReservationDeleteEvent(reservation));
     }
 }
