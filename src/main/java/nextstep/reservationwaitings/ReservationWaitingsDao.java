@@ -69,7 +69,7 @@ public class ReservationWaitingsDao {
 
     public List<ReservationWaitings> findMyReservationWaitings(Long id) {
         String sql = "SELECT " +
-                "reservation_waitings.id , reservation_waitings.wait_num, " +
+                "reservation_waitings.id, reservation_waitings.wait_num, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -79,5 +79,24 @@ public class ReservationWaitingsDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "WHERE reservation_waitings.member_id = ?";
         return jdbcTemplate.query(sql, rowMapper, id);
+    }
+
+    public void delete(Long id) {
+        String sql = "DELETE FROM reservation_waitings WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public ReservationWaitings findById(Long id) {
+        String sql = "SELECT " +
+                "reservation_waitings.id, reservation_waitings.wait_num, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "FROM reservation_waitings " +
+                "inner join schedule on reservation_waitings.schedule_id = schedule.id " +
+                "inner join member on reservation_waitings.member_id = member.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "WHERE reservation_waitings.id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 }
