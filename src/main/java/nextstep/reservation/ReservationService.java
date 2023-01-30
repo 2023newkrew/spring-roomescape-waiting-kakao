@@ -1,8 +1,11 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberDaoImpl;
+import nextstep.reservation_waiting.ReservationWaiting;
+import nextstep.reservation_waiting.ReservationWaitingDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -13,19 +16,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDaoImpl memberDao;
-
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDaoImpl memberDao) {
-        this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
-        this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
-    }
+    private final ReservationDao reservationDao;
+    private final ReservationWaitingDao reservationWaitingDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final MemberDaoImpl memberDao;
 
     public Long create(Member member, ReservationRequest reservationRequest) {
         if (member == null) {
@@ -63,9 +61,15 @@ public class ReservationService {
         if (reservation == null) {
             throw new NonExistEntityException();
         }
-
         if (!reservation.sameMember(member)) {
             throw new AuthenticationException();
+        }
+        List<ReservationWaiting> reservationWaitings = reservationWaitingDao.findAllByScheduleIdOrderByDesc(reservation.getSchedule().getId());
+        if (!reservationWaitings.isEmpty()) {
+            ReservationWaiting reservationWaiting = reservationWaitings.get(reservationWaitings.size() - 1);
+            Reservation toSave = Reservation.fromReservationWaiting(reservationWaiting);
+            reservationDao.save(toSave);
+            reservationWaitingDao.deleteById(reservationWaiting.getId());
         }
 
         reservationDao.deleteById(id);

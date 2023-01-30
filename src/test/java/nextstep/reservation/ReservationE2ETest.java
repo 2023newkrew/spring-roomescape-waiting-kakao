@@ -4,6 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
+import nextstep.reservation_waiting.ReservationWaitingRequest;
+import nextstep.reservation_waiting.ReservationWaitingResponse;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.AfterEach;
@@ -147,6 +149,45 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @DisplayName("예약을 삭제하면 예약 대기를 예약으로 변경한다.")
+    @Test
+    void deleteWhenReservationWaitingExists() {
+        var reservation = createReservation(request);
+        sendReservationWaiting(new ReservationWaitingRequest(request.getScheduleId()));
+
+        var reservationsResponse = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete(reservation.header("Location"))
+                .then().log().all()
+                .extract();
+
+        var reservationWaitingsResponse = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        var reservationResponseAfterDeleteResponse = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        assertThat(reservationsResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        List<ReservationWaitingResponse> responses = reservationWaitingsResponse.jsonPath().getList(".", ReservationWaitingResponse.class);
+        assertThat(responses.size()).isEqualTo(0);
+
+        List<Reservation> reservations = reservationResponseAfterDeleteResponse.jsonPath().getList(".", Reservation.class);
+        assertThat(reservations.size()).isEqualTo(1);
+    }
+
     @DisplayName("중복 예약을 생성한다")
     @Test
     void createDuplicateReservation() {
@@ -210,9 +251,9 @@ class ReservationE2ETest extends AbstractE2ETest {
     private ExtractableResponse<Response> createReservation(ReservationRequest request) {
         return RestAssured
                 .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .auth().oauth2(token.getAccessToken())
                 .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();

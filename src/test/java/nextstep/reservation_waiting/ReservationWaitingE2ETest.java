@@ -3,8 +3,6 @@ package nextstep.reservation_waiting;
 import auth.TokenRequest;
 import auth.TokenResponse;
 import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
 import nextstep.member.MemberRequest;
 import nextstep.reservation.ReservationRequest;
@@ -51,18 +49,6 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         var response = sendReservationWaiting(request);
 
         assertThat(response.header("Location").startsWith("/reservation-waitings/")).isTrue();
-    }
-
-    private ExtractableResponse<Response> sendReservationWaiting(ReservationWaitingRequest request) {
-        return RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when().post("/reservation-waitings")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract();
     }
 
     private void createReservation(Long scheduleId) {
