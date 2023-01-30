@@ -7,43 +7,36 @@ import java.util.Objects;
 
 public class ReservationWaiting {
     private Long id;
-    private Long scheduleId;
-    private Long memberId;
-    private int waitNum;
+    private Schedule schedule;
+    private Member member;
 
     public ReservationWaiting() {
     }
 
-    public ReservationWaiting(Long scheduleId, Long memberId, int waitNum) {
-        this.scheduleId = scheduleId;
-        this.memberId = memberId;
-        this.waitNum = waitNum;
+    public ReservationWaiting(Schedule schedule, Member member) {
+        this.schedule = schedule;
+        this.member = member;
     }
 
-    public ReservationWaiting(Long id, Long scheduleId, Long memberId, int waitNum) {
+    public ReservationWaiting(Long id, Schedule schedule, Member member) {
         this.id = id;
-        this.scheduleId = scheduleId;
-        this.memberId = memberId;
-        this.waitNum= waitNum;
+        this.schedule = schedule;
+        this.member = member;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Long getScheduleId() {
-        return scheduleId;
+    public Schedule getSchedule() {
+        return schedule;
     }
 
-    public Long getMemberId() {
-        return memberId;
-    }
-
-    public int getWaitNum() {
-        return waitNum;
+    public Member getMember() {
+        return member;
     }
 
     public boolean sameMember(Member member) {
-        return member != null && Objects.equals(this.memberId, member.getId());
+        return member != null && Objects.equals(member.getId(), member.getId());
     }
 }

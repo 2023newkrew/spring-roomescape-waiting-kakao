@@ -12,7 +12,9 @@ import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationWaitingService {
@@ -28,7 +30,7 @@ public class ReservationWaitingService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
+    public String create(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
         Member member = memberDao.findById(memberId);
         if (member == null) {
             throw new AuthenticationException();
@@ -42,28 +44,33 @@ public class ReservationWaitingService {
         List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
         if (reservations.isEmpty()) {
             Reservation reservation = new Reservation(schedule, member);
-            reservationDao.save(reservation);
+            return "/reservation/" + reservationDao.save(reservation);
         }
 
-        int waitNum = reservationWaitingDao.getWaitNumByScheduleId(schedule.getId()) + 1;
-
         ReservationWaiting newReservationWaiting = new ReservationWaiting(
-                schedule.getId(),
-                member.getId(),
-                waitNum
+                schedule,
+                member
         );
 
-        return reservationWaitingDao.save(newReservationWaiting);
+        return "/reservation-waiting/" + reservationWaitingDao.save(newReservationWaiting);
     }
-//
-//    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-//        Theme theme = themeDao.findById(themeId);
-//        if (theme == null) {
-//            throw new NullPointerException();
-//        }
-//
-//        return reservationDao.findAllByThemeIdAndDate(themeId, date);
-//    }
+
+    public List<ReservationWaitingResponse> findAllByMemberId(Long memberId) {
+        Member member = memberDao.findById(memberId);
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+
+        List<ReservationWaiting> reservationWaitings = reservationWaitingDao.findAllByMemberId(memberId);
+        if (reservationWaitings.isEmpty()) {
+            System.out.println("ASDASDAD");
+            return new ArrayList<ReservationWaitingResponse>();
+        }
+
+        return reservationWaitings.stream()
+                .map(v -> ReservationWaitingResponse.of(v, reservationWaitingDao.getWaitNum(v.getSchedule().getId(), v.getId())))
+                .collect(Collectors.toList());
+    }
 //
 //    public void deleteById(Member member, Long id) {
 //        Reservation reservation = reservationDao.findById(id);

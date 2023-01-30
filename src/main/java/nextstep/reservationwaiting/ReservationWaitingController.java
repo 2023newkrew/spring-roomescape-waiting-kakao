@@ -22,21 +22,21 @@ public class ReservationWaitingController {
 
     @PostMapping("/reservation-waitings")
     public ResponseEntity createReservationWaiting(@LoginMember Long memberId, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
-        Long id = reservationWaitingService.create(memberId, reservationWaitingRequest);
-        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
+        String location = reservationWaitingService.create(memberId, reservationWaitingRequest);
+        return ResponseEntity.created(URI.create(location)).build();
     }
 
-//    @GetMapping("/reservation-waitings/mine")
-//    public ResponseEntity readReservationWaitings(@LoginMember Long memberId) {
-//        List<ReservationWaiting> results = reservationWaitingService.findAllByMemberId(memberId);
-//        return ResponseEntity.ok().body(results);
-//    }
-//
-//    @DeleteMapping("/reservation-waitings/{id}")
-//    public ResponseEntity deleteReservationWaiting(@LoginMember Long memberId, @PathVariable Long id) {
-//        reservationWaitingService.deleteById(memberService.findById(memberId), id);
-//        return ResponseEntity.noContent().build();
-//    }
+    @GetMapping("/reservation-waitings/mine")
+    public ResponseEntity readReservationWaitings(@LoginMember Long memberId) {
+        List<ReservationWaitingResponse> results = reservationWaitingService.findAllByMemberId(memberId);
+        return ResponseEntity.ok().body(results);
+    }
+
+    @DeleteMapping("/reservation-waitings/{id}")
+    public ResponseEntity deleteReservationWaiting(@LoginMember Long memberId, @PathVariable Long id) {
+        reservationWaitingService.deleteById(memberService.findById(memberId), id);
+        return ResponseEntity.noContent().build();
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {

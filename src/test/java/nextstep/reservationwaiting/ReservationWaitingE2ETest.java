@@ -93,37 +93,23 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
-//
-//    @DisplayName("비로그인 사용자가 예약을 생성한다")
-//    @Test
-//    void createWithoutLogin() {
-//        var response = RestAssured
-//                .given().log().all()
-//                .body(request)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when().post("/reservations")
-//                .then().log().all()
-//                .extract();
-//
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-//    }
-//
-//    @DisplayName("예약을 조회한다")
-//    @Test
-//    void show() {
-//        createReservation();
-//
-//        var response = RestAssured
-//                .given().log().all()
-//                .param("themeId", themeId)
-//                .param("date", DATE)
-//                .when().get("/reservations")
-//                .then().log().all()
-//                .extract();
-//
-//        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
-//        assertThat(reservations.size()).isEqualTo(1);
-//    }
+
+    @DisplayName("예약 대기를 조회한다")
+    @Test
+    void show() {
+        createReservation();
+        createReservationWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationWaitingResponse> reservationWaitingResponses = response.jsonPath().getList(".", ReservationWaitingResponse.class);
+        assertThat(reservationWaitingResponses.size()).isEqualTo(1);
+    }
 //
 //    @DisplayName("예약을 삭제한다")
 //    @Test
@@ -207,6 +193,17 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> createReservationWaiting() {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(reservationWaitingRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
                 .then().log().all()
                 .extract();
     }
