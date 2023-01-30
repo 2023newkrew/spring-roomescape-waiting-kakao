@@ -2,8 +2,8 @@ package nextstep.service;
 
 import auth.domain.persist.UserDetails;
 import auth.support.AuthenticationException;
-import nextstep.domain.dto.ReservationRequest;
-import nextstep.domain.dto.ReservationResponse;
+import nextstep.domain.dto.request.ReservationRequest;
+import nextstep.domain.dto.response.ReservationResponse;
 import nextstep.domain.persist.Member;
 import nextstep.repository.MemberDao;
 import nextstep.domain.persist.Reservation;

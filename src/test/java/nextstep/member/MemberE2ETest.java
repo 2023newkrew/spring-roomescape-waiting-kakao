@@ -3,7 +3,7 @@ package nextstep.member;
 import io.restassured.RestAssured;
 import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
-import nextstep.domain.dto.MemberRequest;
+import nextstep.domain.dto.request.MemberRequest;
 import nextstep.domain.persist.Member;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

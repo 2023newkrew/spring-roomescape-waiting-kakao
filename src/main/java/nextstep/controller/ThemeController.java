@@ -1,7 +1,7 @@
 package nextstep.controller;
 
 import nextstep.domain.persist.Theme;
-import nextstep.domain.dto.ThemeRequest;
+import nextstep.domain.dto.request.ThemeRequest;
 import nextstep.service.ThemeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

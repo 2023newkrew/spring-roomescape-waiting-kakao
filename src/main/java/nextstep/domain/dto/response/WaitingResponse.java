@@ -1,4 +1,4 @@
-package nextstep.domain.dto;
+package nextstep.domain.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

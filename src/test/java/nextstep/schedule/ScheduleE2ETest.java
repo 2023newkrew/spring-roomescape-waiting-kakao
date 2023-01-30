@@ -2,8 +2,8 @@ package nextstep.schedule;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.domain.dto.ScheduleRequest;
-import nextstep.domain.dto.ThemeRequest;
+import nextstep.domain.dto.request.ScheduleRequest;
+import nextstep.domain.dto.request.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

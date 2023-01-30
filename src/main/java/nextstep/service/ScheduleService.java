@@ -1,6 +1,6 @@
 package nextstep.service;
 
-import nextstep.domain.dto.ScheduleRequest;
+import nextstep.domain.dto.request.ScheduleRequest;
 import nextstep.domain.persist.Schedule;
 import nextstep.repository.ScheduleDao;
 import nextstep.domain.persist.Theme;

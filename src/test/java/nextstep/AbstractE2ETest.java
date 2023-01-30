@@ -3,7 +3,7 @@ package nextstep;
 import io.restassured.RestAssured;
 import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
-import nextstep.domain.dto.MemberRequest;
+import nextstep.domain.dto.request.MemberRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;

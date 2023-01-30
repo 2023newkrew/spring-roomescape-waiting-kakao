@@ -1,4 +1,4 @@
-package nextstep.domain.dto;
+package nextstep.domain.dto.request;
 
 public class ReservationRequest {
     private Long scheduleId;

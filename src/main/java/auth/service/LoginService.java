@@ -30,7 +30,7 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public UserDetails extractMember(String credential) {
+    public UserDetails extractUserDetails(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
         return userDetailsRepository.findById(id);
     }

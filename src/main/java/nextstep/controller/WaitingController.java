@@ -3,8 +3,8 @@ package nextstep.controller;
 import auth.domain.persist.UserDetails;
 import auth.domain.template.LoginMember;
 import lombok.RequiredArgsConstructor;
-import nextstep.domain.dto.WaitingRequest;
-import nextstep.domain.dto.WaitingResponse;
+import nextstep.domain.dto.request.WaitingRequest;
+import nextstep.domain.dto.response.WaitingResponse;
 import nextstep.service.WaitingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +32,8 @@ public class WaitingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity deleteWaiting(@LoginMember UserDetails userDetails,
+                                        @PathVariable Long id) {
         waitingService.deleteById(userDetails, id);
         return ResponseEntity.noContent().build();
     }
