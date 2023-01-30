@@ -70,4 +70,8 @@ public class ReservationService {
 
         reservationDao.deleteById(id);
     }
+
+    public List<Reservation> findAllByMember(Member member) {
+        return reservationDao.findAllByMember(member);
+    }
 }
