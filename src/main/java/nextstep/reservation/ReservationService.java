@@ -93,6 +93,10 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
+    public void deleteWaitingById(Member member, Long id) {
+        deleteById(member, id);
+	}
+
     public List<Reservation> getReservationsByMember(Member member) {
         if (member == null) {
             throw new AuthenticationException();

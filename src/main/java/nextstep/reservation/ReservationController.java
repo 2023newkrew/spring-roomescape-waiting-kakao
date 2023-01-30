@@ -47,6 +47,13 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
+    @DeleteMapping("/reservation-waitings/{id}")
+    public ResponseEntity deleteReservationWaiting(@LoginMember Member member, @PathVariable Long id) {
+        reservationService.deleteWaitingById(member, id);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/reservations/mine")
     public ResponseEntity<List<ReservationResponseDto>> getReservations(@LoginMember Member member) {
         List<ReservationResponseDto> reservations = reservationService.getReservationsByMember(member)

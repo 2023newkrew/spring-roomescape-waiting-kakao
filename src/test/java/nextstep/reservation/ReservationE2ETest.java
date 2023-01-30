@@ -21,6 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ReservationE2ETest extends AbstractE2ETest {
+
     public static final String DATE = "2022-08-11";
     public static final String TIME = "13:00";
 
@@ -255,6 +256,30 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+
+    @DisplayName("예약대기를 삭제한다")
+    @Test
+    void deleteWaiting() {
+        createReservation();
+        var waitingReservation = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        var waitingResponse = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete(waitingReservation.header("Location"))
+                .then().log().all()
+                .extract();
+
+        assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("중복 예약을 생성한다")
