@@ -10,7 +10,7 @@ public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
-    private Long waitNumber;
+    private Long waitTicketNumber;
 
     public Reservation() {
     }
@@ -20,11 +20,11 @@ public class Reservation {
         this.member = member;
     }
 
-    public Reservation(Long id, Schedule schedule, Member member, Long waitNumber) {
+    public Reservation(Long id, Schedule schedule, Member member, Long waitTicketNumber) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
-        this.waitNumber = waitNumber;
+        this.waitTicketNumber = waitTicketNumber;
     }
 
     public Long getId() {
@@ -39,8 +39,8 @@ public class Reservation {
         return member;
     }
 
-    public Long getWaitNumber() {
-        return waitNumber;
+    public Long getWaitTicketNumber() {
+        return waitTicketNumber;
     }
 
     public boolean sameMember(Member member) {

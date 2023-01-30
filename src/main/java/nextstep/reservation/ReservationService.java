@@ -101,13 +101,13 @@ public class ReservationService {
                 .map(Schedule::getId)
                 .map(reservationDao::findByScheduleId)
                 .map(reservationsBySchedule -> reservationsBySchedule.stream()
-                        .min(Comparator.comparing(Reservation::getWaitNumber))
+                        .min(Comparator.comparing(Reservation::getWaitTicketNumber))
                         .orElseThrow())
                 .collect(Collectors.toList());
 
         List<Reservation> result = new ArrayList<>();
         for (int i = 0; i < reservations.size(); i++) {
-            if (reservations.get(i).getWaitNumber() == reservationsNotWaiting.get(i).getWaitNumber()) {
+            if (reservations.get(i).getWaitTicketNumber() == reservationsNotWaiting.get(i).getWaitTicketNumber()) {
                 result.add(reservations.get(i));
             }
         }
