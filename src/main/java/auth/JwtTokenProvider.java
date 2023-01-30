@@ -1,13 +1,19 @@
 package auth;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 import org.springframework.stereotype.Component;
 
 @Component
+@NoArgsConstructor
 public class JwtTokenProvider {
+
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
@@ -28,20 +34,18 @@ public class JwtTokenProvider {
     }
 
     public String getPrincipal(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return extractBody(token).getSubject();
     }
 
     public String getRole(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("role", String.class);
+        return extractBody(token).get("role", String.class);
     }
 
-    public boolean validateToken(String token) {
+    private Claims extractBody(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-
-            return !claims.getBody().getExpiration().before(new Date());
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new InvalidTokenException();
         }
     }
 }

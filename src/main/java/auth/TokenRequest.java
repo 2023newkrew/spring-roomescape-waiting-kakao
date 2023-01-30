@@ -1,13 +1,13 @@
 package auth;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
 public class TokenRequest {
     private String username;
     private String password;
-
-    public TokenRequest(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
 
     public String getUsername() {
         return username;
