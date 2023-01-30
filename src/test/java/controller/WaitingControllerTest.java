@@ -1,5 +1,6 @@
 package controller;
 
+import auth.domain.TokenData;
 import nextstep.etc.exception.ErrorMessage;
 import nextstep.member.dto.MemberRequest;
 import nextstep.reservation.dto.ReservationRequest;
@@ -18,6 +19,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         createMember();
         createTheme();
         createSchedule();
+        createReservation();
     }
 
     private void createTheme() {
@@ -26,13 +28,25 @@ public class WaitingControllerTest extends AbstractControllerTest {
     }
 
     private void createMember() {
-        var request = new MemberRequest("member", "password", "member", "-");
-        post(given(), "/members", request);
+        var request1 = new MemberRequest("member", "password", "member", "-");
+        post(given(), "/members", request1);
+        var request2 = new MemberRequest("member2", "password", "member", "-");
+        post(given(), "/members", request2);
     }
 
     private void createSchedule() {
-        var request = new ScheduleRequest("2021-01-01", "00:00", 1L);
-        post(given(), "/schedules", request);
+        var request1 = new ScheduleRequest("2021-01-01", "00:00", 1L);
+        post(given(), "/schedules", request1);
+        var request2 = new ScheduleRequest("2021-01-01", "10:00", 1L);
+        post(given(), "/schedules", request2);
+    }
+
+    private void createReservation() {
+        var request = new ReservationRequest(1L);
+        var given = given()
+                .auth()
+                .oauth2(provider.createToken(new TokenData(2L, "ADMIN")));
+        post(given, "/reservations", request);
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -42,7 +56,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("예약 대기 생성 성공")
         @Test
         void should_returnLocation_when_givenRequest() {
-            var request = createRequest();
+            var request = createRequest(1L);
 
             var response = post(authGiven(), DEFAULT_PATH, request);
 
@@ -55,7 +69,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @Test
         void should_throwException_when_duplicated() {
             var expectedException = ErrorMessage.WAITING_CONFLICT;
-            var request = createRequest();
+            var request = createRequest(1L);
 
             post(authGiven(), DEFAULT_PATH, request);
             var response = post(authGiven(), DEFAULT_PATH, request);
@@ -67,7 +81,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @Test
         void should_throwException_when_reservationExists() {
             var expectedException = ErrorMessage.RESERVATION_CONFLICT;
-            var request = createRequest();
+            var request = createRequest(2L);
             var reservationRequest = new ReservationRequest(request.getScheduleId());
 
             post(authGiven(), "/reservations", reservationRequest);
@@ -75,10 +89,23 @@ public class WaitingControllerTest extends AbstractControllerTest {
 
             thenThrow(response, expectedException);
         }
+
+        @DisplayName("예약이 없을 경우 즉시 예약")
+        @Test
+        void should_returnReservationLocation_when_givenRequest() {
+            var request = createRequest(2L);
+
+            var response = post(authGiven(), DEFAULT_PATH, request);
+
+            then(response)
+                    .statusCode(HttpStatus.CREATED.value())
+                    .header("Location", "/reservations/2");
+        }
+
     }
 
-    WaitingRequest createRequest() {
-        return new WaitingRequest(1L);
+    WaitingRequest createRequest(long scheduleId) {
+        return new WaitingRequest(scheduleId);
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
