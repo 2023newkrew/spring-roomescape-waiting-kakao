@@ -19,7 +19,7 @@ public class UserDetailService {
     public UserDetails loadUserByUsername(String username){
         try {
             Member member = memberDao.findByUsername(username);
-            UserDetails userDetails = new UserDetails(member.getId(), member.getUsername(), member.getPassword(), member.getRole());
+            UserDetails userDetails = new UserDetails(member);
             cache.put(userDetails.getId(), userDetails);
             return userDetails;
         } catch(Exception e){
