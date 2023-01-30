@@ -4,8 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
-import nextstep.schedule.ScheduleRequest;
-import nextstep.theme.ThemeRequest;
+import nextstep.domain.reservation.Reservation;
+import nextstep.domain.reservation.ReservationWaiting;
+import nextstep.dto.request.ReservationRequest;
+import nextstep.dto.request.ScheduleRequest;
+import nextstep.dto.request.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,13 +27,14 @@ class ReservationE2ETest extends AbstractE2ETest {
     private Long themeId;
     private Long scheduleId;
 
+
     @BeforeEach
     public void setUp() {
         super.setUp();
         ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
         var themeResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(themeRequest)
                 .when().post("/admin/themes")
@@ -43,7 +47,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(scheduleRequest)
                 .when().post("/admin/schedules")
@@ -63,7 +67,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void create() {
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
@@ -96,6 +100,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .given().log().all()
                 .param("themeId", themeId)
                 .param("date", DATE)
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .extract();
@@ -111,7 +116,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().delete(reservation.header("Location"))
                 .then().log().all()
                 .extract();
@@ -126,7 +131,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
@@ -143,6 +148,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .given().log().all()
                 .param("themeId", themeId)
                 .param("date", DATE)
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .extract();
@@ -156,7 +162,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void createNotExistReservation() {
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();
@@ -171,7 +177,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2("other-token")
+                .auth().oauth2(userToken.getAccessToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();
@@ -179,10 +185,103 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    @DisplayName("예약이 존재하지 않는데 대기를 생성한다")
+    @Test
+    void createInvalidReservationWaiting() {
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .body(request)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("예약 대기를 생성한다")
+    @Test
+    void createWaiting() {
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservations")
+                .then().log().all();
+
+        RestAssured.given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("예약 대기 목록을 조회한다")
+    @Test
+    void showReservationWaitings() {
+        createReservation();
+        createReservationWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(userToken.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationWaiting> reservations = response.jsonPath().getList(".", ReservationWaiting.class);
+        assertThat(reservations).hasSize(1);
+    }
+
+    @DisplayName("다른 사람이 예약 대기 삭제")
+    @Test
+    void InvalidDeleteWaiting() {
+        createReservation();
+        createReservationWaiting();
+
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().delete("/reservation-waitings/1")
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @DisplayName("예약 대기 삭제")
+    @Test
+    void deleteWaiting() {
+        createReservation();
+        createReservationWaiting();
+
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(userToken.getAccessToken())
+                .when().delete("/reservation-waitings/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> createReservationWaiting() {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(userToken.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+    }
+
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
