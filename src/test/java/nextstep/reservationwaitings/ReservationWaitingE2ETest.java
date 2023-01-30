@@ -3,6 +3,7 @@ package nextstep.reservationwaitings;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
 import nextstep.reservation.ReservationRequest;
+import nextstep.reservation.Reservation;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +36,35 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("예약 대기가 없을 때 예약을 한다.")
+    @Test
+    void createReservationIfNoWaiting() {
+        long themeId = createTheme("테마이름", "테마설명", 22000);
+        long scheduleId = createSchedule(themeId, "2018-10-22", "13:00");
+
+        var request = new ReservationWaitingRequest(scheduleId);
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+
+        var response = RestAssured
+                .given().log().all()
+                .param("themeId", themeId)
+                .param("date", "2018-10-22")
+                .when().get("/reservations")
+                .then().log().all()
+                .extract();
+
+        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        assertThat(reservations.size()).isEqualTo(1);
     }
 
     @DisplayName("예약 대기 목록을 조회한다.")
