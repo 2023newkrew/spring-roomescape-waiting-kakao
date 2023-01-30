@@ -6,17 +6,24 @@ import auth.repository.UserDetailsRepositoryImpl;
 import auth.service.LoginService;
 import auth.support.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @RequiredArgsConstructor
+@ConfigurationProperties(prefix = "security.jwt.token")
 public class AuthConfig {
+    private String secretKey;
+    private Long expireLength;
     private final JdbcTemplate jdbcTemplate;
 
     @Bean
-    public JwtTokenProvider jwtTokenProvider() { return new JwtTokenProvider(); }
+    public JwtTokenProvider jwtTokenProvider() {
+        return new JwtTokenProvider(secretKey, expireLength);
+    }
 
     @Bean
     public LoginController loginController() { return new LoginController(loginService()); }
@@ -28,4 +35,12 @@ public class AuthConfig {
 
     @Bean
     public LoginService loginService() { return new LoginService(userDetailsRepository(), jwtTokenProvider()); }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setExpireLength(Long expireLength) {
+        this.expireLength = expireLength;
+    }
 }

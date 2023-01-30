@@ -2,8 +2,6 @@ package auth.repository;
 
 import auth.domain.persist.UserDetails;
 import lombok.RequiredArgsConstructor;
-import nextstep.domain.persist.Member;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
