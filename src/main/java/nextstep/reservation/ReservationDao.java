@@ -107,4 +107,21 @@ public class ReservationDao {
         String sql = "DELETE FROM reservation where id = ?;";
         jdbcTemplate.update(sql, id);
     }
+
+    public List<Reservation> findAllByMemberId(Long memberId) {
+        String sql = "select *" +
+                "from reservation as r1 " +
+                "inner join schedule on schedule.id = r1.schedule_id " +
+                "inner join theme on theme.id = schedule.theme_id " +
+                "inner join member on member.id = r1.member_id " +
+
+                "where r1.member_id = ? " +
+
+                "and r1.created_datetime <= all( " +
+                "    select created_datetime " +
+                "    from reservation as r2 " +
+                "    where r2.schedule_id = r1.schedule_id " +
+                ")";
+        return jdbcTemplate.query(sql, rowMapper, memberId);
+    }
 }

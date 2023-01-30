@@ -69,4 +69,11 @@ public class ReservationService {
 
         reservationDao.deleteById(id);
     }
+
+    public List<ReservationResponse> findAllByMember(Member member) {
+        List<Reservation> reservations = reservationDao.findAllByMemberId(member.getId());
+        return reservations.stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
 }

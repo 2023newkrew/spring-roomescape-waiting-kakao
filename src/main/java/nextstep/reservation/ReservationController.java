@@ -38,6 +38,12 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/reservations/mine")
+    public ResponseEntity<List<ReservationResponse>> showMyReservations(@LoginMember Member member) {
+        List<ReservationResponse> reservations = reservationService.findAllByMember(member);
+        return ResponseEntity.ok(reservations);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         return ResponseEntity.badRequest().build();
