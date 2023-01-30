@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/reservation-waitings")
@@ -36,5 +39,14 @@ public class ReservationWaitingController {
         reservationWaitingService.deleteById(memberId, id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity findMyReservationWaitings(@LoginMember Long memberId) {
+        List<ReservationWaitingResponse> reservationWaitings
+                = reservationWaitingService.findByMemberId(memberId).stream()
+                .map(ReservationWaitingResponse::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(reservationWaitings);
     }
 }

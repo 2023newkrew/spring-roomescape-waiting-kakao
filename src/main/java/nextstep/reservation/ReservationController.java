@@ -31,10 +31,15 @@ public class ReservationController {
         return ResponseEntity.ok().body(results);
     }
 
+    @GetMapping("/reservations/mine")
+    public ResponseEntity findByMemberId(@LoginMember Long memberId) {
+        List<Reservation> reservations = reservationService.findByMemberId(memberId);
+        return ResponseEntity.ok().body(reservations);
+    }
+
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginMember Long memberId, @PathVariable Long id) {
         reservationService.deleteById(memberId, id);
-
         return ResponseEntity.noContent().build();
     }
 

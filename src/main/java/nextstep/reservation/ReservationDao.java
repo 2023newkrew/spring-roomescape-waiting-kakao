@@ -65,7 +65,7 @@ public class ReservationDao {
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, schedule.next_wait_num, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
                 "from reservation " +
@@ -117,5 +117,23 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation where id = ?;";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<Reservation> findByMemberId(Long id) {
+        String sql = "SELECT " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, schedule.next_wait_num, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from reservation " +
+                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation.member_id = member.id " +
+                "where reservation.member_id = ?;";
+        try {
+            return jdbcTemplate.query(sql, rowMapper, id);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 }
