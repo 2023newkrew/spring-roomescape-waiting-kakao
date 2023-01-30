@@ -5,21 +5,24 @@ import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
 import nextstep.domain.dto.request.MemberRequest;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AbstractE2ETest {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
     protected TokenResponse token;
 
     @BeforeEach
     protected void setUp() {
+        databaseCleaner.execute();
         MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()
@@ -40,5 +43,6 @@ public class AbstractE2ETest {
                 .extract();
 
         token = response.as(TokenResponse.class);
+
     }
 }

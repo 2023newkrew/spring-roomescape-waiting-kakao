@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
+import nextstep.DatabaseCleaner;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.request.ScheduleRequest;
 import nextstep.domain.dto.request.ThemeRequest;
@@ -12,9 +13,11 @@ import nextstep.domain.dto.response.WaitingResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

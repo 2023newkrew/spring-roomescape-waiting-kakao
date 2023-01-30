@@ -4,16 +4,26 @@ import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
 import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
+import nextstep.DatabaseCleaner;
 import nextstep.domain.dto.request.MemberRequest;
 import nextstep.domain.dto.request.ThemeRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ThemeE2ETest extends AbstractE2ETest {
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+    }
+
     @DisplayName("테마를 생성한다")
     @Test
     public void create() {
