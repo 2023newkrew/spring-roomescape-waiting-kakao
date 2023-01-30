@@ -1,8 +1,12 @@
 package nextstep.waiting;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
+import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationRequest;
+import nextstep.reservationwaiting.ReservationWaitingResponse;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,6 +74,38 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .header("Location", "/reservation-waitings/1");
+    }
+
+    @DisplayName("내 예약 대기를 조회한다")
+    @Test
+    void findMine() {
+        createReservationWaiting();
+        createReservationWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        List<ReservationWaitingResponse> reservationWaitingResponseList = response.jsonPath().getList(".", ReservationWaitingResponse.class);
+        assertThat(reservationWaitingResponseList.size()).isEqualTo(1);
+
+    }
+
+    private ExtractableResponse<Response> createReservationWaiting() {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
     }
 
 
