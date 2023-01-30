@@ -18,8 +18,8 @@ public class WaitingService {
     private final ScheduleDao scheduleDao;
     private final ReservationDao reservationDao;
     private final WaitingDao waitingDao;
-    public String create(Member member, WaitingRequestDTO waitingRequestDTO) {
-        Schedule schedule = scheduleDao.findById(waitingRequestDTO.getScheduleId());
+    public String create(Member member, WaitingRequest waitingRequest) {
+        Schedule schedule = scheduleDao.findById(waitingRequest.getScheduleId());
         if (schedule == null) {
             throw new NullPointerException();}
 

@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class WaitingRequestDTO {
+public class WaitingRequest {
     private Long scheduleId;
 }

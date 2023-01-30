@@ -23,11 +23,11 @@ public class WaitingController {
     }
 
     @PostMapping("/reservation-waitings")
-    public ResponseEntity<Void> createWaiting(@LoginMember TokenMember member, @RequestBody WaitingRequestDTO waitingRequestDTO) {
+    public ResponseEntity<Void> createWaiting(@LoginMember TokenMember member, @RequestBody WaitingRequest waitingRequest) {
         if (member == null) {
             throw new AuthenticationException();
         }
-        String location = waitingService.create(memberService.findById(member.getId()), waitingRequestDTO);
+        String location = waitingService.create(memberService.findById(member.getId()), waitingRequest);
         return ResponseEntity.created(URI.create(location)).build();
     }
 

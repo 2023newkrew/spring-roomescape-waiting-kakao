@@ -56,7 +56,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
         var responseReservation = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .body(new WaitingRequestDTO(scheduleId0))
+                .body(new WaitingRequest(scheduleId0))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
                 .then().log().all()
@@ -68,7 +68,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
         var responseWaiting = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .body(new WaitingRequestDTO(scheduleId0))
+                .body(new WaitingRequest(scheduleId0))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
                 .then().log().all()
@@ -150,7 +150,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
             RestAssured
                     .given().log().all()
                     .auth().oauth2(token.getAccessToken())
-                    .body(new WaitingRequestDTO(scheduleId))
+                    .body(new WaitingRequest(scheduleId))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when().post("/reservation-waitings")
                     .then().log().all();
@@ -159,7 +159,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .body(new WaitingRequestDTO(scheduleId))
+                .body(new WaitingRequest(scheduleId))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
                 .then().log().all()
