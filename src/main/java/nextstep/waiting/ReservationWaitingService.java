@@ -46,7 +46,6 @@ public class ReservationWaitingService {
                         .stream()
                         .map(ReservationWaiting::getReservation)
                         .toList());
-
         reservations.addAll(reservationDao.findByScheduleId(schedule.getId()));
 
         reservations.stream()

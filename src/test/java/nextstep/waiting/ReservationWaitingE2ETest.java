@@ -33,11 +33,8 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     public static final String USERNAME2 = "username2";
     public static final String PASSWORD2 = "password2";
 
-    public static final String USERNAME3 = "username3";
-    public static final String PASSWORD3 = "password3";
 
     protected TokenResponse token2;
-    protected TokenResponse token3;
 
     @BeforeEach
     public void setUp() {
@@ -63,29 +60,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .extract();
 
         token2 = response.as(TokenResponse.class);
-        //////////
-        MemberRequest memberBody2 = new MemberRequest(USERNAME3, PASSWORD3, "name", "010-1234-5678", "ADMIN");
-        RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(memberBody2)
-                .when().post("/members")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
 
-        TokenRequest tokenBody2 = new TokenRequest(USERNAME3, PASSWORD3);
-        var response2 = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(tokenBody2)
-                .when().post("/login/token")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        token3 = response2.as(TokenResponse.class);
-
-        //////////
         ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
         var themeResponse = RestAssured
                 .given().log().all()
@@ -170,22 +145,6 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         createReservation();
         var reservationWaiting = createReservationWaiting();
 
-        RestAssured
-                .given().log().all()
-                .auth().oauth2(token3.getAccessToken())
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservation-waitings")
-                .then().log().all()
-                .extract();
-
-        RestAssured
-                .given().log().all()
-                .auth().oauth2(token2.getAccessToken())
-                .when().get("/reservation-waitings/mine")
-                .then().log().all()
-                .extract();
-
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token2.getAccessToken())
@@ -194,20 +153,6 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
-        RestAssured
-                .given().log().all()
-                .auth().oauth2(token2.getAccessToken())
-                .when().get("/reservation-waitings/mine")
-                .then().log().all()
-                .extract();
-
-        RestAssured
-                .given().log().all()
-                .auth().oauth2(token3.getAccessToken())
-                .when().get("/reservation-waitings/mine")
-                .then().log().all()
-                .extract();
     }
 
     private ExtractableResponse<Response> createReservation() {
