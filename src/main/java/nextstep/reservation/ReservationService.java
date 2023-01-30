@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,5 +66,12 @@ public class ReservationService {
         reservationDao.deleteById(id);
 
         publisher.publishEvent(new ReservationDeleteEvent(reservation));
+    }
+
+    public List<ReservationResponse> findByMemberId(Long memberId) {
+        return reservationDao.findByMemberId(memberId)
+                .stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
     }
 }

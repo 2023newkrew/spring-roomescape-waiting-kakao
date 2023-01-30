@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/reservations")
 public class ReservationController {
 
     public final ReservationService reservationService;
@@ -18,23 +19,28 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/reservations")
+    @PostMapping
     public ResponseEntity createReservation(@LoginMember Long memberId, @RequestBody ReservationRequest reservationRequest) {
         Long reservationId = reservationService.create(memberId, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservationId)).build();
     }
 
-    @GetMapping("/reservations")
+    @GetMapping
     public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
 
-    @DeleteMapping("/reservations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteReservation(@LoginMember Long memberId, @PathVariable Long id) {
         reservationService.deleteById(memberId, id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<ReservationResponse>> mine(@LoginMember Long memberId) {
+        return ResponseEntity.ok(reservationService.findByMemberId(memberId));
     }
 
     @ExceptionHandler(Exception.class)
