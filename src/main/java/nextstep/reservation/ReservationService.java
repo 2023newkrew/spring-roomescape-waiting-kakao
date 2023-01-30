@@ -9,6 +9,8 @@ import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import nextstep.waiting.Waiting;
+import nextstep.waiting.WaitingDao;
 import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +18,18 @@ import java.util.List;
 
 @Service
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    private final ReservationDao reservationDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final MemberDao memberDao;
+    private final WaitingDao waitingDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, WaitingDao waitingDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.waitingDao = waitingDao;
     }
 
     public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
@@ -77,5 +81,13 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+
+        List<Waiting> waitings = waitingDao.findByScheduleId(reservation.getSchedule().getId());
+        if (!waitings.isEmpty()) {
+            Waiting waiting = waitings.get(0);
+            Reservation nextReservation = new Reservation(waiting.getSchedule(), waiting.getMember());
+            reservationDao.save(nextReservation);
+            waitingDao.deleteById(waiting.getId());
+        }
     }
 }

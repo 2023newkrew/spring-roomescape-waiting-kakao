@@ -16,7 +16,7 @@ import java.util.List;
 @Component
 public class WaitingDao {
 
-    public final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public WaitingDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -111,5 +111,24 @@ public class WaitingDao {
                 "where waiting.id < ? and waiting.schedule_id = ?";
 
         return jdbcTemplate.queryForObject(sql, Long.class, waiting.getId(), waiting.getSchedule().getId());
+    }
+
+    public List<Waiting> findByScheduleId(Long scheduleId) {
+        String sql = "SELECT " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on waiting.member_id = member.id " +
+                "where schedule.id = ?;";
+
+        try {
+            return jdbcTemplate.query(sql, rowMapper, scheduleId);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 }
