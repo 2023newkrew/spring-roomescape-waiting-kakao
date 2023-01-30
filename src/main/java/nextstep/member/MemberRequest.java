@@ -1,6 +1,7 @@
 package nextstep.member;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class MemberRequest {
     @NotBlank
@@ -11,7 +12,7 @@ public class MemberRequest {
     private String name;
     @NotBlank
     private String phone;
-    @NotBlank
+    @NotNull
     private Role role;
 
     public MemberRequest(String username, String password, String name, String phone, Role role) {

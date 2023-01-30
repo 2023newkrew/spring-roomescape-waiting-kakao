@@ -4,12 +4,16 @@ import auth.AuthenticationException;
 import auth.UserDetails;
 import java.net.URI;
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.reservation.service.ReservationService;
 import nextstep.reservation.service.ReservationWaitingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +27,7 @@ import auth.LoginMember;
 import nextstep.member.Member;
 import nextstep.reservation.dto.ReservationRequest;
 
+@Validated
 @RestController
 @RequestMapping("/reservation-waitings")
 public class ReservationWaitingController {
@@ -33,7 +38,7 @@ public class ReservationWaitingController {
     }
 
     @PostMapping
-    public ResponseEntity create(@LoginMember UserDetails member, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity create(@LoginMember UserDetails member, @RequestBody @Valid ReservationRequest reservationRequest) {
         String waitingReservation = "/reservation-waitings/" +
                                     reservationWaitingService.create(new Member(member), reservationRequest);
         return ResponseEntity.created(URI.create(waitingReservation)).build();
@@ -46,7 +51,7 @@ public class ReservationWaitingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationWaiting(@LoginMember UserDetails member, @PathVariable Long id){
+    public ResponseEntity<Void> deleteReservationWaiting(@LoginMember UserDetails member, @PathVariable @NotNull @Min(1L) Long id){
         reservationWaitingService.delete(new Member(member), id);
         return ResponseEntity.noContent().build();
     }
