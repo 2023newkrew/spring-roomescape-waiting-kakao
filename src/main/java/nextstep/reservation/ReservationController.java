@@ -4,6 +4,7 @@ import auth.AuthenticationException;
 import nextstep.config.annotation.LoginMember;
 import nextstep.member.Member;
 import nextstep.reservation.dto.response.ReservationResponseDto;
+import nextstep.reservation.dto.response.ReservationWaitingResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +54,12 @@ public class ReservationController {
                 .map(ReservationResponseDto::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(reservations);
+    }
+
+    @GetMapping("/reservation-waitings/mine")
+    public ResponseEntity<List<ReservationWaitingResponseDto>> createReservationWaiting(@LoginMember Member member) {
+        List<ReservationWaitingResponseDto> dtos = reservationService.getReservationWaitingsByMember(member);
+        return ResponseEntity.ok(dtos);
     }
 
     @ExceptionHandler(Exception.class)

@@ -3,6 +3,7 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservation.dto.response.ReservationWaitingResponseDto;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -11,6 +12,7 @@ import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -112,5 +114,29 @@ public class ReservationService {
             }
         }
         return result;
+    }
+
+    public List<ReservationWaitingResponseDto> getReservationWaitingsByMember(Member member) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+        List<Reservation> reservationsByMemberId = reservationDao.findByMemberId(member.getId());
+        List<List<Reservation>> reservationsPerSchedule = reservationsByMemberId.stream()
+                .map(Reservation::getSchedule)
+                .map(Schedule::getId)
+                .map(reservationDao::findByScheduleId)
+                .collect(Collectors.toList());
+
+        List<ReservationWaitingResponseDto> responseDto = new ArrayList<>();
+        for (int i = 0; i < reservationsPerSchedule.size(); i++) {
+            List<Reservation> reservationList = reservationsPerSchedule.get(i);
+            reservationList.sort(Comparator.comparing(Reservation::getWaitTicketNumber));
+            Reservation reservation = reservationsByMemberId.get(i);
+            int waitNum = reservationList.indexOf(reservation);
+            if (waitNum != 0) {
+                responseDto.add(ReservationWaitingResponseDto.of(reservation, waitNum));
+            }
+        }
+        return responseDto;
     }
 }
