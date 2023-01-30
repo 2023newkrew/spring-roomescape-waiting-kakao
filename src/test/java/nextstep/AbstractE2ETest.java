@@ -24,21 +24,11 @@ public class AbstractE2ETest {
     @BeforeEach
     protected void setUp() {
         MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
-        RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(memberBody)
-                .when().post("/members")
-                .then().log().all()
+        then(post(given(), "/members", memberBody))
                 .statusCode(HttpStatus.CREATED.value());
 
         TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
-        var response = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(tokenBody)
-                .when().post("/login/token")
-                .then().log().all()
+        var response = then(post(given(), "/login/token", tokenBody))
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 

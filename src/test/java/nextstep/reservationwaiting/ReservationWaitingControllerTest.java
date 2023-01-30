@@ -1,8 +1,11 @@
 package nextstep.reservationwaiting;
 
+import auth.TokenRequest;
+import auth.TokenResponse;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
+import nextstep.member.MemberRequest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,6 +132,33 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
         Response response = delete(givenWithAuth(), DEFAULT_PATH + "/1");
         then(response)
                 .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("다른 사용자가 등록한 예약 대기는 취소할 수 없어야 한다.")
+    @Test
+    void deleteWaitingOfOther() {
+        TokenResponse othersToken = createOtherMemberToken();
+
+        createReservation();
+        var othersResponseOfPost = post(given().auth().oauth2(othersToken.getAccessToken()), DEFAULT_PATH, waitingRequest);
+        var othersReservationWaiting = then(othersResponseOfPost).extract();
+
+        Response response = delete(givenWithAuth(), othersReservationWaiting.header("Location"));
+
+        then(response)
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private TokenResponse createOtherMemberToken() {
+        MemberRequest memberBody = new MemberRequest("other", "9999", "other", "010-1111-2222", "USER");
+        then(post(given(), "/members", memberBody))
+                .statusCode(HttpStatus.CREATED.value());
+
+        TokenRequest tokenBody = new TokenRequest("other", "9999");
+        return then(post(given(), "/login/token", tokenBody))
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(TokenResponse.class);
     }
 
     private ExtractableResponse<Response> createReservationWaiting() {
