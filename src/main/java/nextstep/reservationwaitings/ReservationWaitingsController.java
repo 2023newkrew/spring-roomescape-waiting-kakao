@@ -14,9 +14,15 @@ import java.net.URI;
 @RequestMapping("/reservation-waitings")
 public class ReservationWaitingsController {
 
-    @PostMapping
-    public ResponseEntity<Void> create(@LoginMember Member member, @RequestBody ReservationWaitingRequest request) {
-        return ResponseEntity.created(URI.create("/reservation-waitings/1")).build();
+    private final ReservationWaitingsService reservationWaitingsService;
+
+    public ReservationWaitingsController(ReservationWaitingsService reservationWaitingsService) {
+        this.reservationWaitingsService = reservationWaitingsService;
     }
 
+    @PostMapping
+    public ResponseEntity<Void> create(@LoginMember Member member, @RequestBody ReservationWaitingRequest request) {
+        long id = reservationWaitingsService.create(member, request);
+        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
+    }
 }
