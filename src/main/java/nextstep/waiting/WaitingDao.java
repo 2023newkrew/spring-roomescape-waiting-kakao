@@ -7,6 +7,7 @@ import java.util.List;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
+import nextstep.support.DBException;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -140,6 +141,11 @@ public class WaitingDao {
 
     public int countWaitingNumber(Waiting waiting) {
         String sql = "SELECT COUNT(*) FROM waiting WHERE schedule.id = ? AND id <= ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, waiting.getSchedule().getId(), waiting.getId());
+
+        try {
+            return jdbcTemplate.queryForObject(sql, Integer.class, waiting.getSchedule().getId(), waiting.getId());
+        } catch (Exception e) {
+            throw new DBException("대기 번호 측정에 실패했습니다.");
+        }
     }
 }
