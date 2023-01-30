@@ -1,16 +1,14 @@
 package nextstep.reservationwaiting;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Objects;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
 import org.springframework.stereotype.Repository;
 
 @Repository

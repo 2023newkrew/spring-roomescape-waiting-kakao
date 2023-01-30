@@ -1,14 +1,13 @@
 package nextstep.reservationwaiting;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-import static org.assertj.core.api.Assertions.assertThatCode;
 
 class ReservationWaitingTest {
 

@@ -2,12 +2,11 @@ package auth.config;
 
 import auth.exception.AuthenticationException;
 import auth.utils.JwtTokenProvider;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.servlet.HandlerInterceptor;
-
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Objects;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 public class AdminInterceptor implements HandlerInterceptor {
     private final JwtTokenProvider jwtTokenProvider;

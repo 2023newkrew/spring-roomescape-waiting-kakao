@@ -1,11 +1,10 @@
 package auth.config;
 
-import auth.utils.JwtTokenProvider;
 import auth.LoginService;
+import auth.utils.JwtTokenProvider;
+import java.util.List;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.List;
 
 public class WebMvcAuthConfiguration implements WebMvcConfigurer {
     private final JwtTokenProvider jwtTokenProvider;
