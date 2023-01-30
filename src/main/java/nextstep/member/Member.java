@@ -10,7 +10,7 @@ public class Member implements MemberDetails{
     private String phone;
     private String role;
 
-    public Member() {
+    private Member() {
     }
 
     public Member(Long id, String username, String password, String name, String phone, String role) {

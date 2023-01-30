@@ -11,7 +11,7 @@ public class Schedule {
     private LocalDate date;
     private LocalTime time;
 
-    public Schedule() {
+    private Schedule() {
     }
 
     public Schedule(Long id, Theme theme, LocalDate date, LocalTime time) {

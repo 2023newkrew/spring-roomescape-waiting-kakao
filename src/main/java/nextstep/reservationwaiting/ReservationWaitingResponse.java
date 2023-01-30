@@ -8,7 +8,7 @@ public class ReservationWaitingResponse {
     private Schedule schedule;
     private Long waitNum;
 
-    public ReservationWaitingResponse() {
+    private ReservationWaitingResponse() {
     }
 
     public ReservationWaitingResponse(ReservationWaiting reservationWaiting) {
