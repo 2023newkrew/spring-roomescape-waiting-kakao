@@ -1,7 +1,7 @@
 package nextstep.controller;
 
-import nextstep.domain.persist.Schedule;
 import nextstep.domain.dto.ScheduleRequest;
+import nextstep.domain.persist.Schedule;
 import nextstep.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

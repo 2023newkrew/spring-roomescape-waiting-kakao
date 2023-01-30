@@ -21,10 +21,14 @@ public class AuthConfig {
     private final JdbcTemplate jdbcTemplate;
 
     @Bean
-    public JwtTokenProvider jwtTokenProvider() { return new JwtTokenProvider(secretKey, validityInMilliseconds); }
+    public JwtTokenProvider jwtTokenProvider() {
+        return new JwtTokenProvider(secretKey, validityInMilliseconds);
+    }
 
     @Bean
-    public LoginController loginController() { return new LoginController(loginService()); }
+    public LoginController loginController() {
+        return new LoginController(loginService());
+    }
 
     @Bean
     public UserDetailsRepository userDetailsRepository() {
@@ -32,5 +36,7 @@ public class AuthConfig {
     }
 
     @Bean
-    public LoginService loginService() { return new LoginService(userDetailsRepository(), jwtTokenProvider()); }
+    public LoginService loginService() {
+        return new LoginService(userDetailsRepository(), jwtTokenProvider());
+    }
 }

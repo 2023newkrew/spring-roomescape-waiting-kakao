@@ -4,7 +4,6 @@ import nextstep.domain.dto.MemberRequest;
 import nextstep.domain.persist.Member;
 import nextstep.repository.MemberDao;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {

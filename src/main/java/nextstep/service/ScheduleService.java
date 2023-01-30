@@ -2,8 +2,8 @@ package nextstep.service;
 
 import nextstep.domain.dto.ScheduleRequest;
 import nextstep.domain.persist.Schedule;
-import nextstep.repository.ScheduleDao;
 import nextstep.domain.persist.Theme;
+import nextstep.repository.ScheduleDao;
 import nextstep.repository.ThemeDao;
 import org.springframework.stereotype.Service;
 

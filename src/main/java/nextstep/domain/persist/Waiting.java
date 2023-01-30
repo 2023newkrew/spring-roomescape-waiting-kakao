@@ -1,6 +1,5 @@
 package nextstep.domain.persist;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
 import java.util.Objects;

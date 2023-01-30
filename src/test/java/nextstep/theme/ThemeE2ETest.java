@@ -1,9 +1,9 @@
 package nextstep.theme;
 
-import io.restassured.RestAssured;
-import nextstep.AbstractE2ETest;
 import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
+import io.restassured.RestAssured;
+import nextstep.AbstractE2ETest;
 import nextstep.domain.dto.MemberRequest;
 import nextstep.domain.dto.ThemeRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +32,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
     @Test
     public void createFromNormalUser() {
 
-        MemberRequest memberBody = new MemberRequest(USERNAME+1, PASSWORD, "name", "010-1234-5678", "");
+        MemberRequest memberBody = new MemberRequest(USERNAME + 1, PASSWORD, "name", "010-1234-5678", "");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -41,7 +41,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        TokenRequest tokenBody = new TokenRequest(USERNAME+1, PASSWORD);
+        TokenRequest tokenBody = new TokenRequest(USERNAME + 1, PASSWORD);
         var response = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
