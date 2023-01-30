@@ -26,12 +26,8 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        boolean test = true;
-        if (member == null) {
-            throw new AuthenticationException();
-        }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+    public Long create(Member member, Long scheduleId) {
+        Schedule schedule = scheduleDao.findById(scheduleId);
         if (schedule == null) {
             throw new NullPointerException();
         }
