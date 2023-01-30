@@ -1,6 +1,6 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -27,6 +27,7 @@ public class ReservationService {
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
+        boolean test = true;
         if (member == null) {
             throw new AuthenticationException();
         }

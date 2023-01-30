@@ -63,6 +63,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void create() {
         var response = RestAssured
                 .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .auth().oauth2(token.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -76,8 +77,11 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("비로그인 사용자가 예약을 생성한다")
     @Test
     void createWithoutLogin() {
+
+
         var response = RestAssured
                 .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
@@ -171,6 +175,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .auth().oauth2("other-token")
                 .when().delete("/reservations/1")
                 .then().log().all()
@@ -187,6 +192,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
                 .extract();
     }
 }
