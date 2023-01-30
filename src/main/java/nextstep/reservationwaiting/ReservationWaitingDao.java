@@ -42,17 +42,19 @@ public class ReservationWaitingDao {
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
-            )
+            ),
+            ReservationWaitingStatus.valueOf(resultSet.getString("reservation_waiting.status"))
     );
 
     public Long save(ReservationWaiting reservationWaiting) {
-        String sql = "INSERT INTO reservation_waiting (schedule_id, member_id) VALUES (?, ?);";
+        String sql = "INSERT INTO reservation_waiting (schedule_id, member_id, status) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, reservationWaiting.getSchedule().getId());
             ps.setLong(2, reservationWaiting.getMember().getId());
+            ps.setString(3, reservationWaiting.getStatus().name());
             return ps;
 
         }, keyHolder);

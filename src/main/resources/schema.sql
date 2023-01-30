@@ -41,5 +41,6 @@ CREATE TABLE reservation_waiting
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
+    status      varchar(20) not null,
     primary key (id)
 );

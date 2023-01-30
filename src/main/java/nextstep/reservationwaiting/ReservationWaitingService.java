@@ -39,12 +39,22 @@ public class ReservationWaitingService {
         if (schedule == null) {
             throw new NullPointerException();
         }
+        ReservationWaitingStatus currentStatus = ReservationWaitingStatus.WAITING;
+        if(tryInsertReservation(schedule, member)) {
+            currentStatus = ReservationWaitingStatus.RESERVED;
+        }
+        return reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus));
+    }
+
+    private boolean tryInsertReservation(Schedule schedule, Member member) {
         try {
             reservationDao.save(new Reservation(schedule, member));
         } catch (DuplicateKeyException e) {
+            // 예약이 이미 존재할 때
             e.printStackTrace();
+            return false;
         }
-        return reservationWaitingDao.save(new ReservationWaiting(schedule, member));
+        return true;
     }
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {

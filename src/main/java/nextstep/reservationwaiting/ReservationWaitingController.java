@@ -44,6 +44,7 @@ public class ReservationWaitingController {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity runtimeException(RuntimeException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
