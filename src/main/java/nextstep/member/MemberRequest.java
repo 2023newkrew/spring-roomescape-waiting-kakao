@@ -14,7 +14,6 @@ public class MemberRequest {
     private String password;
     private String name;
     private String phone;
-    private Role role;
 
     public Member toEntity() {
         return Member.builder()
@@ -22,7 +21,7 @@ public class MemberRequest {
                 .password(password)
                 .name(name)
                 .phone(phone)
-                .role(role)
+                .role(Role.USER)
                 .build();
     }
 }

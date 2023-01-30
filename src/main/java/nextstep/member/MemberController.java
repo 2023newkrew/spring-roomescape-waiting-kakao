@@ -16,14 +16,14 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
+    public ResponseEntity<URI> createMember(@RequestBody MemberRequest memberRequest) {
         Long id = memberService.create(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + id)).build();
     }
 
     @GetMapping("/me")
-    public ResponseEntity me(@LoginMember UserDetails userDetails) {
+    public ResponseEntity<MemberResponse> me(@LoginMember UserDetails userDetails) {
         Member member = memberService.findById(userDetails.getId());
-        return ResponseEntity.ok(member);
+        return ResponseEntity.ok(MemberResponse.of(member));
     }
 }
