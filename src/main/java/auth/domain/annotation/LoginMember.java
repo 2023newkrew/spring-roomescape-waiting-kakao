@@ -1,4 +1,4 @@
-package auth.domain.template;
+package auth.domain.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

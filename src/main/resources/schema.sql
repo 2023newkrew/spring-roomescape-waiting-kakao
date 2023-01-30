@@ -42,3 +42,11 @@ CREATE TABLE member
     role     varchar(20) not null,
     primary key (id)
 );
+
+CREATE TABLE profit
+(
+    id       bigint  not null auto_increment,
+    date     date    not null,
+    amount   int     not null,
+    primary key (id)
+);

@@ -1,9 +1,11 @@
 package nextstep.controller;
 
 import auth.domain.persist.UserDetails;
-import auth.domain.template.LoginMember;
+import auth.domain.annotation.LoginMember;
+import auth.domain.annotation.Secured;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
+import auth.domain.enumeration.Roles;
 import nextstep.domain.persist.Reservation;
 import nextstep.service.ReservationService;
 import org.springframework.http.ResponseEntity;
@@ -46,4 +48,9 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
+    @Secured(role = Roles.ADMIN)
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity approveReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+
+    }
 }

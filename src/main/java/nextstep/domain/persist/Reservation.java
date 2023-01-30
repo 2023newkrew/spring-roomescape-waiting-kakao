@@ -1,13 +1,16 @@
 package nextstep.domain.persist;
 
+import nextstep.domain.enumeration.ReservationStatus;
+
 import java.util.Objects;
 
 public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
-
+    private ReservationStatus status;
     public Reservation() {
+        this.status = ReservationStatus.NOT_APPROVED;
     }
 
     public Reservation(Schedule schedule, Member member) {

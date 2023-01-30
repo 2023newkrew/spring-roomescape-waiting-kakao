@@ -1,5 +1,7 @@
-package auth.support;
+package auth.support.interceptor;
 
+import auth.support.AuthorizationException;
+import auth.support.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
