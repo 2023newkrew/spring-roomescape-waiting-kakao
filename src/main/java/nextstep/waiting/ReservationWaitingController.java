@@ -30,4 +30,11 @@ public class ReservationWaitingController {
         Long reservationWaitingId = reservationWaitingService.save(memberId, request);
         return ResponseEntity.created(URI.create("/reservation-waitings/" + reservationWaitingId)).build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteReservationWaiting(@LoginMember Long memberId, @PathVariable Long id) {
+        reservationWaitingService.deleteById(memberId, id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
