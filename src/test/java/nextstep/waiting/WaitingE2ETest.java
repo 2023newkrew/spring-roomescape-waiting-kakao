@@ -81,7 +81,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @DisplayName("예약 대기를 삭제한다")
     @Test
     void delete() {
-        var waiting = createWaiting();
+        var waiting = createWaiting(1);
 
         var response = RestAssured
                 .given().log().all()
@@ -96,7 +96,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @DisplayName("다른 사람이 예약 대기를 삭제한다")
     @Test
     void deleteWaitingOfOthers() {
-        createWaiting();
+        createWaiting(1);
 
         var response = RestAssured
                 .given().log().all()
@@ -108,7 +108,32 @@ public class WaitingE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
-    private ExtractableResponse<Response> createWaiting() {
+    @DisplayName("나의 예약 대기 목록을 조회한다.")
+    @Test
+    void showMyWaiting() {
+        createWaiting(2);
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        var myWaiting = response.jsonPath().getList(".", MyWaiting.class);
+        assertThat(myWaiting)
+                .hasSize(2)
+                .satisfies((elem)->{
+                    assertThat(elem.get(0).getWaitNum()).isEqualTo(1);
+                    assertThat(elem.get(1).getWaitNum()).isEqualTo(2);
+                })
+        ;
+
+
+    }
+
+    private ExtractableResponse<Response> createWaiting(int scheduleCount) {
         var scheduleResponse = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -121,13 +146,15 @@ public class WaitingE2ETest extends AbstractE2ETest {
         String[] scheduleLocation = scheduleResponse.header("Location").split("/");
         var scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
-        RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .body(new WaitingRequestDTO(scheduleId))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservation-waitings")
-                .then().log().all();
+        for (int i = 0; i < scheduleCount; i++) {
+            RestAssured
+                    .given().log().all()
+                    .auth().oauth2(token.getAccessToken())
+                    .body(new WaitingRequestDTO(scheduleId))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/reservation-waitings")
+                    .then().log().all();
+        }
 
         return RestAssured
                 .given().log().all()
@@ -138,4 +165,5 @@ public class WaitingE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
     }
+
 }
