@@ -109,6 +109,16 @@ public class WaitingControllerTest extends AbstractControllerTest {
                     .header("Location", "/reservations/2");
         }
 
+        @DisplayName("스케줄이 없을 경우 예외 발생")
+        @Test
+        void should_thorwException_when_scheduleNotExists() {
+            var expectedException = ErrorMessage.SCHEDULE_NOT_EXISTS;
+            var request = createRequest(99L);
+
+            var response = post(authGiven(), DEFAULT_PATH, request);
+
+            thenThrow(response, expectedException);
+        }
     }
 
     WaitingRequest createRequest(long scheduleId) {

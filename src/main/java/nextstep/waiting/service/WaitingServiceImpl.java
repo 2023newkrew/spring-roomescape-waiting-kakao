@@ -5,7 +5,6 @@ import nextstep.etc.exception.ErrorMessage;
 import nextstep.etc.exception.ReservationException;
 import nextstep.etc.exception.WaitingException;
 import nextstep.reservation.repository.ReservationRepository;
-import nextstep.schedule.repository.ScheduleRepository;
 import nextstep.waiting.domain.Waiting;
 import nextstep.waiting.dto.WaitingRequest;
 import nextstep.waiting.dto.WaitingResponse;
@@ -25,8 +24,6 @@ import java.util.stream.Collectors;
 public class WaitingServiceImpl implements WaitingService {
 
     private final WaitingRepository repository;
-
-    private final ScheduleRepository scheduleRepository;
 
     private final ReservationRepository reservationRepository;
 

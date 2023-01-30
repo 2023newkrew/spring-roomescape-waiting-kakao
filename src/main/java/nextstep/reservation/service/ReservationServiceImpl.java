@@ -3,6 +3,7 @@ package nextstep.reservation.service;
 import lombok.RequiredArgsConstructor;
 import nextstep.etc.exception.ErrorMessage;
 import nextstep.etc.exception.ReservationException;
+import nextstep.etc.exception.ScheduleException;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
@@ -40,7 +41,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     private void validateSchedule(ScheduleResponse schedule) {
         if (Objects.isNull(schedule)) {
-            throw new ReservationException(ErrorMessage.SCHEDULE_NOT_EXISTS);
+            throw new ScheduleException(ErrorMessage.SCHEDULE_NOT_EXISTS);
         }
         if (repository.existsByScheduleId(schedule.getId())) {
             throw new ReservationException(ErrorMessage.RESERVATION_CONFLICT);
