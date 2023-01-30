@@ -11,6 +11,7 @@ import nextstep.reservation.ReservationService;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
+import nextstep.support.NotExistException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class WaitingService {
         // 이미 예약이 되어 있는지 체크 -> 만약에 안돼있다면 Error(예약이 가능합니다.)
         List<Waiting> waitings = waitingDao.findByScheduleId(schedule.getId());
         if (waitings.isEmpty()) {
-            throw new DuplicateEntityException();
+            throw new NotExistException("예약이 존재하지 않기 때문에 예약 대기가 불가능합니다.");
         }
 
         Waiting waiting = new Waiting(
