@@ -1,5 +1,6 @@
 package nextstep.service;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.ScheduleRequest;
 import nextstep.domain.persist.Schedule;
 import nextstep.repository.ScheduleDao;
@@ -11,14 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ScheduleService {
-    private ScheduleDao scheduleDao;
-    private ThemeDao themeDao;
-
-    public ScheduleService(ScheduleDao scheduleDao, ThemeDao themeDao) {
-        this.scheduleDao = scheduleDao;
-        this.themeDao = themeDao;
-    }
+    private final ScheduleDao scheduleDao;
+    private final ThemeDao themeDao;
 
     @Transactional
     public Long create(ScheduleRequest scheduleRequest) {

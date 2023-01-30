@@ -1,5 +1,6 @@
 package nextstep.service;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.ThemeRequest;
 import nextstep.domain.persist.Theme;
 import nextstep.repository.ThemeDao;
@@ -10,12 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ThemeService {
-    private ThemeDao themeDao;
+    private final ThemeDao themeDao;
 
-    public ThemeService(ThemeDao themeDao) {
-        this.themeDao = themeDao;
-    }
 
     public Long create(ThemeRequest themeRequest) {
         return themeDao.save(themeRequest.toEntity());
