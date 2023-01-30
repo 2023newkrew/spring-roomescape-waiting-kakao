@@ -8,8 +8,8 @@ import auth.dto.response.TokenResponse;
 import auth.exception.AuthenticationException;
 
 public class LoginService {
-    private UserDetailsRepository userDetailsRepository;
-    private JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsRepository userDetailsRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public LoginService(UserDetailsRepository userDetailsRepository, JwtTokenProvider jwtTokenProvider) {
         this.userDetailsRepository = userDetailsRepository;
@@ -31,8 +31,7 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public UserDetails extractMember(String credential) {
-        Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
+    public UserDetails extractMember(Long id) {
         return userDetailsRepository.findById(id);
     }
 }
