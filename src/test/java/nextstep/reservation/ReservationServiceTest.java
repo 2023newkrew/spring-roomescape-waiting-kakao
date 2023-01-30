@@ -6,6 +6,7 @@ import nextstep.domain.reservation.ReservationDao;
 import nextstep.domain.schedule.Schedule;
 import nextstep.domain.theme.Theme;
 import nextstep.dto.request.ReservationRequest;
+import nextstep.dto.response.CreateReservationResponse;
 import nextstep.service.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,10 +60,11 @@ public class ReservationServiceTest {
                 .willReturn(createdReservationWaitingId);
 
         // when
-        Long reservationWaitingId = reservationService.createReservationOrReservationWaiting(member.getId(), reservationRequest);
+        CreateReservationResponse createReservationWaitingResponse = reservationService.createReservationOrReservationWaiting(member.getId(), reservationRequest);
 
         // then
-        assertThat(reservationWaitingId).isEqualTo(createdReservationWaitingId);
+        assertThat(createReservationWaitingResponse.getId()).isEqualTo(createdReservationWaitingId);
+        assertThat(createReservationWaitingResponse.isReservationCreated()).isFalse();
         verify(reservationWaitingService, times(1)).createReservationWaiting(any(Member.class), any(Schedule.class));
         verify(reservationDao, times(0)).save(any(Reservation.class));
     }
@@ -86,10 +88,11 @@ public class ReservationServiceTest {
                 .willReturn(createdReservationId);
 
         // when
-        Long reservationId = reservationService.createReservationOrReservationWaiting(member.getId(), reservationRequest);
+        CreateReservationResponse createReservationResponse = reservationService.createReservationOrReservationWaiting(member.getId(), reservationRequest);
 
         // then
-        assertThat(reservationId).isEqualTo(createdReservationId);
+        assertThat(createReservationResponse.getId()).isEqualTo(createdReservationId);
+        assertThat(createReservationResponse.isReservationCreated()).isTrue();
         verify(reservationDao, times(1)).save(any(Reservation.class));
         verify(reservationWaitingService, times(0)).createReservationWaiting(any(Member.class), any(Schedule.class));
     }

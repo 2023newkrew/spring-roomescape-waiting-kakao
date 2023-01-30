@@ -4,6 +4,7 @@ import nextstep.domain.member.Member;
 import nextstep.domain.reservation.Reservation;
 import nextstep.domain.reservation.ReservationDao;
 import nextstep.dto.request.ReservationRequest;
+import nextstep.dto.response.CreateReservationResponse;
 import nextstep.dto.response.ReservationResponse;
 import nextstep.domain.schedule.Schedule;
 import nextstep.error.ApplicationException;
@@ -33,15 +34,15 @@ public class ReservationService {
     }
 
     @Transactional
-    public Long createReservationOrReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
+    public CreateReservationResponse createReservationOrReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
         Member member = memberService.findById(memberId);
         Schedule schedule = scheduleService.findById(reservationRequest.getScheduleId());
 
         if (existsByScheduleId(reservationRequest.getScheduleId())) {
-            return reservationWaitingService.createReservationWaiting(member, schedule);
+            return new CreateReservationResponse(reservationWaitingService.createReservationWaiting(member, schedule), false);
         }
 
-        return reservationDao.save(new Reservation(schedule, member));
+        return new CreateReservationResponse(reservationDao.save(new Reservation(schedule, member)), true);
     }
 
     @Transactional(readOnly = true)
