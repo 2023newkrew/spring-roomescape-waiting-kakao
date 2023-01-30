@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
-import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationRequest;
 import nextstep.reservationwaiting.ReservationWaitingResponse;
 import nextstep.schedule.ScheduleRequest;

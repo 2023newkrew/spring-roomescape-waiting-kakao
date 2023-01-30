@@ -21,37 +21,37 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<Void> createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
         Long id = reservationService.create(member, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping("/mine")
-    public ResponseEntity findMyReservation(@LoginMember Member member) {
+    public ResponseEntity<List<ReservationResponse>> findMyReservation(@LoginMember Member member) {
         List<ReservationResponse> results = reservationService.findMyReservations(member);
         return ResponseEntity.ok().body(results);
     }
 
     @GetMapping()
-    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<List<ReservationResponse>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<ReservationResponse> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@LoginMember Member member, @PathVariable Long id) {
         reservationService.deleteById(member, id);
 
         return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
+    public ResponseEntity<Void> onException(Exception e) {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
+    public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

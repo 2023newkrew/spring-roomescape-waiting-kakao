@@ -21,36 +21,36 @@ public class ReservationWaitingController {
     }
 
     @PostMapping
-    public ResponseEntity createReservationWaiting(@LoginMember Member member, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
+    public ResponseEntity<Void> createReservationWaiting(@LoginMember Member member, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
         Long id = reservationWaitingService.create(member, reservationWaitingRequest);
         return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
     @GetMapping("/mine")
-    public ResponseEntity findMyReservationWaitings(@LoginMember Member member) {
+    public ResponseEntity<List<ReservationWaitingResponse>> findMyReservationWaitings(@LoginMember Member member) {
         List<ReservationWaitingResponse> results = reservationWaitingService.findMyReservationWaitings(member);
         return ResponseEntity.ok().body(results);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity cancelReservationWaiting(@LoginMember Member member, @PathVariable Long id) {
+    public ResponseEntity<Void> cancelReservationWaiting(@LoginMember Member member, @PathVariable Long id) {
         reservationWaitingService.cancelById(member, id);
 
         return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
+    public ResponseEntity<Void> onException(Exception e) {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
+    public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity runtimeException(RuntimeException e) {
+    public ResponseEntity<Void> runtimeException(RuntimeException e) {
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }

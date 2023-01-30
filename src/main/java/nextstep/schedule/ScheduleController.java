@@ -15,7 +15,7 @@ public class ScheduleController {
     }
 
     @PostMapping("/admin/schedules")
-    public ResponseEntity createSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+    public ResponseEntity<Void> createSchedule(@RequestBody ScheduleRequest scheduleRequest) {
         Long id = scheduleService.create(scheduleRequest);
         return ResponseEntity.created(URI.create("/schedules/" + id)).build();
     }
@@ -26,7 +26,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/admin/schedules/{id}")
-    public ResponseEntity deleteReservation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         scheduleService.deleteById(id);
 
         return ResponseEntity.noContent().build();

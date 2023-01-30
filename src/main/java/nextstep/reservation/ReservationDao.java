@@ -1,7 +1,6 @@
 package nextstep.reservation;
 
 import nextstep.member.Member;
-import nextstep.reservationwaiting.ReservationWaiting;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
