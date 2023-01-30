@@ -1,6 +1,7 @@
 package auth;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.support.NoMemberException;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -24,7 +25,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                     .split(" ")[1];
             return loginService.extractMember(credential);
         } catch (Exception e) {
-            return null;
+            throw new NoMemberException();
         }
     }
 }
