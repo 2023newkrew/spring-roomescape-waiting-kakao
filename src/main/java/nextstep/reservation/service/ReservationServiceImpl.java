@@ -66,7 +66,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ReservationException(ErrorMessage.RESERVATION_NOT_EXISTS);
         }
         if (!memberId.equals(reservation.getMemberId())) {
-            throw new ReservationException(ErrorMessage.NOT_RESERVER);
+            throw new ReservationException(ErrorMessage.NOT_RESERVATION_OWNER);
         }
     }
 }

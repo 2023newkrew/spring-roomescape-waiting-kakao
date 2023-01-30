@@ -35,7 +35,10 @@ public class WaitingRepositoryImpl implements WaitingRepository {
 
     @Override
     public Waiting getById(Long id) {
-        return null;
+        return jdbcTemplate.query(
+                connection -> statementCreator.createSelectById(connection, id),
+                resultSetParser::parseWaiting
+        );
     }
 
     @Override
@@ -45,6 +48,8 @@ public class WaitingRepositoryImpl implements WaitingRepository {
 
     @Override
     public boolean deleteById(Long id) {
-        return false;
+        int deletedRow = jdbcTemplate.update(connection -> statementCreator.createDeleteById(connection, id));
+
+        return deletedRow > 0;
     }
 }

@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import nextstep.member.dto.MemberResponse;
 import nextstep.schedule.dto.ScheduleResponse;
 
 @RequiredArgsConstructor
@@ -13,8 +12,6 @@ import nextstep.schedule.dto.ScheduleResponse;
 public class WaitingResponse {
 
     private final Long id;
-
-    private final MemberResponse member;
 
     private final ScheduleResponse schedule;
 

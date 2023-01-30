@@ -12,17 +12,29 @@ public class WaitingStatementCreator {
 
     private static final String INSERT_SQL = "INSERT INTO waiting (member_id, schedule_id) VALUES (?, ?);";
 
-    private static final String SELECT_BY_ID_SQL = "SELECT * FROM waiting WHERE id = ?";
-
-    private static final String SELECT_BY_MEMBER_ID_SQL = "SELECT *\n" +
-            "FROM\n" +
-            "    (SELECT\n" +
-            "         id,\n" +
-            "         member_id,\n" +
+    private static final String SELECT_BY_ID_SQL = "SELECT * \n" +
+            "FROM \n" +
+            "    (SELECT \n" +
+            "         id, \n" +
+            "         member_id, \n" +
             "         schedule_id,\n" +
-            "         RANK() OVER (PARTITION BY schedule_id ORDER BY id ASC) waitNum\n" +
-            "     FROM waiting)\n" +
-            "WHERE member_id = ?;";
+            "         RANK() OVER (PARTITION BY schedule_id ORDER BY id ASC) AS waitNum \n" +
+            "     FROM waiting AS W) AS waiting \n" +
+            "INNER JOIN schedule ON waiting.schedule_id = schedule.id \n" +
+            "INNER JOIN theme ON schedule.theme_id = theme.id \n" +
+            "WHERE waiting.id = ?";
+
+    private static final String SELECT_BY_MEMBER_ID_SQL = "SELECT * \n" +
+            "FROM \n" +
+            "    (SELECT \n" +
+            "         id, \n" +
+            "         member_id, \n" +
+            "         schedule_id,\n" +
+            "         RANK() OVER (PARTITION BY schedule_id ORDER BY id ASC) AS waitNum \n" +
+            "     FROM waiting AS W) AS waiting \n" +
+            "INNER JOIN schedule ON waiting.schedule_id = schedule.id \n" +
+            "INNER JOIN theme ON schedule.theme_id = theme.id \n" +
+            "WHERE waiting.member_id = ?;";
 
     private static final String DELETE_BY_ID_SQL = "DELETE FROM waiting WHERE id = ?";
 
