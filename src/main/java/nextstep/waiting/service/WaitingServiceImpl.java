@@ -31,6 +31,7 @@ public class WaitingServiceImpl implements WaitingService {
     private final WaitingMapper mapper;
 
 
+    @Transactional
     @Override
     public WaitingResponse create(Long memberId, WaitingRequest request) {
         Waiting waiting = mapper.fromRequest(memberId, request);
@@ -60,6 +61,7 @@ public class WaitingServiceImpl implements WaitingService {
         return null;
     }
 
+    @Transactional
     @Override
     public boolean deleteById(Long MemberId, Long id) {
         return false;
