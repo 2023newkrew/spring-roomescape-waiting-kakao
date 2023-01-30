@@ -33,9 +33,4 @@ public class Member {
     public MemberRequest toDto(){
         return new MemberRequest(this.memberName, this.password, this.name, this.phone);
     }
-
-
-    public boolean isValidPassword(String password) {
-        return this.password.equals(password);
-    }
 }

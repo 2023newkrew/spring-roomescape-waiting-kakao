@@ -4,26 +4,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public enum MemberRoleType {
+public enum RoleType {
     ADMIN("ROLE_ADMIN"),
     MEMBER("ROLE_MEMBER");
 
     private final String type;
 
-    MemberRoleType(String type){
+    RoleType(String type){
         this.type = type;
     }
 
-    public static MemberRoleType from(String type){
-        return Arrays.stream(MemberRoleType.values())
+    public static RoleType from(String type){
+        return Arrays.stream(RoleType.values())
                 .filter(memberRoleType -> memberRoleType.isSameType(type))
                 .findFirst()
                 .orElseThrow();
     }
 
-    public static List<MemberRoleType> of(List<String> roles) {
+    public static List<RoleType> of(List<String> roles) {
         return roles.stream()
-                .map(MemberRoleType::from)
+                .map(RoleType::from)
                 .collect(Collectors.toList());
     }
 

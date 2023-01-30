@@ -1,14 +1,12 @@
 package auth.config;
 
 import auth.controller.AuthController;
-import auth.dao.MemberRoleDao;
+import auth.dao.AuthDao;
 import auth.service.AuthService;
 import auth.support.AuthenticationInterceptor;
 import auth.support.AuthenticationPrincipalArgumentResolver;
 import auth.support.AuthorizationInterceptor;
 import auth.support.JwtTokenProvider;
-import nextstep.member.dao.MemberDao;
-import nextstep.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,13 +27,13 @@ public class AuthConfiguration {
     }
 
     @Bean
-    public MemberRoleDao memberRoleDao(JdbcTemplate jdbcTemplate){
-        return new MemberRoleDao(jdbcTemplate);
+    public AuthDao memberRoleDao(JdbcTemplate jdbcTemplate){
+        return new AuthDao(jdbcTemplate);
     }
 
     @Bean
-    public AuthService authService(MemberRoleDao memberRoleDao, MemberDao memberDao, JwtTokenProvider jwtTokenProvider){
-        return new AuthService(jwtTokenProvider, memberDao, memberRoleDao);
+    public AuthService authService(AuthDao authDao, JwtTokenProvider jwtTokenProvider){
+        return new AuthService(jwtTokenProvider, authDao);
     }
 
     @Bean
@@ -44,8 +42,8 @@ public class AuthConfiguration {
     }
 
     @Bean
-    public AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver(JwtTokenProvider jwtTokenProvider, MemberService memberService){
-        return new AuthenticationPrincipalArgumentResolver(jwtTokenProvider, memberService);
+    public AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver(JwtTokenProvider jwtTokenProvider, AuthService authService){
+        return new AuthenticationPrincipalArgumentResolver(jwtTokenProvider, authService);
     }
 
     @Bean

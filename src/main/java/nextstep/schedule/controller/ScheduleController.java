@@ -1,6 +1,6 @@
 package nextstep.schedule.controller;
 
-import auth.domain.MemberRoleType;
+import auth.domain.RoleType;
 import auth.support.AuthorizationRequired;
 import lombok.RequiredArgsConstructor;
 import nextstep.schedule.model.Schedule;
@@ -23,14 +23,14 @@ public class ScheduleController {
         return ResponseEntity.ok().body(scheduleService.findByThemeIdAndDate(themeId, date));
     }
 
-    @AuthorizationRequired(MemberRoleType.ADMIN)
+    @AuthorizationRequired(RoleType.ADMIN)
     @PostMapping("/admin/schedules")
     public ResponseEntity<Void> createSchedule(@Valid @RequestBody ScheduleRequest scheduleRequest) {
         Long id = scheduleService.create(scheduleRequest);
         return ResponseEntity.created(URI.create("/schedules/" + id)).build();
     }
 
-    @AuthorizationRequired(MemberRoleType.ADMIN)
+    @AuthorizationRequired(RoleType.ADMIN)
     @DeleteMapping("/admin/schedules/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         scheduleService.deleteById(id);

@@ -1,9 +1,10 @@
 package nextstep.reservation.service;
 
-import lombok.RequiredArgsConstructor;
 import auth.exception.AuthenticationException;
+import lombok.RequiredArgsConstructor;
 import nextstep.exception.DuplicateEntityException;
 import nextstep.exception.NotExistEntityException;
+import nextstep.member.dao.MemberDao;
 import nextstep.member.model.Member;
 import nextstep.reservation.dao.ReservationDao;
 import nextstep.reservation.model.CreateReservationRequest;
@@ -21,6 +22,7 @@ public class ReservationService {
     public final ReservationDao reservationDao;
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
+    public final MemberDao memberDao;
 
     public Long create(CreateReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
@@ -40,16 +42,22 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date, Member loginMember) {
+    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date, Long loginMemberId) {
         themeDao.findById(themeId)
                 .orElseThrow(NotExistEntityException::new);
+
+        Member loginMember = memberDao.findById(loginMemberId)
+                .orElseThrow(AuthenticationException::new);
 
         return reservationDao.findAllByThemeIdAndDateAndMemberName(themeId, date, loginMember.getMemberName());
     }
 
-    public void deleteById(Long id, Member loginMember) {
+    public void deleteById(Long id, Long loginMemberId) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NotExistEntityException::new);
+
+        Member loginMember = memberDao.findById(loginMemberId)
+                .orElseThrow(AuthenticationException::new);
 
         if (!reservation.isReservedBy(loginMember)) {
             throw new AuthenticationException();

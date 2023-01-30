@@ -1,21 +1,21 @@
 package auth.service;
 
-import auth.dao.MemberRoleDao;
-import auth.domain.MemberRoles;
+import auth.dao.AuthDao;
+import auth.domain.RoleTypes;
+import auth.exception.MemberNameNotFoundException;
+import auth.model.MemberDetails;
 import lombok.RequiredArgsConstructor;
 import auth.exception.AuthenticationException;
 import auth.model.TokenRequest;
 import auth.model.TokenResponse;
 import auth.support.JwtTokenProvider;
-import nextstep.member.dao.MemberDao;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberDao memberDao;
-    private final MemberRoleDao memberRoleDao;
+    private final AuthDao authDao;
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
         if (!isValidLogin(tokenRequest)) {
@@ -26,12 +26,21 @@ public class AuthService {
         return new TokenResponse(accessToken);
     }
 
-    public MemberRoles findRoleByMemberName(String memberName){
-        return memberRoleDao.findByMemberName(memberName);
+    public RoleTypes findRoleByMemberName(String memberName){
+        return authDao.findMemberRolesByMemberName(memberName);
+    }
+
+    public MemberDetails findMemberDetailsByMemberName(String memberName){
+        MemberDetails memberDetails = authDao.findMemberDetailsByMemberName(memberName)
+                .orElseThrow(MemberNameNotFoundException::new);
+
+        RoleTypes roleTypes = findRoleByMemberName(memberName);
+        memberDetails.addRole(roleTypes);
+        return memberDetails;
     }
 
     private boolean isValidLogin(TokenRequest request) {
-        return memberDao.findByMemberName(request.getMemberName())
+        return authDao.findMemberDetailsByMemberName(request.getMemberName())
                 .filter(member -> member.isValidPassword(request.getPassword()))
                 .isPresent();
     }

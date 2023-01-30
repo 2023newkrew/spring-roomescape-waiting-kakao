@@ -1,6 +1,6 @@
 package nextstep.theme.controller;
 
-import auth.domain.MemberRoleType;
+import auth.domain.RoleType;
 import auth.support.AuthorizationRequired;
 import lombok.RequiredArgsConstructor;
 import nextstep.theme.model.Theme;
@@ -24,14 +24,14 @@ public class ThemeController {
         return ResponseEntity.ok().body(results);
     }
 
-    @AuthorizationRequired(MemberRoleType.ADMIN)
+    @AuthorizationRequired(RoleType.ADMIN)
     @PostMapping("/admin/themes")
     public ResponseEntity<Void> createTheme(@Valid @RequestBody ThemeRequest themeRequest) {
         Long id = themeService.create(themeRequest);
         return ResponseEntity.created(URI.create("/themes/" + id)).build();
     }
 
-    @AuthorizationRequired(MemberRoleType.ADMIN)
+    @AuthorizationRequired(RoleType.ADMIN)
     @DeleteMapping("/admin/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.delete(id);

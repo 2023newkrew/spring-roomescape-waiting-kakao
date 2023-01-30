@@ -1,7 +1,7 @@
 package auth.support;
 
-import auth.domain.MemberRoleType;
-import auth.domain.MemberRoles;
+import auth.domain.RoleType;
+import auth.domain.RoleTypes;
 import auth.exception.AuthenticationException;
 import auth.exception.AuthorizationException;
 import auth.exception.InvalidTokenException;
@@ -34,13 +34,13 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
     }
 
     private boolean hasRequiredRoles(HttpServletRequest request, Object handler) {
-        MemberRoleType[] requiredRoles = getRequiredRoles(handler);
-        MemberRoles memberRoles = getMemberRoles(request);
+        RoleType[] requiredRoles = getRequiredRoles(handler);
+        RoleTypes roleTypes = getMemberRoles(request);
 
-        return memberRoles.hasRoles(requiredRoles);
+        return roleTypes.hasRoles(requiredRoles);
     }
 
-    private MemberRoles getMemberRoles(HttpServletRequest request) {
+    private RoleTypes getMemberRoles(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         try{
             String subject = jwtTokenProvider.getSubject(token);
@@ -50,7 +50,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         }
     }
 
-    private static MemberRoleType[] getRequiredRoles(Object handler) {
+    private static RoleType[] getRequiredRoles(Object handler) {
         HandlerMethod httpMethod = (HandlerMethod) handler;
         return httpMethod.getMethod()
                 .getAnnotation(AuthorizationRequired.class)

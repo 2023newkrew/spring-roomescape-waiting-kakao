@@ -1,8 +1,10 @@
 package auth.support;
 
+import auth.exception.AuthenticationException;
+import auth.exception.MemberNameNotFoundException;
+import auth.model.MemberDetails;
+import auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.model.Member;
-import nextstep.member.service.MemberService;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -16,12 +18,12 @@ import javax.servlet.http.HttpServletRequest;
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberService memberService;
+    private final AuthService authService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(AuthenticationPrincipal.class)
-                && parameter.getParameterType().equals(Member.class);
+                && parameter.getParameterType().equals(MemberDetails.class);
     }
 
     @Override
@@ -30,6 +32,10 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         String subject = jwtTokenProvider.getSubject(token);
 
-        return memberService.findByMemberName(subject);
+        try{
+            return authService.findMemberDetailsByMemberName(subject);
+        }catch (MemberNameNotFoundException err){
+            throw new AuthenticationException();
+        }
     }
 }

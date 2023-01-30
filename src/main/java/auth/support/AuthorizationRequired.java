@@ -1,6 +1,6 @@
 package auth.support;
 
-import auth.domain.MemberRoleType;
+import auth.domain.RoleType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuthorizationRequired{
-    MemberRoleType[] value() default {};
+    RoleType[] value() default {};
 }

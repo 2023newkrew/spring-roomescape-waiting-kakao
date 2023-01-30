@@ -1,9 +1,9 @@
 package nextstep.reservation.controller;
 
-import lombok.RequiredArgsConstructor;
+import auth.model.MemberDetails;
 import auth.support.AuthenticationPrincipal;
 import auth.support.LoginRequired;
-import nextstep.member.model.Member;
+import lombok.RequiredArgsConstructor;
 import nextstep.reservation.model.CreateReservationRequest;
 import nextstep.reservation.model.Reservation;
 import nextstep.reservation.model.ReservationRequest;
@@ -24,23 +24,23 @@ public class ReservationController {
 
     @LoginRequired
     @PostMapping
-    public ResponseEntity<Void> createReservation(@AuthenticationPrincipal Member member, @Valid @RequestBody ReservationRequest reservationRequest) {
-        CreateReservationRequest createReservationRequest = CreateReservationRequest.to(reservationRequest, member.getMemberName());
+    public ResponseEntity<Void> createReservation(@AuthenticationPrincipal MemberDetails memberDetails, @Valid @RequestBody ReservationRequest reservationRequest) {
+        CreateReservationRequest createReservationRequest = CreateReservationRequest.to(reservationRequest, memberDetails.getMemberName());
         Long id = reservationService.create(createReservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @LoginRequired
     @GetMapping
-    public ResponseEntity<List<Reservation>> readReservations(@AuthenticationPrincipal Member member, @RequestParam Long themeId, @RequestParam String date) {
-        List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date, member);
+    public ResponseEntity<List<Reservation>> readReservations(@AuthenticationPrincipal MemberDetails memberDetails, @RequestParam Long themeId, @RequestParam String date) {
+        List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date, memberDetails.getId());
         return ResponseEntity.ok().body(results);
     }
 
     @LoginRequired
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@AuthenticationPrincipal Member member, @PathVariable Long id) {
-        reservationService.deleteById(id, member);
+    public ResponseEntity<Void> deleteReservation(@AuthenticationPrincipal MemberDetails memberDetails, @PathVariable Long id) {
+        reservationService.deleteById(id, memberDetails.getId());
 
         return ResponseEntity.noContent().build();
     }
