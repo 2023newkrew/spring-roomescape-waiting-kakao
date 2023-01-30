@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
@@ -56,6 +57,14 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectById(connection, id),
                 resultSetParser::parseReservation
+        );
+    }
+
+    @Override
+    public List<Reservation> getByMemberId(Long memberId) {
+        return jdbcTemplate.query(
+                connection -> statementCreator.createSelectByMemberId(connection, memberId),
+                resultSetParser::parseReservations
         );
     }
 

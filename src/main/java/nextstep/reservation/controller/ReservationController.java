@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/reservations")
@@ -38,6 +39,11 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> getReservation(@PathVariable("reservation_id") Long reservationId) {
         ReservationEntity reservation = service.getById(reservationId);
         return ResponseEntity.ok(mapper.toResponse(reservation));
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<ReservationResponse>> getByMemberId(@MemberId Long memberId) {
+        return ResponseEntity.ok(service.getByMemberId(memberId));
     }
 
     @DeleteMapping("/{reservation_id}")
