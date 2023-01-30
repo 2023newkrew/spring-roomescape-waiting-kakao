@@ -1,12 +1,13 @@
 package nextstep.member;
 
-import io.restassured.RestAssured;
 import auth.TokenRequest;
 import auth.TokenResponse;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -14,8 +15,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MemberE2ETest {
+    @LocalServerPort
+    int port;
 
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
@@ -23,22 +26,33 @@ public class MemberE2ETest {
 
     @BeforeEach
     void setUp() {
+        RestAssured.port = port;
         MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
         RestAssured
-                .given().log().all()
+                .given()
+                .log()
+                .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(memberBody)
-                .when().post("/members")
-                .then().log().all()
+                .when()
+                .post("/members")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.CREATED.value());
 
         TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
         var response = RestAssured
-                .given().log().all()
+                .given()
+                .log()
+                .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(tokenBody)
-                .when().post("/login/token")
-                .then().log().all()
+                .when()
+                .post("/login/token")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
@@ -50,11 +64,16 @@ public class MemberE2ETest {
     public void create() {
         MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", "ADMIN");
         RestAssured
-                .given().log().all()
+                .given()
+                .log()
+                .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
-                .when().post("/members")
-                .then().log().all()
+                .when()
+                .post("/members")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.CREATED.value());
     }
 
@@ -62,10 +81,16 @@ public class MemberE2ETest {
     @Test
     public void showThemes() {
         var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().get("/members/me")
-                .then().log().all()
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2(token.getAccessToken())
+                .when()
+                .get("/members/me")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
