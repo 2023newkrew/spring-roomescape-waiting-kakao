@@ -1,9 +1,11 @@
 package nextstep;
 
-import nextstep.auth.AdminInterceptor;
-import nextstep.auth.JwtTokenProvider;
-import nextstep.auth.LoginMemberArgumentResolver;
-import nextstep.auth.LoginService;
+import auth.AdminInterceptor;
+import auth.JwtTokenProvider;
+import auth.LoginMemberArgumentResolver;
+import auth.LoginService;
+import nextstep.member.MemberDao;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
