@@ -23,6 +23,16 @@ public class CreateWaitingResponse {
         return this.reservation != null;
     }
 
+    public Long getId() {
+        if (this.reservation != null) {
+            return reservation.getId();
+        }
+        if (this.waiting != null) {
+            return waiting.getId();
+        }
+        return null;
+    }
+
 
     public Waiting getWaiting() {
         return this.waiting;

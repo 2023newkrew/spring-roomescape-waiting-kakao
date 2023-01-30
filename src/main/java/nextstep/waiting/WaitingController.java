@@ -13,6 +13,8 @@ import java.util.List;
 
 @RestController
 public class WaitingController {
+    private static final String RESERVATION_LOCATION_PREFIX = "/reservations/";
+    public static final String WAITING_LOCATION_PREFIX = "/reservation-waitings/";
     private final WaitingService waitingService;
 
     public WaitingController(WaitingService waitingService) {
@@ -23,9 +25,7 @@ public class WaitingController {
     public ResponseEntity<Void> createWaiting(@LoginMember Member member, @RequestBody WaitingRequest waitingRequest) {
         CreateWaitingResponse response = waitingService.create(member, waitingRequest);
         return ResponseEntity.created(URI.create(
-                response.isReservedDirectly()
-                        ? "/reservations/" + response.getReservation().getId()
-                        : "/reservation-waitings/" + response.getWaiting().getId()))
+                        (response.isReservedDirectly() ? RESERVATION_LOCATION_PREFIX : WAITING_LOCATION_PREFIX) + response.getId()))
                 .build();
     }
 
