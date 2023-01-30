@@ -1,6 +1,5 @@
 package auth.config;
 
-import auth.controller.AdminController;
 import auth.controller.AuthController;
 import auth.dao.MemberRoleDao;
 import auth.service.AuthService;
@@ -10,8 +9,6 @@ import auth.support.AuthorizationInterceptor;
 import auth.support.JwtTokenProvider;
 import nextstep.member.dao.MemberDao;
 import nextstep.member.service.MemberService;
-import nextstep.schedule.service.ScheduleService;
-import nextstep.theme.service.ThemeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,11 +41,6 @@ public class AuthConfiguration {
     @Bean
     public AuthController authController(AuthService authService){
         return new AuthController(authService);
-    }
-
-    @Bean
-    public AdminController adminController(ThemeService themeService, ScheduleService scheduleService){
-        return new AdminController(themeService, scheduleService);
     }
 
     @Bean
