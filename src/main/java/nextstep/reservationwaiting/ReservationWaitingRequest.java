@@ -1,10 +1,11 @@
 package nextstep.reservationwaiting;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public class ReservationWaitingRequest {
-    private Long scheduleId;
+    private final Long scheduleId;
 
-    public ReservationWaitingRequest() {}
-
+    @JsonCreator
     public ReservationWaitingRequest(Long scheduleId) {
         this.scheduleId = scheduleId;
     }

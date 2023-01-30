@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import nextstep.theme.Theme;
 
 import java.time.LocalDate;
@@ -7,13 +8,11 @@ import java.time.LocalTime;
 
 public class Schedule {
     private Long id;
-    private Theme theme;
-    private LocalDate date;
-    private LocalTime time;
+    private final Theme theme;
+    private final LocalDate date;
+    private final LocalTime time;
 
-    public Schedule() {
-    }
-
+    @JsonCreator
     public Schedule(Long id, Theme theme, LocalDate date, LocalTime time) {
         this.id = id;
         this.theme = theme;

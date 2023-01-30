@@ -1,5 +1,6 @@
 package nextstep.reservation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
@@ -7,12 +8,10 @@ import java.util.Objects;
 
 public class Reservation {
     private Long id;
-    private Schedule schedule;
-    private Member member;
+    private final Schedule schedule;
+    private final Member member;
 
-    public Reservation() {
-    }
-
+    @JsonCreator
     public Reservation(Schedule schedule, Member member) {
         this.schedule = schedule;
         this.member = member;

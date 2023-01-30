@@ -8,10 +8,11 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public class ThemeDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

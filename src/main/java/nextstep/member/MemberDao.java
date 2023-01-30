@@ -8,8 +8,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public class MemberDao implements LoginMemberDao {
     public final JdbcTemplate jdbcTemplate;
 

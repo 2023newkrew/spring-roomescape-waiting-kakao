@@ -11,8 +11,9 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public class ReservationWaitingDao {
 
     public final JdbcTemplate jdbcTemplate;

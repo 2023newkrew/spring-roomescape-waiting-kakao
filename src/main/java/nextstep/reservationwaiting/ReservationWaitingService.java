@@ -11,12 +11,10 @@ import java.util.List;
 @Service
 public class ReservationWaitingService {
     private final ReservationWaitingDao reservationWaitingDao;
-    private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
 
-    public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao) {
+    public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ScheduleDao scheduleDao) {
         this.reservationWaitingDao = reservationWaitingDao;
-        this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
     }
 

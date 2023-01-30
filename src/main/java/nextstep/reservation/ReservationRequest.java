@@ -1,11 +1,11 @@
 package nextstep.reservation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public class ReservationRequest {
-    private Long scheduleId;
+    private final Long scheduleId;
 
-    public ReservationRequest() {
-    }
-
+    @JsonCreator
     public ReservationRequest(Long scheduleId) {
         this.scheduleId = scheduleId;
     }

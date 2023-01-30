@@ -1,16 +1,15 @@
 package nextstep.reservationwaiting;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import nextstep.schedule.Schedule;
 
 public class ReservationWaitingResponse {
 
-    private Long id;
-    private Schedule schedule;
-    private Long waitNum;
+    private final Long id;
+    private final Schedule schedule;
+    private final Long waitNum;
 
-    public ReservationWaitingResponse() {
-    }
-
+    @JsonCreator
     public ReservationWaitingResponse(ReservationWaiting reservationWaiting) {
         this.id = reservationWaiting.getId();
         this.schedule = reservationWaiting.getSchedule();
