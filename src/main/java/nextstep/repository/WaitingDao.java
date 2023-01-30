@@ -58,7 +58,7 @@ public class WaitingDao {
     }
 
     public Long getPriority(Long scheduleId, Long waitingId) {
-        String sql = "SELECT COUNT(waiting.id)" +
+        String sql = "SELECT FOR UPDATE COUNT(waiting.id)" +
                 "FROM waiting " +
                 "WHERE waiting.schedule_id = ? AND waiting.id <= ?";
         try {

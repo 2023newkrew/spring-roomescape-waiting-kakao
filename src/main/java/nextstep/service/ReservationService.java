@@ -14,6 +14,7 @@ import nextstep.support.DuplicateEntityException;
 import nextstep.domain.persist.Theme;
 import nextstep.repository.ThemeDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
+    @Transactional
     public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
         if (userDetails == null) {
             throw new AuthenticationException();
@@ -54,6 +56,7 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
@@ -63,10 +66,12 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationResponse> findAllByUserId(Long id) {
         return reservationDao.findAllByUserId(id).stream().map(ReservationResponse::new).collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteById(UserDetails userDetails, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {

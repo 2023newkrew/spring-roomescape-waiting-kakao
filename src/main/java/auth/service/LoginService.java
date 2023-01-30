@@ -8,6 +8,7 @@ import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class LoginService {
     private final UserDetailsRepository userDetailsRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Transactional(readOnly = true)
     public TokenResponse createToken(TokenRequest tokenRequest) {
         UserDetails userDetails = userDetailsRepository.findByUsername(tokenRequest.getUsername());
         if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {

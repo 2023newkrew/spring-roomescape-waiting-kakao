@@ -15,6 +15,7 @@ class JwtTokenProviderTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @Test
+    @DisplayName("토큰 검증 테스트")
     void Should_ReturnTrue_When_ValidateToken() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
 
@@ -22,6 +23,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
+    @DisplayName("토큰 Principal 가져오기 테스트")
     void Should_ReturnId_When_GetPrincipal() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
 
@@ -29,6 +31,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
+    @DisplayName("토큰 내에 담긴 유저 권한 가져오기 테스트")
     void Should_ReturnAdmin_When_GetRoleOfAdminToken() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
 

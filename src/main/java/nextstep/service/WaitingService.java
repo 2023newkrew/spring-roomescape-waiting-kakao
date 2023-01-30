@@ -12,6 +12,7 @@ import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.WaitingDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class WaitingService {
     private final ScheduleDao scheduleDao;
     private final WaitingDao waitingDao;
 
+    @Transactional
     public String create(UserDetails userDetails, WaitingRequest waitingRequest) {
         Long scheduleId = waitingRequest.getScheduleId();
         List<Reservation> reservations = reservationDao.findByScheduleId(scheduleId);
@@ -39,6 +41,7 @@ public class WaitingService {
         return "/" + WAITING + "/" + waitingId;
     }
 
+    @Transactional(readOnly = true)
     public List<WaitingResponse> findAll(Long id) {
         List<Waiting> waitings = waitingDao.findAll(id);
 
@@ -47,10 +50,12 @@ public class WaitingService {
                 .collect(Collectors.toList());
     }
 
-    private Long getPriority(Waiting waiting) {
+    @Transactional(readOnly = true)
+    public Long getPriority(Waiting waiting) {
         return waitingDao.getPriority(waiting.getSchedule().getId(), waiting.getId());
     }
 
+    @Transactional
     public void deleteById(UserDetails userDetails, Long id) {
         Waiting waiting = waitingDao.findById(id);
 
