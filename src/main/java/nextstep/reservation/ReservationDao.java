@@ -1,5 +1,6 @@
 package nextstep.reservation;
 
+import auth.TokenMember;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
@@ -43,6 +44,21 @@ public class ReservationDao {
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
+            )
+    );
+
+    private final RowMapper<MyReservation> myReservationRowMapper = (resultSet, rowNum) -> new MyReservation(
+            resultSet.getLong("reservation.id"),
+            new Schedule(
+                    resultSet.getLong("schedule.id"),
+                    new Theme(
+                            resultSet.getLong("theme.id"),
+                            resultSet.getString("theme.name"),
+                            resultSet.getString("theme.desc"),
+                            resultSet.getInt("theme.price")
+                    ),
+                    resultSet.getDate("schedule.date").toLocalDate(),
+                    resultSet.getTime("schedule.time").toLocalTime()
             )
     );
 
@@ -116,5 +132,20 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation where id = ?;";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<MyReservation> findAllByMemberId(Long memberId) {
+        String sql = "SELECT " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from reservation " +
+                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation.member_id = member.id " +
+                "where member.id = ?;";
+
+        return jdbcTemplate.query(sql, myReservationRowMapper, memberId);
     }
 }
