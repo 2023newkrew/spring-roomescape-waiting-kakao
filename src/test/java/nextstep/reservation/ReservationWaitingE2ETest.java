@@ -123,6 +123,34 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         assertThat(waitingList.size()).isEqualTo(1);
     }
 
+    @DisplayName("자신이 예약 대기 중인 스케줄엔 대기를 요청할 수 없다.")
+    @Test
+    void requestDuplicatedWaiting() {
+        // given
+        createReservation();
+
+        // when
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        // then
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+    }
+
     @DisplayName("자신의 예약 대기를 취소할 수 있다")
     @Test
     void deleteWaiting() {

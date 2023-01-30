@@ -94,7 +94,6 @@ public class ReservationWaitingDao {
     public List<ReservationWaiting> findByScheduleId(Long id) {
         String sql = SELECT_SQL +
                 "where schedule.id = ?;";
-
         try {
             return jdbcTemplate.query(sql, rowMapper, id);
         } catch (Exception e) {

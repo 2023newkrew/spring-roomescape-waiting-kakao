@@ -1,5 +1,6 @@
 package nextstep.reservation.domain;
 
+import java.util.Objects;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
@@ -37,5 +38,9 @@ public class ReservationWaiting {
 
     public Long getWaitingNum() {
         return waitingNum;
+    }
+
+    public boolean isMine(Member member) {
+        return Objects.equals(member.getId(), this.member.getId());
     }
 }

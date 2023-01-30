@@ -39,6 +39,10 @@ public class ReservationWaitingService {
             reservationService.create(member, reservationRequest);
         }
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
+        boolean isDuplicated = reservationWaitingList.stream().anyMatch(reservationWaiting -> reservationWaiting.isMine(member));
+        if (isDuplicated) {
+            throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION_WAITING);
+        }
         long waitNum = reservationWaitingList.isEmpty() ? 1
                 : reservationWaitingList.get(reservationWaitingList.size() - 1).getWaitingNum() + 1;
         return reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
