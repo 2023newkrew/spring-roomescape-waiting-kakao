@@ -17,7 +17,7 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application.yml")
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final AuthenticationProvider authenticationProvider;
