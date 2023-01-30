@@ -42,7 +42,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약 대기를 생성한다")
     @Test
-    void create() {
+    void Should_CreateWaiting_When_Request() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -57,7 +57,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약 대기를 삭제한다")
     @Test
-    void delete() {
+    void Should_DeleteWaiting_When_Request() {
         var reservation = createReservationWaiting();
 
         var response = RestAssured
@@ -72,7 +72,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약이 없을 때 예약 요청 후 예약 대기를 조회한다")
     @Test
-    void showMineWhenEmpty() {
+    void Should_NotCreateWaiting_When_IfCreateWaitingNoReservationExists() {
         createReservationWaiting();
 
         var response = RestAssured
@@ -88,7 +88,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약이 있을 때 예약 요청 후 예약 대기를 조회한다")
     @Test
-    void showMineWhenExist() {
+    void Should_CreateWaiting_When_IfCreateWaitingReservationExists() {
         createReservationWaiting();
         createReservationWaiting();
 

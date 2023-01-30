@@ -40,7 +40,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약을 생성한다")
     @Test
-    void create() {
+    void Should_CreateReservation_When_Request() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -55,7 +55,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("비로그인 사용자가 예약을 생성한다")
     @Test
-    void createWithoutLogin() {
+    void Should_ThrowUnAuthorized_When_IfUserIsNotLoggedIn() {
         var response = RestAssured
                 .given().log().all()
                 .body(request)
@@ -69,7 +69,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약을 조회한다")
     @Test
-    void show() {
+    void Should_GetAllReservationInfo_When_Request() {
         createReservation();
 
         var response = RestAssured
@@ -86,7 +86,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("내 예약을 조회한다")
     @Test
-    void showMine() {
+    void Should_GetMyReservationInfo_When_Request() {
         createReservation();
 
         var response = RestAssured
@@ -102,7 +102,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약을 삭제한다")
     @Test
-    void delete() {
+    void Should_DeleteReservation_When_Request() {
         var reservation = createReservation();
 
         var response = RestAssured
@@ -117,7 +117,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("중복 예약을 생성한다")
     @Test
-    void createDuplicateReservation() {
+    void Should_ThrowBadRequest_When_RequestCreateDuplicateReservation() {
         createReservation();
 
         var response = RestAssured
@@ -134,7 +134,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약이 없을 때 예약 목록을 조회한다")
     @Test
-    void showEmptyReservations() {
+    void Should_ReturnEmptyList_When_IfNoReservationExists() {
         var response = RestAssured
                 .given().log().all()
                 .param("themeId", themeId)
@@ -149,7 +149,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("없는 예약을 삭제한다")
     @Test
-    void createNotExistReservation() {
+    void Should_ThrowBadRequest_When_IfAttemptToDeleteNotExists() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -162,7 +162,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("다른 사람이 예약을 삭제한다")
     @Test
-    void deleteReservationOfOthers() {
+    void Should_ThrowUnAuthorized_When_IfAttemptToDeleteNotMine() {
         createReservation();
 
         var response = RestAssured

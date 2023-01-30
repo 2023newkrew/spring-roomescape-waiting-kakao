@@ -15,21 +15,21 @@ class JwtTokenProviderTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @Test
-    void createToken() {
+    void Should_ReturnTrue_When_ValidateToken() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
 
         assertThat(jwtTokenProvider.validateToken(token)).isTrue();
     }
 
     @Test
-    void getPrincipal() {
+    void Should_ReturnId_When_GetPrincipal() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
 
         assertThat(jwtTokenProvider.getPrincipal(token)).isEqualTo("1");
     }
 
     @Test
-    void getRole() {
+    void Should_ReturnAdmin_When_GetRoleOfAdminToken() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
 
         assertThat(jwtTokenProvider.getRole(token)).isEqualTo("ADMIN");

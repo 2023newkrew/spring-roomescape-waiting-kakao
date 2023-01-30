@@ -15,7 +15,7 @@ public class ThemeDaoTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    void save() {
+    void Should_IdIsNotNull_When_SaveTheme() {
         ThemeDao themeDao = new ThemeDao(jdbcTemplate);
         Long id = themeDao.save(new Theme("테마 이름", "테마 설명", 22_000));
         assertThat(id).isNotNull();

@@ -27,7 +27,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
 
     @DisplayName("테마를 생성한다")
     @Test
-    public void create() {
+    public void Should_CreateTheme_When_Request() {
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         RestAssured
                 .given().log().all()
@@ -41,7 +41,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
 
     @DisplayName("어드민이 아닌 사람이 테마를 생성한다")
     @Test
-    public void createFromNormalUser() {
+    public void Should_ThrowUnAuthorized_When_IfAttemptToCreateTheme_WhoIsNotAdmin() {
         MemberRequest memberBody = new MemberRequest(USERNAME+1, PASSWORD, "name", "010-1234-5678", "");
         RestAssured
                 .given().log().all()
@@ -76,7 +76,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
 
     @DisplayName("테마 목록을 조회한다")
     @Test
-    public void showThemes() {
+    public void Should_GetThemes_When_Request() {
         createTheme();
 
         var response = RestAssured
@@ -91,7 +91,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
 
     @DisplayName("테마를 삭제한다")
     @Test
-    void delete() {
+    void Should_DeleteThemes_When_Request() {
         Long id = createTheme();
 
         var response = RestAssured
