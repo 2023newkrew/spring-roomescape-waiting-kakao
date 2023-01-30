@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class ReservationDao {
@@ -48,7 +49,7 @@ public class ReservationDao {
             )
     );
 
-    public Long save(Reservation reservation) {
+    public long save(Reservation reservation) {
         String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -60,7 +61,7 @@ public class ReservationDao {
 
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {

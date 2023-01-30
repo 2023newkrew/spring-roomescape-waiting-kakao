@@ -10,11 +10,11 @@ import nextstep.domain.persist.Waiting;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WaitingResponse {
-    private Long id;
+    private long id;
     private Schedule schedule;
-    private Long waitNum;
+    private long waitNum;
 
-    public WaitingResponse(Waiting waiting, Long waitNum) {
+    public WaitingResponse(Waiting waiting, long waitNum) {
         this.id = waiting.getId();
         this.schedule = waiting.getSchedule();
         this.waitNum = waitNum;

@@ -10,7 +10,7 @@ import nextstep.domain.persist.Schedule;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationResponse {
-    private Long id;
+    private long id;
     private Schedule schedule;
 
     public ReservationResponse(Reservation reservation) {

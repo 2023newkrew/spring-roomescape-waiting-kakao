@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class WaitingRequest {
-    private Long scheduleId;
+    private long scheduleId;
 }
