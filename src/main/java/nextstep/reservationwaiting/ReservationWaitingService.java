@@ -43,7 +43,8 @@ public class ReservationWaitingService {
         if(tryInsertReservation(schedule, member)) {
             currentStatus = ReservationWaitingStatus.RESERVED;
         }
-        return reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus));
+        Long id = reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus));
+        return id;
     }
 
     private boolean tryInsertReservation(Schedule schedule, Member member) {

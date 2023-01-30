@@ -67,7 +67,8 @@ public class ReservationWaitingDao {
                 "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
-                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role, " +
+                "reservation_waiting.status " +
                 "from reservation_waiting " +
                 "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
@@ -85,15 +86,17 @@ public class ReservationWaitingDao {
                 "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
-                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role, " +
+                "reservation_waiting.status " +
                 "from reservation_waiting " +
                 "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation_waiting.member_id = member.id " +
-                "where reservation_waiting.member_id = ?;";
+                "where reservation_waiting.member_id = ? and reservation_waiting.status = ?;";
         try {
-            return jdbcTemplate.query(sql, rowMapper, memberId);
+            return jdbcTemplate.query(sql, rowMapper, memberId, ReservationWaitingStatus.WAITING.name());
         } catch (Exception e) {
+            e.printStackTrace();
             return Collections.emptyList();
         }
     }
