@@ -1,5 +1,6 @@
 package nextstep.member;
 
+import auth.UserDetails;
 import auth.UserDetailsDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -23,6 +24,12 @@ public class MemberDao implements UserDetailsDao {
             resultSet.getString("password"),
             resultSet.getString("name"),
             resultSet.getString("phone"),
+            resultSet.getString("role")
+    );
+
+    private final RowMapper<Member> userDetailRowMapper = (resultSet, rowNum) -> new Member(
+            resultSet.getString("username"),
+            resultSet.getString("password"),
             resultSet.getString("role")
     );
 
@@ -52,5 +59,10 @@ public class MemberDao implements UserDetailsDao {
     public Member findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, username);
+    }
+
+    public Member findByUsername2(String username) {
+        String sql = "SELECT username, password, role from member where username = ?;";
+        return jdbcTemplate.queryForObject(sql, userDetailRowMapper, username);
     }
 }

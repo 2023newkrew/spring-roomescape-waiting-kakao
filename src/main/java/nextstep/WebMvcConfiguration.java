@@ -1,9 +1,7 @@
 package nextstep;
 
-import auth.AdminInterceptor;
-import auth.JwtTokenProvider;
-import auth.LoginMemberArgumentResolver;
-import auth.LoginService;
+import auth.*;
+import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,21 +12,35 @@ import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private LoginService loginService;
-    private JwtTokenProvider jwtTokenProvider;
 
-    public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
-        this.loginService = loginService;
-        this.jwtTokenProvider = jwtTokenProvider;
+    private final MemberDao memberDao;
+
+    public WebMvcConfiguration(MemberDao memberDao) {
+        this.memberDao = memberDao;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider())).addPathPatterns("/admin/**");
     }
 
     @Override
     public void addArgumentResolvers(List argumentResolvers) {
-        argumentResolvers.add(new LoginMemberArgumentResolver(loginService));
+        argumentResolvers.add(new LoginMemberArgumentResolver(loginService()));
+    }
+
+    @Bean
+    public LoginService loginService() {
+        return new LoginService(memberDao, jwtTokenProvider());
+    }
+
+    @Bean
+    public JwtTokenProvider jwtTokenProvider() {
+        return new JwtTokenProvider();
+    }
+
+    @Bean
+    public LoginController loginController() {
+        return new LoginController(loginService());
     }
 }

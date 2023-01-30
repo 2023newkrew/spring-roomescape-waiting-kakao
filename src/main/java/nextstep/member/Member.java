@@ -30,6 +30,12 @@ public class Member implements UserDetails {
         this.role = role;
     }
 
+    public Member(String username, String password, String role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
     public Long getId() {
         return id;
     }
