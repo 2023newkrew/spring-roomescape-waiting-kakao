@@ -37,7 +37,7 @@ public class ReservationService {
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException(schedule.getId().toString(), "중복되는 예약이 존재합니다.");
+            throw new DuplicateEntityException(schedule.getId().toString(), "중복되는 예약이 존재합니다.", ReservationService.class);
         }
 
         Reservation newReservation = new Reservation(

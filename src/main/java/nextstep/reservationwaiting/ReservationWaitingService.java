@@ -1,6 +1,7 @@
 package nextstep.reservationwaiting;
 
 import java.util.List;
+import nextstep.exception.NotFoundException;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
@@ -34,7 +35,8 @@ public class ReservationWaitingService {
 
     public void deleteById(Member member, Long id) {
         if (!reservationWaitingDao.existById(id, member.getId())) {
-            throw new NullPointerException();
+            throw new NotFoundException("해당 멤버의 id에 해당하는 reservation-waiting이 존재해야 합니다.", id.toString(),
+                    "삭제할 대상이 존재하지 않습니다.", ReservationWaitingService.class);
         }
         reservationWaitingDao.deleteById(id);
     }

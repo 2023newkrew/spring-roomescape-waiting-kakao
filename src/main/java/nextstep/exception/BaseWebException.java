@@ -1,20 +1,18 @@
 package nextstep.exception;
 
-import static nextstep.utils.ValidateUtils.getType;
-
 public class BaseWebException extends RuntimeException {
 
     int status;
     Class<?> type;
 
-    private BaseWebException(String message, int status) {
+    private BaseWebException(String message, int status, Class<?> type) {
         super(message);
-        this.type = getType();
+        this.type = type;
         this.status = status;
     }
 
-    public BaseWebException(String expected, String actual, String context, int status) {
-        this(makeMessage(expected, actual, context), status);
+    public BaseWebException(String expected, String actual, String context, int status, Class<?> type) {
+        this(makeMessage(expected, actual, context), status, type);
     }
 
     private static String makeMessage(String expected, String actual, String context) {
