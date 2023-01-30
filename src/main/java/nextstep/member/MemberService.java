@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
-    private MemberDaoImpl memberDao;
+    private final MemberDaoImpl memberDao;
 
     public MemberService(MemberDaoImpl memberDao) {
         this.memberDao = memberDao;

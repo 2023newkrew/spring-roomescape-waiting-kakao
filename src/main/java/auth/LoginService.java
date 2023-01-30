@@ -1,10 +1,8 @@
 package auth;
 
-import nextstep.member.Member;
-
 public class LoginService {
-    private MemberDao memberDao;
-    private JwtTokenProvider jwtTokenProvider;
+    private final MemberDao memberDao;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
         this.memberDao = memberDao;

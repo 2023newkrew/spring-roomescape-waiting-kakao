@@ -18,13 +18,13 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember MemberDetail member, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<Void> createReservation(@LoginMember MemberDetail member, @RequestBody ReservationRequest reservationRequest) {
         Long id = reservationService.create(member.toMember(), reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<List<Reservation>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
@@ -36,7 +36,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember MemberDetail member, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@LoginMember MemberDetail member, @PathVariable Long id) {
         reservationService.deleteById(member.toMember(), id);
 
         return ResponseEntity.noContent().build();

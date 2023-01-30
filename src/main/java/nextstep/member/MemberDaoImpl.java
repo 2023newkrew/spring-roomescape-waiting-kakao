@@ -2,6 +2,7 @@ package nextstep.member;
 
 import auth.MemberDao;
 import auth.MemberDetail;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.Objects;
 
 @Component
 public class MemberDaoImpl implements MemberDao {
@@ -49,12 +51,20 @@ public class MemberDaoImpl implements MemberDao {
     @Override
     public MemberDetail findById(Long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id).toMemberDetail();
+        try {
+            return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, rowMapper, id)).toMemberDetail();
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
     @Override
     public MemberDetail findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username).toMemberDetail();
+        try {
+            return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, rowMapper, username)).toMemberDetail();
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 }
