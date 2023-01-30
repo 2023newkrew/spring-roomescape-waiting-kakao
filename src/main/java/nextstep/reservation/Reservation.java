@@ -1,7 +1,9 @@
 package nextstep.reservation;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
+import lombok.Setter;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
@@ -9,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @AllArgsConstructor
+@Builder
+@Setter
 public class Reservation {
     private Long id;
     private Schedule schedule;

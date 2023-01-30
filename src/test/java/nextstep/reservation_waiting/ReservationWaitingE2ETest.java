@@ -1,7 +1,11 @@
-package nextstep.reservation;
+package nextstep.reservation_waiting;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
+import nextstep.reservation.Reservation;
+import nextstep.reservation.ReservationRequest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +22,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     public static final String DATE = "2022-08-11";
     public static final String TIME = "13:00";
 
-    private ReservationRequest request;
+    private Long reservationId;
     private Long themeId;
     private Long scheduleId;
 
@@ -35,8 +39,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
-        String[] themeLocation = themeResponse.header("Location").split("/");
-        themeId = Long.parseLong(themeLocation[themeLocation.length - 1]);
+        themeId = getIdFromResponse(themeResponse);
 
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
@@ -48,21 +51,34 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
-        String[] scheduleLocation = scheduleResponse.header("Location").split("/");
-        scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
+        scheduleId = getIdFromResponse(scheduleResponse);
 
-        request = new ReservationRequest(
-                scheduleId
-        );
+        ReservationRequest reservationRequest = new ReservationRequest(scheduleId);
+        var reservationResponse = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(reservationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservations")
+                .then().log().all()
+                .extract();
+        reservationId = getIdFromResponse(reservationResponse);
+    }
+
+    private Long getIdFromResponse(ExtractableResponse response) {
+        String[] locations = response.header("Location").split("/");
+        String id = locations[locations.length - 1];
+        return Long.parseLong(id);
     }
 
     @DisplayName("예약 대기를 신청한다")
     @Test
     void create() {
+        ReservationRequest reservationRequest = new ReservationRequest(scheduleId);
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .body(request)
+                .body(reservationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
                 .then().log().all()
@@ -74,7 +90,9 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     @DisplayName("예약이 없는 스케줄에 대해서 예약 대기 신청을 할 경우 예약이 된다")
     @Test
     void waitScheduleWithNoReservation() {
-        create();
+        deleteReservation();
+        createReservationWaiting();
+
 
         var response = RestAssured
                 .given().log().all()
@@ -87,4 +105,43 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(1);
     }
+
+    private ExtractableResponse<Response> createReservationWaiting() {
+        ReservationRequest reservationRequest = new ReservationRequest(scheduleId);
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(reservationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteReservation() {
+        return RestAssured
+                .given().auth().oauth2(token.getAccessToken()).log().all()
+                .when().delete("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+    }
+
+    @DisplayName("예약 대기 취소를 할 수 있다")
+    @Test
+    void reservationWaitingDeleteTest() {
+        var response = createReservationWaiting();
+        Long reservationWaitingId = getIdFromResponse(response);
+
+        RestAssured
+                .given().auth().oauth2(token.getAccessToken()).log().all()
+                .when().delete("/reservation-waitings/" + reservationWaitingId)
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+    }
+
+
 }

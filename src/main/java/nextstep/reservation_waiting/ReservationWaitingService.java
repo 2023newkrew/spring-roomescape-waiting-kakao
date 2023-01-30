@@ -32,4 +32,16 @@ public class ReservationWaitingService {
 
         return reservationDao.save(newReservation);
     }
+
+    public void deleteById(Member member, Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new IllegalArgumentException("예약대기가 존재하지 않습니다.");
+        }
+        if (!reservation.sameMember(member)) {
+            throw new IllegalArgumentException("예약을 한 당사자만이 지울 수 있습니다.");
+        }
+
+        reservationDao.deleteById(id);
+    }
 }
