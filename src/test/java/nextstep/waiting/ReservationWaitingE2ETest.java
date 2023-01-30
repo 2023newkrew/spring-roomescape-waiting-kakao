@@ -14,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.regex.Matcher;
-
 class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     public static final String DATE = "2022-08-11";
@@ -86,7 +84,7 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약이 있는 경우 예약 대기를 생성한다.")
     @Test
-    void creatingWaiting() {
+    void createWaitingE2E() {
         createReservation();
 
         // given
@@ -102,6 +100,49 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .then().statusCode(HttpStatus.CREATED.value()).extract();
         Assertions.assertThat(response.header("Location").startsWith("/reservation-waitings/"))
                 .isTrue();
+    }
+
+    @DisplayName("예약 대기를 삭제한다.")
+    @Test
+    void deleteWaiting() {
+        createReservation();
+        String id = createWaiting().header("Location").split("/")[2];
+        RestAssured
+            .given().log().all()
+            .auth().oauth2(token.getAccessToken())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+
+            // when
+                .when().delete("/reservation-waitings/" + id)
+            // then
+            .then().statusCode(HttpStatus.NO_CONTENT.value()).extract();
+    }
+
+    @DisplayName("자신의 예약 대기가 아닌 경우 삭제할 수 없다.")
+    @Test
+    void deleteWaitingFail() {
+        createReservation();
+        String id = createWaiting().header("Location").split("/")[2];
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token2.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+
+                // when
+                .when().delete("/reservation-waitings/" + id)
+                // then
+                .then().statusCode(HttpStatus.FORBIDDEN.value()).extract();
+    }
+
+    private ExtractableResponse<Response> createWaiting() {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(reservationWaitingRequest)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> createReservation() {
