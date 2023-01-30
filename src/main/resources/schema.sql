@@ -1,4 +1,4 @@
-CREATE TABLE reservation
+CREATE TABLE IF NOT EXISTS reservation
 (
     id          bigint not null auto_increment,
     schedule_id bigint not null,
@@ -7,7 +7,7 @@ CREATE TABLE reservation
     unique (schedule_id)
 );
 
-CREATE TABLE theme
+CREATE TABLE IF NOT EXISTS theme
 (
     id    bigint       not null auto_increment,
     name  varchar(20)  not null,
@@ -16,7 +16,7 @@ CREATE TABLE theme
     primary key (id)
 );
 
-CREATE TABLE schedule
+CREATE TABLE IF NOT EXISTS schedule
 (
     id       bigint not null auto_increment,
     theme_id bigint not null,
@@ -25,7 +25,7 @@ CREATE TABLE schedule
     primary key (id)
 );
 
-CREATE TABLE member
+CREATE TABLE IF NOT EXISTS member
 (
     id       bigint      not null auto_increment,
     username varchar(20) not null,
@@ -36,7 +36,7 @@ CREATE TABLE member
     primary key (id)
 );
 
-CREATE TABLE reservation_waiting
+CREATE TABLE IF NOT EXISTS reservation_waiting
 (
     id          bigint not null auto_increment,
     schedule_id bigint not null,
