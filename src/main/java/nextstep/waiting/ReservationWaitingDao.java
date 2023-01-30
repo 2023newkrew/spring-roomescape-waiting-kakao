@@ -1,6 +1,7 @@
 package nextstep.waiting;
 
 import nextstep.member.Member;
+import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,7 +22,7 @@ public class ReservationWaitingDao {
     }
 
     private final RowMapper<ReservationWaiting> rowMapper = (resultSet, rowNum) -> new ReservationWaiting(
-            resultSet.getLong("reservation.id"),
+            resultSet.getLong("reservation_waiting.id"),
             new Schedule(
                     resultSet.getLong("schedule.id"),
                     new Theme(
@@ -59,4 +60,29 @@ public class ReservationWaitingDao {
 
         return keyHolder.getKey().longValue();
     }
+
+    public ReservationWaiting findById(Long id) {
+        String sql = "SELECT " +
+                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, schedule.next_wait_num, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from reservation_waiting " +
+                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation_waiting.member_id = member.id " +
+                "where reservation_waiting.id = ?;";
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM reservation_waiting where id = ?;";
+        jdbcTemplate.update(sql, id);
+    }
+
+
 }

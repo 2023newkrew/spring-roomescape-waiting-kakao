@@ -3,6 +3,8 @@ package nextstep.waiting;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
+import java.util.Objects;
+
 public class ReservationWaiting {
 
     private Long id;
@@ -40,5 +42,9 @@ public class ReservationWaiting {
 
     public Long getWaitNum() {
         return waitNum;
+    }
+
+    public boolean sameMember(Long memberId) {
+        return Objects.equals(member.getId(), memberId);
     }
 }

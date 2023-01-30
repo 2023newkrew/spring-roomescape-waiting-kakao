@@ -1,8 +1,10 @@
 package nextstep.waiting;
 
 import auth.AuthenticationException;
+import auth.AuthorizationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
@@ -39,5 +41,18 @@ public class ReservationWaitingService {
         schedule.increaseWaitingNumber();
         scheduleDao.updateWaitNum(schedule);
         return reservationWaitingDao.save(reservationWaiting);
+    }
+
+    public void deleteById(Long memberId, Long reservationWaitingId) {
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId);
+        if (reservationWaiting == null) {
+            throw new NullPointerException();
+        }
+
+        if (!reservationWaiting.sameMember(memberId)) {
+            throw new AuthorizationException();
+        }
+
+        reservationWaitingDao.deleteById(reservationWaitingId);
     }
 }
