@@ -1,13 +1,14 @@
-package auth;
+package nextstep;
 
+import auth.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class AuthConfig {
+public class AuthConfiguration {
     private final MemberDao memberDao;
 
-    public AuthConfig(MemberDao memberDao) {
+    public AuthConfiguration(MemberDao memberDao) {
         this.memberDao = memberDao;
     }
 
