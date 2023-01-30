@@ -2,10 +2,10 @@
 
 # Step 1
 ## 프로그래밍 요구사항
-* [ ] auth package를 nextstep 패키지로부터 분리한다
+* [x] auth package를 nextstep 패키지로부터 분리한다
     * [x] auth 패키지에서 nextstep으로 의존하는 부분을 제거한다.
       * UserDetails, UserDetailService
-    * [ ] auth 패키지 내에서 스프링 빈으로 사용되던 객체를 Component Scan이 아닌 Java Configuration으로 빈 등록한다.
+    * [x] auth 패키지 내에서 스프링 빈으로 사용되던 객체를 Component Scan이 아닌 Java Configuration으로 빈 등록한다.
 
 현재 auth 패키지에서 nextstep으로 의존하고 있는 곳 : LoginService(MemberDao 및 Member 의존, ID, PW 확인을 위하여 의존)
 
@@ -17,7 +17,7 @@
 ## 기능 요구사항
 ### 예약 대기 신청
 * [ ] 이미 예약이 된 스케줄 대상으로 예약 대기를 신청할 수 있다.
-  * [ ]예약이 없는 스케줄에 대해서 예약 대기 신청을 할 경우 예약이 된다.
+  * [ ] 예약이 없는 스케줄에 대해서 예약 대기 신청을 할 경우 예약이 된다.
 
 ### 예약 대기 취소
 * [ ] 자신의 예약 대기를 취소할 수 있다.

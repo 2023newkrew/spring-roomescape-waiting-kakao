@@ -1,7 +1,6 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
-import auth.UserDetails;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -47,6 +46,11 @@ public class ReservationService {
         );
 
         return reservationDao.save(newReservation);
+    }
+
+    public boolean isReserved(Long scheduleId) {
+        List<Reservation> reservation = reservationDao.findByScheduleId(scheduleId);
+        return !reservation.isEmpty();
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {

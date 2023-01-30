@@ -5,7 +5,6 @@ import auth.LoginController;
 import auth.LoginService;
 import auth.UserDetailService;
 import nextstep.member.MemberDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

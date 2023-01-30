@@ -2,8 +2,6 @@ package auth;
 
 import nextstep.member.Member;
 
-import java.util.List;
-
 /**
  * Username, Password 등 사용자 로그인 정보를 저장하는 클래스
  */
