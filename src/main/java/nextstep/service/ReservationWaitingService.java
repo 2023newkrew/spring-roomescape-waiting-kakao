@@ -4,7 +4,6 @@ import nextstep.domain.member.Member;
 import nextstep.domain.reservationwaiting.ReservationWaiting;
 import nextstep.domain.reservationwaiting.ReservationWaitingDao;
 import nextstep.domain.schedule.Schedule;
-import nextstep.dto.request.ReservationRequest;
 import nextstep.dto.response.ReservationWaitingResponse;
 import nextstep.error.ApplicationException;
 import org.springframework.stereotype.Service;
@@ -20,28 +19,15 @@ import static nextstep.error.ErrorType.UNAUTHORIZED_ERROR;
 public class ReservationWaitingService {
 
     private final ReservationWaitingDao reservationWaitingDao;
-    private final MemberService memberService;
-    private final ScheduleService scheduleService;
-    private final ReservationService reservationService;
 
-    public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, MemberService memberService, ScheduleService scheduleService, ReservationService reservationService) {
+    public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao) {
         this.reservationWaitingDao = reservationWaitingDao;
-        this.memberService = memberService;
-        this.scheduleService = scheduleService;
-        this.reservationService = reservationService;
     }
 
     @Transactional
-    public Long createReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
-        Schedule schedule = scheduleService.findById(reservationRequest.getScheduleId());
-
-        if (!reservationService.findByScheduleId(reservationRequest.getScheduleId()).isEmpty()) {
-            Member member = memberService.findById(memberId);
-            int waitNum = reservationWaitingDao.findMaxWaitNum(reservationRequest.getScheduleId()) + 1;
-            return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
-        }
-
-        return reservationService.create(memberId, reservationRequest);
+    public Long createReservationWaiting(Member member, Schedule schedule) {
+        int waitNum = reservationWaitingDao.findMaxWaitNum(schedule.getId()) + 1;
+        return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
     }
 
     @Transactional
@@ -67,5 +53,4 @@ public class ReservationWaitingService {
         return reservationWaitingDao.findById(reservationWaitingId)
                 .orElseThrow(() -> new ApplicationException(RESERVATION_WAITING_NOT_FOUND));
     }
-
 }

@@ -16,6 +16,9 @@ import java.util.List;
 @RestController
 public class ReservationController {
 
+    private final static String RESERVATION_URL_PREFIX = "/reservations/";
+    private final static String RESERVATION_WAITING_URL_PREFIX = "/reservation-waitings/";
+
     public final ReservationService reservationService;
 
     public ReservationController(ReservationService reservationService) {
@@ -24,9 +27,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity createReservation(@AuthenticationPricipal LoginMember loginMember, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(loginMember.getId(), reservationRequest);
+        String urlPrefix = reservationService.existsByScheduleId(reservationRequest.getScheduleId()) ? RESERVATION_WAITING_URL_PREFIX : RESERVATION_URL_PREFIX;
+        Long id = reservationService.createReservationOrReservationWaiting(loginMember.getId(), reservationRequest);
 
-        return ResponseEntity.created(URI.create("/reservations/" + id))
+        return ResponseEntity.created(URI.create(urlPrefix + id))
                 .build();
     }
 

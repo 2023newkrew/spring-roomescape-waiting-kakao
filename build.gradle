@@ -16,6 +16,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.2'
 
     implementation 'net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.7.1'
 
@@ -27,6 +28,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 }
+
 test {
     useJUnitPlatform()
 }

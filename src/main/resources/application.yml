@@ -1,0 +1,12 @@
+spring:
+    datasource:
+        driver-class-name: org.h2.Driver
+        url: jdbc:h2:tcp://localhost/~/test
+        username: sa
+        password:
+
+security:
+    jwt:
+        token:
+            secret-key: learning-test-spring
+            expire-length: 3600000

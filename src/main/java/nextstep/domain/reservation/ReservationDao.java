@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -100,23 +101,13 @@ public class ReservationDao {
         }
     }
 
-    public List<Reservation> findByScheduleId(Long id) {
-        String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                "theme.id, theme.name, theme.desc, theme.price, " +
-                "member.id, member.username, member.password, member.name, member.phone, member.role " +
-                "from reservation " +
-                "inner join schedule on reservation.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation.member_id = member.id " +
-                "where schedule.id = ?;";
+    public Boolean existsByScheduleId(Long id) {
+        String sql = "SELECT 1 " +
+                "FROM reservation " +
+                "INNER JOIN schedule ON reservation.schedule_id = schedule.id " +
+                "WHERE schedule.id = ?;";
 
-        try {
-            return jdbcTemplate.query(sql, rowMapper, id);
-        } catch (EmptyResultDataAccessException e) {
-            return Collections.emptyList();
-        }
+        return jdbcTemplate.query(sql, ResultSet::next, id);
     }
 
     public void deleteById(Long id) {

@@ -18,23 +18,28 @@ import static nextstep.error.ErrorType.*;
 @Service
 public class ReservationService {
 
-    public final ReservationDao reservationDao;
-    public final MemberService memberService;
-    public final ScheduleService scheduleService;
-    public final ThemeService themeService;
+    private final ReservationDao reservationDao;
+    private final ReservationWaitingService reservationWaitingService;
+    private final MemberService memberService;
+    private final ScheduleService scheduleService;
+    private final ThemeService themeService;
 
-    public ReservationService(ReservationDao reservationDao, MemberService memberService, ScheduleService scheduleService, ThemeService themeService) {
+    public ReservationService(ReservationDao reservationDao, ReservationWaitingService reservationWaitingService, MemberService memberService, ScheduleService scheduleService, ThemeService themeService) {
         this.reservationDao = reservationDao;
+        this.reservationWaitingService = reservationWaitingService;
         this.memberService = memberService;
         this.scheduleService = scheduleService;
         this.themeService = themeService;
     }
 
     @Transactional
-    public Long create(Long memberId, ReservationRequest reservationRequest) {
+    public Long createReservationOrReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
         Member member = memberService.findById(memberId);
         Schedule schedule = scheduleService.findById(reservationRequest.getScheduleId());
-        checkIfExistsByScheduleId(reservationRequest.getScheduleId());
+
+        if (existsByScheduleId(reservationRequest.getScheduleId())) {
+            return reservationWaitingService.createReservationWaiting(member, schedule);
+        }
 
         return reservationDao.save(new Reservation(schedule, member));
     }
@@ -43,6 +48,11 @@ public class ReservationService {
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         themeService.findById(themeId);
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean existsByScheduleId(Long scheduleId) {
+        return reservationDao.existsByScheduleId(scheduleId);
     }
 
     @Transactional
@@ -65,19 +75,8 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public List<Reservation> findByScheduleId(Long scheduleId) {
-        return reservationDao.findByScheduleId(scheduleId);
-    }
-
     private Reservation findById(Long reservationId) {
         return reservationDao.findById(reservationId)
                 .orElseThrow(() -> new ApplicationException(RESERVATION_NOT_FOUND));
-    }
-
-    private void checkIfExistsByScheduleId(Long scheduleId) {
-        if (!reservationDao.findByScheduleId(scheduleId).isEmpty()) {
-            throw new ApplicationException(DUPLICATE_RESERVATION);
-        }
     }
 }
