@@ -1,7 +1,9 @@
 package nextstep.member;
 
 import auth.MemberDetail;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode
 public class Member {
     private Long id;
     private String username;
