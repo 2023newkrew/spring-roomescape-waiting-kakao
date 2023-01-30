@@ -1,6 +1,6 @@
 package nextstep.member;
 
-import auth.MemberDetails;
+import auth.config.MemberDetails;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public class Member implements MemberDetails{

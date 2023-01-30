@@ -1,6 +1,6 @@
 package nextstep.reservationwaiting;
 
-import auth.LoginMember;
+import auth.config.LoginMember;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationRequest;
 import nextstep.reservation.ReservationService;

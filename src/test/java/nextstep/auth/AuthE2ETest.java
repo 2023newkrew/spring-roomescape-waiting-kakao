@@ -1,7 +1,7 @@
 package nextstep.auth;
 
-import auth.TokenRequest;
-import auth.TokenResponse;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.member.MemberRequest;
 import nextstep.theme.ThemeRequest;

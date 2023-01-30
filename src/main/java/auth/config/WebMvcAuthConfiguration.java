@@ -1,5 +1,7 @@
-package auth;
+package auth.config;
 
+import auth.utils.JwtTokenProvider;
+import auth.LoginService;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 

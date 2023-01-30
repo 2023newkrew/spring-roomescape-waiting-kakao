@@ -1,5 +1,8 @@
-package auth;
+package auth.config;
 
+import auth.utils.JwtTokenProvider;
+import auth.LoginController;
+import auth.LoginService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,4 +1,4 @@
-package auth;
+package auth.utils;
 
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package auth;
+package auth.config;
 
 public interface LoginMemberDao {
     MemberDetails findById(Long id);

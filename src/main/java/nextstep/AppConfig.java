@@ -1,6 +1,6 @@
 package nextstep;
 
-import auth.AuthConfig;
+import auth.config.AuthConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 

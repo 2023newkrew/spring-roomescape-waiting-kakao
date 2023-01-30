@@ -1,5 +1,6 @@
-package auth;
+package auth.config;
 
+import auth.LoginService;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;

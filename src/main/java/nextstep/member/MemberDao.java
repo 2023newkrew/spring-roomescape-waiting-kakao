@@ -1,11 +1,10 @@
 package nextstep.member;
 
-import auth.LoginMemberDao;
+import auth.config.LoginMemberDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import org.springframework.stereotype.Repository;

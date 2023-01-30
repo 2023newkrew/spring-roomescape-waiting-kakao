@@ -1,5 +1,7 @@
-package auth;
+package auth.config;
 
+import auth.exception.AuthenticationException;
+import auth.utils.JwtTokenProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
 
