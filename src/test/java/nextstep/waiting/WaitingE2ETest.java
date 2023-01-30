@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
-import nextstep.reservation.Reservation;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +21,7 @@ class WaitingE2ETest extends AbstractE2ETest {
     public static final String DATE = "2022-08-11";
     public static final String TIME = "13:00";
 
-    private WaitingRequest request;
+    private CreateWaitingRequest request;
     private Long themeId;
     private Long scheduleId;
 
@@ -55,7 +54,7 @@ class WaitingE2ETest extends AbstractE2ETest {
         String[] scheduleLocation = scheduleResponse.header("Location").split("/");
         scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
-        request = new WaitingRequest(
+        request = new CreateWaitingRequest(
                 scheduleId
         );
     }
@@ -114,7 +113,7 @@ class WaitingE2ETest extends AbstractE2ETest {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .body(new WaitingRequest(-1L))
+                .body(new CreateWaitingRequest(-1L))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
                 .then().log().all()

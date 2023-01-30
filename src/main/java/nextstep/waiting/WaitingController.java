@@ -22,8 +22,8 @@ public class WaitingController {
     }
 
     @PostMapping("/reservation-waitings")
-    public ResponseEntity<Void> createWaiting(@LoginMember Member member, @RequestBody WaitingRequest waitingRequest) {
-        CreateWaitingResponse response = waitingService.create(member, waitingRequest);
+    public ResponseEntity<Void> createWaiting(@LoginMember Member member, @RequestBody CreateWaitingRequest createWaitingRequest) {
+        CreateWaitingResponse response = waitingService.create(member, createWaitingRequest);
         return ResponseEntity.created(URI.create(
                         (response.isReservedDirectly() ? RESERVATION_LOCATION_PREFIX : WAITING_LOCATION_PREFIX) + response.getId()))
                 .build();

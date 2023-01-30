@@ -1,12 +1,12 @@
 package nextstep.waiting;
 
-public class WaitingRequest {
+public class CreateWaitingRequest {
     private Long scheduleId;
 
-    public WaitingRequest() {
+    public CreateWaitingRequest() {
     }
 
-    public WaitingRequest(Long scheduleId) {
+    public CreateWaitingRequest(Long scheduleId) {
         this.scheduleId = scheduleId;
     }
 

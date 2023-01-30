@@ -23,8 +23,8 @@ public class WaitingService {
         this.scheduleDao = scheduleDao;
     }
 
-    public CreateWaitingResponse create(Member member, WaitingRequest waitingRequest) {
-        Schedule schedule = scheduleDao.findById(waitingRequest.getScheduleId());
+    public CreateWaitingResponse create(Member member, CreateWaitingRequest createWaitingRequest) {
+        Schedule schedule = scheduleDao.findById(createWaitingRequest.getScheduleId());
         if (schedule == null) {
             throw new NullPointerException();
         }
