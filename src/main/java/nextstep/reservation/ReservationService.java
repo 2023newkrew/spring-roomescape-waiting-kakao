@@ -14,6 +14,7 @@ import java.util.List;
 
 @Service
 public class ReservationService {
+
     public final ReservationDao reservationDao;
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
@@ -68,5 +69,22 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public Long createWaiting(Member member, Long scheduleId) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+        Schedule schedule = scheduleDao.findById(scheduleId);
+        if (schedule == null) {
+            throw new NullPointerException();
+        }
+
+        Reservation newReservation = new Reservation(
+                schedule,
+                member
+        );
+
+        return reservationDao.save(newReservation);
     }
 }

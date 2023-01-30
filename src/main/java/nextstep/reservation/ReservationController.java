@@ -38,6 +38,12 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/reservation-waitings")
+    public ResponseEntity createReservationWaiting(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.createWaiting(member, reservationRequest.getScheduleId());
+        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         return ResponseEntity.badRequest().build();

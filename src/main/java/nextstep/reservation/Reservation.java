@@ -6,9 +6,11 @@ import nextstep.schedule.Schedule;
 import java.util.Objects;
 
 public class Reservation {
+
     private Long id;
     private Schedule schedule;
     private Member member;
+    private Long waitNumber;
 
     public Reservation() {
     }
@@ -34,6 +36,10 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    public Long getWaitNumber() {
+        return waitNumber;
     }
 
     public boolean sameMember(Member member) {
