@@ -79,7 +79,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
     }
 
     public String requestCreateSchedule() {
-        ScheduleRequest body = new ScheduleRequest(1L, "2022-08-11", "13:00");
+        ScheduleRequest body = new ScheduleRequest(themeId, "2022-08-11", "13:00");
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
