@@ -1,6 +1,5 @@
 package nextstep.waiting;
 
-import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
@@ -24,9 +23,6 @@ public class WaitingService {
     }
 
     public CreateWaitingResponse create(Member member, WaitingRequest waitingRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         Schedule schedule = scheduleDao.findById(waitingRequest.getScheduleId());
         if (schedule == null) {
             throw new NullPointerException();
