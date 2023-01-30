@@ -1,5 +1,6 @@
 package nextstep.reservationwaitings;
 
+import auth.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
 import nextstep.reservation.ReservationRequest;
@@ -23,7 +24,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     void createReservationWaiting() {
         long themeId = createTheme("테마이름", "테마설명", 22000);
         long scheduleId = createSchedule(themeId, "2018-10-22", "13:00");
-        createReservation(scheduleId);
+        createReservation(scheduleId, token);
 
         var request = new ReservationWaitingRequest(scheduleId);
 
@@ -75,21 +76,14 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
         long scheduleId1 = createSchedule(themeId1, "2018-10-22", "13:00");
         long scheduleId2 = createSchedule(themeId2, "2018-10-22", "13:00");
-        createReservation(scheduleId1);
-        createReservation(scheduleId2);
+        createReservation(scheduleId1, token);
+        createReservation(scheduleId2, token);
 
-        long waitingId1 = createReservationWaiting(scheduleId1);
-        long waitingId2 = createReservationWaiting(scheduleId1);
-        long waitingId3 = createReservationWaiting(scheduleId2);
+        long waitingId1 = createReservationWaiting(scheduleId1, token);
+        long waitingId2 = createReservationWaiting(scheduleId1, token);
+        long waitingId3 = createReservationWaiting(scheduleId2, token);
 
-        var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().get("/reservation-waitings/mine")
-                .then().log().all()
-                .extract();
-
-        List<ReservationWaitings> reservationWaitings = response.jsonPath().getList(".", ReservationWaitings.class);
+        List<ReservationWaitings> reservationWaitings = getMyWaitings();
         assertThat(reservationWaitings)
                 .extracting(ReservationWaitings::getId, r -> r.getSchedule().getId(), ReservationWaitings::getWaitNum)
                 .hasSize(3)
@@ -98,6 +92,47 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                         tuple(waitingId2, scheduleId1, 2L),
                         tuple(waitingId3, scheduleId2, 1L)
                 );
+    }
+
+    @DisplayName("예약 대기를 삭제한다")
+    @Test
+    void delete() {
+        long themeId = createTheme("테마이름", "테마설명", 22000);
+        long scheduleId = createSchedule(themeId, "2018-10-22", "13:00");
+        createReservation(scheduleId, token);
+        long waitingId = createReservationWaiting(scheduleId, token);
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete("/reservation-waitings/" + waitingId)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(getMyWaitings()).hasSize(0);
+    }
+    
+    @DisplayName("타인의 예약 대기를 삭제하지 못한다.")
+    @Test
+    void deleteOthers() {
+        saveMember("other", "other");
+        TokenResponse otherToken = createToken("other", "other");
+
+        long themeId = createTheme("테마이름", "테마설명", 22000);
+        long scheduleId = createSchedule(themeId, "2018-10-22", "13:00");
+        createReservation(scheduleId, token);
+        long waitingId = createReservationWaiting(scheduleId, token);
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(otherToken.getAccessToken())
+                .when().delete("/reservation-waitings/" + waitingId)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(getMyWaitings()).hasSize(1);
     }
 
     private long createTheme(String themeName, String themeDesc, int themePrice) {
@@ -130,7 +165,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         return Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
     }
 
-    private long createReservation(long scheduleId) {
+    private long createReservation(long scheduleId, TokenResponse token) {
         var request = new ReservationRequest(scheduleId);
 
         var response = RestAssured
@@ -145,7 +180,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         return Long.parseLong(reservationLocation[reservationLocation.length - 1]);
     }
 
-    private long createReservationWaiting(long scheduleId) {
+    private long createReservationWaiting(long scheduleId, TokenResponse token) {
         var request = new ReservationWaitingRequest(scheduleId);
 
         var response = RestAssured
@@ -158,5 +193,16 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .extract();
         String[] location = response.header("Location").split("/");
         return Long.parseLong(location[location.length - 1]);
+    }
+
+    private List<ReservationWaitings> getMyWaitings() {
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        return response.jsonPath().getList(".", ReservationWaitings.class);
     }
 }
