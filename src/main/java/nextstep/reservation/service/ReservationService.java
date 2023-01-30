@@ -13,6 +13,7 @@ import nextstep.schedule.dao.ScheduleDao;
 import nextstep.schedule.model.Schedule;
 import nextstep.theme.dao.ThemeDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class ReservationService {
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
 
+    @Transactional
     public Long create(CreateReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
                 .orElseThrow(NotExistEntityException::new);
@@ -42,6 +44,7 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date, Long loginMemberId) {
         themeDao.findById(themeId)
                 .orElseThrow(NotExistEntityException::new);
@@ -52,6 +55,7 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDateAndMemberName(themeId, date, loginMember.getMemberName());
     }
 
+    @Transactional
     public void deleteById(Long id, Long loginMemberId) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NotExistEntityException::new);

@@ -10,6 +10,7 @@ import auth.model.TokenRequest;
 import auth.model.TokenResponse;
 import auth.support.JwtTokenProvider;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthDao authDao;
 
+    @Transactional
     public TokenResponse createToken(TokenRequest tokenRequest) {
         if (!isValidLogin(tokenRequest)) {
             throw new AuthenticationException();
@@ -32,6 +34,7 @@ public class AuthService {
                 .isPresent();
     }
 
+    @Transactional(readOnly = true)
     public MemberDetails findMemberDetailsByMemberName(String memberName){
         MemberDetails memberDetails = authDao.findMemberDetailsByMemberName(memberName)
                 .orElseThrow(MemberNameNotFoundException::new);
@@ -41,6 +44,7 @@ public class AuthService {
         return memberDetails;
     }
 
+    @Transactional(readOnly = true)
     public RoleTypes findRoleByMemberName(String memberName){
         return authDao.findMemberRolesByMemberName(memberName);
     }
