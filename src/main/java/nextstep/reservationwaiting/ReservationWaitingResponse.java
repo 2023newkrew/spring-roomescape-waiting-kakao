@@ -24,4 +24,8 @@ public class ReservationWaitingResponse {
     public Long getWaitNum() {
         return waitNum;
     }
+
+    public static ReservationWaitingResponse from(ReservationWaiting reservationWaiting) {
+        return new ReservationWaitingResponse(reservationWaiting.getId(), reservationWaiting.getSchedule(), reservationWaiting.getWaitingNum());
+    }
 }

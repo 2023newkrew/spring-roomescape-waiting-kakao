@@ -10,6 +10,7 @@ public class ReservationWaiting {
     private Schedule schedule;
     private Member member;
     private ReservationWaitingStatus status;
+    private Long waitingNum;
 
     public ReservationWaiting() {
     }
@@ -27,6 +28,14 @@ public class ReservationWaiting {
         this.status = status;
     }
 
+    public ReservationWaiting(Long id, Schedule schedule, Member member, ReservationWaitingStatus status, Long waitingNum) {
+        this.id = id;
+        this.schedule = schedule;
+        this.member = member;
+        this.status = status;
+        this.waitingNum = waitingNum;
+    }
+
     public Long getId() {
         return id;
     }
@@ -41,6 +50,10 @@ public class ReservationWaiting {
 
     public ReservationWaitingStatus getStatus() {
         return status;
+    }
+
+    public Long getWaitingNum() {
+        return waitingNum;
     }
 
     public boolean sameMember(Member member) {

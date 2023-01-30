@@ -39,13 +39,10 @@ public class ReservationWaitingController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> onException(Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 

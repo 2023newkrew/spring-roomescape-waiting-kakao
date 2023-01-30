@@ -15,22 +15,26 @@ import org.springframework.test.annotation.DirtiesContext;
 public class AbstractE2ETest {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
+    public static final String SOMEONE_USERNAME = "someone";
+    public static final String SOMEONE_PASSWORD = "pwdpwd";
+
 
     protected TokenResponse token;
+    protected TokenResponse someoneToken;
 
     @BeforeEach
     protected void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        MemberRequest myMmemberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(memberBody)
+                .body(myMmemberBody)
                 .when().post("/members")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
         TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
-        var response = RestAssured
+        var myResponse = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(tokenBody)
@@ -39,6 +43,26 @@ public class AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        token = response.as(TokenResponse.class);
+        token = myResponse.as(TokenResponse.class);
+
+        MemberRequest someoneMmemberBody = new MemberRequest(SOMEONE_USERNAME, SOMEONE_PASSWORD, "someone", "010-1234-5678", "ADMIN");
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(someoneMmemberBody)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+
+        TokenRequest someoneTokenBody = new TokenRequest(SOMEONE_USERNAME, SOMEONE_PASSWORD);
+        var someoneResponse = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(someoneTokenBody)
+                .when().post("/login/token")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+        someoneToken = someoneResponse.as(TokenResponse.class);
     }
 }

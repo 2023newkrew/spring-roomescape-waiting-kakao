@@ -40,7 +40,7 @@ public class ReservationWaitingService {
             throw new NullPointerException();
         }
         ReservationWaitingStatus currentStatus = ReservationWaitingStatus.WAITING;
-        if(tryInsertReservation(schedule, member)) {
+        if (tryInsertReservation(schedule, member)) {
             currentStatus = ReservationWaitingStatus.RESERVED;
         }
         Long id = reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus));
@@ -52,7 +52,7 @@ public class ReservationWaitingService {
             reservationDao.save(new Reservation(schedule, member));
         } catch (DuplicateKeyException e) {
             // 예약이 이미 존재할 때
-            e.printStackTrace();
+            System.out.println("예약이 이미 존재하여 예약 대기열로 이동합니다.");
             return false;
         }
         return true;
@@ -60,11 +60,10 @@ public class ReservationWaitingService {
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {
         try {
-            return reservationWaitingDao.findAllByMemberId(member.getId()).stream()
-                    .map(r -> {
-                        Long rank = reservationWaitingDao.getRank(r);
-                        return new ReservationWaitingResponse(r.getId(), r.getSchedule(), rank);
-                    }).collect(Collectors.toList());
+            List<ReservationWaitingResponse> res = reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()).stream()
+                    .map(ReservationWaitingResponse::from)
+                    .collect(Collectors.toList());
+            return res;
         } catch (RuntimeException e) {
             e.printStackTrace();
             return Collections.emptyList();
@@ -72,7 +71,7 @@ public class ReservationWaitingService {
     }
 
     public void cancelById(Member member, Long id) {
-        ReservationWaitingStatus status =  ReservationWaitingStatus.CANCELED;
+        ReservationWaitingStatus status = ReservationWaitingStatus.CANCELED;
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
         if (reservationWaiting == null) {
             throw new NullPointerException();
