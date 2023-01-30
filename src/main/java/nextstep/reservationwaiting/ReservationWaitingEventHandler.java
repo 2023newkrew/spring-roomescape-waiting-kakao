@@ -16,10 +16,11 @@ public class ReservationWaitingEventHandler {
     @EventListener
     @Transactional
     public void convert(ReservationDeleteEvent reservationDeleteEvent) {
-        ReservationWaiting reservationWaiting = reservationWaitingDao.findMinIdByScheduleId(reservationDeleteEvent.getSchedule());
-        if (reservationWaiting == null) {
-            return;
-        }
+        reservationWaitingDao.findMinIdByScheduleId(reservationDeleteEvent.getSchedule())
+                .ifPresent(this::convertReservationWaitingToReservation);
+    }
+
+    private void convertReservationWaitingToReservation(ReservationWaiting reservationWaiting) {
         reservationWaitingDao.deleteById(reservationWaiting.getId());
         reservationDao.save(reservationWaiting.toReservation());
     }

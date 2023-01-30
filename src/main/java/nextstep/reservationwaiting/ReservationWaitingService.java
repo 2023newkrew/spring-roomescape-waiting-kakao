@@ -1,12 +1,12 @@
 package nextstep.reservationwaiting;
 
+import auth.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
-import nextstep.reservation.ReservationValidator;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
+import nextstep.support.DoesNotExistEntityException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +19,6 @@ public class ReservationWaitingService {
     private final MemberDao memberDao;
     private final ScheduleDao scheduleDao;
     private final ReservationWaitingDao reservationWaitingDao;
-    private final ReservationValidator reservationValidator;
 
     public List<ReservationWaitingResponse> findByMemberId(Long memberId) {
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByMemberId(memberId);
@@ -29,28 +28,28 @@ public class ReservationWaitingService {
     }
 
     public Long create(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
-        Member member = memberDao.findById(memberId);
-        Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId());
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(AuthenticationException::new);
+        Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId())
+                .orElseThrow(DoesNotExistEntityException::new);
 
         ReservationWaiting newReservationWaiting = new ReservationWaiting(
                 schedule,
                 member
         );
 
-        try {
-            reservationValidator.validateCreation(newReservationWaiting.toReservation());
-        } catch (DuplicateEntityException ignored) {
-
-        }
         return reservationWaitingDao.save(newReservationWaiting);
 
     }
 
     public void deleteById(Long memberId, Long id) {
-        Member member = memberDao.findById(memberId);
-        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
-        reservationValidator.validateDelete(member, reservationWaiting.toReservation());
-
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(AuthenticationException::new);
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id)
+                .orElseThrow(DoesNotExistEntityException::new);
+        if (!reservationWaiting.sameMember(member)) {
+            throw new AuthenticationException();
+        }
         reservationWaitingDao.deleteById(id);
     }
 }

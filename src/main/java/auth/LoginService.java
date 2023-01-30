@@ -9,10 +9,6 @@ public class LoginService {
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
         UserDetails userDetails = userValidator.authenticate(tokenRequest.getUsername(), tokenRequest.getPassword());
-
-        if (userDetails == null) {
-            throw new AuthenticationException();
-        }
         String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
 
         return new TokenResponse(accessToken);

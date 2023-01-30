@@ -6,8 +6,8 @@ import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.support.DoesNotExistEntityException;
 import nextstep.support.DuplicateEntityException;
-import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -22,20 +22,18 @@ public class ReservationService {
     private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
     private final MemberDao memberDao;
-    private final ReservationValidator reservationValidator;
     private final ApplicationEventPublisher publisher;
 
     public Long create(Long memberId, ReservationRequest reservationRequest) {
-        Member member = memberDao.findById(memberId);
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(AuthenticationException::new);
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(DoesNotExistEntityException::new);
 
         Reservation newReservation = new Reservation(
                 schedule,
                 member
         );
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         if (schedule == null) {
             throw new NullPointerException();
         }
@@ -49,18 +47,20 @@ public class ReservationService {
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
+        themeDao.findById(themeId)
+                .orElseThrow(DoesNotExistEntityException::new);
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
     public void deleteById(Long memberId, Long id) {
-        Member member = memberDao.findById(memberId);
-        Reservation reservation = reservationDao.findById(id);
-        reservationValidator.validateDelete(member, reservation);
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(AuthenticationException::new);
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(DoesNotExistEntityException::new);
+        if (!reservation.sameMember(member)) {
+            throw new AuthenticationException();
+        }
 
         reservationDao.deleteById(id);
 

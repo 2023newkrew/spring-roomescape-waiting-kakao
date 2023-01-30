@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -78,7 +79,7 @@ public class ReservationWaitingDao {
         return jdbcTemplate.query(sql, rowMapper, memberId);
     }
 
-    public ReservationWaiting findById(Long id) {
+    public Optional<ReservationWaiting> findById(Long id) {
         String sql = "SELECT " +
                 "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -90,14 +91,13 @@ public class ReservationWaitingDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation_waiting.member_id = member.id " +
                 "where reservation_waiting.id = ?;";
-        try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
-            return null;
-        }
+
+        return jdbcTemplate.query(sql, rowMapper, id)
+                .stream()
+                .findAny();
     }
 
-    public ReservationWaiting findMinIdByScheduleId(Schedule schedule) {
+    public Optional<ReservationWaiting> findMinIdByScheduleId(Schedule schedule) {
         String sql = "SELECT " +
                 "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -114,11 +114,10 @@ public class ReservationWaitingDao {
                 "    FROM reservation_waiting " +
                 "    WHERE schedule_id = ?" +
                 ")";
-        try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, schedule.getId());
-        } catch (Exception e) {
-            return null;
-        }
+
+        return jdbcTemplate.query(sql, rowMapper, schedule.getId())
+                .stream()
+                .findAny();
     }
 
     public void deleteById(Long id) {
