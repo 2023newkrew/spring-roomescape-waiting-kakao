@@ -1,6 +1,4 @@
-package nextstep.auth.support;
-
-import nextstep.auth.domain.MemberRoleType;
+package auth.support;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +7,5 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AuthorizationRequired{
-    MemberRoleType[] value() default {};
+public @interface LoginRequired {
 }

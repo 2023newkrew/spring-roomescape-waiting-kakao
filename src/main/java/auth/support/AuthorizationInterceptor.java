@@ -1,14 +1,13 @@
-package nextstep.auth.support;
+package auth.support;
 
+import auth.domain.MemberRoleType;
+import auth.domain.MemberRoles;
+import auth.exception.AuthenticationException;
+import auth.exception.AuthorizationException;
+import auth.exception.InvalidTokenException;
+import auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.domain.MemberRoleType;
-import nextstep.auth.domain.MemberRoles;
-import nextstep.auth.exception.AuthenticationException;
-import nextstep.auth.exception.AuthorizationException;
-import nextstep.auth.exception.InvalidTokenException;
-import nextstep.auth.service.AuthService;
 import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
-@Component
 @RequiredArgsConstructor
 public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
     private final JwtTokenProvider jwtTokenProvider;

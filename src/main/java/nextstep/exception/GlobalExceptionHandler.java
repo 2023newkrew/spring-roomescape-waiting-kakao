@@ -1,7 +1,7 @@
 package nextstep.exception;
 
-import nextstep.auth.exception.AuthenticationException;
-import nextstep.auth.exception.AuthorizationException;
+import auth.exception.AuthenticationException;
+import auth.exception.AuthorizationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

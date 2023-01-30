@@ -1,8 +1,8 @@
 package nextstep.member;
 
 import nextstep.auth.AuthTestUtil;
-import nextstep.auth.model.TokenRequest;
-import nextstep.auth.model.TokenResponse;
+import auth.model.TokenRequest;
+import auth.model.TokenResponse;
 import nextstep.member.model.Member;
 import nextstep.member.model.MemberRequest;
 import org.junit.jupiter.api.DisplayName;

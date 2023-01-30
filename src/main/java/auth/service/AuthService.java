@@ -1,12 +1,12 @@
-package nextstep.auth.service;
+package auth.service;
 
+import auth.dao.MemberRoleDao;
+import auth.domain.MemberRoles;
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.dao.MemberRoleDao;
-import nextstep.auth.domain.MemberRoles;
-import nextstep.auth.exception.AuthenticationException;
-import nextstep.auth.model.TokenRequest;
-import nextstep.auth.model.TokenResponse;
-import nextstep.auth.support.JwtTokenProvider;
+import auth.exception.AuthenticationException;
+import auth.model.TokenRequest;
+import auth.model.TokenResponse;
+import auth.support.JwtTokenProvider;
 import nextstep.member.dao.MemberDao;
 import org.springframework.stereotype.Service;
 

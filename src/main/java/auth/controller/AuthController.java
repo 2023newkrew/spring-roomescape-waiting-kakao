@@ -1,9 +1,9 @@
-package nextstep.auth.controller;
+package auth.controller;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.model.TokenRequest;
-import nextstep.auth.model.TokenResponse;
-import nextstep.auth.service.AuthService;
+import auth.model.TokenRequest;
+import auth.model.TokenResponse;
+import auth.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

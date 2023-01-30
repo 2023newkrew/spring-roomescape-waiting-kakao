@@ -1,4 +1,4 @@
-package nextstep.auth.exception;
+package auth.exception;
 
 public class InvalidTokenException extends RuntimeException{
 }

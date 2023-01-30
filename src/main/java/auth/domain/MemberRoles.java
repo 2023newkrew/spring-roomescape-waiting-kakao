@@ -1,4 +1,4 @@
-package nextstep.auth.domain;
+package auth.domain;
 
 import java.util.Arrays;
 import java.util.List;

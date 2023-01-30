@@ -1,7 +1,7 @@
 package nextstep.reservation.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.exception.AuthenticationException;
+import auth.exception.AuthenticationException;
 import nextstep.exception.DuplicateEntityException;
 import nextstep.exception.NotExistEntityException;
 import nextstep.member.model.Member;

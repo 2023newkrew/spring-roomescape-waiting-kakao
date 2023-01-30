@@ -1,4 +1,4 @@
-package nextstep.auth.model;
+package auth.model;
 
 import lombok.Getter;
 import lombok.ToString;

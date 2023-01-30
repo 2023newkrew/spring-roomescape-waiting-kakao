@@ -1,8 +1,8 @@
 package nextstep.reservation.controller;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.support.AuthenticationPrincipal;
-import nextstep.auth.support.LoginRequired;
+import auth.support.AuthenticationPrincipal;
+import auth.support.LoginRequired;
 import nextstep.member.model.Member;
 import nextstep.reservation.model.CreateReservationRequest;
 import nextstep.reservation.model.Reservation;

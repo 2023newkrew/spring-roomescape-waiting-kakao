@@ -1,8 +1,8 @@
-package nextstep.auth.dao;
+package auth.dao;
 
 
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.domain.MemberRoles;
+import auth.domain.MemberRoles;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;

@@ -1,19 +1,21 @@
-package nextstep.auth.support;
+package auth.support;
 
-import io.jsonwebtoken.*;
-import nextstep.auth.exception.InvalidTokenException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import auth.exception.InvalidTokenException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.util.Date;
 
-@Component
 public class JwtTokenProvider {
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    private final String secretKey;
+    private final Long validityInMilliseconds;
 
-    @Value("${security.jwt.token.expire-length}")
-    private Long validityInMilliseconds;
+    public JwtTokenProvider(String secretKey, Long validityInMilliseconds) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
 
     public String createCredential(String subject) {
         Claims claims = makeClaims(subject);

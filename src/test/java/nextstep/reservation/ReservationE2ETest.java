@@ -1,7 +1,7 @@
 package nextstep.reservation;
 
 import nextstep.auth.AuthTestUtil;
-import nextstep.auth.model.TokenResponse;
+import auth.model.TokenResponse;
 import nextstep.member.model.Member;
 import nextstep.member.MemberTestUtil;
 import nextstep.reservation.model.Reservation;

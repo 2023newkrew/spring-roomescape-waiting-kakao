@@ -1,8 +1,8 @@
-package nextstep.auth.controller;
+package auth.controller;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.domain.MemberRoleType;
-import nextstep.auth.support.AuthorizationRequired;
+import auth.domain.MemberRoleType;
+import auth.support.AuthorizationRequired;
 import nextstep.schedule.model.ScheduleRequest;
 import nextstep.schedule.service.ScheduleService;
 import nextstep.theme.model.ThemeRequest;
