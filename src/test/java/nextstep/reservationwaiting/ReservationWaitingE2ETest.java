@@ -110,21 +110,22 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
         List<ReservationWaitingResponse> reservationWaitingResponses = response.jsonPath().getList(".", ReservationWaitingResponse.class);
         assertThat(reservationWaitingResponses.size()).isEqualTo(1);
     }
-//
-//    @DisplayName("예약을 삭제한다")
-//    @Test
-//    void delete() {
-//        var reservation = createReservation();
-//
-//        var response = RestAssured
-//                .given().log().all()
-//                .auth().oauth2(token.getAccessToken())
-//                .when().delete(reservation.header("Location"))
-//                .then().log().all()
-//                .extract();
-//
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//    }
+
+    @DisplayName("예약 대기를 삭제한다")
+    @Test
+    void delete() {
+        createReservation();
+        var reservationWaiting = createReservationWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete(reservationWaiting.header("Location"))
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 //
 //    @DisplayName("중복 예약을 생성한다")
 //    @Test

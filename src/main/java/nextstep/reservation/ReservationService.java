@@ -3,6 +3,7 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservationwaiting.ReservationWaitingDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -18,6 +19,7 @@ public class ReservationService {
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
+    private final ReservationWaitingDao reservationWaitingDao;
 
     public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
