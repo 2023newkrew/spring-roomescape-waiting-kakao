@@ -18,6 +18,9 @@ public class AbstractE2ETest {
 
     protected TokenResponse token;
 
+    public static final String USER_JAYDEN = "jayden";
+    protected TokenResponse token2;
+
     @BeforeEach
     protected void setUp() {
         MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
@@ -40,5 +43,26 @@ public class AbstractE2ETest {
                 .extract();
 
         token = response.as(TokenResponse.class);
+
+        MemberRequest memberBody2 = new MemberRequest(USER_JAYDEN, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(memberBody2)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+
+        TokenRequest tokenBody2 = new TokenRequest(USER_JAYDEN, PASSWORD);
+        var response2 = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(tokenBody2)
+                .when().post("/login/token")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        token2 = response2.as(TokenResponse.class);
     }
 }
