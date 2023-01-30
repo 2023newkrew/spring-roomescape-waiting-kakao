@@ -3,6 +3,8 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservationwaiting.ReservationWaiting;
+import nextstep.reservationwaiting.ReservationWaitingDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -14,13 +16,15 @@ import java.util.List;
 
 @Service
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    private final ReservationDao reservationDao;
+    private final ReservationWaitingDao reservationWaitingDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
+        this.reservationWaitingDao = reservationWaitingDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
@@ -68,5 +72,16 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+        pullReservationWaiting(reservation.getSchedule().getId());
+    }
+
+    private void pullReservationWaiting(Long scheduleId) {
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findEarliestOneByScheduleId(scheduleId);
+        if (reservationWaiting != null) {
+            Member waitingMember = memberDao.findById(reservationWaiting.getMemberId());
+            ReservationRequest request = new ReservationRequest(reservationWaiting.getSchedule().getId());
+            create(waitingMember, request);
+            reservationWaitingDao.deleteById(reservationWaiting.getId());
+        }
     }
 }

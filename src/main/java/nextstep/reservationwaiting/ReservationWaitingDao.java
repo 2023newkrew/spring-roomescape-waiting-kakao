@@ -70,6 +70,24 @@ public class ReservationWaitingDao {
         }
     }
 
+    public ReservationWaiting findEarliestOneByScheduleId(Long scheduleId) {
+        String sql = "SELECT " +
+                "reservation_waiting.id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price " +
+                "from reservation_waiting " +
+                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "where reservation_waiting.schedule_id = ? " +
+                "order by reservation_waiting.wait_num asc " +
+                "limit 1;";
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, scheduleId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public boolean existById(Long id, Long memberId) {
         String sql = "SELECT " +
                 "1 " +

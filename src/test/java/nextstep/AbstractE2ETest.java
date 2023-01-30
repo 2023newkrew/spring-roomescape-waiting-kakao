@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.Map;
+
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AbstractE2ETest {
@@ -53,6 +55,11 @@ public class AbstractE2ETest {
     }
 
     protected <T> Response get(RequestSpecification given, String path, Object... pathParams) {
+        return given
+                .when().get(path, pathParams);
+    }
+
+    protected <T> Response get(RequestSpecification given, String path, Map<String, ?> pathParams) {
         return given
                 .when().get(path, pathParams);
     }

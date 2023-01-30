@@ -4,8 +4,10 @@ import auth.TokenRequest;
 import auth.TokenResponse;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import nextstep.AbstractE2ETest;
 import nextstep.member.MemberRequest;
+import nextstep.reservation.Reservation;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +15,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,6 +26,7 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
     public static final String TIME = "13:00";
     private static final String DEFAULT_PATH = "/reservation-waitings";
 
+    private Long themeId;
     private ReservationWaitingRequest waitingRequest;
 
     @BeforeEach
@@ -33,7 +38,7 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
         String[] themeLocation = themeResponse.header("Location").split("/");
-        Long themeId = Long.parseLong(themeLocation[themeLocation.length - 1]);
+        themeId = Long.parseLong(themeLocation[themeLocation.length - 1]);
 
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         response = post(givenWithAuth(), "/admin/schedules", scheduleRequest);
@@ -112,7 +117,7 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
         assertThat(reservationWaitings.size()).isEqualTo(1);
     }
 
-    @DisplayName("예약이 삭제되어야 한다.")
+    @DisplayName("예약 대기가 삭제되어야 한다.")
     @Test
     void delete() {
         createReservation();
@@ -147,6 +152,28 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
 
         then(response)
                 .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("예약을 삭제하면 가장 빠른 예약 대기가 예약되어야 한다.")
+    @Test
+    void deleteReservation() {
+        var reservation = createReservation();
+        createReservationWaiting();
+
+        var deleteResponse = delete(givenWithAuth(), reservation.header("Location"));
+        then(deleteResponse)
+                .statusCode(HttpStatus.NO_CONTENT.value());
+
+        RequestSpecification given = given()
+                .param("themeId", Long.toString(themeId))
+                .param("date", DATE);
+        var reservationResponse = get(given, "/reservations");
+        List<Reservation> reservations = reservationResponse.jsonPath().getList(".", Reservation.class);
+        assertThat(reservations.size()).isEqualTo(1);
+
+        var reservationWaitingResponse = get(givenWithAuth(), DEFAULT_PATH + "/mine");
+        List<ReservationWaiting> reservationWaitings = reservationWaitingResponse.jsonPath().getList(".", ReservationWaiting.class);
+        assertThat(reservationWaitings.size()).isEqualTo(0);
     }
 
     private TokenResponse createOtherMemberToken() {

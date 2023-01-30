@@ -98,6 +98,35 @@ class ReservationWaitingDaoTest {
         Assertions.assertThat(foundReservationWaiting.getSchedule().getId()).isEqualTo(reservationWaiting.getSchedule().getId());
     }
 
+    @Test
+    @DisplayName("스케줄 id로 조회가 가능해야 한다.")
+    void findEarliestOneByScheduleId() {
+        // given
+        ReservationWaiting reservationWaiting = createReservationWaitingByWaitNum(1L);
+        reservationWaitingDao.save(reservationWaiting);
+
+        // when
+        ReservationWaiting foundReservationWaiting = reservationWaitingDao.findEarliestOneByScheduleId(reservationWaiting.getSchedule().getId());
+
+        // then
+        Assertions.assertThat(foundReservationWaiting).isNotNull();
+    }
+
+    @Test
+    @DisplayName("스케줄 id로 조회시 waitNum 이 가장 낮은 entity 가 조회되어야 한다.")
+    void findEarliestOneByScheduleId2() {
+        // given
+        ReservationWaiting reservationWaiting = createReservationWaitingByWaitNum(1L);
+        reservationWaitingDao.save(reservationWaiting);
+        reservationWaitingDao.save(reservationWaiting);
+
+        // when
+        ReservationWaiting foundReservationWaiting = reservationWaitingDao.findEarliestOneByScheduleId(reservationWaiting.getSchedule().getId());
+
+        // then
+        Assertions.assertThat(foundReservationWaiting.getWaitNum()).isEqualTo(1L);
+    }
+
     private ReservationWaiting createReservationWaitingByWaitNum(Long waitNum) {
         return new ReservationWaiting(schedule, 1L, waitNum);
     }
