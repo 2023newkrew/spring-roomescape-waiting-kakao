@@ -8,7 +8,6 @@ import nextstep.member.model.Member;
 import nextstep.member.model.MemberRequest;
 import nextstep.member.service.MemberService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;

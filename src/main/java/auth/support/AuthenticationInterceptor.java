@@ -27,17 +27,17 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         return super.preHandle(request, response, handler);
     }
 
-    private boolean hasValidToken(HttpServletRequest request) {
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-        return jwtTokenProvider.isValidToken(token);
-    }
-
     private static boolean isLoginRequiredMethod(Object handler) {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         LoginRequired loginRequired = handlerMethod.getMethod()
                 .getAnnotation(LoginRequired.class);
 
         return !Objects.isNull(loginRequired);
+    }
+
+    private boolean hasValidToken(HttpServletRequest request) {
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        return jwtTokenProvider.isValidToken(token);
     }
 }

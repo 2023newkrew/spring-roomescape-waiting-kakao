@@ -33,11 +33,26 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         return super.preHandle(request, response, handler);
     }
 
+    private static boolean isAuthorizationRequiredMethod(Object handler) {
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        AuthorizationRequired authorizationRequired = handlerMethod.getMethod()
+                .getAnnotation(AuthorizationRequired.class);
+
+        return !Objects.isNull(authorizationRequired);
+    }
+
     private boolean hasRequiredRoles(HttpServletRequest request, Object handler) {
         RoleType[] requiredRoles = getRequiredRoles(handler);
         RoleTypes roleTypes = getMemberRoles(request);
 
         return roleTypes.hasRoles(requiredRoles);
+    }
+
+    private static RoleType[] getRequiredRoles(Object handler) {
+        HandlerMethod httpMethod = (HandlerMethod) handler;
+        return httpMethod.getMethod()
+                .getAnnotation(AuthorizationRequired.class)
+                .value();
     }
 
     private RoleTypes getMemberRoles(HttpServletRequest request) {
@@ -48,20 +63,5 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         }catch (InvalidTokenException e){
             throw new AuthenticationException();
         }
-    }
-
-    private static RoleType[] getRequiredRoles(Object handler) {
-        HandlerMethod httpMethod = (HandlerMethod) handler;
-        return httpMethod.getMethod()
-                .getAnnotation(AuthorizationRequired.class)
-                .value();
-    }
-
-    private static boolean isAuthorizationRequiredMethod(Object handler) {
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        AuthorizationRequired authorizationRequired = handlerMethod.getMethod()
-                .getAnnotation(AuthorizationRequired.class);
-
-        return !Objects.isNull(authorizationRequired);
     }
 }

@@ -26,8 +26,10 @@ public class AuthService {
         return new TokenResponse(accessToken);
     }
 
-    public RoleTypes findRoleByMemberName(String memberName){
-        return authDao.findMemberRolesByMemberName(memberName);
+    private boolean isValidLogin(TokenRequest request) {
+        return authDao.findMemberDetailsByMemberName(request.getMemberName())
+                .filter(member -> member.isValidPassword(request.getPassword()))
+                .isPresent();
     }
 
     public MemberDetails findMemberDetailsByMemberName(String memberName){
@@ -39,9 +41,7 @@ public class AuthService {
         return memberDetails;
     }
 
-    private boolean isValidLogin(TokenRequest request) {
-        return authDao.findMemberDetailsByMemberName(request.getMemberName())
-                .filter(member -> member.isValidPassword(request.getPassword()))
-                .isPresent();
+    public RoleTypes findRoleByMemberName(String memberName){
+        return authDao.findMemberRolesByMemberName(memberName);
     }
 }

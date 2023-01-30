@@ -14,22 +14,22 @@ public class RoleTypes {
         this.roles = new ArrayList<>(roles);
     }
 
-    public boolean hasRole(RoleType roleType){
-        return roles.contains(roleType);
-    }
-
     public boolean hasRoles(RoleType[] roleTypes){
         return Arrays.stream(roleTypes)
                 .allMatch(this::hasRole);
     }
 
-    public RoleTypes copy(){
-        return new RoleTypes(this.roles);
+    public boolean hasRole(RoleType roleType){
+        return roles.contains(roleType);
     }
+
     public RoleTypes add(RoleTypes roleTypes){
         RoleTypes copied = this.copy();
         copied.roles.addAll(roleTypes.roles);
 
         return copied;
+    }
+    public RoleTypes copy(){
+        return new RoleTypes(this.roles);
     }
 }
