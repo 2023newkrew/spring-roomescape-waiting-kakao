@@ -19,7 +19,7 @@ public class LoginService {
             throw new AuthenticationException("아이디 혹은 패스워드가 틀렸습니다.");
         }
 
-        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
+        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole().toString());
 
         return new TokenResponse(accessToken);
     }

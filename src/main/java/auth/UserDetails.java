@@ -1,17 +1,19 @@
 package auth;
 
+import nextstep.member.Role;
+
 public class UserDetails {
     private Long id;
     private String username;
     private String password;
     private String name;
     private String phone;
-    private String role;
+    private Role role;
 
     public UserDetails() {
     }
 
-    public UserDetails(Long id, String username, String password, String name, String phone, String role) {
+    public UserDetails(Long id, String username, String password, String name, String phone, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -40,7 +42,7 @@ public class UserDetails {
         return phone;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 

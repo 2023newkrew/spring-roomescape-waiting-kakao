@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import auth.TokenRequest;
 import auth.TokenResponse;
 import nextstep.member.MemberRequest;
+import nextstep.member.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class AbstractE2ETest {
 
     @BeforeEach
     protected void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", Role.ADMIN);
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

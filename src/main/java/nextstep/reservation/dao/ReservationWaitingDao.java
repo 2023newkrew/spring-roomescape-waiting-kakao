@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 import nextstep.member.Member;
+import nextstep.member.Role;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.schedule.Schedule;
@@ -53,7 +54,7 @@ public class ReservationWaitingDao {
                     resultSet.getString("member.password"),
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
-                    resultSet.getString("member.role")
+                    Role.valueOf(resultSet.getString("member.role"))
             ), resultSet.getLong("reservation_waiting.wait_num")
     );
 

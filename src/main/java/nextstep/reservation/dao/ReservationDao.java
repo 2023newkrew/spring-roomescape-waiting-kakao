@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 import nextstep.member.Member;
+import nextstep.member.Role;
 import nextstep.reservation.domain.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
@@ -42,7 +43,7 @@ public class ReservationDao {
                     resultSet.getString("member.password"),
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
-                    resultSet.getString("member.role")
+                    Role.valueOf(resultSet.getString("member.role"))
             )
     );
 

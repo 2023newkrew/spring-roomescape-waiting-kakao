@@ -5,6 +5,7 @@ import nextstep.AbstractE2ETest;
 import auth.TokenRequest;
 import auth.TokenResponse;
 import nextstep.member.MemberRequest;
+import nextstep.member.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
     @Test
     public void createFromNormalUser() {
 
-        MemberRequest memberBody = new MemberRequest(USERNAME+1, PASSWORD, "name", "010-1234-5678", "");
+        MemberRequest memberBody = new MemberRequest(USERNAME+1, PASSWORD, "name", "010-1234-5678", Role.USER);
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

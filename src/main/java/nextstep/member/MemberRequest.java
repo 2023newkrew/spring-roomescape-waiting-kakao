@@ -1,13 +1,20 @@
 package nextstep.member;
 
-public class MemberRequest {
-    private String username;
-    private String password;
-    private String name;
-    private String phone;
-    private String role;
+import javax.validation.constraints.NotBlank;
 
-    public MemberRequest(String username, String password, String name, String phone, String role) {
+public class MemberRequest {
+    @NotBlank
+    private String username;
+    @NotBlank
+    private String password;
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String phone;
+    @NotBlank
+    private Role role;
+
+    public MemberRequest(String username, String password, String name, String phone, Role role) {
         this.username = username;
         this.password = password;
         this.name = name;
@@ -31,7 +38,7 @@ public class MemberRequest {
         return phone;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 

@@ -8,12 +8,12 @@ public class Member {
     private String password;
     private String name;
     private String phone;
-    private String role;
+    private Role role;
 
     public Member() {
     }
 
-    public Member(Long id, String username, String password, String name, String phone, String role) {
+    public Member(Long id, String username, String password, String name, String phone, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -22,12 +22,8 @@ public class Member {
         this.role = role;
     }
 
-    public Member(String username, String password, String name, String phone, String role) {
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.phone = phone;
-        this.role = role;
+    public Member(String username, String password, String name, String phone, Role role) {
+        this(null, username, password, name, phone, role);
     }
 
     public Member(UserDetails userDetails) {
@@ -60,7 +56,7 @@ public class Member {
         return phone;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
