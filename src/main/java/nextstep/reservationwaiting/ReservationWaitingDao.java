@@ -39,7 +39,7 @@ public class ReservationWaitingDao {
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
             ),
-            resultSet.getLong("reservation_waiting.wait_num")
+            resultSet.getLong("wait_num")
     );
 
     public Long save(ReservationWaiting reservationWaiting) {
@@ -63,7 +63,7 @@ public class ReservationWaitingDao {
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role, " +
-                "reservation_waiting.wait_num " +
+                "wait_num " +
                 "FROM (" +
                 "    SELECT " +
                 "    id, schedule_id, member_id, " +
@@ -84,7 +84,7 @@ public class ReservationWaitingDao {
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role," +
-                "0 AS reservation_waiting.wait_num " +
+                "0 AS wait_num " +
                 "from reservation_waiting " +
                 "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
@@ -103,7 +103,7 @@ public class ReservationWaitingDao {
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role," +
-                "0 AS reservation_waiting.wait_num " +
+                "0 AS wait_num " +
                 "from reservation_waiting " +
                 "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +

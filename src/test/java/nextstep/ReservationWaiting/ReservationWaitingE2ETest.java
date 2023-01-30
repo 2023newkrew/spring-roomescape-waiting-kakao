@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
+import nextstep.reservation.Reservation;
 import nextstep.reservationwaiting.ReservationWaitingRequest;
 import nextstep.reservationwaiting.ReservationWaitingResponse;
 import nextstep.schedule.ScheduleRequest;
@@ -120,6 +121,41 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("예약을 삭제한다")
+    @Test
+    void delete2() {
+        var reservation = createReservation();
+        createReservation();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete(reservation.header("Location"))
+                .then().log().all()
+                .extract();
+
+        var responseWaiting = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationWaitingResponse> reservationWaitings = responseWaiting.jsonPath().getList(".", ReservationWaitingResponse.class);
+        assertThat(reservationWaitings.size()).isEqualTo(0);
+
+        var response = RestAssured
+                .given().log().all()
+                .param("themeId", themeId)
+                .param("date", DATE)
+                .when().get("/reservations")
+                .then().log().all()
+                .extract();
+
+        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        assertThat(reservations.size()).isEqualTo(1);
     }
 
     @DisplayName("중복 예약을 생성한다")
