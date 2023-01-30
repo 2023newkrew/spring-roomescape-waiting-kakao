@@ -66,7 +66,7 @@ public class ReservationWaitingDao {
 
     public ReservationWaiting findById(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.wating_seq, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.waiting_seq, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
