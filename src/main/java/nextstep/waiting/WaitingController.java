@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class WaitingController {
@@ -39,6 +40,12 @@ public class WaitingController {
         return ResponseEntity.noContent().build();
     }
 
+
+    @GetMapping("/reservation-waitings/mine")
+    public ResponseEntity<List<MyWaiting>> readMyReservations(@LoginMember TokenMember member) {
+        List<MyWaiting> myReservations = waitingService.findAllByMember(member);
+        return ResponseEntity.ok().body(myReservations);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {

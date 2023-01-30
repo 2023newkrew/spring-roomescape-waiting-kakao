@@ -1,6 +1,7 @@
 package nextstep.waiting;
 
 import auth.AuthenticationException;
+import auth.TokenMember;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
@@ -50,5 +51,9 @@ public class WaitingService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public List<MyWaiting> findAllByMember(TokenMember member) {
+        return waitingDao.findAllByMemberId(member.getId());
     }
 }
