@@ -3,6 +3,8 @@ package nextstep.reservation.service;
 import auth.AuthenticationException;
 import java.util.List;
 import java.util.Objects;
+import nextstep.error.ErrorCode;
+import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
 import nextstep.reservation.dao.ReservationDao;
 import nextstep.reservation.dao.ReservationWaitingDao;
@@ -31,7 +33,7 @@ public class ReservationWaitingService {
     public Long create(Member member, ReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (Objects.isNull(schedule)) {
-            throw new RuntimeException("해당 ID의 스케줄이 존재하지 않습니다.");
+            throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
         List<Reservation> reservationList = reservationDao.findByScheduleId(schedule.getId());
         if (reservationList.size() == 0) {
@@ -50,10 +52,10 @@ public class ReservationWaitingService {
     public void delete(Member member, Long id) {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
         if (reservationWaiting == null) {
-            throw new NullPointerException();
+            throw new RoomReservationException(ErrorCode.RESERVATION_WAITING_NOT_FOUND);
         }
         if (!reservationWaiting.getMember().getId().equals(member.getId())) {
-            throw new AuthenticationException("User does not match");
+            throw new RoomReservationException(ErrorCode.RESERVATION_WAITING_NOT_FOUND);
         }
         reservationWaitingDao.deleteById(id);
     }

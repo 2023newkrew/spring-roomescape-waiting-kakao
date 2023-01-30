@@ -55,14 +55,4 @@ public class ReservationController {
         List<Reservation> reservationList = reservationService.lookUp(new Member(member));
         return ResponseEntity.ok().body(reservationList);
     }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
 }

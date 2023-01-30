@@ -71,6 +71,14 @@ public class ScheduleDao {
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(LocalDate.parse(date)));
     }
 
+    public List<Schedule> findByThemeId(Long themeId) {
+        String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
+                "from schedule " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "where schedule.theme_id = ?;";
+
+        return jdbcTemplate.query(sql, rowMapper, themeId);    }
+
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM schedule where id = ?;", id);
     }
