@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import nextstep.member.Member;
 import nextstep.member.Role;
-import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
@@ -20,7 +19,8 @@ import org.springframework.stereotype.Component;
 public class ReservationWaitingDao {
 
     private static final String SELECT_SQL = "SELECT " +
-            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
+            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, "
+            +
             "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
             "theme.id, theme.name, theme.desc, theme.price, " +
             "member.id, member.username, member.password, member.name, member.phone, member.role " +

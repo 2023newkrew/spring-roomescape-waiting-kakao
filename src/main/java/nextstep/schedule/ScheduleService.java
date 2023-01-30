@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import java.util.List;
 import java.util.Objects;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
@@ -10,8 +11,6 @@ import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ScheduleService {
@@ -39,7 +38,7 @@ public class ScheduleService {
 
     public void deleteById(Long id) {
         Schedule schedule = scheduleDao.findById(id);
-        if(Objects.isNull(schedule)) {
+        if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
         List<Reservation> reservationList = reservationDao.findByScheduleId(id);

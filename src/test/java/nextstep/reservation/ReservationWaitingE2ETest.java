@@ -86,7 +86,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약이 되어있는 스케줄에 예약 대기 신청을 할 수 있다.")
     @Test
-    void requestWaitingReservedSchedule(){
+    void requestWaitingReservedSchedule() {
         // given
         createReservation();
 
@@ -125,7 +125,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     @DisplayName("자신의 예약 대기를 취소할 수 있다")
     @Test
-    void deleteWaiting(){
+    void deleteWaiting() {
         // given
         createReservation();
 
@@ -182,7 +182,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     @DisplayName("자신의 얘약 대기가 아닌 경우 취소할 수 없다")
     @Test
-    void deleteWaitingByOtherUser(){
+    void deleteWaitingByOtherUser() {
         // given
         createReservation();
         // when
@@ -231,7 +231,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     @Test
     @DisplayName("로그인을 하지 예약 상태로 예약 삭제를 할 수 없다")
-    void deleteWaitingWIthNoneAuthority(){
+    void deleteWaitingWIthNoneAuthority() {
         // given
         createReservation();
         // when

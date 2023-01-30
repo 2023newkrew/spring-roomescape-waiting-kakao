@@ -1,6 +1,5 @@
 package nextstep.reservation.service;
 
-import auth.AuthenticationException;
 import java.util.List;
 import java.util.Objects;
 import nextstep.error.ErrorCode;
@@ -40,7 +39,8 @@ public class ReservationWaitingService {
             reservationService.create(member, reservationRequest);
         }
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
-        long waitNum = reservationWaitingList.isEmpty() ? 1 : reservationWaitingList.get(reservationWaitingList.size() - 1).getWaitingNum() + 1;
+        long waitNum = reservationWaitingList.isEmpty() ? 1
+                : reservationWaitingList.get(reservationWaitingList.size() - 1).getWaitingNum() + 1;
         return reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
     }
 

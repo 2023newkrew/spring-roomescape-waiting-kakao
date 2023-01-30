@@ -1,9 +1,8 @@
 package nextstep.reservation.domain;
 
+import java.util.Objects;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
-
-import java.util.Objects;
 
 public class Reservation {
     private Long id;

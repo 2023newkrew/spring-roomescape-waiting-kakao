@@ -1,9 +1,8 @@
 package nextstep.schedule;
 
-import nextstep.theme.Theme;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+import nextstep.theme.Theme;
 
 public class Schedule {
     private Long id;

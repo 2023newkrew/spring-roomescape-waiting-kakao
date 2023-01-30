@@ -1,12 +1,11 @@
 package nextstep.theme;
 
+import java.util.List;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ThemeService {

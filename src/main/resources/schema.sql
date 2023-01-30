@@ -8,10 +8,10 @@ CREATE TABLE reservation
 
 CREATE TABLE reservation_waiting
 (
-    id              bigint  not null    auto_increment,
-    schedule_id     bigint  not null,
-    member_id       bigint  not null,
-    wait_num        bigint  not null,
+    id          bigint not null auto_increment,
+    schedule_id bigint not null,
+    member_id   bigint not null,
+    wait_num    bigint not null,
     primary key (id)
 );
 

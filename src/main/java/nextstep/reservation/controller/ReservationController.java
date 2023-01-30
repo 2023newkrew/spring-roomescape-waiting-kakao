@@ -1,6 +1,5 @@
 package nextstep.reservation.controller;
 
-import auth.AuthenticationException;
 import auth.LoginMember;
 import auth.UserDetails;
 import java.net.URI;
@@ -13,11 +12,9 @@ import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.service.ReservationService;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,13 +35,15 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity createReservation(@LoginMember UserDetails member, @RequestBody @Valid ReservationRequest reservationRequest) {
+    public ResponseEntity createReservation(@LoginMember UserDetails member,
+                                            @RequestBody @Valid ReservationRequest reservationRequest) {
         Long id = reservationService.create(new Member(member), reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<Reservation>> readReservations(@RequestParam @NotNull @Min(1L) Long themeId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @NotNull String date) {
+    public ResponseEntity<List<Reservation>> readReservations(@RequestParam @NotNull @Min(1L) Long themeId,
+                                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @NotNull String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }

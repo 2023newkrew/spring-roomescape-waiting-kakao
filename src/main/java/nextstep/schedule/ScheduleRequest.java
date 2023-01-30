@@ -2,12 +2,11 @@ package nextstep.schedule;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import nextstep.theme.Theme;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class ScheduleRequest {
     @Min(1L)
