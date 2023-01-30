@@ -69,6 +69,13 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
+    public boolean updateById(Long id, Long memberId) {
+        int updatedRow = jdbcTemplate.update(connection -> statementCreator.createUpdateById(connection, id, memberId));
+
+        return updatedRow > 0;
+    }
+
+    @Override
     public boolean deleteById(Long id) {
         int deletedRow = jdbcTemplate.update(connection -> statementCreator.createDeleteById(connection, id));
 

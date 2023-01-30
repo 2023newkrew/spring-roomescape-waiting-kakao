@@ -13,8 +13,10 @@ public interface ReservationRepository {
     Reservation insert(Reservation reservation);
 
     Reservation getById(Long id);
-    
+
     List<Reservation> getByMemberId(Long memberId);
+
+    boolean updateById(Long id, Long memberId);
 
     boolean deleteById(Long id);
 }

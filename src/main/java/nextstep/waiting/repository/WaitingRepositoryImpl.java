@@ -42,6 +42,14 @@ public class WaitingRepositoryImpl implements WaitingRepository {
     }
 
     @Override
+    public Waiting getFirstByScheduleId(Long scheduleId) {
+        return jdbcTemplate.query(
+                connection -> statementCreator.createSelectByScheduleId(connection, scheduleId),
+                resultSetParser::parseWaiting
+        );
+    }
+
+    @Override
     public List<Waiting> getByMemberId(Long memberId) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectByMemberId(connection, memberId),

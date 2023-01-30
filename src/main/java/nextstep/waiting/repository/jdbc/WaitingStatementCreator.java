@@ -24,6 +24,20 @@ public class WaitingStatementCreator {
             "INNER JOIN theme ON schedule.theme_id = theme.id \n" +
             "WHERE waiting.id = ?";
 
+    private static final String SELECT_BY_SCHEDULE_ID_SQL = "SELECT * \n" +
+            "FROM \n" +
+            "    (SELECT \n" +
+            "         id, \n" +
+            "         member_id, \n" +
+            "         schedule_id,\n" +
+            "         RANK() OVER (PARTITION BY schedule_id ORDER BY id ASC) AS waitNum \n" +
+            "     FROM waiting AS W) AS waiting \n" +
+            "INNER JOIN schedule ON waiting.schedule_id = schedule.id \n" +
+            "INNER JOIN theme ON schedule.theme_id = theme.id \n" +
+            "WHERE schedule.id = ? " +
+            "ORDER BY waiting.id ASC " +
+            "LIMIT 1";
+
     private static final String SELECT_BY_MEMBER_ID_SQL = "SELECT * \n" +
             "FROM \n" +
             "    (SELECT \n" +
@@ -53,6 +67,13 @@ public class WaitingStatementCreator {
     public PreparedStatement createSelectById(Connection connection, Long id) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);
         ps.setLong(1, id);
+
+        return ps;
+    }
+
+    public PreparedStatement createSelectByScheduleId(Connection connection, Long scheduleId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(SELECT_BY_SCHEDULE_ID_SQL);
+        ps.setLong(1, scheduleId);
 
         return ps;
     }
