@@ -157,4 +157,22 @@ public class WaitingControllerTest extends AbstractControllerTest {
             thenThrow(response, expectedException);
         }
     }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class getByMemberId {
+
+        static final String GET_BY_MEMBER_ID_PATH = DEFAULT_PATH + "/mine";
+
+        @DisplayName("내 예약 대기 조회 성공")
+        @Test
+        void should_returnMember_when_memberExists() {
+            var request = createRequest(1L);
+            post(authGiven(), DEFAULT_PATH, request);
+
+            var response = get(authGiven(), GET_BY_MEMBER_ID_PATH);
+
+            then(response).statusCode(HttpStatus.OK.value());
+        }
+    }
 }

@@ -43,7 +43,10 @@ public class WaitingRepositoryImpl implements WaitingRepository {
 
     @Override
     public List<Waiting> getByMemberId(Long memberId) {
-        return null;
+        return jdbcTemplate.query(
+                connection -> statementCreator.createSelectByMemberId(connection, memberId),
+                resultSetParser::parseWaitings
+        );
     }
 
     @Override
