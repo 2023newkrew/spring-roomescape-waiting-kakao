@@ -32,6 +32,13 @@ public class ReservationWaitingController {
         return ResponseEntity.ok().body(results);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity cancelReservationWaiting(@LoginMember Member member, @PathVariable Long id) {
+        reservationWaitingService.cancelById(member, id);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         return ResponseEntity.badRequest().build();

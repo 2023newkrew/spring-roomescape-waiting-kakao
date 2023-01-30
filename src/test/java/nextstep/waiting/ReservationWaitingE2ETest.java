@@ -97,6 +97,35 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     }
 
+    @DisplayName("내 예약 대기를 취소한다")
+    @Test
+    void cancel() {
+        var reservation = createReservationWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().put(reservation.header("Location"))
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("다른 사람이 예약 대기를 취소한다")
+    @Test
+    void deleteReservationOfOthers() {
+        createReservationWaiting();
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2("other-token")
+                .when().put("/reservation-waitings/1")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
     private ExtractableResponse<Response> createReservationWaiting() {
         return RestAssured
                 .given().log().all()

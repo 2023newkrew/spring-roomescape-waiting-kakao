@@ -70,4 +70,18 @@ public class ReservationWaitingService {
             return Collections.emptyList();
         }
     }
+
+    public void cancelById(Member member, Long id) {
+        ReservationWaitingStatus status =  ReservationWaitingStatus.CANCELED;
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
+        if (reservationWaiting == null) {
+            throw new NullPointerException();
+        }
+
+        if (!reservationWaiting.sameMember(member)) {
+            throw new AuthenticationException();
+        }
+
+        reservationWaitingDao.updateStatusById(id, status);
+    }
 }
