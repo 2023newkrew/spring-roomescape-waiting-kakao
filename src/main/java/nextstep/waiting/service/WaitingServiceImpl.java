@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -63,7 +64,19 @@ public class WaitingServiceImpl implements WaitingService {
 
     @Transactional
     @Override
-    public boolean deleteById(Long MemberId, Long id) {
-        return false;
+    public boolean deleteById(Long memberId, Long id) {
+        Waiting waiting = repository.getById(id);
+        validateWaiting(waiting, memberId);
+
+        return repository.deleteById(id);
+    }
+
+    private void validateWaiting(Waiting waiting, Long memberId) {
+        if (Objects.isNull(waiting)) {
+            throw new WaitingException(ErrorMessage.WAITING_NOT_EXISTS);
+        }
+        if (!memberId.equals(waiting.getMemberId())) {
+            throw new WaitingException(ErrorMessage.NOT_WAITING_OWNER);
+        }
     }
 }

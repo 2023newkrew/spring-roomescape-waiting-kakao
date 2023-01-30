@@ -1,12 +1,14 @@
 package controller;
 
 import auth.domain.TokenData;
+import io.restassured.specification.RequestSpecification;
 import nextstep.etc.exception.ErrorMessage;
 import nextstep.member.dto.MemberRequest;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.theme.dto.ThemeRequest;
 import nextstep.waiting.dto.WaitingRequest;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
 
@@ -43,10 +45,15 @@ public class WaitingControllerTest extends AbstractControllerTest {
 
     private void createReservation() {
         var request = new ReservationRequest(1L);
-        var given = given()
+        post(authGivenAnother(), "/reservations", request);
+    }
+
+    private RequestSpecification authGivenAnother() {
+        String anotherToken = provider.createToken(new TokenData(2L, "ADMIN"));
+
+        return given()
                 .auth()
-                .oauth2(provider.createToken(new TokenData(2L, "ADMIN")));
-        post(given, "/reservations", request);
+                .oauth2(anotherToken);
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -110,34 +117,44 @@ public class WaitingControllerTest extends AbstractControllerTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class getById {
+    class delete {
+        @DisplayName("자신의 예약 대기 취소")
+        @Test
+        void should_deleteWaiting_when_mine() {
+            var request = createRequest(1L);
 
-        //        @DisplayName("멤버 조회 성공")
-        //        @Test
-        //        void should_returnMember_when_memberExists() {
-        //            var request = createRequest();
-        //            post(WaitingControllerTest.this.given(), DEFAULT_PATH, request);
-        //
-        //            var response = get(WaitingControllerTest.this.given(), DEFAULT_PATH + "/1");
-        //
-        //            then(response)
-        //                    .statusCode(HttpStatus.OK.value())
-        //                    .body("id", equalTo(1))
-        //                    .body("username", equalTo(request.getUsername()))
-        //                    .body("password", equalTo(request.getPassword()))
-        //                    .body("name", equalTo(request.getName()))
-        //                    .body("phone", equalTo(request.getPhone()))
-        //                    .body("role", equalTo("NORMAL"));
-        //        }
-        //
-        //        @DisplayName("멤버가 없을 경우 빈 body 반환")
-        //        @Test
-        //        void should_returnNull_when_memberNotExists() {
-        //            var response = get(WaitingControllerTest.this.given(), DEFAULT_PATH + "/1");
-        //
-        //            then(response)
-        //                    .statusCode(HttpStatus.OK.value())
-        //                    .content(emptyString());
-        //        }
+            post(authGiven(), DEFAULT_PATH, request);
+            var response = delete(authGiven(), deletePath(1L));
+
+            var result = response.as(Boolean.class);
+            then(response).statusCode(HttpStatus.OK.value());
+            Assertions.assertThat(result).isTrue();
+        }
+
+        String deletePath(Long id) {
+            return DEFAULT_PATH + "/" + id;
+        }
+
+        @DisplayName("자신의 예약 대기가 아닌경우 예외 발생")
+        @Test
+        void should_throwException_when_not_mine() {
+            var expectedException = ErrorMessage.NOT_WAITING_OWNER;
+            var request = createRequest(1L);
+
+            post(authGiven(), DEFAULT_PATH, request);
+            var response = delete(authGivenAnother(), deletePath(1L));
+
+            thenThrow(response, expectedException);
+        }
+
+        @DisplayName("예약 대기가 없는 경우 예외 발생")
+        @Test
+        void should_throwException_when_waitingNotExists() {
+            var expectedException = ErrorMessage.WAITING_NOT_EXISTS;
+
+            var response = delete(authGiven(), deletePath(1L));
+
+            thenThrow(response, expectedException);
+        }
     }
 }
