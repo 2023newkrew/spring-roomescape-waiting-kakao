@@ -7,19 +7,20 @@ public class Waiting {
     private Long id;
     private Schedule schedule;
     private Member member;
+    private Long waitNum;
 
     public Waiting() {
     }
 
     public Waiting(Schedule schedule, Member member) {
-        this.schedule = schedule;
-        this.member = member;
+        this(null, schedule, member, null);
     }
 
-    public Waiting(Long id, Schedule schedule, Member member) {
+    public Waiting(Long id, Schedule schedule, Member member, Long waitNum) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+        this.waitNum = waitNum;
     }
 
     public Long getId() {
@@ -32,6 +33,10 @@ public class Waiting {
 
     public Member getMember() {
         return member;
+    }
+
+    public Long getWaitNum() {
+        return waitNum;
     }
 
     public void setId(Long id) {

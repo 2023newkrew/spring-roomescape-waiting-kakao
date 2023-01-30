@@ -10,6 +10,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class WaitingDao {
@@ -40,7 +42,8 @@ public class WaitingDao {
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
-            )
+            ),
+            resultSet.getLong("wait_num")
     );
 
     public Waiting save(Waiting waiting) {
@@ -57,5 +60,25 @@ public class WaitingDao {
 
         waiting.setId(keyHolder.getKey().longValue());
         return waiting;
+    }
+
+    public List<Waiting> findAllByMemberId(Long id) {
+        String sql = "SELECT " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role, " +
+                "(SELECT count(*) FROM waiting WHERE waiting.schedule_id = schedule.id) as wait_num " +
+                "from waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on waiting.member_id = member.id " +
+                "where member.id = ?;";
+
+        try {
+            return jdbcTemplate.query(sql, rowMapper, id);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 }

@@ -8,6 +8,7 @@ import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WaitingService {
@@ -36,5 +37,13 @@ public class WaitingService {
 
         Waiting savedWaiting = waitingDao.save(new Waiting(schedule, member));
         return CreateWaitingResponse.fromWaiting(savedWaiting);
+    }
+
+    public List<MyWaitingResponse> findAllWaitingsByMemberId(Long id) {
+        List<Waiting> myWaitings = waitingDao.findAllByMemberId(id);
+
+        return myWaitings.stream()
+                .map(MyWaitingResponse::from)
+                .collect(Collectors.toList());
     }
 }
