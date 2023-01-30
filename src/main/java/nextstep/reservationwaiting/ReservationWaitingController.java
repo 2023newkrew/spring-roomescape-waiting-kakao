@@ -20,12 +20,12 @@ public class ReservationWaitingController {
         this.memberService = memberService;
     }
 
-//    @PostMapping("/reservation-waitings")
-//    public ResponseEntity createReservationWaiting(@LoginMember Long memberId, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
-//        Long id = reservationWaitingService.create(memberId, reservationWaitingRequest);
-//        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
-//    }
-//
+    @PostMapping("/reservation-waitings")
+    public ResponseEntity createReservationWaiting(@LoginMember Long memberId, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
+        Long id = reservationWaitingService.create(memberId, reservationWaitingRequest);
+        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
+    }
+
 //    @GetMapping("/reservation-waitings/mine")
 //    public ResponseEntity readReservationWaitings(@LoginMember Long memberId) {
 //        List<ReservationWaiting> results = reservationWaitingService.findAllByMemberId(memberId);
@@ -37,14 +37,14 @@ public class ReservationWaitingController {
 //        reservationWaitingService.deleteById(memberService.findById(memberId), id);
 //        return ResponseEntity.noContent().build();
 //    }
-//
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity onException(Exception e) {
-//        return ResponseEntity.badRequest().build();
-//    }
-//
-//    @ExceptionHandler(AuthenticationException.class)
-//    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity onException(Exception e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity onAuthenticationException(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }

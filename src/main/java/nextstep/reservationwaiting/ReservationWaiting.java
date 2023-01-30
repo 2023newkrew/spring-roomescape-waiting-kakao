@@ -7,22 +7,23 @@ import java.util.Objects;
 
 public class ReservationWaiting {
     private Long id;
-    private Schedule schedule;
-    private Member member;
+    private Long scheduleId;
+    private Long memberId;
     private int waitNum;
 
     public ReservationWaiting() {
     }
 
-    public ReservationWaiting(Schedule schedule, Member member) {
-        this.schedule = schedule;
-        this.member = member;
+    public ReservationWaiting(Long scheduleId, Long memberId, int waitNum) {
+        this.scheduleId = scheduleId;
+        this.memberId = memberId;
+        this.waitNum = waitNum;
     }
 
-    public ReservationWaiting(Long id, Schedule schedule, Member member, int waitNum) {
+    public ReservationWaiting(Long id, Long scheduleId, Long memberId, int waitNum) {
         this.id = id;
-        this.schedule = schedule;
-        this.member = member;
+        this.scheduleId = scheduleId;
+        this.memberId = memberId;
         this.waitNum= waitNum;
     }
 
@@ -30,12 +31,12 @@ public class ReservationWaiting {
         return id;
     }
 
-    public Schedule getSchedule() {
-        return schedule;
+    public Long getScheduleId() {
+        return scheduleId;
     }
 
-    public Member getMember() {
-        return member;
+    public Long getMemberId() {
+        return memberId;
     }
 
     public int getWaitNum() {
@@ -43,6 +44,6 @@ public class ReservationWaiting {
     }
 
     public boolean sameMember(Member member) {
-        return member != null && Objects.equals(this.member.getId(), member.getId());
+        return member != null && Objects.equals(this.memberId, member.getId());
     }
 }

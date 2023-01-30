@@ -3,6 +3,7 @@ package nextstep.reservationwaiting;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -23,29 +24,38 @@ public class ReservationWaitingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-//    private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
-//            resultSet.getLong("reservation.id"),
-//            new Schedule(
-//                    resultSet.getLong("schedule.id"),
-//                    new Theme(
-//                            resultSet.getLong("theme.id"),
-//                            resultSet.getString("theme.name"),
-//                            resultSet.getString("theme.desc"),
-//                            resultSet.getInt("theme.price")
-//                    ),
-//                    resultSet.getDate("schedule.date").toLocalDate(),
-//                    resultSet.getTime("schedule.time").toLocalTime()
-//            ),
-//            new Member(
-//                    resultSet.getLong("member.id"),
-//                    resultSet.getString("member.username"),
-//                    resultSet.getString("member.password"),
-//                    resultSet.getString("member.name"),
-//                    resultSet.getString("member.phone"),
-//                    resultSet.getString("member.role")
-//            )
-//    );
-//
+    private final RowMapper<ReservationWaiting> rowMapper = (resultSet, rowNum) -> new ReservationWaiting(
+            resultSet.getLong("id"),
+            resultSet.getLong("schedule_id"),
+            resultSet.getLong("member_id"),
+            resultSet.getInt("wait_num")
+    );
+
+    public Integer getWaitNumByScheduleId(Long id) {
+        String sql = "SELECT wait_num FROM RESERVATION_WAITING WHERE schedule_id = ? ORDER BY schedule_id DESC LIMIT 1;";
+        try{
+            return jdbcTemplate.queryForObject(sql, Integer.class, id);
+        } catch (Exception e){
+            return 0;
+        }
+    }
+
+    public Long save(ReservationWaiting reservationWaiting) {
+        String sql = "INSERT INTO RESERVATION_WAITING (schedule_id, member_id, wait_num) VALUES (?, ?, ?);";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setLong(1, reservationWaiting.getScheduleId());
+            ps.setLong(2, reservationWaiting.getMemberId());
+            ps.setInt(3, reservationWaiting.getWaitNum());
+            return ps;
+
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
+    }
+
 //    public Long save(Reservation reservation) {
 //        String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
 //        KeyHolder keyHolder = new GeneratedKeyHolder();
