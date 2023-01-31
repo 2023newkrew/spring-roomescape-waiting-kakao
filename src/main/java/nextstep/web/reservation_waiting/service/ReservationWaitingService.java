@@ -38,7 +38,11 @@ public class ReservationWaitingService {
             return RESERVATIONS_PATH + reservationDao.save(reservation);
         }
 
-        Integer waitNum = getNextWaitNum(reservationWaitingDao.findAllByScheduleIdOrderByDesc(scheduleId));
+        return saveReservationWaiting(schedule, member);
+    }
+    
+    private String saveReservationWaiting(Schedule schedule, Member member) {
+        Integer waitNum = getNextWaitNum(reservationWaitingDao.findAllByScheduleIdOrderByDesc(schedule.getId()));
         ReservationWaiting reservationWaiting = new ReservationWaiting(schedule, member, waitNum);
         return RESERVATION_WAITINGS_PATH + reservationWaitingDao.save(reservationWaiting);
     }
