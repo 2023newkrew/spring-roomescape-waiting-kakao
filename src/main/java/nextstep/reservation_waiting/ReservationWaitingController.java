@@ -9,10 +9,7 @@ import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationRequest;
 import nextstep.reservation.ReservationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.Optional;
@@ -38,6 +35,17 @@ public class ReservationWaitingController {
         reservationService.validateByMember(reservation, member);
         Long reservationWaitingId = reservationWaitingService.create(reservation, member);
         return ResponseEntity.created(URI.create("/reservation-waitings/" + reservationWaitingId))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+        Member member = memberService.findById(userDetails.getId());
+        ReservationWaiting reservationWaiting = reservationWaitingService.findById(id);
+        reservationWaitingService.validateOwner(reservationWaiting, member);
+        reservationWaitingService.delete(id);
+
+        return ResponseEntity.noContent()
                 .build();
     }
 }

@@ -3,6 +3,7 @@ package nextstep.reservation_waiting;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.support.exception.DuplicateEntityException;
+import nextstep.support.exception.NotOwnReservationWaitingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,8 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -49,5 +49,29 @@ class ReservationWaitingServiceTest {
                 .build();
         when(reservationWaitingDao.findByMemberId(anyLong())).thenReturn(Optional.of(reservationWaiting));
         assertThatThrownBy(() -> reservationWaitingService.create(reservation, member)).isInstanceOf(DuplicateEntityException.class);
+    }
+
+    @Test
+    @DisplayName("자신의 예약대기를 취소한다.")
+    void deleteTest() {
+        ReservationWaiting reservationWaiting = ReservationWaiting.builder()
+                .build();
+        when(reservationWaitingDao.findById(anyLong())).thenReturn(Optional.ofNullable(reservationWaiting));
+        assertThatCode(() -> reservationWaitingService.delete(1L)).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("자신의 예약대기가 아닌 경우 NotOwnReservationWaitingException이 발생힌다")
+    void validateOwnerTest() {
+        Member owner = Member.builder()
+                .id(1L)
+                .build();
+        Member other = Member.builder()
+                .id(2L)
+                .build();
+        ReservationWaiting reservationWaiting = ReservationWaiting.builder()
+                .member(owner)
+                .build();
+        assertThatThrownBy(() -> reservationWaitingService.validateOwner(reservationWaiting, other)).isInstanceOf(NotOwnReservationWaitingException.class);
     }
 }

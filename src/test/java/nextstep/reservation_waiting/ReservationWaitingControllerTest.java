@@ -43,14 +43,16 @@ class ReservationWaitingControllerTest {
     @DisplayName("예약 대기 성공 테스트")
     void createTest() {
         ReservationWaitingRequest reservationWaitingRequest = new ReservationWaitingRequest(1L);
-        Reservation reservation = Reservation.builder().id(1L)
-                .build();
-        Member member = Member.builder().id(1L)
-                .build();
-        UserDetails userDetails = UserDetails.builder()
+        Reservation reservation = Reservation.builder()
                 .id(1L)
                 .build();
-        when(loginService.extractMember(anyString())).thenReturn(userDetails);
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+
+        when(loginService.extractMember(anyString())).thenReturn(UserDetails.builder()
+                .id(1L)
+                .build());
         when(memberService.findById(anyLong())).thenReturn(member);
         when(reservationService.findByScheduleId(anyLong())).thenReturn(Optional.ofNullable(reservation));
         when(reservationWaitingService.create(any(Reservation.class), any(Member.class))).thenReturn(1L);
@@ -69,5 +71,26 @@ class ReservationWaitingControllerTest {
                 .all()
                 .statusCode(HttpStatus.CREATED.value())
                 .header("Location", "/reservation-waitings/1");
+    }
+
+    @Test
+    @DisplayName("에약 대기 삭제 테스트")
+    void deleteTest() {
+        when(loginService.extractMember(anyString())).thenReturn(UserDetails.builder()
+                .id(1L)
+                .build());
+
+        RestAssured
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2("token")
+                .when()
+                .delete("/reservation-waitings/1")
+                .then()
+                .log()
+                .all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 }
