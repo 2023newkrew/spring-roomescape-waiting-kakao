@@ -211,17 +211,17 @@ class ReservationE2ETest extends AbstractE2ETest {
         createReservation();
         given().
                 auth().oauth2(token.getAccessToken()).
-                when().
+        when().
                 patch("/reservations/1/approve").
-                then().
+        then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
         given().
                 auth().oauth2(token.getAccessToken()).
-                when().
+        when().
                 patch("/reservations/1/approve").
-                then().
+        then().
                 assertThat().
                 statusCode(HttpStatus.BAD_REQUEST.value());
     }

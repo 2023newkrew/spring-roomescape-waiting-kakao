@@ -138,8 +138,8 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public void approveById(Long id) {
-        String sql = "UPDATE reservation SET status = 'approved' where id = ?";
-        jdbcTemplate.update(sql, id);
+    public void updateStatusById(Long id, String status) {
+        String sql = "UPDATE reservation SET status = ? where id = ?";
+        jdbcTemplate.update(sql, status, id);
     }
 }

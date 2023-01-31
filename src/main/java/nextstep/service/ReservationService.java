@@ -16,7 +16,6 @@ import nextstep.repository.ThemeDao;
 import nextstep.support.exception.api.*;
 import nextstep.worker.ReservationApproveEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,7 @@ import static nextstep.domain.enumeration.ReservationStatus.*;
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
-    private static final Boolean APPROVED = true;
+    private static final String ADMIN = "ADMIN";
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
@@ -91,8 +90,32 @@ public class ReservationService {
         if (!reservationDao.findById(id).getStatus().equals(NOT_APPROVED)) {
             throw new IllegalApproveException();
         }
-        reservationDao.approveById(id);
-        eventPublisher.publishEvent(new ReservationApproveEvent(APPROVED));
+
+        reservationDao.updateStatusById(id, APPROVED.getStatus());
+        eventPublisher.publishEvent(new ReservationApproveEvent(true));
     }
 
+    public void cancelById(UserDetails userDetails, Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new NoSuchReservationException();
+        }
+
+        if (!isAdmin(userDetails) && !reservation.sameMember(new Member(userDetails))) {
+            throw new NotReservationOwnerException();
+        }
+
+        switch (reservation.getStatus()) {
+            case NOT_APPROVED:
+                reservationDao.updateStatusById(id, CANCELED.getStatus());
+            case APPROVED:
+                reservationDao.updateStatusById(id, WAIT_CANCEL.getStatus());
+            default:
+                throw new IllegalCancelException();
+        }
+    }
+
+    private boolean isAdmin(UserDetails userDetails) {
+        return userDetails.getRole().equals(ADMIN);
+    }
 }
