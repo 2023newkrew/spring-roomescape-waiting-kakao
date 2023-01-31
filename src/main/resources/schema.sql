@@ -46,8 +46,8 @@ CREATE TABLE member
 
 CREATE TABLE profit
 (
-    id       bigint  not null auto_increment,
-    date     date    not null,
-    amount   int     not null,
+    id               bigint    not null auto_increment,
+    occurrence_date  datetime  not null,
+    amount           int       not null,
     primary key (id)
 );

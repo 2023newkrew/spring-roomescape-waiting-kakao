@@ -11,7 +11,7 @@ import java.sql.PreparedStatement;
 
 @Component
 public class MemberDao {
-    public final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

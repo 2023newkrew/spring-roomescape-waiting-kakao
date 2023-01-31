@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class WaitingDao {
-    public final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Waiting> rowMapper = (resultSet, rowNum) -> new Waiting(
             resultSet.getLong("waiting.id"),

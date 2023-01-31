@@ -2,17 +2,20 @@ package nextstep.service;
 
 import auth.domain.persist.UserDetails;
 import auth.support.AuthorizationException;
+import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
 import nextstep.domain.persist.Member;
 import nextstep.domain.persist.Reservation;
 import nextstep.domain.persist.Schedule;
 import nextstep.domain.persist.Theme;
-import nextstep.repository.MemberDao;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.ThemeDao;
 import nextstep.support.exception.api.*;
+import nextstep.worker.ReservationApproveEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,18 +23,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationService {
+    private static final Boolean APPROVED = true;
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
-    private final MemberDao memberDao;
-
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
-        this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
-        this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
-    }
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
@@ -88,5 +86,7 @@ public class ReservationService {
     @Transactional
     public void approveById(Long id) {
         reservationDao.approveById(id);
+        eventPublisher.publishEvent(new ReservationApproveEvent(APPROVED));
     }
+
 }
