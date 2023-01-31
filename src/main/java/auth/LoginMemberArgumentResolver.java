@@ -1,4 +1,4 @@
-package nextstep.auth;
+package auth;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -8,10 +8,10 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private LoginService loginService;
+    private final UserDetailsService userDetailsService;
 
-    public LoginMemberArgumentResolver(LoginService loginService) {
-        this.loginService = loginService;
+    public LoginMemberArgumentResolver(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         try {
             String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
-            return loginService.extractMember(credential);
+            return userDetailsService.extractMember(credential);
         } catch (Exception e) {
             return null;
         }

@@ -1,4 +1,4 @@
-package nextstep.auth;
+package auth;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LoginController {
-    private LoginService loginService;
+    private final UserDetailsService userDetailsService;
 
-    public LoginController(LoginService loginService) {
-        this.loginService = loginService;
+    public LoginController(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/login/token")
     public ResponseEntity<TokenResponse> loginToken(@RequestBody TokenRequest tokenRequest) {
-        TokenResponse token = loginService.createToken(tokenRequest);
+        TokenResponse token = userDetailsService.createToken(tokenRequest);
         return ResponseEntity.ok(token);
     }
 }

@@ -1,4 +1,4 @@
-package nextstep.auth;
+package auth;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 public class AdminInterceptor implements HandlerInterceptor {
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public AdminInterceptor(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
