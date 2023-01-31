@@ -51,7 +51,7 @@ public class ReservationWaitingService {
             reservationDao.save(new Reservation(schedule, member));
         } catch (DuplicateKeyException e) {
             // 예약이 이미 존재할 때
-            System.out.println("예약이 이미 존재하여 예약 대기열로 이동합니다.");
+            System.out.println("예약이 이미 존재합니다. 예약 대기 상태로 등록합니다.");
             return false;
         }
         return true;
