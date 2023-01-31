@@ -1,4 +1,4 @@
-package auth;
+package auth.jwt;
 
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;

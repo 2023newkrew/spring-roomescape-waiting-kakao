@@ -1,4 +1,4 @@
-package auth;
+package auth.jwt;
 
 import java.util.Optional;
 

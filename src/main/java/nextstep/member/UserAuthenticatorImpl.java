@@ -1,11 +1,12 @@
 package nextstep.member;
 
-import auth.AuthenticationException;
 import auth.UserAuthenticator;
-import auth.UserDetails;
+import auth.entity.UserDetails;
 import lombok.RequiredArgsConstructor;
-import nextstep.support.DoesNotExistEntityException;
+import nextstep.exception.MemberException;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -13,26 +14,26 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     private final MemberService memberService;
 
     @Override
-    public UserDetails authenticate(String username, String password) {
+    public Optional<UserDetails> authenticate(String username, String password) {
         Member member;
         try {
             member = memberService.findByUsernameAndPassword(username, password);
-        } catch (DoesNotExistEntityException e) {
-            throw new AuthenticationException();
+        } catch (MemberException e) {
+            return Optional.empty();
         }
 
-        return new UserDetails(member.getId(), member.getRole().name());
+        return Optional.of(new UserDetails(member.getId(), member.getRole().name()));
     }
 
     @Override
-    public String getRole(Long id) {
+    public Optional<String> getRole(Long id) {
         Member member;
         try {
             member = memberService.findById(id);
-        } catch (DoesNotExistEntityException e) {
-            throw new AuthenticationException();
+        } catch (MemberException e) {
+            return Optional.empty();
         }
 
-        return member.getRole().name();
+        return Optional.of(member.getRole().name());
     }
 }

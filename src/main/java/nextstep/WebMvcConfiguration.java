@@ -1,6 +1,13 @@
 package nextstep;
 
-import auth.*;
+import auth.UserAuthenticator;
+import auth.argumentResolver.LoginMemberArgumentResolver;
+import auth.controller.LoginController;
+import auth.interceptor.AdminInterceptor;
+import auth.interceptor.LoginInterceptor;
+import auth.jwt.JwtTokenProvider;
+import auth.jwt.TokenExtractor;
+import auth.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.MemberService;
 import nextstep.member.UserAuthenticatorImpl;
@@ -56,6 +63,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new LoginMemberArgumentResolver(loginService()));
+        argumentResolvers.add(new LoginMemberArgumentResolver(loginService(), tokenExtractor()));
     }
 }

@@ -1,5 +1,8 @@
-package auth;
+package auth.controller;
 
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
+import auth.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

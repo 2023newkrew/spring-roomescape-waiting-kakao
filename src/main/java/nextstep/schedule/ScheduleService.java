@@ -1,7 +1,8 @@
 package nextstep.schedule;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.support.DoesNotExistEntityException;
+import nextstep.exception.RoomEscapeExceptionCode;
+import nextstep.exception.ThemeException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class ScheduleService {
 
     public Long create(ScheduleRequest scheduleRequest) {
         Theme theme = themeDao.findById(scheduleRequest.getThemeId())
-                .orElseThrow(DoesNotExistEntityException::new);
+                .orElseThrow(() -> new ThemeException(RoomEscapeExceptionCode.THEME_NOT_FOUND));
         return scheduleDao.save(scheduleRequest.toEntity(theme));
     }
 

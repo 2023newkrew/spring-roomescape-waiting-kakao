@@ -1,7 +1,7 @@
 package nextstep.theme;
 
-import auth.TokenRequest;
-import auth.TokenResponse;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
 import nextstep.member.MemberRequest;
@@ -60,7 +60,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
                 .body(body)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @DisplayName("테마 목록을 조회한다")

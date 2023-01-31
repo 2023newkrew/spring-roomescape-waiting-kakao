@@ -1,10 +1,7 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
-import auth.LoginMember;
+import auth.argumentResolver.LoginMember;
 import lombok.RequiredArgsConstructor;
-import nextstep.support.DuplicateEntityException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,15 +37,5 @@ public class ReservationController {
     @GetMapping("/mine")
     public ResponseEntity<List<ReservationResponse>> mine(@LoginMember Long memberId) {
         return ResponseEntity.ok(reservationService.findByMemberId(memberId));
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    @ExceptionHandler(DuplicateEntityException.class)
-    public ResponseEntity<Void> onDuplicateEntityException(DuplicateEntityException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

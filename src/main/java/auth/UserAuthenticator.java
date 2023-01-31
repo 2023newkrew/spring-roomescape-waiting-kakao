@@ -1,7 +1,11 @@
 package auth;
 
-public interface UserAuthenticator {
-    UserDetails authenticate(String username, String password);
+import auth.entity.UserDetails;
 
-    String getRole(Long id);
+import java.util.Optional;
+
+public interface UserAuthenticator {
+    Optional<UserDetails> authenticate(String username, String password);
+
+    Optional<String> getRole(Long id);
 }

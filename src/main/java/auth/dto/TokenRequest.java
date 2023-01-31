@@ -1,4 +1,4 @@
-package auth;
+package auth.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

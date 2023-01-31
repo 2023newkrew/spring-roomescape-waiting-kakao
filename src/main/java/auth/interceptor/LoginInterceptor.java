@@ -1,5 +1,10 @@
-package auth;
+package auth.interceptor;
 
+import auth.UserAuthenticator;
+import auth.exception.AuthExceptionCode;
+import auth.exception.AuthenticationException;
+import auth.jwt.JwtTokenProvider;
+import auth.jwt.TokenExtractor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -18,14 +23,20 @@ public class LoginInterceptor implements HandlerInterceptor {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         String credential = tokenExtractor.extractToken(authorizationHeader)
-                .orElseThrow(AuthenticationException::new);
+                .orElseThrow(this::throwAuthenticationException);
 
         if (!jwtTokenProvider.validateToken(credential)) {
-            throw new AuthenticationException();
+            throw throwAuthenticationException();
         }
 
         String id = jwtTokenProvider.getPrincipal(credential);
-        request.setAttribute("role", userAuthenticator.getRole(Long.parseLong(id)));
+        String role = userAuthenticator.getRole(Long.parseLong(id))
+                .orElseThrow(this::throwAuthenticationException);
+        request.setAttribute("role", role);
         return true;
+    }
+
+    private AuthenticationException throwAuthenticationException() {
+        return new AuthenticationException(AuthExceptionCode.AUTHENTICATION_FAIL);
     }
 }

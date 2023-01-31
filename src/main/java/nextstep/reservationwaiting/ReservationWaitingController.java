@@ -1,11 +1,9 @@
 package nextstep.reservationwaiting;
 
-import auth.AuthenticationException;
-import auth.LoginMember;
+import auth.argumentResolver.LoginMember;
 import lombok.RequiredArgsConstructor;
+import nextstep.exception.ReservationException;
 import nextstep.reservation.ReservationService;
-import nextstep.support.DuplicateEntityException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +18,11 @@ public class ReservationWaitingController {
     private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity createReservationWaiting(@LoginMember Long memberId, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
+    public ResponseEntity<Void> createReservationWaiting(@LoginMember Long memberId, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
         Long id;
         try {
             id = reservationService.create(memberId, reservationWaitingRequest.toReservationRequest());
-        } catch (DuplicateEntityException e) {
+        } catch (ReservationException e) {
             id = reservationWaitingService.create(memberId, reservationWaitingRequest);
         }
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
@@ -36,18 +34,8 @@ public class ReservationWaitingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Long memberId, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@LoginMember Long memberId, @PathVariable Long id) {
         reservationWaitingService.deleteById(memberId, id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

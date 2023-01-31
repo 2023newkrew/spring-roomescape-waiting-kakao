@@ -1,6 +1,10 @@
-package auth;
+package auth.argumentResolver;
 
+import auth.jwt.TokenExtractor;
+import auth.service.LoginService;
 import lombok.RequiredArgsConstructor;
+import nextstep.exception.RoomEscapeException;
+import nextstep.exception.RoomEscapeExceptionCode;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -11,6 +15,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final LoginService loginService;
+    private final TokenExtractor tokenExtractor;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -19,11 +24,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        try {
-            String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
-            return loginService.extractPrincipal(credential);
-        } catch (Exception e) {
-            throw new AuthenticationException();
-        }
+        String credential = tokenExtractor.extractToken(webRequest.getHeader(HttpHeaders.AUTHORIZATION))
+                .orElseThrow(() -> new RoomEscapeException(RoomEscapeExceptionCode.UNEXPECTED_EXCEPTION));
+        return loginService.extractPrincipal(credential);
     }
 }

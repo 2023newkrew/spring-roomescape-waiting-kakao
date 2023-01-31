@@ -1,13 +1,11 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
 import lombok.RequiredArgsConstructor;
+import nextstep.exception.*;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DoesNotExistEntityException;
-import nextstep.support.DuplicateEntityException;
 import nextstep.theme.ThemeDao;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -26,21 +24,15 @@ public class ReservationService {
 
     public Long create(Long memberId, ReservationRequest reservationRequest) {
         Member member = memberDao.findById(memberId)
-                .orElseThrow(AuthenticationException::new);
+                .orElseThrow(() -> new MemberException(RoomEscapeExceptionCode.MEMBER_NOT_FOUND));
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
-                .orElseThrow(DoesNotExistEntityException::new);
+                .orElseThrow(() -> new ScheduleException(RoomEscapeExceptionCode.SCHEDULE_NOT_FOUND));
 
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        Reservation newReservation = new Reservation(schedule, member);
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
+            throw new ReservationException(RoomEscapeExceptionCode.RESERVED_SCHEDULE);
         }
 
         return reservationDao.save(newReservation);
@@ -48,7 +40,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
         themeDao.findById(themeId)
-                .orElseThrow(DoesNotExistEntityException::new);
+                .orElseThrow(() -> new ThemeException(RoomEscapeExceptionCode.THEME_NOT_FOUND));
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date)
                 .stream()
@@ -58,11 +50,11 @@ public class ReservationService {
 
     public void deleteById(Long memberId, Long id) {
         Member member = memberDao.findById(memberId)
-                .orElseThrow(AuthenticationException::new);
+                .orElseThrow(() -> new MemberException(RoomEscapeExceptionCode.MEMBER_NOT_FOUND));
         Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(DoesNotExistEntityException::new);
+                .orElseThrow(() -> new ReservationException(RoomEscapeExceptionCode.RESERVATION_NOT_FOUND));
         if (!reservation.sameMember(member)) {
-            throw new AuthenticationException();
+            throw new ReservationException(RoomEscapeExceptionCode.NOT_OWN_RESERVATION);
         }
 
         reservationDao.deleteById(id);
