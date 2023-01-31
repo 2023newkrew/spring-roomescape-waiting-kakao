@@ -21,7 +21,7 @@ public class WaitingController {
     @PostMapping
     public ResponseEntity<Void> waitReservation(@LoginMember UserDetails userDetails,
                                                 @RequestBody WaitingRequest waitingRequest) {
-        WaitingRegisterStatus waitingRegisterStatus = waitingService.waitReservation(userDetails, waitingRequest);
+        WaitingRegisterStatus waitingRegisterStatus = waitingService.waitForReservation(userDetails, waitingRequest);
         if (waitingRegisterStatus.isRegisteredAsWaiting()) {
             return ResponseEntity.created(URI.create("/reservation-waitings/" + waitingRegisterStatus.getId())).build();
         }
@@ -35,7 +35,7 @@ public class WaitingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteWaitingReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
         waitingService.deleteById(userDetails, id);
         return ResponseEntity.noContent().build();
     }

@@ -43,10 +43,8 @@ public class WaitingDao {
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
             )
-//            resultSet.getLong("waiting.waitNum")
     );
     
-
     public Waiting findById(Long id) {
         String sql = "SELECT " +
                 "waiting.id, waiting.schedule_id, waiting.member_id, " +
@@ -110,7 +108,8 @@ public class WaitingDao {
                 "FROM waiting " +
                 "where waiting.id < ? and waiting.schedule_id = ?";
 
-        return jdbcTemplate.queryForObject(sql, Long.class, waiting.getId(), waiting.getSchedule().getId());
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, waiting.getId(), waiting.getSchedule().getId());
+        return count + 1;
     }
 
     public List<Waiting> findByScheduleId(Long scheduleId) {

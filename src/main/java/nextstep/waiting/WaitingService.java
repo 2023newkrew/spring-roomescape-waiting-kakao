@@ -8,11 +8,14 @@ import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.support.NoEntityException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class WaitingService {
 
     private final MemberDao memberDao;
@@ -27,18 +30,15 @@ public class WaitingService {
         this.waitingDao = waitingDao;
     }
 
-    public WaitingRegisterStatus waitReservation(UserDetails userDetails, WaitingRequest waitingRequest) {
-        Member member = memberDao.findById(userDetails.getId());
-        if (member == null) {
-            throw new AuthenticationException();
-        }
+    public WaitingRegisterStatus waitForReservation(UserDetails userDetails, WaitingRequest waitingRequest) {
+        Member member = findMember(userDetails);
 
         Schedule schedule = scheduleDao.findById(waitingRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new NoEntityException();
         }
 
-        List<Reservation> reservations = reservationDao.findByMemberIdAndScheduleId(member.getId(), schedule.getId());
+        List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
         if (reservations.isEmpty()) {
             Long reservationId = reservationDao.save(new Reservation(schedule, member));
             return WaitingRegisterStatus.ofReservation(reservationId);
@@ -48,11 +48,16 @@ public class WaitingService {
         return WaitingRegisterStatus.ofWaiting(waitingId);
     }
 
-    public List<WaitingResponse> getWaiting(UserDetails userDetails) {
+    private Member findMember(UserDetails userDetails) {
         Member member = memberDao.findById(userDetails.getId());
         if (member == null) {
             throw new AuthenticationException();
         }
+        return member;
+    }
+
+    public List<WaitingResponse> getWaiting(UserDetails userDetails) {
+        Member member = findMember(userDetails);
 
         List<Waiting> myWaitings = waitingDao.findByMemberId(member.getId());
 
@@ -65,14 +70,11 @@ public class WaitingService {
     }
 
     public void deleteById(UserDetails userDetails, Long id) {
-        Member member = memberDao.findById(userDetails.getId());
-        if (member == null) {
-            throw new AuthenticationException();
-        }
+        Member member = findMember(userDetails);
 
         Waiting waiting = waitingDao.findById(id);
         if (waiting == null){
-            throw new NullPointerException();
+            throw new NoEntityException();
         }
 
         if (!waiting.sameMember(member)) {
