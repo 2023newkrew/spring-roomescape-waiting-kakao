@@ -73,10 +73,7 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(UserDetails userDetails, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NoSuchReservationException();
-        }
+        Reservation reservation = findById(id);
 
         if (!reservation.sameMember(new Member(userDetails))) {
             throw new NotReservationOwnerException();
@@ -87,7 +84,9 @@ public class ReservationService {
 
     @Transactional
     public void approveById(Long id) {
-        if (!isStatusEquals(reservationDao.findById(id), NOT_APPROVED)) {
+        Reservation reservation = findById(id);
+
+        if (!statusEquals(reservation, NOT_APPROVED)) {
             throw new IllegalApproveException();
         }
 
@@ -96,11 +95,7 @@ public class ReservationService {
     }
 
     public void cancelById(UserDetails userDetails, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-
-        if (reservation == null) {
-            throw new NoSuchReservationException();
-        }
+        Reservation reservation = findById(id);
 
         if (!isAdmin(userDetails) && !reservation.sameMember(new Member(userDetails))) {
             throw new NotReservationOwnerException();
@@ -123,20 +118,36 @@ public class ReservationService {
     }
 
     public void rejectById(Long id) {
-        Reservation reservation = reservationDao.findById(id);
+        Reservation reservation = findById(id);
 
-        if (reservation == null) {
-            throw new NoSuchReservationException();
-        }
-
-        if (isStatusEquals(reservation, APPROVED)) {
+        if (statusEquals(reservation, APPROVED)) {
             eventPublisher.publishEvent(new ReservationApproveEvent(false));
         }
 
         reservationDao.updateStatusById(id, REJECTED.getStatus());
     }
 
-    private boolean isStatusEquals(Reservation reservation, ReservationStatus status) {
+    public void approveCancelById(Long id) {
+        Reservation reservation = findById(id);
+
+        if (!statusEquals(reservation, WAIT_CANCEL)) {
+            throw new IllegalCancelException();
+        }
+
+        reservationDao.updateStatusById(id, CANCELED.getStatus());
+        eventPublisher.publishEvent(new ReservationApproveEvent(false));
+    }
+
+    private Reservation findById(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+
+        if (reservation == null) {
+            throw new NoSuchReservationException();
+        }
+        return reservation;
+    }
+
+    private boolean statusEquals(Reservation reservation, ReservationStatus status) {
         return reservation.getStatus().equals(status);
     }
 }

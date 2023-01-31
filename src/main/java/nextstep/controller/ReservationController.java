@@ -3,6 +3,7 @@ package nextstep.controller;
 import auth.domain.persist.UserDetails;
 import auth.domain.annotation.LoginMember;
 import auth.domain.annotation.Secured;
+import lombok.Getter;
 import lombok.extern.java.Log;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
@@ -68,6 +69,14 @@ public class ReservationController {
     @PatchMapping("/{id}/reject")
     public ResponseEntity rejectReservation(@PathVariable Long id) {
         reservationService.rejectById(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Secured(role = Roles.ADMIN)
+    @GetMapping("/{id}/cancel-approve")
+    public ResponseEntity approveCancelReservation(@PathVariable Long id) {
+        reservationService.approveCancelById(id);
 
         return ResponseEntity.ok().build();
     }
