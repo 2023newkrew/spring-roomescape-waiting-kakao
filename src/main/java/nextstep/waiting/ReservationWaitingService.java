@@ -7,10 +7,12 @@ import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.NotExistEntityException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ReservationWaitingService {
     private final ReservationWaitingDao reservationWaitingDao;
     private final ScheduleDao scheduleDao;
@@ -27,7 +29,7 @@ public class ReservationWaitingService {
         Member member = memberDao.findById(memberId)
                 .orElseThrow(NotExistEntityException::new);
 
-        Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId())
+        Schedule schedule = scheduleDao.findAndIncreaseWaitNum(reservationWaitingRequest.getScheduleId())
                 .orElseThrow(NotExistEntityException::new);
 
         ReservationWaiting reservationWaiting = new ReservationWaiting(
@@ -35,8 +37,6 @@ public class ReservationWaitingService {
                 member
         );
 
-        schedule.increaseWaitingNumber();
-        scheduleDao.updateWaitNum(schedule);
         return reservationWaitingDao.save(reservationWaiting);
     }
 

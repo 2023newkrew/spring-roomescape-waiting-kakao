@@ -50,7 +50,4 @@ public class Schedule {
         return nextWaitingNumber;
     }
 
-    public void increaseWaitingNumber() {
-        nextWaitingNumber++;
-    }
 }

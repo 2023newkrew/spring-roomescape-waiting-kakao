@@ -3,10 +3,12 @@ package nextstep.schedule;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ScheduleService {
     private ScheduleDao scheduleDao;
     private ThemeDao themeDao;

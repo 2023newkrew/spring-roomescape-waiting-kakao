@@ -53,17 +53,17 @@ public class ScheduleDao {
         return keyHolder.getKey().longValue();
     }
 
-    public boolean updateWaitNum(Schedule schedule) {
-        String sql = "UPDATE schedule SET next_wait_num=? WHERE id=?;";
+    public Optional<Schedule> findAndIncreaseWaitNum(Long id) {
+        Optional<Schedule> schedule = findById(id);
 
-        int updateCount = jdbcTemplate.update(connection -> {
+        String sql = "UPDATE schedule SET next_wait_num = next_wait_num + 1 WHERE id=?;";
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, schedule.getNextWaitingNumber());
-            ps.setLong(2, schedule.getId());
+            ps.setLong(1, id);
             return ps;
         });
 
-        return updateCount > 0;
+        return schedule;
     }
 
     public Optional<Schedule> findById(Long id) {

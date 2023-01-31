@@ -2,8 +2,10 @@ package nextstep.member;
 
 import nextstep.support.NotExistEntityException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class MemberService {
     private MemberDao memberDao;
 
