@@ -1,9 +1,6 @@
 package nextstep.config;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.repository.ProfitDao;
-import nextstep.worker.AsyncReservationApproveEventHandler;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -16,13 +13,18 @@ import java.util.concurrent.Executor;
 @RequiredArgsConstructor
 public class AsyncConfig extends AsyncConfigurerSupport {
     private static final int MINUTE = 60;
+    private static final int MAX_CORE_POOL_SIZE = 5;
+    private static final int MAX_POOL_SIZE = 10;
+    private static final int QUEUE_CAPACITY = 20;
+    private static final String THREAD_NAME_PREFIX = "[PROFIT ASYNC] - ";
+
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(20);
-        executor.setThreadNamePrefix("PROFIT-ASYNC-");
+        executor.setCorePoolSize(MAX_CORE_POOL_SIZE);
+        executor.setMaxPoolSize(MAX_POOL_SIZE);
+        executor.setQueueCapacity(QUEUE_CAPACITY);
+        executor.setThreadNamePrefix(THREAD_NAME_PREFIX);
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(MINUTE);
         executor.initialize();

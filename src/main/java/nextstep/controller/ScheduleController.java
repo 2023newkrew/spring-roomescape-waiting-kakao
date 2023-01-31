@@ -1,7 +1,8 @@
 package nextstep.controller;
 
-import nextstep.domain.persist.Schedule;
+import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.ScheduleRequest;
+import nextstep.domain.persist.Schedule;
 import nextstep.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,12 +11,9 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ScheduleController {
-    private ScheduleService scheduleService;
-
-    public ScheduleController(ScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
-    }
+    private final ScheduleService scheduleService;
 
     @PostMapping("/admin/schedules")
     public ResponseEntity createSchedule(@RequestBody ScheduleRequest scheduleRequest) {

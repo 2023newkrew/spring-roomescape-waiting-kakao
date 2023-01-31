@@ -1,9 +1,9 @@
 package nextstep.config;
 
-import auth.support.interceptor.AdminInterceptor;
+import auth.service.LoginService;
 import auth.support.JwtTokenProvider;
 import auth.support.LoginMemberArgumentResolver;
-import auth.service.LoginService;
+import auth.support.interceptor.AdminInterceptor;
 import auth.support.interceptor.CommonInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

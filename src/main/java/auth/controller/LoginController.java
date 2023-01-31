@@ -6,13 +6,19 @@ import auth.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import org.springframework.web.bind.annotation.*;
 =======
+=======
+>>>>>>> a20bcac (refactor: 전반적인 코드 리팩토링)
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+<<<<<<< HEAD
 >>>>>>> 72c4f92 (refactor: ConfigurationProperties 사용)
+=======
+>>>>>>> a20bcac (refactor: 전반적인 코드 리팩토링)
 
 @RestController
 @RequestMapping("/login")

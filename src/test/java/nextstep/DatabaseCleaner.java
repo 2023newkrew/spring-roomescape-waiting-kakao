@@ -2,14 +2,10 @@ package nextstep;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class DatabaseCleaner {

@@ -1,13 +1,12 @@
 package nextstep.controller;
 
-import auth.domain.persist.UserDetails;
 import auth.domain.annotation.LoginMember;
 import auth.domain.annotation.Secured;
-import lombok.Getter;
-import lombok.extern.java.Log;
+import auth.domain.enumeration.Roles;
+import auth.domain.persist.UserDetails;
+import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
-import auth.domain.enumeration.Roles;
 import nextstep.domain.persist.Reservation;
 import nextstep.service.ReservationService;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +17,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
+@RequiredArgsConstructor
 public class ReservationController {
 
     public final ReservationService reservationService;
-
-    public ReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
 
     @PostMapping
     public ResponseEntity createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {

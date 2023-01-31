@@ -2,9 +2,6 @@ package nextstep.repository;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.domain.persist.Profit;
-import nextstep.domain.persist.Reservation;
-import nextstep.domain.persist.Schedule;
-import nextstep.domain.persist.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

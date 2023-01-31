@@ -2,7 +2,7 @@ package nextstep.support.exception.api;
 
 import nextstep.support.exception.ErrorCode;
 
-public class IllegalApproveException extends ApiException{
+public class IllegalApproveException extends ApiException {
 
     @Override
     public ErrorCode getErrorCode() {

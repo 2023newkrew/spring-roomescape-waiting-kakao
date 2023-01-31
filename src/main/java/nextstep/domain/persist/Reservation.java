@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.domain.enumeration.ReservationStatus;
 
-import javax.management.relation.Role;
 import java.util.Objects;
 
 @Getter

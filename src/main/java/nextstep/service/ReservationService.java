@@ -1,7 +1,6 @@
 package nextstep.service;
 
 import auth.domain.persist.UserDetails;
-import auth.support.AuthorizationException;
 import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
@@ -35,34 +34,14 @@ public class ReservationService {
 
     @Transactional
     public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
-        if (userDetails == null) {
-            throw new AuthorizationException();
-        }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NoSuchScheduleException();
-        }
-
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
-            throw new DuplicateReservationException();
-        }
-
-        Reservation newReservation = new Reservation(
-                schedule,
-                new Member(userDetails)
-        );
-
-        return reservationDao.save(newReservation);
+        Schedule schedule = findScheduleById(reservationRequest);
+        validateDuplicationReservation(schedule);
+        return reservationDao.save(new Reservation(schedule, new Member(userDetails)));
     }
 
     @Transactional(readOnly = true)
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NoSuchThemeException();
-        }
-
+        findThemeById(themeId);
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
@@ -73,9 +52,9 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(UserDetails userDetails, Long id) {
-        Reservation reservation = findById(id);
+        Reservation reservation = findReservationById(id);
 
-        if (!reservation.sameMember(new Member(userDetails))) {
+        if (!reservationOwner(userDetails, reservation)) {
             throw new NotReservationOwnerException();
         }
 
@@ -84,7 +63,7 @@ public class ReservationService {
 
     @Transactional
     public void approveById(Long id) {
-        Reservation reservation = findById(id);
+        Reservation reservation = findReservationById(id);
 
         if (!statusEquals(reservation, NOT_APPROVED)) {
             throw new IllegalApproveException();
@@ -94,10 +73,11 @@ public class ReservationService {
         eventPublisher.publishEvent(new ReservationApproveEvent(true));
     }
 
+    @Transactional
     public void cancelById(UserDetails userDetails, Long id) {
-        Reservation reservation = findById(id);
+        Reservation reservation = findReservationById(id);
 
-        if (!isAdmin(userDetails) && !reservation.sameMember(new Member(userDetails))) {
+        if (!isAdmin(userDetails) && !reservationOwner(userDetails, reservation)) {
             throw new NotReservationOwnerException();
         }
 
@@ -113,12 +93,9 @@ public class ReservationService {
         }
     }
 
-    private boolean isAdmin(UserDetails userDetails) {
-        return userDetails.getRole().equals(ADMIN);
-    }
-
+    @Transactional
     public void rejectById(Long id) {
-        Reservation reservation = findById(id);
+        Reservation reservation = findReservationById(id);
 
         if (statusEquals(reservation, APPROVED)) {
             eventPublisher.publishEvent(new ReservationApproveEvent(false));
@@ -127,8 +104,9 @@ public class ReservationService {
         reservationDao.updateStatusById(id, REJECTED.getStatus());
     }
 
+    @Transactional
     public void approveCancelById(Long id) {
-        Reservation reservation = findById(id);
+        Reservation reservation = findReservationById(id);
 
         if (!statusEquals(reservation, WAIT_CANCEL)) {
             throw new IllegalCancelException();
@@ -138,7 +116,11 @@ public class ReservationService {
         eventPublisher.publishEvent(new ReservationApproveEvent(false));
     }
 
-    private Reservation findById(Long id) {
+    private boolean isAdmin(UserDetails userDetails) {
+        return userDetails.getRole().equals(ADMIN);
+    }
+
+    private Reservation findReservationById(Long id) {
         Reservation reservation = reservationDao.findById(id);
 
         if (reservation == null) {
@@ -147,7 +129,33 @@ public class ReservationService {
         return reservation;
     }
 
+    private Schedule findScheduleById(ReservationRequest reservationRequest) {
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+        if (schedule == null) {
+            throw new NoSuchScheduleException();
+        }
+        return schedule;
+    }
+
+    private void findThemeById(Long themeId) {
+        Theme theme = themeDao.findById(themeId);
+        if (theme == null) {
+            throw new NoSuchThemeException();
+        }
+    }
+
     private boolean statusEquals(Reservation reservation, ReservationStatus status) {
         return reservation.getStatus().equals(status);
+    }
+
+    private void validateDuplicationReservation(Schedule schedule) {
+        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
+        if (!reservation.isEmpty()) {
+            throw new DuplicateReservationException();
+        }
+    }
+
+    private boolean reservationOwner(UserDetails userDetails, Reservation reservation) {
+        return reservation.sameMember(new Member(userDetails));
     }
 }

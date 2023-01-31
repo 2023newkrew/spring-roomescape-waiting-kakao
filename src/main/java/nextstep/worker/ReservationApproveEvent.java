@@ -9,6 +9,6 @@ public class ReservationApproveEvent extends ApplicationEvent {
     private Boolean isApprove;
 
     public Boolean isApproveTrue() {
-        return isApprove;
+        return isApprove.equals(true);
     }
 }

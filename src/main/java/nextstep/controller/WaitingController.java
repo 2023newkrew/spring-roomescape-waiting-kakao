@@ -1,7 +1,7 @@
 package nextstep.controller;
 
-import auth.domain.persist.UserDetails;
 import auth.domain.annotation.LoginMember;
+import auth.domain.persist.UserDetails;
 import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.WaitingRequest;
 import nextstep.domain.dto.response.WaitingResponse;

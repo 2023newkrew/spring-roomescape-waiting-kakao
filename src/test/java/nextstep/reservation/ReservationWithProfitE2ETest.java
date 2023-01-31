@@ -3,6 +3,7 @@ package nextstep.reservation;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
+import nextstep.DatabaseCleaner;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
 import nextstep.domain.enumeration.ReservationStatus;
@@ -21,18 +22,22 @@ import java.util.concurrent.TimeUnit;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ReservationWithProfitTest extends AbstractE2ETest {
+public class ReservationWithProfitE2ETest extends AbstractE2ETest {
     @Autowired
     private ProfitDao profitDao;
     @Autowired
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
     private ReservationRequest request;
     private Long themeId;
     private Long scheduleId;
 
     @BeforeEach
     public void setUp() {
+        databaseCleaner.execute();
         super.setUp();
+
         themeId = super.createTheme();
         scheduleId = super.createSchedule(themeId);
         request = new ReservationRequest(scheduleId);
@@ -45,9 +50,9 @@ public class ReservationWithProfitTest extends AbstractE2ETest {
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/approve").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
@@ -62,9 +67,9 @@ public class ReservationWithProfitTest extends AbstractE2ETest {
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/reject").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
@@ -103,7 +108,7 @@ public class ReservationWithProfitTest extends AbstractE2ETest {
                 statusCode(HttpStatus.OK.value());
 
         threadPoolTaskExecutor.getThreadPoolExecutor().awaitTermination(1, TimeUnit.SECONDS);
-        assertThat(profitDao.findAll().size()).isEqualTo(1);
+        assertThat(profitDao.findAll().size()).isEqualTo(2);
 
         var response = given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -122,30 +127,30 @@ public class ReservationWithProfitTest extends AbstractE2ETest {
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/approve").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/cancel").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 get("/reservations/1/cancel-approve").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
         threadPoolTaskExecutor.getThreadPoolExecutor().awaitTermination(1, TimeUnit.SECONDS);
-        assertThat(profitDao.findAll().size()).isEqualTo(1);
+        assertThat(profitDao.findAll().size()).isEqualTo(2);
 
         var response = given().log().all()
                 .auth().oauth2(token.getAccessToken())

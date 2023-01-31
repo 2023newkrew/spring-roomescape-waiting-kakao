@@ -15,7 +15,6 @@ import java.util.List;
 public class ThemeService {
     private final ThemeDao themeDao;
 
-
     public Long create(ThemeRequest themeRequest) {
         return themeDao.save(themeRequest.toEntity());
     }

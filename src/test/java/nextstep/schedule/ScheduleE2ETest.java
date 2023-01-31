@@ -2,13 +2,11 @@ package nextstep.schedule;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.DatabaseCleaner;
 import nextstep.domain.dto.request.ScheduleRequest;
 import nextstep.domain.dto.request.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -16,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScheduleE2ETest extends AbstractE2ETest {
     private Long themeId;
+
     @BeforeEach
     public void setUp() {
         super.setUp();

@@ -13,12 +13,12 @@ public class UserDetailsToMemberConverter implements Converter<UserDetails, Memb
     @Override
     public Member convert(UserDetails userDetails) {
         return new Member(
-            userDetails.getId(),
-            userDetails.getUsername(),
-            userDetails.getPassword(),
-            userDetails.getName(),
-            userDetails.getPhone(),
-            userDetails.getRole()
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getPassword(),
+                userDetails.getName(),
+                userDetails.getPhone(),
+                userDetails.getRole()
         );
     }
 }

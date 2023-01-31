@@ -1,21 +1,15 @@
 package nextstep.reservation;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
-import nextstep.DatabaseCleaner;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
-import nextstep.domain.dto.request.ScheduleRequest;
-import nextstep.domain.dto.request.ThemeRequest;
 import nextstep.domain.enumeration.ReservationStatus;
 import nextstep.domain.persist.Reservation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -175,9 +169,9 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         given().
                 auth().oauth2("other-token").
-        when().
+                when().
                 patch("/reservations/1/approve").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.UNAUTHORIZED.value());
     }
@@ -189,9 +183,9 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/approve").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
@@ -211,17 +205,17 @@ class ReservationE2ETest extends AbstractE2ETest {
         createReservation();
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/approve").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/approve").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -233,9 +227,9 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/cancel").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
@@ -256,17 +250,17 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/approve").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/cancel").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
@@ -279,6 +273,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
         assertThat(reservationResponses.get(0).getStatus()).isEqualTo(ReservationStatus.WAIT_CANCEL);
     }
+
     @Test
     @DisplayName("예약 취소 가능 상태가 아닌 예약은 취소할 수 없다.")
     void Should_ThrowBadRequest_When_IfAttemptToCancelInvalidStatus() {
@@ -286,17 +281,17 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/cancel").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.OK.value());
 
         given().
                 auth().oauth2(token.getAccessToken()).
-        when().
+                when().
                 patch("/reservations/1/cancel").
-        then().
+                then().
                 assertThat().
                 statusCode(HttpStatus.BAD_REQUEST.value());
     }

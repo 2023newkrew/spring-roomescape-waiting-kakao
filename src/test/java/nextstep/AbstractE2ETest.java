@@ -1,10 +1,9 @@
 package nextstep;
 
-import io.restassured.RestAssured;
 import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
+import io.restassured.RestAssured;
 import nextstep.domain.dto.request.MemberRequest;
-import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.request.ScheduleRequest;
 import nextstep.domain.dto.request.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AbstractE2ETest {

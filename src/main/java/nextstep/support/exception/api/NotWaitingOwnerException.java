@@ -2,7 +2,7 @@ package nextstep.support.exception.api;
 
 import nextstep.support.exception.ErrorCode;
 
-public class NotWaitingOwnerException extends ApiException{
+public class NotWaitingOwnerException extends ApiException {
 
     @Override
     public ErrorCode getErrorCode() {

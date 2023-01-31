@@ -1,5 +1,6 @@
 package nextstep.repository;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.domain.persist.Schedule;
 import nextstep.domain.persist.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,12 +16,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ScheduleDao {
     private final JdbcTemplate jdbcTemplate;
-
-    public ScheduleDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     private final RowMapper<Schedule> rowMapper = (resultSet, rowNum) -> new Schedule(
             resultSet.getLong("schedule.id"),

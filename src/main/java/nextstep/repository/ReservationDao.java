@@ -1,5 +1,6 @@
 package nextstep.repository;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.domain.persist.Member;
 import nextstep.domain.persist.Reservation;
 import nextstep.domain.persist.Schedule;
@@ -16,13 +17,10 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation.id"),
