@@ -111,7 +111,7 @@ public class ReservationDao {
         }
     }
 
-    public List<Reservation> findByMemberId(Long id) {
+    public List<Reservation> findAllByMemberId(Long id) {
         String sql = DEFAULT_SELECT_FROM_SQL +
                 "where member.id = ? and reservation.wait_num = 0;";
         try {
@@ -121,7 +121,7 @@ public class ReservationDao {
         }
     }
 
-    public List<Reservation> findWaitingByMemberId(Long id) {
+    public List<Reservation> findAllWaitingByMemberId(Long id) {
         String sql = DEFAULT_SELECT_FROM_SQL +
                 "where member.id = ? and reservation.wait_num > 0;";
         try {
@@ -141,8 +141,8 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public void adjustWaitingNumByScheduleIdAndBaseNum(Long id, Long num) {
+    public void adjustWaitNumByScheduleIdAndBaseNum(Long scheduleId, Long baseWaitNum) {
         String sql = "UPDATE reservation set wait_num = wait_num - 1 where schedule_id = ? and wait_num > ?";
-        jdbcTemplate.update(sql, id, num);
+        jdbcTemplate.update(sql, scheduleId, baseWaitNum);
     }
 }

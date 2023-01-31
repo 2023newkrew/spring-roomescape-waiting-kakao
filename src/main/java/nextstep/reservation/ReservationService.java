@@ -68,14 +68,14 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findMyReservations(UserDetails userDetails) {
-        return reservationDao.findByMemberId(userDetails.getId())
+        return reservationDao.findAllByMemberId(userDetails.getId())
                 .stream()
                 .map(ReservationResponse::new)
                 .collect(Collectors.toList());
     }
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(UserDetails userDetails) {
-        return reservationDao.findWaitingByMemberId(userDetails.getId())
+        return reservationDao.findAllWaitingByMemberId(userDetails.getId())
                 .stream()
                 .map(ReservationWaitingResponse::new)
                 .collect(Collectors.toList());
@@ -93,7 +93,7 @@ public class ReservationService {
 
         reservationDao.deleteById(id);
 
-        reservationDao.adjustWaitingNumByScheduleIdAndBaseNum(reservation.getSchedule().getId(), 0L);
+        reservationDao.adjustWaitNumByScheduleIdAndBaseNum(reservation.getSchedule().getId(), 0L);
     }
 
     public void deleteWaitingById(UserDetails userDetails, Long id) {
@@ -108,6 +108,6 @@ public class ReservationService {
 
         reservationDao.deleteWaitingById(id);
 
-        reservationDao.adjustWaitingNumByScheduleIdAndBaseNum(reservation.getSchedule().getId(), reservation.getWaitNum());
+        reservationDao.adjustWaitNumByScheduleIdAndBaseNum(reservation.getSchedule().getId(), reservation.getWaitNum());
     }
 }
