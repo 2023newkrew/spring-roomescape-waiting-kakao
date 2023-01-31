@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionAdvice {
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> methodArgumentNotValidException(RuntimeException ignore) {
+    public ResponseEntity<ErrorResponse> methodArgumentNotValidException(RuntimeException e) {
+        e.printStackTrace();
         return ResponseEntity.internalServerError()
                 .body(ErrorResponse.from("서버에 문제가 생겼습니다."));
     }

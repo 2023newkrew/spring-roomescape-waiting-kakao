@@ -1,12 +1,10 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import nextstep.config.annotation.LoginMember;
 import nextstep.member.Member;
 import nextstep.reservation.dto.response.ReservationResponseDto;
 import nextstep.reservation.dto.response.ReservationWaitingResponseDto;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,16 +63,5 @@ public class ReservationController {
     public ResponseEntity<List<ReservationWaitingResponseDto>> createReservationWaiting(@LoginMember Member member) {
         List<ReservationWaitingResponseDto> dtos = reservationService.getReservationWaitingsByMember(member);
         return ResponseEntity.ok(dtos);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.Optional;
 
 @Component
 public class MemberDao {
@@ -43,13 +44,21 @@ public class MemberDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Member findById(Long id) {
-        String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    public Optional<Member> findById(Long id) {
+        try {
+            String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
-    public Member findByUsername(String username) {
-        String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username);
+    public Optional<Member> findByUsername(String username) {
+        try {
+            String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, username));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }

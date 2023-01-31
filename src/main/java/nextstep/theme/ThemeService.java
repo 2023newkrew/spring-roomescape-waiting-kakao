@@ -1,9 +1,12 @@
 package nextstep.theme;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.exception.dataaccess.DataAccessErrorCode;
+import nextstep.exception.dataaccess.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -20,9 +23,9 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
-        Theme theme = themeDao.findById(id);
-        if (theme == null) {
-            throw new NullPointerException();
+        Optional<Theme> theme = themeDao.findById(id);
+        if (theme.isEmpty()) {
+            throw new DataAccessException(DataAccessErrorCode.THEME_NOT_FOUND);
         }
 
         themeDao.delete(id);

@@ -1,12 +1,9 @@
 package nextstep.reservation;
 
-import auth.TokenRequest;
-import auth.TokenResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
-import nextstep.member.MemberRequest;
 import nextstep.reservation.dto.response.ReservationWaitingResponseDto;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
@@ -255,7 +252,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @DisplayName("예약이 없을 때 예약 목록을 조회한다")
@@ -275,7 +272,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("없는 예약을 삭제한다")
     @Test
-    void createNotExistReservation() {
+    void deleteNotExistReservation() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -283,7 +280,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("다른 사람이 예약을삭제한다")
