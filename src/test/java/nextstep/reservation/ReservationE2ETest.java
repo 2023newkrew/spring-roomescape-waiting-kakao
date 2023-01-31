@@ -103,6 +103,21 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    @DisplayName("기존예약이 없는 상태에서 대기예약을 생성한다")
+    @Test
+    void create_waiting_with_no_reservation() {
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
     @DisplayName("비로그인 사용자가 예약을 생성한다")
     @Test
     void createWithoutLogin() {
