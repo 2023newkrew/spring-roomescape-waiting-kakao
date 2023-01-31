@@ -28,7 +28,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     @DisplayName("예약 대기를 생성한다. (해당 스케줄에 예약이 없을 경우)")
     void createReservationWaitingNoReservation() {
         ReservationWaitingRequest request = new ReservationWaitingRequest(1L);
-        String location = createReservationWaiting(request);
+        String location = requestCreateReservationWaiting(request);
 
         assertThat(location.startsWith("/reservations/")).isTrue();
     }
@@ -39,7 +39,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         createReservation(1L);
 
         ReservationWaitingRequest request = new ReservationWaitingRequest(1L);
-        var location = createReservationWaiting(request);
+        var location = requestCreateReservationWaiting(request);
 
         assertThat(location.startsWith("/reservation-waitings/")).isTrue();
     }
@@ -64,8 +64,8 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     void findMyReservationWaitings() {
         createReservation(1L);
         createReservation(2L);
-        createReservationWaiting(new ReservationWaitingRequest(1L));
-        createReservationWaiting(new ReservationWaitingRequest(2L));
+        requestCreateReservationWaiting(new ReservationWaitingRequest(1L));
+        requestCreateReservationWaiting(new ReservationWaitingRequest(2L));
 
         var response = RestAssured
                 .given().log().all()
@@ -84,7 +84,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     @DisplayName("자신의 예약 대기를 취소할 수 있다.")
     void deleteMyReservationWaiting() {
         createReservation(1L);
-        String location = createReservationWaiting(new ReservationWaitingRequest(1L));
+        String location = requestCreateReservationWaiting(new ReservationWaitingRequest(1L));
         RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -99,7 +99,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     @DisplayName("자신의 예약 대기가 아니면 취소할 수 없다.")
     void deleteOtherReservationWaiting() {
         createReservation(1L);
-        String location = createReservationWaiting(new ReservationWaitingRequest(1L));
+        String location = requestCreateReservationWaiting(new ReservationWaitingRequest(1L));
 
         String anotherToken = createAnotherMember();
 

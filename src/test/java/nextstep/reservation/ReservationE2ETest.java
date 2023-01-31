@@ -100,7 +100,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 조회한다")
     @Test
     void show() {
-        createReservation(request);
+        requestCreateReservation(request);
 
         var response = RestAssured
                 .given().log().all()
@@ -117,8 +117,8 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("해당 유저의 모든 예약을 조회한다.")
     @Test
     void showMine(){
-        createReservation(request);
-        createReservation(new ReservationRequest(2L));
+        requestCreateReservation(request);
+        requestCreateReservation(new ReservationRequest(2L));
 
         var response = RestAssured
                 .given().log().all()
@@ -134,7 +134,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 삭제한다")
     @Test
     void delete() {
-        var reservationLocation = createReservation(request);
+        var reservationLocation = requestCreateReservation(request);
 
         var response = RestAssured
                 .given().log().all()
@@ -149,8 +149,8 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 삭제하면 예약 대기를 예약으로 변경한다.")
     @Test
     void deleteWhenReservationWaitingExists() {
-        var reservationLocation = createReservation(request);
-        createReservationWaiting(new ReservationWaitingRequest(request.getScheduleId()));
+        var reservationLocation = requestCreateReservation(request);
+        requestCreateReservationWaiting(new ReservationWaitingRequest(request.getScheduleId()));
 
         var reservationsResponse = RestAssured
                 .given().log().all()
@@ -185,7 +185,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("중복 예약을 생성한다")
     @Test
     void createDuplicateReservation() {
-        createReservation(request);
+        requestCreateReservation(request);
 
         var response = RestAssured
                 .given().log().all()
@@ -230,7 +230,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("다른 사람이 예약을 삭제한다")
     @Test
     void deleteReservationOfOthers() {
-        createReservation(request);
+        requestCreateReservation(request);
 
         var response = RestAssured
                 .given().log().all()

@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import nextstep.member.MemberRequest;
 import nextstep.reservation.ReservationRequest;
 import nextstep.reservation_waiting.ReservationWaitingRequest;
+import nextstep.schedule.ScheduleRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -44,7 +45,7 @@ public class AbstractE2ETest {
         token = response.as(TokenResponse.class);
     }
 
-    protected String createReservationWaiting(ReservationWaitingRequest request) {
+    protected String requestCreateReservationWaiting(ReservationWaitingRequest request) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -56,7 +57,7 @@ public class AbstractE2ETest {
                 .extract().header("Location");
     }
 
-    protected String createReservation(ReservationRequest request) {
+    protected String requestCreateReservation(ReservationRequest request) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -88,5 +89,19 @@ public class AbstractE2ETest {
                 .extract();
 
         return response.as(TokenResponse.class).getAccessToken();
+    }
+
+    protected String requestCreateSchedule(Long themeId) {
+        ScheduleRequest body = new ScheduleRequest(themeId, "2022-08-11", "13:00");
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(body)
+                .when().post("/admin/schedules")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .header("Location");
     }
 }

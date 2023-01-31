@@ -49,7 +49,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
     @DisplayName("스케줄을 조회한다")
     @Test
     public void showSchedules() {
-        requestCreateSchedule();
+        requestCreateSchedule(themeId);
 
         var response = RestAssured
                 .given().log().all()
@@ -66,7 +66,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 삭제한다")
     @Test
     void delete() {
-        String location = requestCreateSchedule();
+        String location = requestCreateSchedule(themeId);
 
         var response = RestAssured
                 .given().log().all()
@@ -76,19 +76,5 @@ public class ScheduleE2ETest extends AbstractE2ETest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    public String requestCreateSchedule() {
-        ScheduleRequest body = new ScheduleRequest(themeId, "2022-08-11", "13:00");
-        return RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(body)
-                .when().post("/admin/schedules")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .header("Location");
     }
 }
