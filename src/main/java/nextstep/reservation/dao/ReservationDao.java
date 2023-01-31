@@ -52,6 +52,20 @@ public class ReservationDao {
         return keyHolder.getKey().longValue();
     }
 
+    public List<Reservation> findByMemberId(Long memberId){
+        String sql = "SELECT " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from reservation " +
+                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation.member_id = member.id " +
+                "WHERE member_id = ?";
+        return jdbcTemplate.query(sql, rowMapper, memberId);
+    }
+
     public List<Reservation> findAllByThemeIdAndDateAndMemberName(Long themeId, String date, String memberName) {
         String sql = "SELECT reservation.id, reservation.schedule_id, reservation.member_name, schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
                 "from reservation " +

@@ -41,4 +41,13 @@ CREATE TABLE member_role
     member_name varchar(40) not null,
     role_name varchar(40) not null,
     primary key (id)
-)
+);
+
+CREATE TABLE reservation_waiting
+(
+    id          bigint not null auto_increment,
+    member_id   bigint not null,
+    schedule_id bigint not null,
+    applied_time        datetime   not null,
+    primary key (id)
+);

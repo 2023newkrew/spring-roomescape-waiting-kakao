@@ -14,7 +14,7 @@ public class CreateReservation {
         this.scheduleId = scheduleId;
     }
 
-    public static CreateReservation toCreateEntity(ReservationRequest reservationRequest, String memberName){
+    public static CreateReservation from(ReservationRequest reservationRequest, String memberName){
         return new CreateReservation(reservationRequest.getScheduleId(), memberName);
     }
 }
