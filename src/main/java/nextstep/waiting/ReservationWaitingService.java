@@ -34,10 +34,8 @@ public class ReservationWaitingService {
     }
 
     public Long create(Member member, ReservationWaitingRequest reservationWaitingRequest) {
-        Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NotExistEntityException(ErrorCode.SCHEDULE_NOT_FOUND);
-        }
+        Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId())
+                .orElseThrow(() -> new NotExistEntityException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         List<Reservation> reservations = new ArrayList<>(
                 reservationWaitingDao.findByScheduleId(schedule.getId())

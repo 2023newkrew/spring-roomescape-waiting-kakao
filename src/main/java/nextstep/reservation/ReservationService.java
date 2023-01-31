@@ -29,10 +29,8 @@ public class ReservationService {
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NotExistEntityException(ErrorCode.SCHEDULE_NOT_FOUND);
-        }
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(() -> new NotExistEntityException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
@@ -52,19 +50,15 @@ public class ReservationService {
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NotExistEntityException(ErrorCode.THEME_NOT_FOUND);
-        }
+        Theme theme = themeDao.findById(themeId)
+                .orElseThrow(() -> new NotExistEntityException(ErrorCode.THEME_NOT_FOUND));
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NotExistEntityException(ErrorCode.RESERVATION_NOT_FOUND);
-        }
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new NotExistEntityException(ErrorCode.RESERVATION_NOT_FOUND));
 
         if (!reservation.sameMember(member)) {
             throw new UnauthorizedException(ErrorCode.FORBIDDEN);

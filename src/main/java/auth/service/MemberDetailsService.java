@@ -1,9 +1,12 @@
 package auth.service;
 
 import auth.dto.MemberDetails;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class MemberDetailsService {
@@ -14,9 +17,13 @@ public class MemberDetailsService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public MemberDetails loadMemberDetailsByUsername(String username) {
+    public Optional<MemberDetails> loadMemberDetailsByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, username));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     private final RowMapper<MemberDetails> rowMapper = (resultSet, rowNum) -> new MemberDetails(

@@ -19,10 +19,10 @@ public class LoginService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        MemberDetails memberDetails = memberDetailsService.loadMemberDetailsByUsername(tokenRequest.getUsername());
-        if (memberDetails == null) {
-            throw new UnauthenticatedException(ErrorCode.USER_NOT_FOUND);
-        }
+        MemberDetails memberDetails =
+                memberDetailsService.loadMemberDetailsByUsername(tokenRequest.getUsername())
+                        .orElseThrow(() -> new UnauthenticatedException(ErrorCode.AUTHENTICATION_FAIL));
+
         if (!memberDetails.getPassword().equals(tokenRequest.getPassword())) {
             throw new UnauthenticatedException(ErrorCode.AUTHENTICATION_FAIL);
         }
@@ -38,6 +38,7 @@ public class LoginService {
 
     public MemberDetails extractMemberDetails(String credential) {
         String username = jwtTokenProvider.getUsername(credential);
-        return memberDetailsService.loadMemberDetailsByUsername(username);
+        return memberDetailsService.loadMemberDetailsByUsername(username)
+                .orElseThrow(() -> new UnauthenticatedException(ErrorCode.USER_NOT_FOUND));
     }
 }
