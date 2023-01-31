@@ -97,6 +97,7 @@ public class ReservationService {
 
     public void cancelById(UserDetails userDetails, Long id) {
         Reservation reservation = reservationDao.findById(id);
+
         if (reservation == null) {
             throw new NoSuchReservationException();
         }
@@ -108,8 +109,10 @@ public class ReservationService {
         switch (reservation.getStatus()) {
             case NOT_APPROVED:
                 reservationDao.updateStatusById(id, CANCELED.getStatus());
+                break;
             case APPROVED:
                 reservationDao.updateStatusById(id, WAIT_CANCEL.getStatus());
+                break;
             default:
                 throw new IllegalCancelException();
         }

@@ -184,7 +184,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @Test
     @DisplayName("관리자는 예약을 승인할 수 있다.")
-    void Should_ChangeReservationStatus_When_IfAttemptToApproveAdmin() {
+    void Should_Approve_When_IfAttemptToApproveAdmin() {
         createReservation();
 
         given().
@@ -221,6 +221,80 @@ class ReservationE2ETest extends AbstractE2ETest {
                 auth().oauth2(token.getAccessToken()).
         when().
                 patch("/reservations/1/approve").
+        then().
+                assertThat().
+                statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("미승인 상태의 예약은 취소 시 취소 상태가 된다.")
+    void Should_Cancel_When_IfAttemptToCancelIsNotApproved() {
+        createReservation();
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/cancel").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        var response = given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservationResponses.get(0).getStatus()).isEqualTo(ReservationStatus.CANCELED);
+    }
+
+    @Test
+    @DisplayName("승인 상태의 예약은 취소 시 취소 상태가 된다.")
+    void Should_WaitCancel_When_IfAttemptToCancelIsApproved() {
+        createReservation();
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/approve").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/cancel").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        var response = given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservationResponses.get(0).getStatus()).isEqualTo(ReservationStatus.WAIT_CANCEL);
+    }
+    @Test
+    @DisplayName("예약 취소 가능 상태가 아닌 예약은 취소할 수 없다.")
+    void Should_ThrowBadRequest_When_IfAttemptToCancelInvalidStatus() {
+        createReservation();
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/cancel").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/cancel").
         then().
                 assertThat().
                 statusCode(HttpStatus.BAD_REQUEST.value());
