@@ -24,8 +24,9 @@ public class ReservationWaitingController {
             throw new AuthenticationException();
         }
         Long id = reservationWaitingService.create(member.getUsername(), reservationWaitingRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + id)).build();
-
+        if (reservationWaitingService.getWaitingNum(reservationWaitingRequest, id) == 0)
+            return ResponseEntity.created(URI.create("/reservations/" + id)).build();
+        return ResponseEntity.created(URI.create("/reservations-waitings/" + id)).build();
     }
 
     @GetMapping("/reservations-waitings/mine")
@@ -37,8 +38,8 @@ public class ReservationWaitingController {
                 reservationWaitingService.findAllByUsername(member.getUsername())
         );
     }
-    
-    
+
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         e.printStackTrace();
