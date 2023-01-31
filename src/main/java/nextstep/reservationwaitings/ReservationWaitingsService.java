@@ -7,7 +7,7 @@ import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.NotCreatorMemberException;
+import nextstep.support.UnauthorizedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public class ReservationWaitingsService {
     public void delete(UserDetails member, Long id) {
         ReservationWaitings reservationWaitings = reservationWaitingsDao.findById(id);
         if (!reservationWaitings.getMember().getId().equals(member.getId())) {
-            throw new NotCreatorMemberException();
+            throw new UnauthorizedException("예약 대기를 삭제할 권한이 없습니다.");
         }
         reservationWaitingsDao.delete(id);
     }

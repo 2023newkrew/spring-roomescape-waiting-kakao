@@ -2,8 +2,8 @@ package nextstep.reservationwaitings;
 
 import auth.LoginMember;
 import auth.UserDetails;
-import nextstep.member.Member;
-import nextstep.support.NotCreatorMemberException;
+import nextstep.support.UnauthorizedException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,8 +41,14 @@ public class ReservationWaitingsController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(NotCreatorMemberException.class)
-    public ResponseEntity onException(NotCreatorMemberException e) {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity onUnauthorizedException(UnauthorizedException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getStackTrace());
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity onException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
+    }
+
 }
