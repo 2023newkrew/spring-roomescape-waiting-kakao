@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import nextstep.exception.NotExistEntityException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -62,10 +63,8 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
+        Theme theme = themeDao.findById(themeId)
+                .orElseThrow(() -> new NotExistEntityException(Theme.class));
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date).stream()
                 .map(ReservationResponse::from)
@@ -73,10 +72,8 @@ public class ReservationService {
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new NotExistEntityException(Reservation.class));
 
         if (!reservation.sameMember(member)) {
             throw new AuthenticationException();

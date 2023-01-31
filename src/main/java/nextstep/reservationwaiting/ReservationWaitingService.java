@@ -1,6 +1,7 @@
 package nextstep.reservationwaiting;
 
 import auth.AuthenticationException;
+import nextstep.exception.NotExistEntityException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
@@ -72,10 +73,8 @@ public class ReservationWaitingService {
 
     public void cancelById(Member member, Long id) {
         ReservationWaitingStatus status = ReservationWaitingStatus.CANCELED;
-        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
-        if (reservationWaiting == null) {
-            throw new NullPointerException();
-        }
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id)
+                .orElseThrow(() -> new NotExistEntityException(Reservation.class));
 
         if (!reservationWaiting.sameMember(member)) {
             throw new AuthenticationException();
