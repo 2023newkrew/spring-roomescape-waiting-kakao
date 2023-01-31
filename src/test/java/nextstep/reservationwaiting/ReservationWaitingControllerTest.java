@@ -107,9 +107,8 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
-
 
     @DisplayName("같은 스케쥴에 예약하면 waitNum이 증가한다.")
     @Test

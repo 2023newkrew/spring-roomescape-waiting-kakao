@@ -1,10 +1,15 @@
 package nextstep.reservation;
 
-import auth.exception.AuthenticationException;
+import static nextstep.utils.Validator.checkFieldIsNull;
+
 import java.util.List;
+import java.util.Objects;
 import nextstep.exception.DuplicateEntityException;
+import nextstep.exception.MemberAuthenticationException;
+import nextstep.exception.ReservationAuthorizationWebException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservation.dto.ReservationRequest;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.Theme;
@@ -27,46 +32,41 @@ public class ReservationService {
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
+        checkValid(member);
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
-
+        checkFieldIsNull(schedule, "schedule");
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException(schedule.getId().toString(), "중복되는 예약이 존재합니다.", ReservationService.class.getSimpleName());
+            throw new DuplicateEntityException(schedule.getId().toString(), "중복되는 예약이 존재합니다.",
+                    ReservationService.class.getSimpleName());
         }
-
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
-
+        Reservation newReservation = Reservation.builder()
+                .member(member)
+                .schedule(schedule).build();
         return reservationDao.save(newReservation);
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
-
+        checkFieldIsNull(theme, "theme");
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
     public void deleteById(Member member, Long id) {
+        checkValid(member);
         Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
-
+        checkFieldIsNull(reservation, "reservation");
         if (!reservation.sameMember(member)) {
-            throw new AuthenticationException();
+            throw new MemberAuthenticationException("비밀번호가 일치해야 합니다.", member.getPassword(), "delete by id",
+                    ReservationService.class.getSimpleName());
         }
-
         reservationDao.deleteById(id);
+    }
+
+    private void checkValid(Member member) {
+        if (Objects.isNull(member)) {
+            throw new ReservationAuthorizationWebException("해당 권한이 존재해야 하니다.", "member is null", "check valid",
+                    ReservationController.class.getSimpleName());
+        }
     }
 }

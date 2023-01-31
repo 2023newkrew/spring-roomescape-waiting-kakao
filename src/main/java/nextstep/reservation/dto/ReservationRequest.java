@@ -1,4 +1,4 @@
-package nextstep.reservation;
+package nextstep.reservation.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
