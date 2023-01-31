@@ -1,5 +1,7 @@
 package auth;
 
+import static nextstep.exception.ErrorMessage.NOT_AUTHORIZED;
+
 import lombok.RequiredArgsConstructor;
 import nextstep.exception.AuthenticationException;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +21,7 @@ public class AdminInterceptor implements HandlerInterceptor {
                 .split(" ")[1];
         String role = jwtTokenProvider.getRole(credential);
         if (!Objects.equals(role, "ADMIN")) {
-            throw new AuthenticationException();
+            throw new AuthenticationException(NOT_AUTHORIZED.getMessage());
         }
 
         return true;

@@ -34,7 +34,7 @@ public class ReservationWaitingController {
                     .build();
         }
         Reservation reservation = findOptionalReservation.get();
-        reservationService.validateByMember(reservation, member);
+        reservationService.validateReservationOwner(reservation, member);
         Long reservationWaitingId = reservationWaitingService.create(reservation, member);
         return ResponseEntity.created(URI.create("/reservation-waitings/" + reservationWaitingId))
                 .build();

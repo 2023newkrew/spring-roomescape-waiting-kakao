@@ -1,5 +1,7 @@
 package nextstep.member;
 
+import static nextstep.exception.ErrorMessage.NOT_AUTHORIZED;
+
 import auth.UserDetails;
 import auth.UserDetailsFactory;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,7 @@ public class UserDetailsFactoryImpl implements UserDetailsFactory {
     public UserDetails createUserDetails(String username, String password) {
         Member member = memberDao.findByUsername(username);
         if (member == null || member.checkWrongPassword(password)) {
-            throw new AuthenticationException();
+            throw new AuthenticationException(NOT_AUTHORIZED.getMessage());
         }
         return Member.convertToUserDetails(member);
     }

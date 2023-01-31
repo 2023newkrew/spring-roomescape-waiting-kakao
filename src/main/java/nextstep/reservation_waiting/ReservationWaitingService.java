@@ -1,5 +1,9 @@
 package nextstep.reservation_waiting;
 
+import static nextstep.exception.ErrorMessage.DUPLICATED_RESERVATION_WAITING;
+import static nextstep.exception.ErrorMessage.NOT_EXIST_RESERVATION_WAITING;
+import static nextstep.exception.ErrorMessage.NOT_OWN_RESERVATION_WAITING;
+
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
@@ -24,14 +28,14 @@ public class ReservationWaitingService {
     public Long create(Reservation reservation, Member member) {
         if (reservationWaitingDao.findByMemberId(member.getId())
                 .isPresent()) {
-            throw new DuplicateEntityException("예약 대기는 중복될 수 없습니다.");
+            throw new DuplicateEntityException(DUPLICATED_RESERVATION_WAITING.getMessage());
         }
         return reservationWaitingDao.save(reservation, member);
     }
 
     public ReservationWaiting findById(Long id) {
         return reservationWaitingDao.findById(id)
-                .orElseThrow(NoReservationWaitingException::new);
+                .orElseThrow(() -> new NoReservationWaitingException(NOT_EXIST_RESERVATION_WAITING.getMessage()));
     }
 
     public Optional<ReservationWaiting> findByScheduleId(Long scheduleId) {
@@ -46,7 +50,7 @@ public class ReservationWaitingService {
 
     public void validateByMember(ReservationWaiting reservationWaiting, Member member) {
         if (!reservationWaiting.sameMember(member)) {
-            throw new NotOwnReservationWaitingException("자신의 예약 대기가 아닙니다.");
+            throw new NotOwnReservationWaitingException(NOT_OWN_RESERVATION_WAITING.getMessage());
         }
     }
 
