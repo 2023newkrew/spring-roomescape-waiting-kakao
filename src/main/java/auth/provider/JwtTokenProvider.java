@@ -51,9 +51,16 @@ public class JwtTokenProvider {
             return !claims.getBody()
                     .getExpiration()
                     .before(new Date());
-        }
-        catch (JwtException | IllegalArgumentException e) {
-            return false;
+        } catch (MalformedJwtException e){
+            throw new AuthenticationException(ErrorMessage.MALFORMED_TOKEN);
+        } catch (ExpiredJwtException e){
+            throw new AuthenticationException(ErrorMessage.EXPIRED_TOKEN);
+        } catch (UnsupportedJwtException e){
+            throw new AuthenticationException(ErrorMessage.UNSUPPORTED_TOKEN);
+        } catch (SignatureException e ){
+            throw new AuthenticationException(ErrorMessage.NOT_SIGNATURE_TOKEN);
+        } catch (IllegalArgumentException e){
+            throw new AuthenticationException(ErrorMessage.INVALID_TOKEN);
         }
     }
 
