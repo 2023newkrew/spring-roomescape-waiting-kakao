@@ -9,16 +9,15 @@ import roomescape.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberService {
     private final MemberRepository repository;
 
-
-    @Transactional
     public long createMember(MemberControllerPostBody request) {
         return repository.insert(request.getUsername(), request.getPassword(), request.getName(), request.getPhone());
     }
 
-
+    @Transactional(readOnly = true)
     public Member me(long memberId) {
         return repository.selectById(memberId);
     }

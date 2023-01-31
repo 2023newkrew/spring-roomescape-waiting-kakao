@@ -14,9 +14,11 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ThemeService {
     private final ThemeRepository repository;
 
+    @Transactional(readOnly = true)
     public Theme getTheme(long id) {
         var target = repository.selectById(id);
         if (target.isEmpty()) {
@@ -25,17 +27,17 @@ public class ThemeService {
         return target.get();
     }
 
-    @Transactional
+
     public long createTheme(ThemeControllerPostBody body) {
         return repository.insert(body.getName(), body.getDesc(), body.getPrice());
     }
 
+    @Transactional(readOnly = true)
     public Stream<Theme> pageTheme(int page) {
         return repository.selectPage(30, Math.max(page, 0))
                          .stream();
     }
-
-    @Transactional
+    
     public void deleteTheme(long id) {
         try {
             var affectedRows = repository.delete(id);

@@ -14,12 +14,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final WaitingRepository waitingRepository;
 
-    @Transactional
     public long createReservation(long callerId, ReservationsControllerPostBody body) {
         var id = reservationRepository.insert(body.getName(), body.getDate(), body.getTime(), body.getThemeId(), callerId);
         if (id.isEmpty()) {
@@ -28,7 +28,7 @@ public class ReservationService {
         return id.get();
     }
 
-
+    @Transactional(readOnly = true)
     public Reservation findReservation(Long id) {
         var reservation = reservationRepository.selectById(id);
         if (reservation.isEmpty()) {
@@ -37,11 +37,11 @@ public class ReservationService {
         return reservation.get();
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> findMyReservation(Long memberId) {
         return reservationRepository.selectByMemberId(memberId);
     }
 
-    @Transactional
     public void deleteReservation(long callerId, Long id) {
         var reservation = reservationRepository.selectById(id);
         if (reservation.isEmpty()) {

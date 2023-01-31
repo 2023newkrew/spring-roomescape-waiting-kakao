@@ -15,11 +15,11 @@ import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class WaitingService {
     private final WaitingRepository waitingRepository;
     private final ReservationRepository reservationRepository;
-
-    @Transactional
+    
     public String createWaiting(long callerId, ReservationsControllerPostBody body, Function<Long, String> onReservationCreated, Function<Long, String> onWaitingCreated) {
         var reservationId = reservationRepository.insert(body.getName(), body.getDate(), body.getTime(), body.getThemeId(), callerId);
         if (reservationId.isPresent()) {
@@ -28,11 +28,12 @@ public class WaitingService {
         return onWaitingCreated.apply(waitingRepository.insert(body.getName(), body.getDate(), body.getTime(), body.getThemeId(), callerId));
     }
 
+    @Transactional(readOnly = true)
     public List<Waiting> findMyWaiting(Long memberId) {
         return waitingRepository.selectByMemberId(memberId);
     }
 
-    @Transactional
+
     public void deleteWaiting(long callerId, Long id) {
         var waiting = waitingRepository.selectById(id);
         if (waiting.isEmpty()) {
