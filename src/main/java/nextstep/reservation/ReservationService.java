@@ -5,6 +5,7 @@ import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.support.AlreadyReservedScheduleException;
 import nextstep.support.AuthenticationException;
 import nextstep.support.DuplicateEntityException;
 import nextstep.support.NoReservationException;
@@ -64,5 +65,11 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public void validateByMember(Reservation reservation, Member member) {
+        if (reservation.sameMember(member)) {
+            throw new AlreadyReservedScheduleException("이미 예약된 스케줄에 예약 대기를 생성할 수 없습니다.");
+        }
     }
 }
