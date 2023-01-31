@@ -34,18 +34,13 @@ public class ReservationService {
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
+        checkEmptyMember(member);
+
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        checkEmptySchedule(schedule);
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
-        }
+        checkDuplicatedReservation(reservation);
 
         Reservation newReservation = new Reservation(
                 schedule,
@@ -55,37 +50,55 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
+    private void checkEmptyMember(Member member) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+    }
+
+    private void checkEmptySchedule(Schedule schedule) {
+        if (schedule == null) {
             throw new NullPointerException();
         }
+    }
+
+
+    private void checkDuplicatedReservation(List<Reservation> reservation) {
+        if (!reservation.isEmpty()) {
+            throw new DuplicateEntityException();
+        }
+    }
+
+    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+        Theme theme = themeDao.findById(themeId);
+        checkEmptyTheme(theme);
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public List<Reservation> findAllByMemberId(Member member) {
-        if (member == null) {
-            throw new AuthenticationException();
+    private void checkEmptyTheme(Theme theme) {
+        if (theme == null) {
+            throw new NullPointerException();
         }
+    }
+
+    public List<Reservation> findAllByMemberId(Member member) {
+        checkEmptyMember(member);
 
         return reservationDao.findAllByMemberId(member.getId());
     }
 
     public void deleteById(Member member, Long id) {
         Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
-
-        if (!reservation.sameMember(member)) {
-            throw new AuthenticationException();
-        }
+        checkEmptyReservation(reservation);
+        checkReservationIsMine(member, reservation);
 
         reservationDao.deleteById(id);
 
+        // get reservationWaiting which has first priority for this reservation
         ReservationWaiting reservationWaiting = reservationWaitingDao.findByScheduleId(reservation.getSchedule().getId());
 
+        // if there is no reservationWaiting, do nothing
         if (reservationWaiting == null) {
             return;
         }
@@ -93,5 +106,17 @@ public class ReservationService {
         reservationWaitingDao.deleteById(reservationWaiting.getId());
 
         reservationDao.save(Reservation.of(reservationWaiting));
+    }
+
+    private static void checkReservationIsMine(Member member, Reservation reservation) {
+        if (!reservation.sameMember(member)) {
+            throw new AuthenticationException();
+        }
+    }
+
+    private static void checkEmptyReservation(Reservation reservation) {
+        if (reservation == null) {
+            throw new NullPointerException();
+        }
     }
 }
