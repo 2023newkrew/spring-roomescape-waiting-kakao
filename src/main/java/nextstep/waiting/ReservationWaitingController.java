@@ -1,8 +1,10 @@
 package nextstep.waiting;
 
 import auth.LoginMember;
-import auth.UserDetails;
+import auth.dto.UserDetails;
 import nextstep.member.Member;
+import nextstep.waiting.dto.ReservationWaitingRequest;
+import nextstep.waiting.dto.ReservationWaitingResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

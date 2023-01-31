@@ -1,5 +1,7 @@
 package auth;
 
+import auth.dto.UserDetails;
+
 import java.util.Optional;
 
 public interface AuthDao {

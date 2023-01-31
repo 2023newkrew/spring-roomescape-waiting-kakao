@@ -1,7 +1,8 @@
-package nextstep.theme;
+package nextstep.theme.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import nextstep.theme.Theme;
 
 public class ThemeRequest {
     private String name;

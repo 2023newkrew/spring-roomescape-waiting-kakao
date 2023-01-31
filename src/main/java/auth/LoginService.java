@@ -1,5 +1,8 @@
 package auth;
 
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
+import auth.dto.UserDetails;
 import nextstep.support.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 

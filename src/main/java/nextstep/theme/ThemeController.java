@@ -1,5 +1,6 @@
 package nextstep.theme;
 
+import nextstep.theme.dto.ThemeRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

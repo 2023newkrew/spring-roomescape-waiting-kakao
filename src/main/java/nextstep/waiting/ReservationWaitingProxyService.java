@@ -1,10 +1,9 @@
 package nextstep.waiting;
 
 import nextstep.member.Member;
-import nextstep.reservation.ReservationRequest;
 import nextstep.reservation.ReservationService;
-import nextstep.schedule.Schedule;
 import nextstep.support.DuplicateEntityException;
+import nextstep.waiting.dto.ReservationWaitingResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

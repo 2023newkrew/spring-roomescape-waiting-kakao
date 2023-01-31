@@ -1,5 +1,6 @@
-package nextstep.reservation;
+package nextstep.reservation.dto;
 
+import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 
 public class ReservationResponse {

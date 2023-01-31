@@ -1,4 +1,4 @@
-package nextstep.waiting;
+package nextstep.waiting.dto;
 
 public class ReservationWaitingRequest {
     private final Long scheduleId;

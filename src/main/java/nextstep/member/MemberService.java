@@ -1,5 +1,6 @@
 package nextstep.member;
 
+import nextstep.member.dto.MemberRequest;
 import org.springframework.stereotype.Service;
 
 @Service

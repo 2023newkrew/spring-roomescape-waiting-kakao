@@ -1,7 +1,8 @@
-package nextstep.member;
+package nextstep.member.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import nextstep.member.Member;
 
 public class MemberRequest {
     private String username;
