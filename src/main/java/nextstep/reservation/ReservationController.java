@@ -1,17 +1,14 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
 import auth.LoginMember;
 import auth.UserDetails;
+import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import java.net.URI;
-import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,15 +49,5 @@ public class ReservationController {
         Member member = memberService.findById(userDetails.getId());
         reservationService.deleteById(member, id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

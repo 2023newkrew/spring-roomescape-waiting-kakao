@@ -1,10 +1,13 @@
 package nextstep.member;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.exceptions.exception.NotExistEntityException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberService {
     private final MemberDao memberDao;
 
@@ -13,6 +16,6 @@ public class MemberService {
     }
 
     public Member findById(Long id) {
-        return memberDao.findById(id).orElseThrow(NullPointerException::new);
+        return memberDao.findById(id).orElseThrow(NotExistEntityException::new);
     }
 }

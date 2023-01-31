@@ -1,9 +1,11 @@
 package nextstep.waiting;
 
-import auth.AuthenticationException;
+import auth.AuthorizationException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import nextstep.exceptions.exception.NotExistEntityException;
+import nextstep.exceptions.exception.NotLoggedInException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -22,10 +24,11 @@ public class WaitingService {
 
     public Long create(Member member, WaitingRequest waitingRequest) {
         if (member == null) {
-            throw new AuthenticationException();
+            throw new NotLoggedInException();
         }
 
-        Schedule schedule = scheduleDao.findById(waitingRequest.getScheduleId()).orElseThrow(NullPointerException::new);
+        Schedule schedule = scheduleDao.findById(waitingRequest.getScheduleId())
+                .orElseThrow(NotExistEntityException::new);
         List<Waiting> waitings = waitingDao.findByScheduleId(schedule.getId());
         if (waitings.isEmpty()) {
             throw new UnsupportedOperationException();
@@ -40,14 +43,14 @@ public class WaitingService {
     }
 
     public List<Waiting> findAllByThemeIdAndDate(Long themeId, String date) {
-        themeDao.findById(themeId).orElseThrow(NullPointerException::new);
+        themeDao.findById(themeId).orElseThrow(NotExistEntityException::new);
         return waitingDao.findAllByThemeIdAndDate(themeId, date);
     }
 
     public void deleteById(Member member, Long id) {
-        Waiting waiting = waitingDao.findById(id).orElseThrow(NullPointerException::new);
+        Waiting waiting = waitingDao.findById(id).orElseThrow(NotExistEntityException::new);
         if (!waiting.isCreatedBy(member)) {
-            throw new AuthenticationException();
+            throw new AuthorizationException();
         }
         waitingDao.deleteById(id);
     }

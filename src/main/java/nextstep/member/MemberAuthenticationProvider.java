@@ -1,10 +1,10 @@
 package nextstep.member;
 
-import auth.AuthenticationException;
 import auth.AuthenticationProvider;
 import auth.TokenRequest;
 import auth.UserDetails;
 import lombok.RequiredArgsConstructor;
+import nextstep.exceptions.exception.LoginFailException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,9 +16,9 @@ public class MemberAuthenticationProvider implements AuthenticationProvider {
     @Override
     public UserDetails getUserDetails(TokenRequest tokenRequest){
         Member member = memberDao.findByUsername(tokenRequest.getUsername())
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(LoginFailException::new);
         if (member == null || !member.doesPasswordMatch(tokenRequest.getPassword())) {
-            throw new AuthenticationException();
+            throw new LoginFailException();
         }
         return new UserDetails(member.getId(), member.getRole());
     }

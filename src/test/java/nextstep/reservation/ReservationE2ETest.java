@@ -1,8 +1,12 @@
 package nextstep.reservation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.AbstractE2ETest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
@@ -12,25 +16,23 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 class ReservationE2ETest extends AbstractE2ETest {
     public static final String DATE = "2022-08-11";
     public static final String TIME = "13:00";
-
-    private ReservationRequest request;
+    public static final String THEME_NAME = "테마이름";
+    public static final String THEME_DESC = "테마설명";
+    public static final int THEME_PRICE = 22_000;
+    private ReservationRequest reservationRequest;
     private Long themeId;
     private Long scheduleId;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
+        ThemeRequest themeRequest = new ThemeRequest(THEME_NAME, THEME_DESC, THEME_PRICE);
         var themeResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(themeRequest)
                 .when().post("/admin/themes")
@@ -43,7 +45,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(scheduleRequest)
                 .when().post("/admin/schedules")
@@ -53,39 +55,34 @@ class ReservationE2ETest extends AbstractE2ETest {
         String[] scheduleLocation = scheduleResponse.header("Location").split("/");
         scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
-        request = new ReservationRequest(
-                scheduleId
-        );
+        reservationRequest = new ReservationRequest(scheduleId);
     }
 
     @DisplayName("예약을 생성한다")
     @Test
     void create() {
-        var response = RestAssured
+        String reservationLocation = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .body(request)
+                .auth().oauth2(adminToken)
+                .body(reservationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
                 .then().log().all()
-                .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().header("Location");
+        assertTrue(reservationLocation.matches("/reservations/[1-9][0-9]*"));
     }
 
-    @DisplayName("비로그인 사용자가 예약을 생성한다")
+    @DisplayName("비로그인 사용자가 예약을 생성 시 실패한다")
     @Test
-    void createWithoutLogin() {
-        var response = RestAssured
+    void createWithoutLoginFail() {
+        RestAssured
                 .given().log().all()
-                .body(request)
+                .body(reservationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
                 .then().log().all()
-                .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        //assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
     @DisplayName("예약을 조회한다")
@@ -102,7 +99,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
 
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations).hasSize(1);
     }
 
     @DisplayName("예약을 삭제한다")
@@ -112,7 +109,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(notAdminToken)
                 .when().delete(reservation.header("Location"))
                 .then().log().all()
                 .extract();
@@ -127,8 +124,8 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .body(request)
+                .auth().oauth2(adminToken)
+                .body(reservationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
                 .then().log().all()
@@ -149,7 +146,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
 
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
-        assertThat(reservations.size()).isEqualTo(0);
+        assertThat(reservations).isEmpty();
     }
 
     @DisplayName("없는 예약을 삭제한다")
@@ -157,7 +154,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void createNotExistReservation() {
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(notAdminToken)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();
@@ -165,27 +162,24 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("다른 사람이 예약을 삭제한다")
+    @DisplayName("다른 사람의 예약을 삭제한다")
     @Test
     void deleteReservationOfOthers() {
-        createReservation();
+        var reservation = createReservation();
 
-        var response = RestAssured
+        RestAssured
                 .given().log().all()
-                .auth().oauth2("other-token")
-                .when().delete("/reservations/1")
+                .auth().oauth2(adminToken)
+                .when().delete(reservation.header("Location"))
                 .then().log().all()
-                .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .body(request)
+                .auth().oauth2(notAdminToken)
+                .body(reservationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
                 .then().log().all()
@@ -195,16 +189,16 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("내 예약을 조회한다")
     @Test
     void showMyReservations() {
-        var reservation = createReservation();
+        createReservation();
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(notAdminToken)
                 .when().get("/reservations/mine")
                 .then().log().all()
                 .extract();
 
         List<ReservationResponse> reservations = response.jsonPath().getList(".", ReservationResponse.class);
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations).hasSize(1);
     }
 }

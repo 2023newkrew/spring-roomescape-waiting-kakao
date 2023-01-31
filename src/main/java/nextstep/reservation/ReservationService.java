@@ -1,17 +1,18 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
+import auth.AuthorizationException;
+import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import nextstep.exceptions.exception.DuplicatedEntityException;
+import nextstep.exceptions.exception.NotExistEntityException;
+import nextstep.exceptions.exception.NotLoggedInException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +25,15 @@ public class ReservationService {
 
     public Long create(Member member, ReservationRequest reservationRequest) {
         if (member == null) {
-            throw new AuthenticationException();
+            throw new NotLoggedInException();
         }
 
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId()).orElseThrow(NullPointerException::new);
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(NotExistEntityException::new);
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
+            throw new DuplicatedEntityException();
         }
 
         Reservation newReservation = Reservation.builder()
@@ -43,14 +45,14 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
-        themeDao.findById(themeId).orElseThrow(NullPointerException::new);
+        themeDao.findById(themeId).orElseThrow(NotExistEntityException::new);
         return changeToResponse(reservationDao.findAllByThemeIdAndDate(themeId, date));
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id).orElseThrow(NullPointerException::new);
+        Reservation reservation = reservationDao.findById(id).orElseThrow(NotExistEntityException::new);
         if (!reservation.isCreatedBy(member)) {
-            throw new AuthenticationException();
+            throw new AuthorizationException();
         }
         reservationDao.deleteById(id);
     }
@@ -59,7 +61,7 @@ public class ReservationService {
         return changeToResponse(reservationDao.findByMemberId(memberId));
     }
 
-    private List<ReservationResponse> changeToResponse(List<Reservation> reservations){
+    private List<ReservationResponse> changeToResponse(List<Reservation> reservations) {
         return reservations.stream()
                 .map(ReservationResponse::of)
                 .collect(Collectors.toList());

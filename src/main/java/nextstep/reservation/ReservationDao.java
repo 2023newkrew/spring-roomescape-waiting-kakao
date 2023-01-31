@@ -1,20 +1,21 @@
 package nextstep.reservation;
 
 import auth.Role;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.util.Collections;
-import java.util.List;
 
 @Component
 public class ReservationDao {
@@ -57,7 +58,6 @@ public class ReservationDao {
             ps.setLong(1, reservation.getSchedule().getId());
             ps.setLong(2, reservation.getMember().getId());
             return ps;
-
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
@@ -131,11 +131,10 @@ public class ReservationDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
                 "where member.id = ?;";
-
         try {
             return jdbcTemplate.query(sql, rowMapper, id);
-        } catch (Exception e) {
-            return Collections.emptyList();
+        } catch (DataAccessException e) {
+            throw new IllegalStateException();
         }
     }
 }
