@@ -48,8 +48,6 @@ public class WaitingE2ETest extends AbstractE2ETest {
         scheduleId0 = Long.parseLong(scheduleLocation0[scheduleLocation0.length - 1]);
     }
 
-
-
     @DisplayName("예약을 순차적으로 시도해 예약 대기를 유도한다.")
     @Test
     void createNotExist() {
@@ -124,7 +122,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
         var myWaiting = response.jsonPath().getList(".", MyWaiting.class);
         assertThat(myWaiting)
                 .hasSize(2)
-                .satisfies((elem)->{
+                .satisfies((elem) -> {
                     assertThat(elem.get(0).getWaitNum()).isEqualTo(1);
                     assertThat(elem.get(1).getWaitNum()).isEqualTo(2);
                 })

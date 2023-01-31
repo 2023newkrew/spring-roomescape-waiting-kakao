@@ -15,21 +15,21 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final MemberDao memberDao;
 
-    public WebMvcConfiguration(MemberDao memberDao){
+    public WebMvcConfiguration(MemberDao memberDao) {
         this.memberDao = memberDao;
     }
 
     @Bean
-    public JwtTokenProvider jwtTokenProvider(){
+    public JwtTokenProvider jwtTokenProvider() {
         return new JwtTokenProvider();
     }
 
     @Bean
-    public LoginService loginService(){
+    public LoginService loginService() {
         return new LoginService(
-                (username, password)->{
+                (username, password) -> {
                     Member member = memberDao.findByUsername(username);
-                    if(member.checkWrongPassword(password)){
+                    if (member.checkWrongPassword(password)) {
                         return null;
                     }
                     return new TokenMember(
@@ -37,7 +37,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                             member.getRole()
                     );
                 },
-                (id)->{
+                (id) -> {
                     Member member = memberDao.findById(id);
                     return new TokenMember(
                             member.getId(),
@@ -49,7 +49,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public LoginController loginController(){
+    public LoginController loginController() {
         return new LoginController(loginService());
     }
 
