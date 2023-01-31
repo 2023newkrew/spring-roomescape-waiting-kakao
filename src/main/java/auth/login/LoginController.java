@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class LoginController {
+
     private final LoginService loginService;
 
     @PostMapping("/login/token")
-    public ResponseEntity<TokenResponse> loginToken(@RequestBody TokenRequest tokenRequest) {
+    public ResponseEntity<TokenResponse> loginToken(@RequestBody final TokenRequest tokenRequest) {
         TokenResponse token = loginService.createToken(tokenRequest);
         return ResponseEntity.ok(token);
     }

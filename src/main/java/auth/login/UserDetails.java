@@ -9,6 +9,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class UserDetails {
+
     private Long id;
     private String role;
 

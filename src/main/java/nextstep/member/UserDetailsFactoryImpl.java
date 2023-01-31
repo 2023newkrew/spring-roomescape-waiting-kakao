@@ -13,7 +13,7 @@ public class UserDetailsFactoryImpl implements UserDetailsFactory {
     private final MemberDao memberDao;
 
     @Override
-    public UserDetails makeUserDetails(String username, String password) {
+    public UserDetails makeUserDetails(final String username, final String password) {
         Member member = memberDao.findByUsername(username);
         if (member == null || member.checkWrongPassword(password)) {
             throw new AuthenticationException(NOT_AUTHORIZED.getMessage());
@@ -22,7 +22,7 @@ public class UserDetailsFactoryImpl implements UserDetailsFactory {
     }
 
     @Override
-    public UserDetails convertToUserDetails(Long id, String role) {
+    public UserDetails convertToUserDetails(final Long id, final String role) {
         return UserDetails.builder()
                 .id(id)
                 .role(role)
