@@ -52,8 +52,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ErrorResponse.toResponseEntity(ErrorCode.NOT_OWN_RESERVATION_WAITING);
     }
 
-//    @ExceptionHandler(NotAdminRoleException.class)
-//    ResponseEntity<ErrorResponse> handleNotAdminRoleException() {
-//        return ErrorResponse.toResponseEntity(ErrorCode.NOT_ADMIN_ROLE);
-//    }
+    @ExceptionHandler(NotAdminRoleException.class)
+    ResponseEntity<ErrorResponse> handleNotAdminRoleException() {
+        return ErrorResponse.toResponseEntity(ErrorCode.NOT_ADMIN_ROLE);
+    }
 }

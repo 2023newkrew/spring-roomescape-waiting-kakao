@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
     UNAUTHENTICATED(HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
-//    NOT_ADMIN_ROLE(HttpStatus.FORBIDDEN, "관리자 권한이 없습니다."),
+    NOT_ADMIN_ROLE(HttpStatus.FORBIDDEN, "관리자 권한이 없습니다."),
     ALREADY_RESERVED_SCHEDULE(HttpStatus.BAD_REQUEST, "이미 자신의 예약이 존재하는 스케줄에는 예약 대기를 할 수 없습니다."),
     DUPLICATE_RESERVATION(HttpStatus.BAD_REQUEST, "동일한 스케줄에 이미 예약이 존재합니다."),
     DUPLICATE_RESERVATION_WAITING(HttpStatus.BAD_REQUEST, "동일한 스케줄에 이미 예약 대기가 존재합니다."),
