@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
 import nextstep.member.MemberRequest;
 import nextstep.reservation.ReservationRequest;
+import nextstep.role.Role;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     public void setUp() {
         super.setUp();
 
-        MemberRequest memberBody = new MemberRequest(USERNAME2, PASSWORD2, "name", "010-1234-5678", "ADMIN");
+        MemberRequest memberBody = new MemberRequest(USERNAME2, PASSWORD2, "name", "010-1234-5678", Role.ADMIN.name());
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -64,7 +65,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
         token2 = response.as(TokenResponse.class);
         //////////
-        MemberRequest memberBody2 = new MemberRequest(USERNAME3, PASSWORD3, "name", "010-1234-5678", "ADMIN");
+        MemberRequest memberBody2 = new MemberRequest(USERNAME3, PASSWORD3, "name", "010-1234-5678", Role.ADMIN.name());
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -5,6 +5,7 @@ import auth.dto.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.RoomEscapeApplication;
 import nextstep.member.MemberRequest;
+import nextstep.role.Role;
 import nextstep.theme.ThemeRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,7 @@ public class AuthE2ETest {
 
     @BeforeEach
     void setUp() {
-        MemberRequest body = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        MemberRequest body = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", Role.ADMIN.name());
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
