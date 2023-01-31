@@ -2,6 +2,7 @@ package nextstep.reservation_waiting;
 
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
+import nextstep.schedule.Schedule;
 import nextstep.support.exception.DuplicateEntityException;
 import nextstep.support.exception.NotOwnReservationWaitingException;
 import org.junit.jupiter.api.DisplayName;
@@ -55,8 +56,12 @@ class ReservationWaitingServiceTest {
     @Test
     @DisplayName("자신의 예약 대기 목록 조회 테스트")
     void showOwnTest() {
+        Schedule schedule = Schedule.builder()
+                .id(1L)
+                .build();
         List<ReservationWaiting> reservationWaitings = List.of(ReservationWaiting.builder()
                 .id(1L)
+                .schedule(schedule)
                 .build(), ReservationWaiting.builder()
                 .id(2L)
                 .build());
@@ -65,6 +70,27 @@ class ReservationWaitingServiceTest {
                 .build();
         when(reservationWaitingDao.findAllByMemberId(anyLong())).thenReturn(reservationWaitings);
         assertThat(reservationWaitingService.findOwn(member)).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("대기 번호 계산 기능 테스트")
+    void calculateWaitingNumberTest() {
+        Schedule schedule = Schedule.builder()
+                .id(1L)
+                .build();
+        List<ReservationWaiting> reservationWaitings = List.of(ReservationWaiting.builder()
+                .id(1L)
+                .build(), ReservationWaiting.builder()
+                .id(2L)
+                .build(), ReservationWaiting.builder()
+                .id(3L)
+                .schedule(schedule)
+                .build(), ReservationWaiting.builder()
+                .id(4L)
+                .build());
+        ReservationWaiting reservationWaiting = reservationWaitings.get(2);
+        when(reservationWaitingDao.findAllByScheduleId(anyLong())).thenReturn(reservationWaitings);
+        assertThat(reservationWaitingService.calculateWaitNumber(reservationWaiting)).isEqualTo(2L);
     }
 
     @Test

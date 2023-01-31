@@ -41,4 +41,22 @@ public class ReservationWaitingService {
     public List<ReservationWaiting> findOwn(Member member) {
         return reservationWaitingDao.findAllByMemberId(member.getId());
     }
+
+    public ReservationWaitingResponse convertToReservationWaitingResponse(ReservationWaiting reservationWaiting) {
+        Long waitNum = calculateWaitNumber(reservationWaiting);
+
+        return ReservationWaitingResponse.builder()
+                .id(reservationWaiting.getId())
+                .schedule(reservationWaiting.getSchedule())
+                .waitNum(waitNum)
+                .build();
+    }
+
+    public Long calculateWaitNumber(ReservationWaiting reservationWaiting) {
+        return reservationWaitingDao.findAllByScheduleId(reservationWaiting.getSchedule()
+                        .getId())
+                .stream()
+                .filter(rw ->  rw.getId() <= reservationWaiting.getId())
+                .count();
+    }
 }
