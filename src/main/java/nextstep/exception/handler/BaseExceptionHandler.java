@@ -1,6 +1,8 @@
-package nextstep.exception;
+package nextstep.exception.handler;
 
 import auth.exception.AuthenticationException;
+import nextstep.exception.AuthorizationWebException;
+import nextstep.exception.BaseWebException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,7 @@ public class BaseExceptionHandler {
     @ExceptionHandler(BaseWebException.class)
     public ResponseEntity<String> onBaseException(BaseWebException e){
         logger.error(e.getFullMessage());
-        return ResponseEntity.status(e.status).body(e.getMessage());
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
     @ExceptionHandler(AuthorizationWebException.class)
     public ResponseEntity<String> onUnAuthorizationException(AuthorizationWebException e){
