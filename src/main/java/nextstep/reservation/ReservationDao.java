@@ -39,13 +39,17 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        String sql = "SELECT *, MIN(reservation.created_datetime) " +
-                "from reservation " +
-                "inner join schedule on reservation.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation.member_id = member.id " +
-                "where theme.id = ? and schedule.date = ? " +
-                "group by schedule.id";
+        String sql = "select *\n" +
+                "from RESERVATION,\n" +
+                "     (SELECT R.id RESERVATION_ID,\n" +
+                "             ROW_NUMBER() OVER (PARTITION BY R.SCHEDULE_ID ORDER BY R.CREATED_DATETIME) WAIT_NUM\n" +
+                "      FROM RESERVATION R)\n" +
+                "         JOIN SCHEDULE ON RESERVATION.SCHEDULE_ID = SCHEDULE.ID\n" +
+                "         JOIN THEME ON SCHEDULE.THEME_ID = THEME.ID\n" +
+                "         JOIN MEMBER ON RESERVATION.MEMBER_ID = MEMBER.ID\n" +
+                "where RESERVATION.id = RESERVATION_ID\n" +
+                "  and WAIT_NUM = 1\n" +
+                "  and theme.id = ? and schedule.date = ?;";
 
         return jdbcTemplate.query(sql, reservationRowMapper, themeId, Date.valueOf(date));
     }
