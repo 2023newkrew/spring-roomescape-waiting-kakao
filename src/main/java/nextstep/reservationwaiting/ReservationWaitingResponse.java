@@ -3,9 +3,11 @@ package nextstep.reservationwaiting;
 import nextstep.schedule.Schedule;
 
 public class ReservationWaitingResponse {
-    private final Long id;
-    private final Schedule schedule;
-    private final Long waitNum;
+    private Long id;
+    private Schedule schedule;
+    private Long waitNum;
+
+    public ReservationWaitingResponse() {}
 
     public ReservationWaitingResponse(Long id, Schedule schedule, Long waitNum) {
         this.id = id;
