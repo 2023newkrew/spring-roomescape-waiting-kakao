@@ -1,0 +1,29 @@
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/test;AUTO_SERVER=true
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+
+security:
+  jwt:
+    token:
+      secret-key: learning-test-spring
+      expire-length: 3_600_000

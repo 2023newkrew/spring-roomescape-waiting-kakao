@@ -1,28 +1,31 @@
 package nextstep.theme;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-
 @Component
 public class ThemeDao {
-    private JdbcTemplate jdbcTemplate;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    public ThemeDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("desc"),
-            resultSet.getInt("price")
-    );
+    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> Theme.builder()
+            .id(resultSet.getLong("id"))
+            .name(resultSet.getString("name"))
+            .desc(resultSet.getString("desc"))
+            .price(resultSet.getInt("price"))
+            .build();
 
     public Long save(Theme theme) {
         String sql = "INSERT INTO theme (name, desc, price) VALUES (?, ?, ?);";
@@ -34,15 +37,18 @@ public class ThemeDao {
             ps.setString(2, theme.getDesc());
             ps.setInt(3, theme.getPrice());
             return ps;
-
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
     }
 
-    public Theme findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, desc, price from theme where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<Theme> findAll() {
