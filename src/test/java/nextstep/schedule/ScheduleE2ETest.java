@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ScheduleE2ETest extends AbstractE2ETest {
+class ScheduleE2ETest extends AbstractE2ETest {
     private Long themeId;
 
     @BeforeEach
@@ -34,7 +34,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
 
     @DisplayName("스케줄을 생성한다")
     @Test
-    public void createSchedule() {
+    void createSchedule() {
         ScheduleRequest body = new ScheduleRequest(themeId, "2022-08-11", "13:00");
         RestAssured
                 .given().log().all()
@@ -48,7 +48,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
 
     @DisplayName("스케줄을 조회한다")
     @Test
-    public void showSchedules() {
+    void showSchedules() {
         requestCreateSchedule();
 
         var response = RestAssured
@@ -60,7 +60,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
+        assertThat(response.jsonPath().getList(".")).hasSize(1);
     }
 
     @DisplayName("예약을 삭제한다")

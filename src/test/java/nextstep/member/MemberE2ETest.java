@@ -61,7 +61,7 @@ public class MemberE2ETest {
 
     @DisplayName("멤버를 생성한다")
     @Test
-    public void create() {
+    void create() {
         MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given()
@@ -79,7 +79,7 @@ public class MemberE2ETest {
 
     @DisplayName("내 정보를 조회한다")
     @Test
-    public void showThemes() {
+    void showThemes() {
         var response = RestAssured
                 .given()
                 .log()

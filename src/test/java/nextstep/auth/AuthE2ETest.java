@@ -23,7 +23,6 @@ public class AuthE2ETest {
     int port;
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
-    private Long memberId;
 
     @BeforeEach
     void setUp() {
@@ -45,7 +44,7 @@ public class AuthE2ETest {
 
     @DisplayName("토큰을 생성한다")
     @Test
-    public void create() {
+    void create() {
         TokenRequest body = new TokenRequest(USERNAME, PASSWORD);
         var response = RestAssured
                 .given()

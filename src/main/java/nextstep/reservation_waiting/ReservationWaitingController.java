@@ -25,7 +25,7 @@ public class ReservationWaitingController {
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<Void> createReservationWaiting(@LoginMember UserDetails userDetails, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
+    public ResponseEntity<URI> createReservationWaiting(@LoginMember UserDetails userDetails, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
         Member member = memberService.findById(userDetails.getId());
         Optional<Reservation> findOptionalReservation = reservationService.findByScheduleId(reservationWaitingRequest.getScheduleId());
         if (findOptionalReservation.isEmpty()) {
