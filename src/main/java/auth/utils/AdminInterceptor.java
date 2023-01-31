@@ -1,5 +1,6 @@
-package auth;
+package auth.utils;
 
+import auth.Role;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

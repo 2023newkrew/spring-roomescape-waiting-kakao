@@ -1,8 +1,8 @@
 package nextstep.member;
 
-import auth.AuthenticationProvider;
 import auth.TokenRequest;
 import auth.UserDetails;
+import auth.utils.AuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import nextstep.exceptions.exception.LoginFailException;
 import org.springframework.stereotype.Component;

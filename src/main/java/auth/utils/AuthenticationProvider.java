@@ -1,4 +1,7 @@
-package auth;
+package auth.utils;
+
+import auth.TokenRequest;
+import auth.UserDetails;
 
 public interface AuthenticationProvider {
 
