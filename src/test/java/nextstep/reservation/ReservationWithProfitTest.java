@@ -14,16 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.test.context.event.ApplicationEvents;
-import org.springframework.test.context.event.RecordApplicationEvents;
 
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static io.restassured.RestAssured.given;
-import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ReservationWithProfitTest extends AbstractE2ETest {
@@ -118,6 +113,48 @@ public class ReservationWithProfitTest extends AbstractE2ETest {
 
         List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
         assertThat(reservationResponses.get(0).getStatus()).isEqualTo(ReservationStatus.REJECTED);
+    }
+
+    @Test
+    @DisplayName("예약 취소 대기 상태의 예약을 취소하면 환불 이력이 추가되고 예약이 취소된다.")
+    void Should_InsertProfitAndCancelReservation_When_IfCancelReservationIsWaited() throws InterruptedException {
+        createReservation();
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/approve").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/cancel").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                get("/reservations/1/cancel-approve").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        threadPoolTaskExecutor.getThreadPoolExecutor().awaitTermination(1, TimeUnit.SECONDS);
+        assertThat(profitDao.findAll().size()).isEqualTo(1);
+
+        var response = given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservationResponses.get(0).getStatus()).isEqualTo(ReservationStatus.CANCELED);
     }
 
     private ExtractableResponse<Response> createReservation() {
