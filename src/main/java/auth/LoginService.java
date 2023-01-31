@@ -1,5 +1,7 @@
 package auth;
 
+import auth.exception.AuthErrorCode;
+import auth.exception.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,7 @@ public class LoginService {
     public TokenResponse createToken(TokenRequest tokenRequest) {
         UserDetails userDetails = userDetailsService.findByUsername(tokenRequest.getUsername());
         if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {
-            throw new AuthenticationException();
+            throw new AuthException(AuthErrorCode.LOGIN_FAILED_WRONG_USERNAME_PASSWORD);
         }
 
         String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());

@@ -20,11 +20,7 @@ public class LoginUserDetailsArgumentResolver implements HandlerMethodArgumentRe
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        try {
-            String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
-            return loginService.extractUserDetails(credential);
-        } catch (Exception e) {
-            return null;
-        }
+        String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
+        return loginService.extractUserDetails(credential);
     }
 }

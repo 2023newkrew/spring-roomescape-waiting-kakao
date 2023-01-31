@@ -4,6 +4,7 @@ import auth.AdminInterceptor;
 import auth.JwtTokenProvider;
 import auth.LoginService;
 import auth.LoginUserDetailsArgumentResolver;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import nextstep.config.annotation.LoginMemberArgumentResolver;
 import org.springframework.context.annotation.Configuration;
@@ -18,10 +19,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final LoginService loginService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider, objectMapper)).addPathPatterns("/admin/**");
     }
 
     @Override
