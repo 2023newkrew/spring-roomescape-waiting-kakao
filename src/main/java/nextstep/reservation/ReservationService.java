@@ -12,7 +12,6 @@ import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -95,29 +94,26 @@ public class ReservationService {
 
     public void deleteWaitingById(Member member, Long id) {
         deleteById(member, id);
-	}
+    }
 
     public List<Reservation> getReservationsByMember(Member member) {
         if (member == null) {
             throw new AuthenticationException();
         }
+        // 멤버의 모든 예약 조회
         List<Reservation> reservations = reservationDao.findByMemberId(member.getId());
-        List<Reservation> reservationsNotWaiting = reservations.stream()
+
+        // 멤버가 가진 모든 예약의 scheduleId를 활용하여 첫 번째 순서인 예약들 조회
+        List<Reservation> firstReservations = reservations.stream()
                 .map(Reservation::getSchedule)
                 .map(Schedule::getId)
-                .map(reservationDao::findByScheduleId)
-                .map(reservationsBySchedule -> reservationsBySchedule.stream()
-                        .min(Comparator.comparing(Reservation::getWaitTicketNumber))
-                        .orElseThrow())
-                .collect(Collectors.toList());
+                .map(reservationDao::findFirstByScheduleId)
+                .toList();
 
-        List<Reservation> result = new ArrayList<>();
-        for (int i = 0; i < reservations.size(); i++) {
-            if (reservations.get(i).getWaitTicketNumber() == reservationsNotWaiting.get(i).getWaitTicketNumber()) {
-                result.add(reservations.get(i));
-            }
-        }
-        return result;
+        // 멤버가 가진 예약들 중 첫 번째 순서인 예약들을 반환
+        return reservations.stream()
+                .filter(firstReservations::contains)
+                .collect(Collectors.toList());
     }
 
     public List<ReservationWaitingResponseDto> getReservationWaitingsByMember(Member member) {
