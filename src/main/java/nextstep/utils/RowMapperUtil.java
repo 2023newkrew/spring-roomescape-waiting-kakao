@@ -8,7 +8,6 @@ import nextstep.theme.Theme;
 import org.springframework.jdbc.core.RowMapper;
 
 public class RowMapperUtil {
-
     public static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation.id"),
             new Schedule(

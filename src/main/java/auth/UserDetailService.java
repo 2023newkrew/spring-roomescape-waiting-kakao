@@ -10,7 +10,11 @@ public class UserDetailService {
     private final MemberDao memberDao;
 
     public UserDetail getUserDetailByUsername(String username) {
-        return new UserDetail(memberDao.findByUsername(username));
+        Member member = memberDao.findByUsername(username);
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+        return new UserDetail(member);
     }
 
     public Member getMemberById(Long id) {

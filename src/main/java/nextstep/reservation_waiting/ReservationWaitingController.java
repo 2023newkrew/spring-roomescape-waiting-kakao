@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
-@RestController
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/reservation-waitings")
 public class ReservationWaitingController {
     private final ReservationWaitingService reservationWaitingService;
@@ -29,9 +29,7 @@ public class ReservationWaitingController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<ReservationWaitingResponse>> showMyReservationWaiting(
-            @LoginMember Member member
-    ) {
+    public ResponseEntity<List<ReservationWaitingResponse>> showMyReservationWaiting(@LoginMember Member member) {
         List<ReservationWaitingResponse> reservationWaiting = reservationWaitingService.findAllByMember(member);
         return ResponseEntity.ok(reservationWaiting);
     }
