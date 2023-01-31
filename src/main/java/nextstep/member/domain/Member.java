@@ -1,42 +1,18 @@
 package nextstep.member.domain;
 
-import auth.domain.UserDetails;
 import auth.domain.UserRole;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-import java.util.Objects;
+@Value
+public class Member {
+    Long id;
+    String username;
+    String password;
+    String name;
+    String phone;
+    UserRole role;
 
-@AllArgsConstructor
-public class Member implements UserDetails {
-
-    @Getter
-    @Setter
-    private Long id;
-
-    @Getter
-    private final String username;
-
-    @Getter
-    private final String password;
-
-    @Getter
-    private final String name;
-
-    @Getter
-    private final String phone;
-
-    @Getter
-    private final UserRole role;
-
-    @Override
-    public boolean isWrongPassword(String password) {
-        return !Objects.equals(this.password, password);
-    }
-
-    @Override
-    public boolean isNotAdmin() {
-        return role != UserRole.ADMIN;
+    public MemberEntity toEntityWithRole(UserRole role) {
+        return new MemberEntity(id, username, password, name, phone, role);
     }
 }

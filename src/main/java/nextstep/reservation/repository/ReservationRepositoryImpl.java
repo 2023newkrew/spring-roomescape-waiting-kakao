@@ -1,7 +1,7 @@
 package nextstep.reservation.repository;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.repository.jdbc.ReservationResultSetParser;
 import nextstep.reservation.repository.jdbc.ReservationStatementCreator;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,7 +31,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Reservation insert(Reservation reservation) {
+    public ReservationEntity insert(ReservationEntity reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> statementCreator.createInsert(connection, reservation),
@@ -43,7 +43,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Reservation getById(Long id) {
+    public ReservationEntity getById(Long id) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectById(connection, id),
                 resultSetParser::parseReservation

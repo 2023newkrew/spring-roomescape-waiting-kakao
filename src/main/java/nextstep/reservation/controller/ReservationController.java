@@ -2,9 +2,11 @@ package nextstep.reservation.controller;
 
 import auth.domain.LoginUser;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.Member;
+import nextstep.member.domain.MemberEntity;
+import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
+import nextstep.reservation.mapper.ReservationMapper;
 import nextstep.reservation.service.ReservationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +22,13 @@ public class ReservationController {
 
     private final ReservationService service;
 
+    private final ReservationMapper mapper;
+
     @PostMapping
     public ResponseEntity<Void> createReservation(
-            @LoginUser Member member,
+            @LoginUser MemberEntity member,
             @RequestBody ReservationRequest request) {
-        ReservationResponse reservation = service.create(member.getId(), request);
+        ReservationEntity reservation = service.create(mapper.fromRequest(member.getId(), request));
         URI location = URI.create(RESERVATION_PATH + reservation.getId());
 
         return ResponseEntity.created(location).build();
@@ -32,12 +36,13 @@ public class ReservationController {
 
     @GetMapping("/{reservation_id}")
     public ResponseEntity<ReservationResponse> getReservation(@PathVariable("reservation_id") Long reservationId) {
-        return ResponseEntity.ok(service.getById(reservationId));
+        ReservationEntity reservation = service.getById(reservationId);
+        return ResponseEntity.ok(mapper.toResponse(reservation));
     }
 
     @DeleteMapping("/{reservation_id}")
     public ResponseEntity<Boolean> deleteReservation(
-            @LoginUser Member member,
+            @LoginUser MemberEntity member,
             @PathVariable("reservation_id") Long reservationId) {
         return ResponseEntity.ok(service.deleteById(member.getId(), reservationId));
     }

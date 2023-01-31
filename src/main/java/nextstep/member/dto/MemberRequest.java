@@ -24,7 +24,7 @@ public class MemberRequest {
     @NotBlank(message = "phone은 공백일 수 없습니다.")
     private final String phone;
 
-    public MemberRequest() {
+    MemberRequest() {
         this(null, null, null, null);
     }
 }

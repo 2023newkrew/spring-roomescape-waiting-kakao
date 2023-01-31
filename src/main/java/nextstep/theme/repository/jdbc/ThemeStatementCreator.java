@@ -1,7 +1,7 @@
 package nextstep.theme.repository.jdbc;
 
 
-import nextstep.theme.domain.Theme;
+import nextstep.theme.domain.ThemeEntity;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -28,14 +28,14 @@ public class ThemeStatementCreator {
 
 
     public PreparedStatement createInsert(
-            Connection connection, Theme theme) throws SQLException {
+            Connection connection, ThemeEntity theme) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
         setTheme(ps, theme);
 
         return ps;
     }
 
-    private void setTheme(PreparedStatement ps, Theme theme) throws SQLException {
+    private void setTheme(PreparedStatement ps, ThemeEntity theme) throws SQLException {
         ps.setString(1, theme.getName());
         ps.setString(2, theme.getDesc());
         ps.setInt(3, theme.getPrice());
@@ -58,7 +58,7 @@ public class ThemeStatementCreator {
         return connection.prepareStatement(SELECT_ALL_SQL);
     }
 
-    public PreparedStatement createUpdate(Connection connection, Long id, Theme theme) throws SQLException {
+    public PreparedStatement createUpdate(Connection connection, Long id, ThemeEntity theme) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(UPDATE_SQL);
         setTheme(ps, theme);
         ps.setLong(4, id);

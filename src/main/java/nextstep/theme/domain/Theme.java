@@ -1,22 +1,16 @@
 package nextstep.theme.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-@AllArgsConstructor
+@Value
 public class Theme {
 
-    @Getter
-    @Setter
-    private Long id;
+    Long id;
+    String name;
+    String desc;
+    Integer price;
 
-    @Getter
-    private final String name;
-
-    @Getter
-    private final String desc;
-
-    @Getter
-    private final Integer price;
+    public ThemeEntity toEntity() {
+        return new ThemeEntity(id, name, desc, price);
+    }
 }

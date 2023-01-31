@@ -1,14 +1,14 @@
 package nextstep.reservation.repository;
 
-import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.domain.ReservationEntity;
 
 public interface ReservationRepository {
 
     boolean existsByScheduleId(Long scheduleId);
 
-    Reservation insert(Reservation reservation);
+    ReservationEntity insert(ReservationEntity reservation);
 
-    Reservation getById(Long id);
+    ReservationEntity getById(Long id);
 
     boolean deleteById(Long id);
 }

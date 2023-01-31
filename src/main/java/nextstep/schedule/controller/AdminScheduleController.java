@@ -1,8 +1,10 @@
 package nextstep.schedule.controller;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.schedule.domain.ScheduleEntity;
 import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.schedule.dto.ScheduleResponse;
+import nextstep.schedule.mapper.ScheduleMapper;
 import nextstep.schedule.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,9 +21,11 @@ public class AdminScheduleController {
 
     private final ScheduleService service;
 
+    private final ScheduleMapper mapper;
+
     @PostMapping
     public ResponseEntity<ScheduleResponse> create(@RequestBody @Validated ScheduleRequest request) {
-        ScheduleResponse schedule = service.create(request);
+        ScheduleEntity schedule = service.create(mapper.fromRequest(request));
         URI location = URI.create(SCHEDULE_PATH + schedule.getId());
 
         return ResponseEntity.created(location).build();

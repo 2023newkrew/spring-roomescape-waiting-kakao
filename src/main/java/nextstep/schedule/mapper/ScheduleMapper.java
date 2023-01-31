@@ -1,6 +1,7 @@
 package nextstep.schedule.mapper;
 
 import nextstep.schedule.domain.Schedule;
+import nextstep.schedule.domain.ScheduleEntity;
 import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.schedule.dto.ScheduleResponse;
 import org.mapstruct.Mapper;
@@ -13,5 +14,5 @@ public interface ScheduleMapper {
     @Mapping(target = "theme.id", source = "themeId")
     Schedule fromRequest(ScheduleRequest request);
 
-    ScheduleResponse toResponse(Schedule schedule);
+    ScheduleResponse toResponse(ScheduleEntity schedule);
 }

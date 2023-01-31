@@ -1,11 +1,11 @@
 package nextstep.member.service;
 
-import nextstep.member.dto.MemberRequest;
-import nextstep.member.dto.MemberResponse;
+import nextstep.member.domain.Member;
+import nextstep.member.domain.MemberEntity;
 
 public interface MemberService {
 
-    MemberResponse create(MemberRequest request);
+    MemberEntity create(Member member);
 
-    MemberResponse getById(Long id);
+    MemberEntity getById(Long id);
 }

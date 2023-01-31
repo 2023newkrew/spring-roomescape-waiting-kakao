@@ -3,11 +3,9 @@ package nextstep.member.service;
 import auth.domain.UserRole;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.domain.Member;
-import nextstep.member.dto.MemberRequest;
-import nextstep.member.dto.MemberResponse;
+import nextstep.member.domain.MemberEntity;
 import nextstep.member.exception.MemberErrorMessage;
 import nextstep.member.exception.MemberException;
-import nextstep.member.mapper.MemberMapper;
 import nextstep.member.repository.MemberRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -20,17 +18,13 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository repository;
 
-    private final MemberMapper mapper;
-
     @Transactional
     @Override
-    public MemberResponse create(MemberRequest request) {
-        Member member = mapper.fromRequest(request, UserRole.NORMAL);
-
-        return mapper.toResponse(tryInsert(member));
+    public MemberEntity create(Member member) {
+        return tryInsert(member.toEntityWithRole(UserRole.NORMAL));
     }
 
-    private Member tryInsert(Member member) {
+    private MemberEntity tryInsert(MemberEntity member) {
         try {
             return repository.insert(member);
         }
@@ -40,7 +34,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberResponse getById(Long id) {
-        return mapper.toResponse(repository.getById(id));
+    public MemberEntity getById(Long id) {
+        return repository.getById(id);
     }
 }

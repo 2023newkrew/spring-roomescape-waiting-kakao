@@ -1,6 +1,6 @@
 package nextstep.reservation.repository.jdbc;
 
-import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.domain.ReservationEntity;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -37,7 +37,7 @@ public class ReservationStatementCreator {
     }
 
     public PreparedStatement createInsert(
-            Connection connection, Reservation reservation) throws SQLException {
+            Connection connection, ReservationEntity reservation) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
         ps.setLong(1, reservation.getMemberId());
         ps.setLong(2, reservation.getScheduleId());

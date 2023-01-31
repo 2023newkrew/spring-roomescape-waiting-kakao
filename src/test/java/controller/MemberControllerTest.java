@@ -66,7 +66,7 @@ public class MemberControllerTest extends AbstractControllerTest {
 
         List<Arguments> should_throwException_when_invalidRequest() {
             return List.of(
-                    Arguments.of(new MemberRequest()),
+                    Arguments.of(new MemberRequest(null, null, null, null)),
                     Arguments.of(new MemberRequest("", "", "", "")),
                     Arguments.of(new MemberRequest(" ", " ", " ", " "))
             );

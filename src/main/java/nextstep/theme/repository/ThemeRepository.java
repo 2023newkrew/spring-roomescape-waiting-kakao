@@ -1,19 +1,19 @@
 package nextstep.theme.repository;
 
-import nextstep.theme.domain.Theme;
+import nextstep.theme.domain.ThemeEntity;
 import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
 
 public interface ThemeRepository {
 
-    Theme insert(Theme theme) throws DuplicateKeyException;
+    ThemeEntity insert(ThemeEntity theme) throws DuplicateKeyException;
 
-    Theme getById(Long id);
+    ThemeEntity getById(Long id);
 
-    List<Theme> getAll();
+    List<ThemeEntity> getAll();
 
-    boolean update(Long id, Theme theme) throws DuplicateKeyException;
+    boolean update(Long id, ThemeEntity theme) throws DuplicateKeyException;
 
     boolean delete(Long id);
 }

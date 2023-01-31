@@ -1,39 +1,16 @@
 package nextstep.reservation.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 import nextstep.member.domain.Member;
 import nextstep.schedule.domain.Schedule;
 
-import java.util.Objects;
-
-@AllArgsConstructor
+@Value
 public class Reservation {
+    Long id;
+    Member member;
+    Schedule schedule;
 
-    @Getter
-    @Setter
-    private Long id;
-
-    @Getter
-    private final Member member;
-
-    @Getter
-    private final Schedule schedule;
-
-    public Long getMemberId() {
-        if (Objects.isNull(member)) {
-            return null;
-        }
-
-        return member.getId();
-    }
-
-    public Long getScheduleId() {
-        if (Objects.isNull(schedule)) {
-            return null;
-        }
-
-        return schedule.getId();
+    public ReservationEntity toEntity() {
+        return new ReservationEntity(id, member.toEntityWithRole(null), schedule.toEntity());
     }
 }

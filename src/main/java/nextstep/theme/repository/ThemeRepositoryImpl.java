@@ -1,7 +1,7 @@
 package nextstep.theme.repository;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.theme.domain.Theme;
+import nextstep.theme.domain.ThemeEntity;
 import nextstep.theme.repository.jdbc.ThemeResultSetParser;
 import nextstep.theme.repository.jdbc.ThemeStatementCreator;
 import org.springframework.dao.DuplicateKeyException;
@@ -24,7 +24,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
 
 
     @Override
-    public Theme insert(Theme theme) throws DuplicateKeyException {
+    public ThemeEntity insert(ThemeEntity theme) throws DuplicateKeyException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> statementCreator.createInsert(connection, theme),
@@ -36,7 +36,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public Theme getById(Long id) {
+    public ThemeEntity getById(Long id) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectById(connection, id),
                 resultSetParser::parseSingleTheme
@@ -44,7 +44,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> getAll() {
+    public List<ThemeEntity> getAll() {
         return jdbcTemplate.query(
                 statementCreator::createSelectAll,
                 resultSetParser::parseAllThemes
@@ -52,7 +52,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public boolean update(Long id, Theme theme) throws DuplicateKeyException {
+    public boolean update(Long id, ThemeEntity theme) throws DuplicateKeyException {
         int updateRow = jdbcTemplate.update(connection -> statementCreator.createUpdate(connection, id, theme));
 
         return updateRow > 0;
