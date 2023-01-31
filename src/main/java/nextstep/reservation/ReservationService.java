@@ -35,8 +35,8 @@ public class ReservationService {
             throw new NullPointerException();
         }
 
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
+        Reservation reservation = reservationDao.findByScheduleId(schedule.getId());
+        if (reservation == null) {
             throw new DuplicatedReservationException();
         }
 

@@ -1,5 +1,7 @@
 package nextstep.reservation;
 
+import java.util.Optional;
+import nextstep.exceptions.exception.DuplicatedReservationException;
 import nextstep.reservation_waiting.ReservationWaiting;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -39,13 +41,18 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        String sql = "SELECT *, MIN(reservation.created_datetime) " +
-                "from reservation " +
-                "inner join schedule on reservation.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation.member_id = member.id " +
-                "where theme.id = ? and schedule.date = ? " +
-                "group by schedule.id";
+        String sql = "select *\n" +
+                "from RESERVATION,\n" +
+                "     (SELECT R.id RESERVATION_ID,\n" +
+                "             ROW_NUMBER() OVER (PARTITION BY R.SCHEDULE_ID ORDER BY R.CREATED_DATETIME) WAIT_NUM\n" +
+                "      FROM RESERVATION R)\n" +
+                "         JOIN SCHEDULE ON RESERVATION.SCHEDULE_ID = SCHEDULE.ID\n" +
+                "         JOIN THEME ON SCHEDULE.THEME_ID = THEME.ID\n" +
+                "         JOIN MEMBER ON RESERVATION.MEMBER_ID = MEMBER.ID\n" +
+                "where RESERVATION.id = RESERVATION_ID\n" +
+                "  and WAIT_NUM = 1\n" +
+                "  and THEME.id = (?)\n" +
+                "  and SCHEDULE.DATE = (?)";
 
         return jdbcTemplate.query(sql, reservationRowMapper, themeId, Date.valueOf(date));
     }
@@ -64,19 +71,23 @@ public class ReservationDao {
         }
     }
 
-    public List<Reservation> findByScheduleId(Long id) {
-        String sql = "SELECT *, MIN(created_datetime) " +
-                "from reservation " +
-                "inner join schedule on reservation.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation.member_id = member.id " +
-                "where schedule.id = ?";
-
-        try {
-            return jdbcTemplate.query(sql, reservationRowMapper, id);
-        } catch (Exception e) {
-            return Collections.emptyList();
+    public Reservation findByScheduleId(Long id) {
+        String sql = "select *\n" +
+                "from RESERVATION,\n" +
+                "     (SELECT R.id RESERVATION_ID,\n" +
+                "             ROW_NUMBER() OVER (PARTITION BY R.SCHEDULE_ID ORDER BY R.CREATED_DATETIME) WAIT_NUM\n" +
+                "      FROM RESERVATION R)\n" +
+                "         JOIN SCHEDULE ON RESERVATION.SCHEDULE_ID = SCHEDULE.ID\n" +
+                "         JOIN THEME ON SCHEDULE.THEME_ID = THEME.ID\n" +
+                "         JOIN MEMBER ON RESERVATION.MEMBER_ID = MEMBER.ID\n" +
+                "where RESERVATION.id = RESERVATION_ID\n" +
+                "  and WAIT_NUM = 1\n" +
+                "  and SCHEDULE_ID = (?);";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
+        if (reservations.size() != 1) {
+            throw new IllegalStateException();
         }
+        return reservations.get(0);
     }
 
     public void deleteById(Long id) {

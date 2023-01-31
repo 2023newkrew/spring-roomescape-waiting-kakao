@@ -24,7 +24,7 @@ public class ReservationWaitingDaoTest {
         reservationDao = new ReservationDao(jdbcTemplate);
     }
 
-    @DisplayName("")
+    @DisplayName("예약 대기를 불러올 수 있다.")
     @Test
     void testFindAllByMember() {
         assertThat(reservationDao.findAllWaitingByMemberId(1L).size()).isEqualTo(1);

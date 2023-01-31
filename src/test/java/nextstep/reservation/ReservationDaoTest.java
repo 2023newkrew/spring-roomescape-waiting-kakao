@@ -2,6 +2,7 @@ package nextstep.reservation;
 
 import nextstep.member.MemberDao;
 import nextstep.schedule.ScheduleDao;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @JdbcTest
 @Sql({"classpath:schema.sql", "classpath:reservation_data.sql"})
@@ -42,15 +44,41 @@ public class ReservationDaoTest {
         assertThat(id).isInstanceOf(Long.class);
     }
 
+
+    @DisplayName("테마와 날짜로 예약들을 불러올 수 있다.")
+    @Test
+    void findAllByThemeIdAndDate() {
+        List<Reservation> reservations = reservationDao.findAllByThemeIdAndDate(1L, "2023-01-30");
+        assertThat(reservations.size()).isEqualTo(3);
+    }
+
+    @DisplayName("아이디로 예약을 불러올 수 있다.")
+    @Test
+    void findById() {
+        assertThat(reservationDao.findById(1L)).isInstanceOf(Reservation.class);
+    }
+
+    @DisplayName("스케줄로 예약을 불러올 수 있다.")
+    @Test
+    void findByScheduleId() {
+        assertThat(reservationDao.findByScheduleId(1L)).isInstanceOf(Reservation.class);
+    }
+
+    @DisplayName("아이디로 예약을 삭제할 수 있다.")
+    @Test
+    void deleteById() {
+        reservationDao.deleteById(1L);
+        assertDoesNotThrow(() -> reservationDao.findById(1L));
+    }
+
+
+    @DisplayName("모든 예약을 불러올 수 있다.")
     @Test
     void findAllByMemberId() {
-        List<Reservation> reservations = reservationDao.findAllByMemberId(1L);
-        assertThat(reservations.size()).isEqualTo(2);
+        assertThat(reservationDao.findAllByMemberId(1L).size()).isEqualTo(2);
 
-        reservations = reservationDao.findAllByMemberId(2L);
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservationDao.findAllByMemberId(2L).size()).isEqualTo(1);
 
-        reservations = reservationDao.findAllByMemberId(3L);
-        assertThat(reservations.size()).isEqualTo(0);
+        assertThat(reservationDao.findAllByMemberId(3L).size()).isEqualTo(0);
     }
 }
