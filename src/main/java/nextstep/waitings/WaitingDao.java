@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 
 
 @Repository
@@ -51,7 +52,7 @@ public class WaitingDao {
     }
 
     public Long countByScheduleId(final Long scheduleId) {
-        String sql = "SELECT COUNT(*) FROM waitings WHERE schedule_id = ?";
+        String sql = "SELECT COUNT(*) FROM waiting WHERE schedule_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, scheduleId);
     }
 
@@ -74,5 +75,17 @@ public class WaitingDao {
     public void deleteById(final Long waitingId){
         String sql = "DELETE FROM waiting where id = ?;";
         jdbcTemplate.update(sql, waitingId);
+    }
+
+    public List<Waiting> findByMemberId(Long memberId) {
+        String sql = "SELECT " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "from waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "where waiting.member_id = ?;";
+        return jdbcTemplate.query(sql, rowMapper, memberId);
     }
 }

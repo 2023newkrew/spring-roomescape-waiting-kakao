@@ -6,6 +6,9 @@ import nextstep.reservation.ReservationRequest;
 import nextstep.reservation.ReservationService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class WaitingService {
     private final WaitingDao waitingDao;
@@ -14,6 +17,16 @@ public class WaitingService {
     public WaitingService(final WaitingDao waitingDao, final ReservationService reservationService) {
         this.waitingDao = waitingDao;
         this.reservationService = reservationService;
+    }
+
+    public List<WaitingResponse> findAllByMemberId(final Member member) {
+        return waitingDao.findByMemberId(member.getId()).stream()
+                .map(this::toWaitingToWaitingResponse)
+                .collect(Collectors.toList());
+    }
+
+    public WaitingResponse toWaitingToWaitingResponse(Waiting waiting) {
+        return new WaitingResponse(waiting, countByScheduleId(waiting.getSchedule().getId()));
     }
 
     public String create(final Member member, final ReservationRequest reservationRequest) {

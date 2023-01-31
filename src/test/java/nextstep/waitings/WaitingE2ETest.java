@@ -8,6 +8,7 @@ import nextstep.member.MemberRequest;
 import nextstep.reservation.ReservationRequest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -101,21 +102,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @DisplayName("자신의 예약 대기를 취소할 수 있다")
     @Test
     void deleteMyReservation() {
-        RestAssured.given().log().all() // resevation create
-                .auth().oauth2(token.getAccessToken())
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservations")
-                .then().log().all()
-                .extract();
-
-        RestAssured.given().log().all() // reservation waiting create
-                .auth().oauth2(token.getAccessToken())
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservation-waitings")
-                .then().log().all()
-                .extract();
+        createReservationAndWaiting();
 
         RestAssured.given().log().all() // delete reservation waiting
                 .auth().oauth2(token.getAccessToken())
@@ -129,6 +116,48 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @DisplayName("자신의 예약 대기가 아닌 경우 취소할 수 없다.")
     @Test
     void cannotDeleteOtherReservation() {
+        createReservationAndWaiting();
+
+        TokenResponse otherToken = createMemberAndToken("otherUser", "otherPassword");
+
+        RestAssured.given().log().all() // delete reservation waiting with other auth
+                .auth().oauth2(otherToken.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/reservation-waitings/1")
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @DisplayName("나의 예약 대기 목록을 조회할 수 있다")
+    @Test
+    void showMyWaitings() {
+        createReservationAndWaiting();
+
+        var response = RestAssured.given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
+    }
+
+    @DisplayName("나의 예약 대기가 없는 경우 빈 List가 출력된다.")
+    @Test
+    void showMyEmptyWaitings() {
+        var response = RestAssured.given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList(".").size()).isEqualTo(0);
+    }
+
+    private void createReservationAndWaiting() {
         RestAssured.given().log().all() // resevation create
                 .auth().oauth2(token.getAccessToken())
                 .body(request)
@@ -144,16 +173,6 @@ public class WaitingE2ETest extends AbstractE2ETest {
                 .when().post("/reservation-waitings")
                 .then().log().all()
                 .extract();
-
-        TokenResponse otherToken = createMemberAndToken("otherUser", "otherPassword");
-
-        RestAssured.given().log().all() // delete reservation waiting with other auth
-                .auth().oauth2(otherToken.getAccessToken())
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/reservation-waitings/1")
-                .then().log().all()
-                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     private TokenResponse createMemberAndToken(String username, String password) {

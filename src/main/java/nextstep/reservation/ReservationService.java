@@ -11,6 +11,7 @@ import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -73,5 +74,11 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public List<ReservationResponse> findAllByMemberId(Member member) {
+        return reservationDao.findAllByMemberId(member.getId()).stream()
+                .map(ReservationResponse::new)
+                .collect(Collectors.toList());
     }
 }

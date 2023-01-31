@@ -39,6 +39,13 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/reservations/mine")
+    public ResponseEntity<List<ReservationResponse>> readMyReservations(@LoginMember UserDetails userDetails) {
+        List<ReservationResponse> reservationResponses = reservationService.findAllByMemberId(new Member(userDetails));
+
+        return ResponseEntity.ok().body(reservationResponses);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         return ResponseEntity.badRequest().build();

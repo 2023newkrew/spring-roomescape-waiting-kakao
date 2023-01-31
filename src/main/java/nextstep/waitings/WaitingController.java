@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/reservation-waitings")
@@ -34,5 +35,12 @@ public class WaitingController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<WaitingResponse>> readMyWaitings(@LoginMember UserDetails userDetails) {
+        List<WaitingResponse> waitingResponses = waitingService.findAllByMemberId(new Member(userDetails));
+
+        return ResponseEntity.ok().body(waitingResponses);
     }
 }

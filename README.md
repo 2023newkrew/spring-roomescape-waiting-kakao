@@ -1,4 +1,4 @@
-# spring-roomescape-waiting
+omm# spring-roomescape-waiting
 
 # Step 1
 ## 프로그래밍 요구사항
