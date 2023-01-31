@@ -3,18 +3,18 @@ package nextstep;
 import auth.AdminInterceptor;
 import auth.JwtTokenProvider;
 import auth.LoginMemberArgumentResolver;
-import auth.UserDetailsService;
+import auth.LoginService;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private final UserDetailsService userDetailsService;
+    private final LoginService loginService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public WebMvcConfiguration(UserDetailsService userDetailsService, JwtTokenProvider jwtTokenProvider) {
-        this.userDetailsService = userDetailsService;
+    public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
+        this.loginService = loginService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -25,6 +25,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List argumentResolvers) {
-        argumentResolvers.add(new LoginMemberArgumentResolver(userDetailsService));
+        argumentResolvers.add(new LoginMemberArgumentResolver(loginService));
     }
 }

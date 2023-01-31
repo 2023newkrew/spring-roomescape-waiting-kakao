@@ -8,10 +8,10 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final UserDetailsService userDetailsService;
+    private final LoginService loginService;
 
-    public LoginMemberArgumentResolver(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public LoginMemberArgumentResolver(LoginService loginService) {
+        this.loginService = loginService;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         try {
             String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
-            return userDetailsService.extractMember(credential);
+            return loginService.extractMember(credential);
         } catch (Exception e) {
             return null;
         }
