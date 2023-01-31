@@ -42,7 +42,7 @@ public class ReservationWaitingController {
     public ResponseEntity<Void> delete(@LoginMember UserDetails userDetails, @PathVariable Long id) {
         Member member = memberService.findById(userDetails.getId());
         ReservationWaiting reservationWaiting = reservationWaitingService.findById(id);
-        reservationWaitingService.validateOwner(reservationWaiting, member);
+        reservationWaitingService.validateByMember(reservationWaiting, member);
         reservationWaitingService.delete(id);
 
         return ResponseEntity.noContent()

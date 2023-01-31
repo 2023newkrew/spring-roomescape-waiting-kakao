@@ -72,6 +72,6 @@ class ReservationWaitingServiceTest {
         ReservationWaiting reservationWaiting = ReservationWaiting.builder()
                 .member(owner)
                 .build();
-        assertThatThrownBy(() -> reservationWaitingService.validateOwner(reservationWaiting, other)).isInstanceOf(NotOwnReservationWaitingException.class);
+        assertThatThrownBy(() -> reservationWaitingService.validateByMember(reservationWaiting, other)).isInstanceOf(NotOwnReservationWaitingException.class);
     }
 }

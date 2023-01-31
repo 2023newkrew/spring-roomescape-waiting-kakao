@@ -30,7 +30,7 @@ public class ReservationWaitingService {
         reservationWaitingDao.deleteById(reservationWaitingId);
     }
 
-    public void validateOwner(ReservationWaiting reservationWaiting, Member member) {
+    public void validateByMember(ReservationWaiting reservationWaiting, Member member) {
         if (!reservationWaiting.sameMember(member)) {
             throw new NotOwnReservationWaitingException("자신의 예약 대기가 아닙니다.");
         }
