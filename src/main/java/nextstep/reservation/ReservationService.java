@@ -13,10 +13,12 @@ import nextstep.theme.ThemeDao;
 import nextstep.waiting.Waiting;
 import nextstep.waiting.WaitingDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;

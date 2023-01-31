@@ -8,6 +8,7 @@ import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.support.DuplicateEntityException;
 import nextstep.support.NoEntityException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,10 +41,38 @@ public class WaitingService {
 
         List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
         if (reservations.isEmpty()) {
-            Long reservationId = reservationDao.save(new Reservation(schedule, member));
-            return WaitingRegisterStatus.ofReservation(reservationId);
+            return makeReservation(member, schedule);
         }
+        validateAlreadyReserved(member, reservations);
 
+        List<Waiting> waitings = waitingDao.findByScheduleId(schedule.getId());
+        validateAlreadyWaiting(member, waitings);
+
+        return makeWaiting(member, schedule);
+    }
+
+    private WaitingRegisterStatus makeReservation(Member member, Schedule schedule) {
+        Long reservationId = reservationDao.save(new Reservation(schedule, member));
+        return WaitingRegisterStatus.ofReservation(reservationId);
+    }
+
+    private static void validateAlreadyReserved(Member member, List<Reservation> reservations) {
+        for (Reservation reservation : reservations) {
+            if (reservation.sameMember(member)) {
+                throw new DuplicateEntityException("중복된 예약이 존재합니다.");
+            }
+        }
+    }
+
+    private static void validateAlreadyWaiting(Member member, List<Waiting> waitings) {
+        for (Waiting waiting : waitings) {
+            if (waiting.sameMember(member)) {
+                throw new DuplicateEntityException("중복된 예약 대기가 존재합니다.");
+            }
+        }
+    }
+
+    private WaitingRegisterStatus makeWaiting(Member member, Schedule schedule) {
         Long waitingId = waitingDao.save(new Waiting(schedule, member));
         return WaitingRegisterStatus.ofWaiting(waitingId);
     }
