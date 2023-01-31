@@ -137,28 +137,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("내 예약을 조회한다")
     @Test
     void show_my_reservations() {
-
-        // 다른 회원 생성
-        MemberRequest memberBody = new MemberRequest("other user", "some password", "other name", "010-1234-5678", "ADMIN");
-        RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(memberBody)
-                .when().post("/members")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-
-        TokenRequest tokenBody = new TokenRequest("other user", "some password");
-        var createTokenResponse = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(tokenBody)
-                .when().post("/login/token")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        TokenResponse otherUserToken = createTokenResponse.as(TokenResponse.class);
+        var otherUserToken = generateNewMemberToken("otherUser", "password");
 
         RestAssured
                 .given().log().all()
@@ -192,27 +171,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("내 예약대기를 조회한다")
     @Test
     void show_my_reservation_waitings() {
-        // 다른 회원 생성
-        MemberRequest memberBody = new MemberRequest("other user", "some password", "other name", "010-1234-5678", "ADMIN");
-        RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(memberBody)
-                .when().post("/members")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-
-        TokenRequest tokenBody = new TokenRequest("other user", "some password");
-        var createTokenResponse = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(tokenBody)
-                .when().post("/login/token")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        TokenResponse otherUserToken = createTokenResponse.as(TokenResponse.class);
+        var otherUserToken = generateNewMemberToken("otherUser", "password");
 
         RestAssured
                 .given().log().all()

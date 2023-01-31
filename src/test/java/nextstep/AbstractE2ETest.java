@@ -21,7 +21,11 @@ public class AbstractE2ETest {
 
     @BeforeEach
     protected void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        token = generateNewMemberToken(USERNAME, PASSWORD);
+    }
+
+    protected TokenResponse generateNewMemberToken(String username, String password) {
+        MemberRequest memberBody = new MemberRequest(username, password, "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -30,7 +34,7 @@ public class AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
+        TokenRequest tokenBody = new TokenRequest(username, password);
         var response = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -40,6 +44,6 @@ public class AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        token = response.as(TokenResponse.class);
+        return response.as(TokenResponse.class);
     }
 }
