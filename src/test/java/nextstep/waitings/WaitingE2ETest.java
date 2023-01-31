@@ -1,7 +1,10 @@
 package nextstep.waitings;
 
+import auth.TokenRequest;
+import auth.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
+import nextstep.member.MemberRequest;
 import nextstep.reservation.ReservationRequest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
@@ -57,7 +60,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
 
     @DisplayName("이미 예약이 된 스케줄 대상으로 예약 대기를 신청할 수 있다")
     @Test
-    void createWaitingWhenReserved(){
+    void createWaitingWhenReserved() {
         RestAssured.given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .body(request)
@@ -93,5 +96,88 @@ public class WaitingE2ETest extends AbstractE2ETest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("자신의 예약 대기를 취소할 수 있다")
+    @Test
+    void deleteMyReservation() {
+        RestAssured.given().log().all() // resevation create
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservations")
+                .then().log().all()
+                .extract();
+
+        RestAssured.given().log().all() // reservation waiting create
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        RestAssured.given().log().all() // delete reservation waiting
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/reservation-waitings/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("자신의 예약 대기가 아닌 경우 취소할 수 없다.")
+    @Test
+    void cannotDeleteOtherReservation() {
+        RestAssured.given().log().all() // resevation create
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservations")
+                .then().log().all()
+                .extract();
+
+        RestAssured.given().log().all() // reservation waiting create
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        TokenResponse otherToken = createMemberAndToken("otherUser", "otherPassword");
+
+        RestAssured.given().log().all() // delete reservation waiting with other auth
+                .auth().oauth2(otherToken.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/reservation-waitings/1")
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    private TokenResponse createMemberAndToken(String username, String password) {
+        final String OTHER_USERNAME = username;
+        final String OTHER_PASSWORD = password;
+
+        MemberRequest otherMemberBody = new MemberRequest(OTHER_USERNAME, OTHER_PASSWORD, "name", "010-1234-5678", "USER");
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(otherMemberBody)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+
+        TokenRequest otherTokenBody = new TokenRequest(OTHER_USERNAME, OTHER_PASSWORD);
+        var response = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(otherTokenBody)
+                .when().post("/login/token")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+        return response.as(TokenResponse.class);
     }
 }

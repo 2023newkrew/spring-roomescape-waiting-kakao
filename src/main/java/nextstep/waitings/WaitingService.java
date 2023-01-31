@@ -1,5 +1,6 @@
 package nextstep.waitings;
 
+import auth.AuthorizationException;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationRequest;
 import nextstep.reservation.ReservationService;
@@ -28,5 +29,18 @@ public class WaitingService {
 
     private Long countByScheduleId(Long scheduleId) {
         return waitingDao.countByScheduleId(scheduleId);
+    }
+
+    public void delete(final Member member, final Long waitingId) {
+        Waiting waiting = waitingDao.findById(waitingId);
+        if (waiting == null) {
+            throw new NullPointerException();
+        }
+
+        if (waiting.getMemberId() != member.getId()) {
+            // 403 Error, handled by controller
+            throw new AuthorizationException();
+        }
+        waitingDao.deleteById(waitingId);
     }
 }

@@ -2,6 +2,7 @@ package nextstep.waitings;
 
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -52,5 +53,26 @@ public class WaitingDao {
     public Long countByScheduleId(final Long scheduleId) {
         String sql = "SELECT COUNT(*) FROM waitings WHERE schedule_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, scheduleId);
+    }
+
+    public Waiting findById(final Long waitingId) {
+        String sql = "SELECT " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "from waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "where waiting.id = ?;";
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, waitingId);
+        } catch(DataAccessException e){
+            return null;
+        }
+    }
+
+    public void deleteById(final Long waitingId){
+        String sql = "DELETE FROM waiting where id = ?;";
+        jdbcTemplate.update(sql, waitingId);
     }
 }
