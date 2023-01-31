@@ -1,15 +1,12 @@
 package nextstep.member.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 
 @RequiredArgsConstructor
-@Data
-@Setter(AccessLevel.NONE)
+@Getter
 public class MemberRequest {
 
     @NotBlank(message = "username은 공백일 수 없습니다.")

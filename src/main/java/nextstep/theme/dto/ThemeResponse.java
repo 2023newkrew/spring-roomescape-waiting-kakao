@@ -1,20 +1,11 @@
 package nextstep.theme.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 
-@RequiredArgsConstructor
-@Data
-@Setter(AccessLevel.NONE)
+@Value
 public class ThemeResponse {
-
-    private final Long id;
-
-    private final String name;
-
-    private final String desc;
-
-    private final Integer price;
+    Long id;
+    String name;
+    String desc;
+    Integer price;
 }

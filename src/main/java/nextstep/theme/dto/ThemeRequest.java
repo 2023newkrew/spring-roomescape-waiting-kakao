@@ -1,16 +1,13 @@
 package nextstep.theme.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
 @RequiredArgsConstructor
-@Data
-@Setter(AccessLevel.NONE)
+@Getter
 public class ThemeRequest {
 
     @NotBlank(message = "이름은 공백일 수 없습니다.")

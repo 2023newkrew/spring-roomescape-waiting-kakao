@@ -1,24 +1,15 @@
 package nextstep.schedule.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 import nextstep.theme.dto.ThemeResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@RequiredArgsConstructor
-@Data
-@Setter(AccessLevel.NONE)
+@Value
 public class ScheduleResponse {
-
-    private final Long id;
-
-    private final LocalDate date;
-
-    private final LocalTime time;
-
-    private final ThemeResponse theme;
+    Long id;
+    LocalDate date;
+    LocalTime time;
+    ThemeResponse theme;
 }

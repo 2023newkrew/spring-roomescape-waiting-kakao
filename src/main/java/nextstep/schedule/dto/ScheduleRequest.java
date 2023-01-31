@@ -1,16 +1,13 @@
 package nextstep.schedule.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @RequiredArgsConstructor
-@Data
-@Setter(AccessLevel.NONE)
+@Getter
 public class ScheduleRequest {
 
     @Pattern(

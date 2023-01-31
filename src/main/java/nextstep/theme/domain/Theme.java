@@ -4,7 +4,6 @@ import lombok.Value;
 
 @Value
 public class Theme {
-
     Long id;
     String name;
     String desc;
