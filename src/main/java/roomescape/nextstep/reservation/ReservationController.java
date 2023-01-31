@@ -42,8 +42,18 @@ public class ReservationController {
         if (member == null) {
             throw new AuthenticationException();
         }
-        reservationService.deleteById(member.getUsername(), id);
+        reservationService.deleteById(member.getUsername(), id, ReservationStatus.CONFIRMED);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations/mine")
+    public ResponseEntity<List<Reservation>> findMyReservations(@LoginMember UserDetails member) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+        return ResponseEntity.ok(
+                reservationService.findReservationsByUsername(member.getUsername())
+        );
     }
 
     @GetMapping("/reservations-waitings/mine")
@@ -52,8 +62,17 @@ public class ReservationController {
             throw new AuthenticationException();
         }
         return ResponseEntity.ok(
-                reservationService.findAllByUsername(member.getUsername())
+                reservationService.findWaitingReservationsByUsername(member.getUsername())
         );
+    }
+
+    @DeleteMapping("/reservations-waitings/{id}")
+    public ResponseEntity deleteReservationWaitings(@LoginMember UserDetails member, @PathVariable Long id) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+        reservationService.deleteById(member.getUsername(), id, ReservationStatus.WAITING);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(Exception.class)

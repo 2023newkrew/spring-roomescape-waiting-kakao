@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -118,6 +119,15 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation where id = ?;";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void updateLatestReservationToConfirmed(Long scheduleId) {
+        String sql = "UPDATE reservation SET status = 'CONFIRMED' WHERE id = (SELECT min(id) FROM reservation WHERE schedule_id = ?);";
+        try {
+            jdbcTemplate.update(sql, scheduleId);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Reservation> findAllByUsername(String username) {

@@ -206,6 +206,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("내 예약대기 조회")
     @Test
     void findMyReservationsWaitings() {
+        createReservation();
         var waitingResponse = createReservation();
 
         assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -219,5 +220,105 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         List<ReservationWaiting> reservationWaitings = response.jsonPath().getList(".", ReservationWaiting.class);
         assertThat(reservationWaitings).hasSize(1);
+    }
+
+    @DisplayName("내 예약 조회")
+    @Test
+    void findMyReservations() {
+        var waitingResponse = createReservation();
+
+        assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<Reservation> reservation = response.jsonPath().getList(".", Reservation.class);
+        assertThat(reservation).hasSize(1);
+    }
+
+
+    @DisplayName("예약 대기 취소")
+    @Test
+    void deleteWaiting() {
+        createReservation();
+        var reservation = createReservation();
+        assertThat(reservation.header("Location")).isEqualTo("/reservations-waitings/2");
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete(reservation.header("Location"))
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("없는 예약 대기를 취소한다")
+    @Test
+    void createNotExistWaiting() {
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete("/reservations-waitings/1")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("다른 사람의 예약대기를 삭제한다")
+    @Test
+    void deleteWaitingOfOthers() {
+        createReservation();
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2("other-token")
+                .when().delete("/reservations-waitings/2")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @DisplayName("예약이 삭제되면 예약 대기 중 대기 번호가 가장 작은 예약 대기가 예약이 된다")
+    @Test
+    void updateReservationWaiting() {
+        createReservation(); //예약, 번호 1번
+        createReservation(); //예약 대기, 번호 2번
+        createReservation(); //예약 대기, 번호 3번
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .extract();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationWaiting> reservationWaitings = response.jsonPath().getList(".", ReservationWaiting.class);
+        assertThat(reservationWaitings).hasSize(1);
+
+        var response2 = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<Reservation> reservation = response2.jsonPath().getList(".", Reservation.class);
+        assertThat(reservation.get(0).getId()).isEqualTo(2);
     }
 }
