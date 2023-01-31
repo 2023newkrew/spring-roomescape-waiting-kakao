@@ -108,11 +108,6 @@ public class ReservationWaitingDao {
         }
     }
 
-    public Long getRank(ReservationWaiting reservationWaiting) {
-        String sql = "SELECT COUNT(*) FROM reservation_waiting WHERE schedule_id = ? AND id < ?;";
-        return jdbcTemplate.queryForObject(sql, Long.class, reservationWaiting.getSchedule().getId(), reservationWaiting.getId());
-    }
-
     public void updateStatusById(Long id, ReservationWaitingStatus status) {
         String sql = "UPDATE reservation_waiting SET status = ? where id = ?;";
         jdbcTemplate.update(sql, status.name(), id);
