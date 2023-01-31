@@ -2,6 +2,9 @@ package nextstep.schedule;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
+import nextstep.schedule.dto.ScheduleRequest;
+import nextstep.schedule.dto.ScheduleResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,14 +29,14 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<List<Schedule>> showReservations(@RequestParam Long themeId, @RequestParam String date) {
-        return ResponseEntity.ok().body(scheduleService.findByThemeIdAndDate(themeId, date));
+    public ResponseEntity<List<ScheduleResponse>> showReservations(@RequestParam Long themeId, @RequestParam String date) {
+        return ResponseEntity.ok().body(scheduleService.findByThemeIdAndDate(themeId, date).stream().map(
+                ScheduleResponse::of).collect(Collectors.toList()));
     }
 
     @DeleteMapping("/admin/schedules/{id}")
     public ResponseEntity deleteReservation(@PathVariable Long id) {
         scheduleService.deleteById(id);
-
         return ResponseEntity.noContent().build();
     }
 }

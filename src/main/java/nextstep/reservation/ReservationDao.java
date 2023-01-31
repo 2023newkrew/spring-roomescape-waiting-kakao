@@ -24,17 +24,18 @@ public class ReservationDao {
 
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> Reservation.giveId(
             Reservation.builder().schedule(
-                    new Schedule(
-                            resultSet.getLong("schedule.id"),
-                            new Theme(
-                                    resultSet.getLong("theme.id"),
-                                    resultSet.getString("theme.name"),
-                                    resultSet.getString("theme.desc"),
-                                    resultSet.getInt("theme.price")
-                            ),
-                            resultSet.getDate("schedule.date").toLocalDate(),
-                            resultSet.getTime("schedule.time").toLocalTime()
-                    )).member(
+                    Schedule.giveId(Schedule.builder()
+                                    .theme(new Theme(
+                                            resultSet.getLong("theme.id"),
+                                            resultSet.getString("theme.name"),
+                                            resultSet.getString("theme.desc"),
+                                            resultSet.getInt("theme.price")
+                                    ))
+                                    .time(resultSet.getTime("schedule.time").toLocalTime())
+                                    .date(resultSet.getDate("schedule.date").toLocalDate())
+                                    .build()
+                            , resultSet.getLong("schedule.id"))
+            ).member(
                     Member.giveId(Member.builder()
                             .phone(resultSet.getString("phone"))
                             .name(resultSet.getString("name"))

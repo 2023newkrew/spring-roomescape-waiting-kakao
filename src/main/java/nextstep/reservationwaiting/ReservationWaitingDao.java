@@ -22,16 +22,17 @@ public class ReservationWaitingDao {
 
     private final RowMapper<ReservationWaiting> rowMapper = (resultSet, rowNum) -> ReservationWaiting.giveId(
             ReservationWaiting.builder()
-                    .schedule(new Schedule(
-                            resultSet.getLong("schedule.id"),
-                            new Theme(
-                                    resultSet.getLong("theme.id"),
-                                    resultSet.getString("theme.name"),
-                                    resultSet.getString("theme.desc"),
-                                    resultSet.getInt("theme.price")
-                            ),
-                            resultSet.getDate("schedule.date").toLocalDate(),
-                            resultSet.getTime("schedule.time").toLocalTime()
+                    .schedule(Schedule.giveId(Schedule.builder()
+                                    .theme(new Theme(
+                                            resultSet.getLong("theme.id"),
+                                            resultSet.getString("theme.name"),
+                                            resultSet.getString("theme.desc"),
+                                            resultSet.getInt("theme.price")
+                                    ))
+                                    .time(resultSet.getTime("schedule.time").toLocalTime())
+                                    .date(resultSet.getDate("schedule.date").toLocalDate())
+                                    .build()
+                            , resultSet.getLong("schedule.id")
                     ))
                     .waitNum(resultSet.getLong("reservation_waiting.wait_num"))
                     .memberId(resultSet.getLong("reservation_waiting.member_id"))

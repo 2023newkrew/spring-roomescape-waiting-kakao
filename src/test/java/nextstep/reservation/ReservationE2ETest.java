@@ -9,7 +9,7 @@ import java.util.List;
 import nextstep.AbstractE2ETest;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
-import nextstep.schedule.ScheduleRequest;
+import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

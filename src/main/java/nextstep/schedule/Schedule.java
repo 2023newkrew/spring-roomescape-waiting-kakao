@@ -1,9 +1,11 @@
 package nextstep.schedule;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import static nextstep.utils.Validator.*;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import nextstep.theme.Theme;
+import nextstep.utils.Validator;
 
 public class Schedule {
     private Long id;
@@ -11,20 +13,48 @@ public class Schedule {
     private final LocalDate date;
     private final LocalTime time;
 
-    @JsonCreator
-    public Schedule(Long id, Theme theme, LocalDate date, LocalTime time) {
-        this.id = id;
+    private Schedule(Theme theme, LocalDate date, LocalTime time) {
         this.theme = theme;
         this.date = date;
         this.time = time;
+        validateFields();
     }
 
-    public Schedule(Theme theme, LocalDate date, LocalTime time) {
-        this.theme = theme;
-        this.date = date;
-        this.time = time;
+    public static Schedule giveId(Schedule schedule, Long id){
+        checkFieldIsNull(id, "id");
+        schedule.id = id;
+        return schedule;
     }
 
+    public static ScheduleBuilder builder() {
+        return new ScheduleBuilder();
+    }
+
+    public static class ScheduleBuilder {
+
+        private Theme theme;
+        private LocalDate date;
+        private LocalTime time;
+        public ScheduleBuilder theme(Theme theme) {
+            this.theme = theme;
+            return this;
+        }
+
+        public ScheduleBuilder date(LocalDate date) {
+            this.date = date;
+            return this;
+        }
+
+        public ScheduleBuilder time(LocalTime time) {
+            this.time = time;
+            return this;
+        }
+
+        public Schedule build() {
+            return new Schedule(theme, date, time);
+        }
+
+    }
     public Long getId() {
         return id;
     }
@@ -39,5 +69,11 @@ public class Schedule {
 
     public LocalTime getTime() {
         return time;
+    }
+
+    private void validateFields() {
+        checkFieldIsNull(theme, "theme");
+        checkFieldIsNull(date, "date");
+        checkFieldIsNull(time, "time");
     }
 }

@@ -36,7 +36,8 @@ class ReservationWaitingDaoTest {
         Theme theme = new Theme("name", "desc", 210000);
         themeId = themeDao.save(theme);
         Theme scheduleTheme = new Theme(themeId, theme.getName(), theme.getDesc(), theme.getPrice());
-        Schedule schedule = new Schedule(scheduleTheme, LocalDate.parse("2023-01-26"), LocalTime.parse("13:00:00"));
+        Schedule schedule = Schedule.builder().theme(scheduleTheme).date(LocalDate.parse("2023-01-26"))
+                .time(LocalTime.parse("13:00:00")).build();
         scheduleId = scheduleDao.save(schedule);
     }
 
@@ -89,20 +90,26 @@ class ReservationWaitingDaoTest {
         reservationWaitingDao.save(reservationWaiting);
 
         // when
-        List<ReservationWaiting> reservationWaitings = reservationWaitingDao.findByMemberId(reservationWaiting.getMemberId());
+        List<ReservationWaiting> reservationWaitings = reservationWaitingDao.findByMemberId(
+                reservationWaiting.getMemberId());
 
         // then
         Assertions.assertThat(countRows()).isEqualTo(1);
         ReservationWaiting foundReservationWaiting = reservationWaitings.get(0);
         Assertions.assertThat(foundReservationWaiting.getMemberId()).isEqualTo(reservationWaiting.getMemberId());
-        Assertions.assertThat(foundReservationWaiting.getSchedule().getId()).isEqualTo(reservationWaiting.getSchedule().getId());
+        Assertions.assertThat(foundReservationWaiting.getSchedule().getId())
+                .isEqualTo(reservationWaiting.getSchedule().getId());
 
     }
 
     private ReservationWaiting createReservationWaitingByWaitNum(Long waitNum) {
         return ReservationWaiting.builder()
-                .schedule(new Schedule(scheduleId, new Theme(themeId, "name", "desc", 210000),
-                        LocalDate.parse("2023-01-26"), LocalTime.parse("13:00:00")))
+                .schedule(
+                        Schedule.giveId(Schedule.builder()
+                                .theme(new Theme(themeId, "name", "desc", 210000))
+                                .time(LocalTime.parse("13:00:00"))
+                                .date(LocalDate.parse("2023-01-26"))
+                                .build(), scheduleId))
                 .waitNum(waitNum)
                 .memberId(1L).build();
     }

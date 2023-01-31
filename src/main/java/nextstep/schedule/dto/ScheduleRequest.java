@@ -1,7 +1,8 @@
-package nextstep.schedule;
+package nextstep.schedule.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 
 public class ScheduleRequest {
@@ -28,10 +29,10 @@ public class ScheduleRequest {
     }
 
     public Schedule toEntity(Theme theme) {
-        return new Schedule(
-                theme,
-                LocalDate.parse(this.date),
-                LocalTime.parse(this.time)
-        );
+        return Schedule.builder()
+                .theme(theme)
+                .time(LocalTime.parse(this.time))
+                .date(LocalDate.parse(this.date))
+                .build();
     }
 }

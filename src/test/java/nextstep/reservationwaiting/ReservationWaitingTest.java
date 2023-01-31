@@ -11,8 +11,12 @@ import org.junit.jupiter.api.Test;
 
 class ReservationWaitingTest {
 
-    private final Schedule schedule = new Schedule(1L, new Theme(1L, "theme", "desc", 123),
-            LocalDate.parse("2023-01-26"), LocalTime.parse("13:00:00"));
+    private final Schedule schedule = Schedule.giveId(Schedule
+            .builder()
+            .time(LocalTime.parse("13:00:00"))
+            .date(LocalDate.parse("2023-01-26"))
+            .theme(new Theme(1L, "theme", "desc", 123))
+            .build(), 1L);
 
     @Test
     @DisplayName("Reservation Waiting은 id 없이 생성이 가능하다.")
