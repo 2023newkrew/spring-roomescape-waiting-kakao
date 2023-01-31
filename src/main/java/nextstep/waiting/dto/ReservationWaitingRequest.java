@@ -1,7 +1,10 @@
 package nextstep.waiting.dto;
 
 public class ReservationWaitingRequest {
-    private final Long scheduleId;
+    private Long scheduleId;
+
+    private ReservationWaitingRequest() {}
+
 
     public ReservationWaitingRequest(Long scheduleId) {
         this.scheduleId = scheduleId;

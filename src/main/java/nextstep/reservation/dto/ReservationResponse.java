@@ -8,7 +8,7 @@ public class ReservationResponse {
     private Long id;
     private Schedule schedule;
 
-    static ReservationResponse of(Reservation reservation) {
+    public static ReservationResponse of(Reservation reservation) {
         return new ReservationResponse(reservation.getId(), reservation.getSchedule());
     }
 

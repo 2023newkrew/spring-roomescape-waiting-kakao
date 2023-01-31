@@ -3,7 +3,7 @@ package nextstep.waiting;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationService;
 import nextstep.support.DuplicateEntityException;
-import nextstep.waiting.dto.ReservationWaitingResponse;
+import nextstep.waiting.dto.ReservationWaitingCreatedResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,14 +18,14 @@ public class ReservationWaitingProxyService {
         this.waitingService = waitingService;
     }
 
-    public ReservationWaitingResponse makeReservation(Member member, Long scheduleId) {
+    public ReservationWaitingCreatedResponse makeReservation(Member member, Long scheduleId) {
         try {
             Long id = reservationService.create(member, scheduleId);
-            return new ReservationWaitingResponse(id, false);
+            return new ReservationWaitingCreatedResponse(id, false);
         }
         catch (DuplicateEntityException e) {
             Long id = waitingService.create(member, scheduleId);
-            return new ReservationWaitingResponse(id, true);
+            return new ReservationWaitingCreatedResponse(id, true);
         }
     }
 

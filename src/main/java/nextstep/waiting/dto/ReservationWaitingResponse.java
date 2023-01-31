@@ -1,19 +1,35 @@
 package nextstep.waiting.dto;
 
-public class ReservationWaitingResponse {
-    private final Long id;
-    private final Boolean waiting;
+import nextstep.schedule.Schedule;
+import nextstep.waiting.ReservationWaiting;
 
-    public ReservationWaitingResponse(Long id, Boolean waiting) {
+public class ReservationWaitingResponse {
+    private Long id;
+    private Long waitingNumber;
+    private Schedule schedule;
+
+    private ReservationWaitingResponse(Long id, Long waitingNumber, Schedule schedule) {
         this.id = id;
-        this.waiting = waiting;
+        this.waitingNumber = waitingNumber;
+        this.schedule = schedule;
+    }
+    public static ReservationWaitingResponse of(ReservationWaiting reservationWaiting) {
+        return new ReservationWaitingResponse(
+                reservationWaiting.getId(),
+                reservationWaiting.getWaitingNumber(),
+                reservationWaiting.getSchedule()
+        );
     }
 
     public Long getId() {
         return id;
     }
 
-    public Boolean getWaiting() {
-        return waiting;
+    public Long getWaitingNumber() {
+        return waitingNumber;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
     }
 }

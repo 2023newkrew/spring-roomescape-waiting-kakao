@@ -4,6 +4,7 @@ import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -66,12 +67,16 @@ public class ReservationWaitingDao {
     public Long findLastByScheduleId(Long scheduleId) {
         String sql = "SELECT waiting_number from reservation_waiting where schedule_id = ? order by waiting_number desc";
 
-        return jdbcTemplate.queryForObject(sql, new Object[] { scheduleId }, Long.class);
+        try {
+            return jdbcTemplate.queryForObject(sql, new Object[] { scheduleId }, Long.class);
+        } catch (EmptyResultDataAccessException e) {
+            return 0L;
+        }
     }
 
     public List<ReservationWaiting> findByMemberId(Long memberId) {
         String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.waiting_number " +
+                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.waiting_number, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -94,7 +99,7 @@ public class ReservationWaitingDao {
 
     public ReservationWaiting findById(Long id) {
         String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.waiting_number " +
+                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.waiting_number, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
