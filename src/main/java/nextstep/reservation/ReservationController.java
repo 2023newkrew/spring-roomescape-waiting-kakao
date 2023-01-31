@@ -29,7 +29,10 @@ public class ReservationController {
 
     @GetMapping("/reservations")
     public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
-        List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
+        List<ReservationResponse> results = reservationService.findAllByThemeIdAndDate(themeId, date)
+                .stream()
+                .map(ReservationResponse::of)
+                .collect(Collectors.toList());
         return ResponseEntity.ok().body(results);
     }
 
