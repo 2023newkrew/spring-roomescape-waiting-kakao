@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.stream.IntStream;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.schedule.ScheduleDaoImpl;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import nextstep.theme.ThemeDaoImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -159,8 +161,8 @@ class ReservationWaitingDaoTest {
     }
 
     private void createDao() {
-        reservationWaitingDao = new ReservationWaitingDao(jdbcTemplate);
-        scheduleDao = new ScheduleDao(jdbcTemplate);
-        themeDao = new ThemeDao(jdbcTemplate);
+        reservationWaitingDao = new ReservationWaitingDaoImpl(jdbcTemplate);
+        scheduleDao = new ScheduleDaoImpl(jdbcTemplate);
+        themeDao = new ThemeDaoImpl(jdbcTemplate);
     }
 }

@@ -64,26 +64,32 @@ public class Member implements MemberDetails {
         }
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getPhone() {
         return phone;
     }
 
+    @Override
     public String getRole() {
         return role;
     }

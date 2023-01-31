@@ -2,9 +2,10 @@ package nextstep.exception;
 
 public class BaseWebException extends RuntimeException {
 
-    int status;
+    private final int status;
 
-    String type;
+    private final String type;
+
     private BaseWebException(String message, int status, String type) {
         super(message);
         this.type = type;
@@ -15,7 +16,7 @@ public class BaseWebException extends RuntimeException {
         this(makeMessage(expected, actual, context), status, type);
     }
 
-    public String getFullMessage(){
+    public String getFullMessage() {
         return super.getMessage() + "CLASS: " + type + '\n';
     }
 
@@ -28,9 +29,6 @@ public class BaseWebException extends RuntimeException {
     }
 
     private static String makeMessage(String expected, String actual, String context) {
-        return "\n"
-                + "EXPECTED: " + expected + '\n'
-                + "ACTUAL: " + actual + '\n'
-                + "CONTEXT: " + context + '\n';
+        return "\n" + "EXPECTED: " + expected + '\n' + "ACTUAL: " + actual + '\n' + "CONTEXT: " + context + '\n';
     }
 }

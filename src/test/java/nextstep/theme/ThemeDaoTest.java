@@ -14,7 +14,7 @@ public class ThemeDaoTest {
 
     @Test
     void save() {
-        ThemeDao themeDao = new ThemeDao(jdbcTemplate);
+        ThemeDao themeDao = new ThemeDaoImpl(jdbcTemplate);
         Long id = themeDao.save(Theme.builder()
                 .name("테마 이름")
                 .desc("테마 설명")
