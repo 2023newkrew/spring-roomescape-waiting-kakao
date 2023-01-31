@@ -16,10 +16,7 @@ import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -95,22 +92,17 @@ public class ReservationService {
             throw new AuthException(AuthErrorCode.INVALID_USER);
         }
         List<Reservation> reservations = reservationDao.findByMemberId(member.getId());
-        List<Reservation> reservationsNotWaiting = reservations.stream()
-                .map(Reservation::getSchedule)
-                .map(Schedule::getId)
-                .map(reservationDao::findAllByScheduleId)
-                .map(reservationsBySchedule -> reservationsBySchedule.stream()
-                        .min(Comparator.comparing(Reservation::getWaitTicketNumber))
-                        .orElseThrow())
+        return reservations.stream()
+                .filter(reservation -> Objects.equals(reservation.getWaitTicketNumber(),
+                        getReservationHasMinWaitTicketNumber(reservation.getSchedule().getId()).getWaitTicketNumber()))
                 .collect(Collectors.toList());
+    }
 
-        List<Reservation> result = new ArrayList<>();
-        for (int i = 0; i < reservations.size(); i++) {
-            if (reservations.get(i).getWaitTicketNumber() == reservationsNotWaiting.get(i).getWaitTicketNumber()) {
-                result.add(reservations.get(i));
-            }
-        }
-        return result;
+    private Reservation getReservationHasMinWaitTicketNumber(Long scheduleId) {
+        return reservationDao.findAllByScheduleId(scheduleId)
+                .stream()
+                .min(Comparator.comparing(Reservation::getWaitTicketNumber))
+                .orElseThrow();
     }
 
     public List<ReservationWaitingResponseDto> getReservationWaitingsByMember(Member member) {
