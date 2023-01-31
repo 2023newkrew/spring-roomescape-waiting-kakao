@@ -1,6 +1,6 @@
 package nextstep.waiting;
 
-import auth.AuthorizationException;
+import auth.ForbiddenException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -45,7 +45,7 @@ public class ReservationWaitingService {
                 .orElseThrow(NotExistEntityException::new);
 
         if (!reservationWaiting.sameMember(memberId)) {
-            throw new AuthorizationException();
+            throw new ForbiddenException();
         }
 
         reservationWaitingDao.deleteById(reservationWaitingId);

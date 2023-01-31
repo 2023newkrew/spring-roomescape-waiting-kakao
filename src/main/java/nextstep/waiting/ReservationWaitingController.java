@@ -1,13 +1,13 @@
 package nextstep.waiting;
 
 import auth.LoginMember;
+import auth.NeedAuth;
 import nextstep.reservation.ReservationRequest;
 import nextstep.reservation.ReservationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +22,7 @@ public class ReservationWaitingController {
         this.reservationWaitingService = reservationWaitingService;
     }
 
+    @NeedAuth
     @PostMapping
     public ResponseEntity<?> createReservationWaiting(@LoginMember Long memberId, @RequestBody ReservationWaitingRequest request) {
         if (!reservationService.existsByScheduleId(request.getScheduleId())){
@@ -34,6 +35,7 @@ public class ReservationWaitingController {
         return ResponseEntity.created(URI.create("/reservation-waitings/" + reservationWaitingId)).build();
     }
 
+    @NeedAuth
     @DeleteMapping("/{id}")
     public ResponseEntity deleteReservationWaiting(@LoginMember Long memberId, @PathVariable Long id) {
         reservationWaitingService.deleteById(memberId, id);
@@ -41,6 +43,7 @@ public class ReservationWaitingController {
         return ResponseEntity.noContent().build();
     }
 
+    @NeedAuth
     @GetMapping("/mine")
     public ResponseEntity findMyReservationWaitings(@LoginMember Long memberId) {
         List<ReservationWaitingResponse> reservationWaitings

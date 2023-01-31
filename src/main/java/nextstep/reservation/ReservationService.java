@@ -1,6 +1,6 @@
 package nextstep.reservation;
 
-import auth.AuthorizationException;
+import auth.ForbiddenException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -60,7 +60,7 @@ public class ReservationService {
                 .orElseThrow(NotExistEntityException::new);
 
         if (!reservation.sameMember(memberId)) {
-            throw new AuthorizationException();
+            throw new ForbiddenException();
         }
 
         reservationDao.deleteById(reservationId);

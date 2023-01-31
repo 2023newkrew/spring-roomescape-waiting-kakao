@@ -1,7 +1,7 @@
 package nextstep.support;
 
 import auth.AuthenticationException;
-import auth.AuthorizationException;
+import auth.ForbiddenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,9 +29,9 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(value = {
-            AuthorizationException.class
+            ForbiddenException.class
     })
-    public ResponseEntity<String> handle(AuthorizationException exception) {
+    public ResponseEntity<String> handle(ForbiddenException exception) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(exception.getMessage());
