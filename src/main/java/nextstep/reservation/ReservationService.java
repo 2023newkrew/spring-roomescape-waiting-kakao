@@ -28,7 +28,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
+    public Long create(UserDetails userDetails, ReservationRequest reservationRequest, boolean isWaitingRequest) {
         if (userDetails == null) {
             throw new AuthenticationException();
         }
@@ -41,14 +41,15 @@ public class ReservationService {
         }
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
+
+        if (!isWaitingRequest && !reservation.isEmpty()) {
             throw new DuplicateEntityException();
         }
 
         Reservation newReservation = new Reservation(
                 schedule,
                 member,
-                0L
+                (long) reservation.size()
         );
 
         return reservationDao.save(newReservation);
@@ -93,29 +94,6 @@ public class ReservationService {
         reservationDao.deleteById(id);
 
         reservationDao.adjustWaitingNumByScheduleIdAndBaseNum(reservation.getSchedule().getId(), 0L);
-    }
-
-    public Long createWaiting(UserDetails userDetails, ReservationRequest reservationRequest) {
-        if (userDetails == null) {
-            throw new AuthenticationException();
-        }
-
-        Member member = memberDao.findById(userDetails.getId());
-
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
-
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-
-        Reservation newReservation = new Reservation(
-                schedule,
-                member,
-                (long) reservation.size()
-        );
-
-        return reservationDao.save(newReservation);
     }
 
     public void deleteWaitingById(UserDetails userDetails, Long id) {
