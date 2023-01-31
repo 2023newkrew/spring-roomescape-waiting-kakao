@@ -23,8 +23,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity createcReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
-        Member member = Member.of(userDetails);
-        Long id = reservationService.create(Member.of(userDetails), reservationRequest.getScheduleId());
+        Long id = reservationService.create(Member.from(userDetails), reservationRequest.getScheduleId());
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -36,7 +35,7 @@ public class ReservationController {
 
     @GetMapping("/reservations/mine")
     public ResponseEntity readMyReservations(@LoginMember UserDetails userDetails) {
-        List<ReservationResponse> results = reservationService.findAllByMemberId(Member.of(userDetails).getId())
+        List<ReservationResponse> results = reservationService.findAllByMemberId(Member.from(userDetails).getId())
                 .stream()
                 .map(ReservationResponse::of)
                 .collect(Collectors.toList());
@@ -47,7 +46,7 @@ public class ReservationController {
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
-        reservationService.deleteById(Member.of(userDetails), id);
+        reservationService.deleteById(Member.from(userDetails), id);
 
         return ResponseEntity.noContent().build();
     }

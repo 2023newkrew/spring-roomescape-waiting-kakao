@@ -24,7 +24,7 @@ public class ReservationWaitingController {
 
     @PostMapping
     ResponseEntity createReservationWaiting(@LoginMember UserDetails userDetails, @RequestBody ReservationWaitingRequest request) {
-        ReservationWaitingCreatedResponse response = reservationWaitingProxyService.makeReservation(Member.of(userDetails), request.getScheduleId());
+        ReservationWaitingCreatedResponse response = reservationWaitingProxyService.makeReservation(Member.from(userDetails), request.getScheduleId());
         if (response.getWaiting()) {
             return ResponseEntity.created(URI.create("/reservation-waitings/" + response.getId())).build();
         }
@@ -33,7 +33,7 @@ public class ReservationWaitingController {
 
     @GetMapping
     ResponseEntity getReservationWaitings(@LoginMember UserDetails userDetails) {
-        List<ReservationWaitingResponse> responses = reservationWaitingProxyService.getReservationWaitings(Member.of(userDetails))
+        List<ReservationWaitingResponse> responses = reservationWaitingProxyService.getReservationWaitings(Member.from(userDetails))
                 .stream()
                 .map(ReservationWaitingResponse::of)
                 .collect(Collectors.toList());
@@ -43,7 +43,7 @@ public class ReservationWaitingController {
 
     @DeleteMapping("/{id}")
     ResponseEntity removeReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
-        reservationWaitingProxyService.deleteById(Member.of(userDetails).getId(), id);
+        reservationWaitingProxyService.deleteById(Member.from(userDetails).getId(), id);
 
         return ResponseEntity.noContent().build();
     }

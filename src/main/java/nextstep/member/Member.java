@@ -13,7 +13,7 @@ public class Member {
     public Member() {
     }
 
-    public static Member of(UserDetails userDetails) {
+    public static Member from(UserDetails userDetails) {
         return new Member(
                 userDetails.getId(),
                 userDetails.getUsername(),
