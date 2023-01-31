@@ -2,20 +2,37 @@ package nextstep;
 
 import auth.JwtTokenProvider;
 import auth.LoginController;
-import auth.UserDetailsService;
+import auth.LoginService;
+import auth.UserDetailsDao;
+import nextstep.member.MemberDao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 public class AuthConfiguration {
+    private final Environment environment;
+    private final UserDetailsDao userDetailsDao;
 
-    @Bean
-    public JwtTokenProvider jwtTokenProvider(@Value("${security.jwt.token.secret-key}") String secretKey,
-                                             @Value("${security.jwt.token.expire-length}") long validityInMilliseconds) {
-        return new JwtTokenProvider(secretKey, validityInMilliseconds);
+    public AuthConfiguration(Environment environment, UserDetailsDao userDetailsDao) {
+        this.environment = environment;
+        this.userDetailsDao = userDetailsDao;
     }
 
     @Bean
-    public LoginController loginController(UserDetailsService userDetailsService) {
-        return new LoginController(userDetailsService);
+    public JwtTokenProvider jwtTokenProvider() {
+        return new JwtTokenProvider(
+                environment.getProperty("security.jwt.token.secret-key"),
+                Long.parseLong(environment.getProperty("security.jwt.token.expire-length"))
+        );
+    }
+
+    @Bean
+    public LoginService loginService() {
+        return new LoginService(userDetailsDao, jwtTokenProvider());
+    }
+
+    @Bean
+    public LoginController loginController(LoginService loginService) {
+        return new LoginController(loginService);
     }
 }
