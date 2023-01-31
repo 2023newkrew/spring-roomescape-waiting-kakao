@@ -22,11 +22,7 @@ public class ReservationWaitingService {
         if (member == null) {
             throw new AuthenticationException();
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
-
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId()).orElseThrow(NullPointerException::new);
         Reservation newReservation = new Reservation(
                 schedule,
                 member
@@ -36,14 +32,10 @@ public class ReservationWaitingService {
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new IllegalArgumentException("예약대기가 존재하지 않습니다.");
-        }
+        Reservation reservation = reservationDao.findById(id).orElseThrow(NullPointerException::new);
         if (!reservation.sameMember(member)) {
-            throw new IllegalArgumentException("예약을 한 당사자만이 지울 수 있습니다.");
+            throw new AuthenticationException();
         }
-
         reservationDao.deleteById(id);
     }
 

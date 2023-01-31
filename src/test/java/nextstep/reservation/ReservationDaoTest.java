@@ -37,8 +37,8 @@ public class ReservationDaoTest {
     @Test
     void save() {
         Reservation newReservation = Reservation.builder()
-                .schedule(scheduleDao.findById(4L))
-                .member(memberDao.findById(1L))
+                .schedule(scheduleDao.findById(4L).get())
+                .member(memberDao.findById(1L).get())
                 .build();
         Long id = reservationDao.save(newReservation);
         assertThat(id).isInstanceOf(Long.class);
@@ -55,13 +55,13 @@ public class ReservationDaoTest {
     @DisplayName("아이디로 예약을 불러올 수 있다.")
     @Test
     void findById() {
-        assertThat(reservationDao.findById(1L)).isInstanceOf(Reservation.class);
+        assertThat(reservationDao.findById(1L).get()).isInstanceOf(Reservation.class);
     }
 
     @DisplayName("스케줄로 예약을 불러올 수 있다.")
     @Test
     void findByScheduleId() {
-        assertThat(reservationDao.findByScheduleId(1L)).isInstanceOf(Reservation.class);
+        assertThat(reservationDao.findByScheduleId(1L).get()).isInstanceOf(Reservation.class);
     }
 
     @DisplayName("아이디로 예약을 삭제할 수 있다.")

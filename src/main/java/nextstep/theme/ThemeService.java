@@ -21,11 +21,7 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
-        Theme theme = themeDao.findById(id);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
-
+        themeDao.findById(id).orElseThrow(NullPointerException::new);
         themeDao.delete(id);
     }
 }

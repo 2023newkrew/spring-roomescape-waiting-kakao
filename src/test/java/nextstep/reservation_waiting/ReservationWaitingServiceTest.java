@@ -1,5 +1,7 @@
 package nextstep.reservation_waiting;
 
+import auth.AuthenticationException;
+import java.util.Optional;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
@@ -46,18 +48,18 @@ public class ReservationWaitingServiceTest {
     @DisplayName("존재하지 않는 예약 대기를 삭제하면 예외가 발생한다")
     @Test
     void delete() {
-        given(reservationDao.findById(reservation.getId())).willReturn(null);
+        given(reservationDao.findById(reservation.getId())).willReturn(Optional.empty());
         assertThatThrownBy(() -> reservationWaitingService.deleteById(member, reservation.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NullPointerException.class);
     }
 
     @DisplayName("다른 사람의 예약 대기를 취소하면 예외가 발생한다")
     @Test
     void delete2() {
         Member anotherMember = Member.builder().id(100L).build();
-        given(reservationDao.findById(reservation.getId())).willReturn(reservation);
+        given(reservationDao.findById(reservation.getId())).willReturn(Optional.of(reservation));
         assertThatThrownBy(() -> reservationWaitingService.deleteById(anotherMember, reservation.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(AuthenticationException.class);
     }
 
 }

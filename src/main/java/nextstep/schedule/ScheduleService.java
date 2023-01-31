@@ -17,7 +17,8 @@ public class ScheduleService {
     }
 
     public Long create(ScheduleRequest scheduleRequest) {
-        Theme theme = themeDao.findById(scheduleRequest.getThemeId());
+        Theme theme = themeDao.findById(scheduleRequest.getThemeId())
+                .orElseThrow(NullPointerException::new);
         return scheduleDao.save(scheduleRequest.toEntity(theme));
     }
 

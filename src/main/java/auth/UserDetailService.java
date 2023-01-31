@@ -10,10 +10,13 @@ public class UserDetailService {
     private final MemberDao memberDao;
 
     public UserDetail getUserDetailByUsername(String username) {
-        return new UserDetail(memberDao.findByUsername(username));
+        Member member = memberDao.findByUsername(username)
+                .orElseThrow(NullPointerException::new);
+        return new UserDetail(member);
     }
 
     public Member getMemberById(Long id) {
-        return memberDao.findById(id);
+        return memberDao.findById(id)
+                .orElseThrow(NullPointerException::new);
     }
 }

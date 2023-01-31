@@ -57,21 +57,18 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper, themeId, Date.valueOf(date));
     }
 
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = "SELECT * " +
                 "from reservation " +
                 "inner join schedule on reservation.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
                 "where reservation.id = ?";
-        try {
-            return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
-        } catch (Exception e) {
-            return null;
-        }
+
+        return jdbcTemplate.query(sql, reservationRowMapper, id).stream().findAny();
     }
 
-    public Reservation findByScheduleId(Long id) {
+    public Optional<Reservation> findByScheduleId(Long id) {
         String sql = "select *\n" +
                 "from RESERVATION,\n" +
                 "     (SELECT R.id RESERVATION_ID,\n" +
@@ -83,11 +80,7 @@ public class ReservationDao {
                 "where RESERVATION.id = RESERVATION_ID\n" +
                 "  and WAIT_NUM = 1\n" +
                 "  and SCHEDULE_ID = (?);";
-        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
-        if (reservations.size() != 1) {
-            throw new IllegalStateException();
-        }
-        return reservations.get(0);
+        return jdbcTemplate.query(sql, reservationRowMapper, id).stream().findAny();
     }
 
     public void deleteById(Long id) {

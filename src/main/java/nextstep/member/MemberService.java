@@ -15,6 +15,6 @@ public class MemberService {
     }
 
     public Member findById(Long id) {
-        return memberDao.findById(id);
+        return memberDao.findById(id).orElseThrow(NullPointerException::new);
     }
 }
