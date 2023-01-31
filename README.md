@@ -1,5 +1,3 @@
-omm# spring-roomescape-waiting
-
 # Step 1
 ## 프로그래밍 요구사항
 * [x] auth package를 nextstep 패키지로부터 분리한다
