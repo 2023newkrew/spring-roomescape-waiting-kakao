@@ -35,8 +35,7 @@ public class ReservationService {
         checkValid(member);
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         checkFieldIsNull(schedule, "schedule");
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
+        if (isDuplicateByScheduleId(reservationRequest.getScheduleId())) {
             throw new DuplicateEntityException(schedule.getId().toString(), "중복되는 예약이 존재합니다.",
                     ReservationService.class.getSimpleName());
         }
@@ -44,6 +43,10 @@ public class ReservationService {
                 .member(member)
                 .schedule(schedule).build();
         return reservationDao.save(newReservation);
+    }
+
+    public boolean isDuplicateByScheduleId(Long scheduleId) {
+        return !reservationDao.findByScheduleId(scheduleId).isEmpty();
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {

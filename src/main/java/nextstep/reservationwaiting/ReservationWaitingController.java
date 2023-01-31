@@ -4,7 +4,6 @@ import auth.config.LoginMember;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.exception.DuplicateEntityException;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationService;
 import nextstep.reservation.dto.ReservationRequest;
@@ -25,30 +24,29 @@ public class ReservationWaitingController {
     private final ReservationWaitingService reservationWaitingService;
     private final ReservationService reservationService;
 
-    public ReservationWaitingController(ReservationWaitingService reservationWaitingService, ReservationService reservationService) {
+    public ReservationWaitingController(ReservationWaitingService reservationWaitingService,
+                                        ReservationService reservationService) {
         this.reservationWaitingService = reservationWaitingService;
         this.reservationService = reservationService;
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@LoginMember Member member, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
-        try {
-            Long id = reservationService.create(member,
-                    new ReservationRequest(reservationWaitingRequest.getScheduleId()));
-            return ResponseEntity.created(URI.create("/reservations/" + id)).build();
-        } catch (DuplicateEntityException e) {
+    public ResponseEntity<Void> create(@LoginMember Member member,
+                                       @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
+        boolean isDuplicate = reservationService.isDuplicateByScheduleId(reservationWaitingRequest.getScheduleId());
+        if (isDuplicate) {
             Long id = reservationWaitingService.create(member, reservationWaitingRequest);
             return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
         }
+        Long id = reservationService.create(member, new ReservationRequest(reservationWaitingRequest.getScheduleId()));
+        return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping("mine")
     public ResponseEntity<List<ReservationWaitingResponse>> findByMemberId(@LoginMember Member member) {
-        return ResponseEntity.ok(reservationWaitingService
-                .findAllByMemberId(member)
-                .stream()
-                .map(ReservationWaitingResponse::of)
-                .collect(Collectors.toList()));
+        return ResponseEntity.ok(
+                reservationWaitingService.findAllByMemberId(member).stream().map(ReservationWaitingResponse::of)
+                        .collect(Collectors.toList()));
     }
 
     @DeleteMapping("{id}")
