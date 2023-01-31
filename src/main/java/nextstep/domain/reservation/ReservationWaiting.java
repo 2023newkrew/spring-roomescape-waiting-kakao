@@ -20,10 +20,9 @@ public class ReservationWaiting {
         this.waitNum = waitNum;
     }
 
-    public ReservationWaiting(Member member, Schedule schedule, int waitNum) {
+    public ReservationWaiting(Member member, Schedule schedule) {
         this.member = member;
         this.schedule = schedule;
-        this.waitNum = waitNum;
     }
 
     public Long getId() {

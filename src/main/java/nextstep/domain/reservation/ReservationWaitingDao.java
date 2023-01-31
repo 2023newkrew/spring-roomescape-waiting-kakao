@@ -8,14 +8,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-@Component
+@Repository
 public class ReservationWaitingDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -48,7 +48,15 @@ public class ReservationWaitingDao {
             resultSet.getInt("reservation_waiting.wait_num")
     );
 
-    public Long save(ReservationWaiting reservationWaiting) {
+    private final RowMapper<ReservationWaiting> rowMapperForLock = (resultSet, rowNum) -> new ReservationWaiting();
+
+
+    public synchronized Long save(ReservationWaiting reservationWaiting) {
+        String sqlLock = "select wait_num from reservation_waiting WHERE schedule_id = ? for update";
+        jdbcTemplate.query(sqlLock, rowMapperForLock, reservationWaiting.getSchedule().getId());
+
+        int waitNum = findMaxWaitNum(reservationWaiting.getSchedule().getId());
+
         String sql = "INSERT INTO reservation_waiting (member_id, schedule_id, wait_num) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -56,7 +64,7 @@ public class ReservationWaitingDao {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, reservationWaiting.getMember().getId());
             ps.setLong(2, reservationWaiting.getSchedule().getId());
-            ps.setInt(3, reservationWaiting.getWaitNum());
+            ps.setInt(3, waitNum + 1);
             return ps;
 
         }, keyHolder);
@@ -64,7 +72,7 @@ public class ReservationWaitingDao {
         return keyHolder.getKey().longValue();
     }
 
-    public int findMaxWaitNum(Long scheduleId) {
+    private int findMaxWaitNum(Long scheduleId) {
         String sql = "SELECT MAX(wait_num) FROM reservation_waiting WHERE schedule_id = ?";
 
         try {

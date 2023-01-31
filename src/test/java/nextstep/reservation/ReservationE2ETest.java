@@ -11,11 +11,15 @@ import nextstep.dto.request.ScheduleRequest;
 import nextstep.dto.request.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -106,7 +110,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
 
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations).hasSize(1);
     }
 
     @DisplayName("예약을 삭제한다")
@@ -154,7 +158,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
 
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
-        assertThat(reservations.size()).isEqualTo(0);
+        assertThat(reservations).isEmpty();
     }
 
     @DisplayName("없는 예약을 삭제한다")
@@ -217,6 +221,37 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
     }
+
+    @DisplayName("다수 예약 대기 발생")
+    @RepeatedTest(100)
+    void createWaitingFromMany() throws InterruptedException {
+
+        int threadNum = 50;
+        ExecutorService service = Executors.newFixedThreadPool(threadNum);
+        CountDownLatch latch = new CountDownLatch(threadNum);
+
+        createReservation();
+        for (int i = 0; i < threadNum; i++) {
+            service.execute(() -> {
+                createReservationWaiting();
+                latch.countDown();
+            });
+        }
+
+        latch.await();
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(userToken.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationWaiting> reservations = response.jsonPath().getList(".", ReservationWaiting.class);
+        assertThat(reservations).hasSize(threadNum);
+    }
+
 
     @DisplayName("예약 대기 목록을 조회한다")
     @Test

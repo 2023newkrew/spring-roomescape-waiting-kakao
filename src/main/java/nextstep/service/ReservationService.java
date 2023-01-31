@@ -97,8 +97,8 @@ public class ReservationService {
         }
 
         Member member = memberDao.findById(memberId);
-        int waitNum = reservationWaitingDao.findMaxWaitNum(reservationRequest.getScheduleId()) + 1;
-        return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
+
+        return reservationWaitingDao.save(new ReservationWaiting(member, schedule));
     }
 
     @Transactional
