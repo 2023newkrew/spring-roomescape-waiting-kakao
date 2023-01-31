@@ -3,8 +3,9 @@ package auth.provider;
 import auth.domain.UserDetails;
 import auth.dto.TokenRequest;
 import auth.dto.TokenResponse;
-import auth.exception.AuthenticationException;
 import auth.exception.ErrorMessage;
+import auth.exception.ForbiddenException;
+import auth.exception.UnauthorizedException;
 import auth.service.AuthenticationPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -25,7 +26,7 @@ public class JwtTokenProvider {
 
     private final AuthenticationPrincipal principal;
 
-    public TokenResponse createToken(TokenRequest request) {
+    public TokenResponse createToken(TokenRequest request) throws UnauthorizedException {
         UserDetails userDetails = principal.getByUsername(request.getUsername());
         validatePassword(userDetails, request.getPassword());
 
@@ -34,7 +35,7 @@ public class JwtTokenProvider {
 
     private void validatePassword(UserDetails userDetails, String password) {
         if (Objects.isNull(userDetails) || userDetails.isWrongPassword(password)) {
-            throw new AuthenticationException(ErrorMessage.INVALID_USERNAME_OR_PASSWORD);
+            throw new UnauthorizedException(ErrorMessage.INVALID_USERNAME_OR_PASSWORD);
         }
     }
 
@@ -52,7 +53,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public UserDetails getUserDetails(String bearerToken) {
+    public UserDetails getUserDetails(String bearerToken) throws UnauthorizedException {
         Claims body = getValidBody(bearerToken);
 
         return principal.getByUsername(body.get("username", String.class));
@@ -60,7 +61,7 @@ public class JwtTokenProvider {
 
     private Claims getValidBody(String bearerToken) {
         if (isBlankOrNotBearer(bearerToken)) {
-            throw new AuthenticationException(ErrorMessage.NOT_LOGGED_IN);
+            throw new UnauthorizedException(ErrorMessage.NOT_BEARER_TOKEN);
         }
         String accessToken = bearerToken.substring(7);
 
@@ -79,19 +80,20 @@ public class JwtTokenProvider {
                     .getBody();
         }
         catch (ExpiredJwtException e) {
-            throw new AuthenticationException(ErrorMessage.EXPIRED_TOKEN);
+            throw new UnauthorizedException(ErrorMessage.EXPIRED_TOKEN);
         }
         catch (Exception e) {
-            throw new AuthenticationException(ErrorMessage.INVALID_TOKEN);
+            throw new UnauthorizedException(ErrorMessage.INVALID_TOKEN);
         }
     }
 
-    public void validateAdmin(UserDetails userDetails) {
-        if (Objects.isNull(userDetails)) {
-            throw new AuthenticationException(ErrorMessage.NOT_LOGGED_IN);
+    public void validateAdmin(UserDetails userDetails) throws ForbiddenException {
+        if (isNullOrNotAdmin(userDetails)) {
+            throw new ForbiddenException(ErrorMessage.NOT_ADMIN);
         }
-        if (userDetails.isNotAdmin()) {
-            throw new AuthenticationException(ErrorMessage.NOT_ADMIN);
-        }
+    }
+
+    private static boolean isNullOrNotAdmin(UserDetails userDetails) {
+        return Objects.isNull(userDetails) || userDetails.isNotAdmin();
     }
 }
