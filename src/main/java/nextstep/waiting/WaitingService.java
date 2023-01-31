@@ -1,13 +1,15 @@
 package nextstep.waiting;
 
-import auth.AuthorizationException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import nextstep.exceptions.exception.AuthorizationException;
 import nextstep.exceptions.exception.NotExistEntityException;
 import nextstep.exceptions.exception.NotLoggedInException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservation.Reservation;
+import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.ThemeDao;
@@ -21,6 +23,7 @@ public class WaitingService {
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
+    public final ReservationDao reservationDao;
 
     public Long create(Member member, WaitingRequest waitingRequest) {
         if (member == null) {
@@ -29,9 +32,9 @@ public class WaitingService {
 
         Schedule schedule = scheduleDao.findById(waitingRequest.getScheduleId())
                 .orElseThrow(NotExistEntityException::new);
-        List<Waiting> waitings = waitingDao.findByScheduleId(schedule.getId());
-        if (waitings.isEmpty()) {
-            throw new UnsupportedOperationException();
+        List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
+        if (reservations.isEmpty()) {
+            throw new IllegalStateException();
         }
 
         Waiting waiting = Waiting.builder()

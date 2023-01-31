@@ -1,9 +1,9 @@
 package nextstep.reservation;
 
-import auth.AuthorizationException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import nextstep.exceptions.exception.AuthorizationException;
 import nextstep.exceptions.exception.DuplicatedEntityException;
 import nextstep.exceptions.exception.NotExistEntityException;
 import nextstep.exceptions.exception.NotLoggedInException;

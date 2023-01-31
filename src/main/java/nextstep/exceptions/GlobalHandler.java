@@ -26,6 +26,14 @@ public class GlobalHandler {
                 .body(errorResponse);
     }
 
+    @ExceptionHandler(value = IllegalStateException.class)
+    protected ResponseEntity<Object> handleIllegalStateException(IllegalStateException e) {
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.WAITING_UNAVAILABLE);
+        return ResponseEntity
+                .status(errorResponse.getStatus())
+                .body(errorResponse);
+    }
+
     @ExceptionHandler(value = ResponseStatusException.class)
     protected ResponseEntity<Object> handleException(ResponseStatusException e) {
         return ResponseEntity

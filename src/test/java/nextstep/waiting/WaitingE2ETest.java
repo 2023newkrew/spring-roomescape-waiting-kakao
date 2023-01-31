@@ -1,4 +1,4 @@
-package nextstep.reservation;
+package nextstep.waiting;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,6 +8,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import nextstep.AbstractE2ETest;
+import nextstep.reservation.ReservationRequest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-class ReservationE2ETest extends AbstractE2ETest {
-    private ReservationRequest reservationRequest;
+class WaitingE2ETest extends AbstractE2ETest {
+    private WaitingRequest waitingRequest;
     private Long themeId;
     private Long scheduleId;
 
@@ -50,150 +51,111 @@ class ReservationE2ETest extends AbstractE2ETest {
         String[] scheduleLocation = scheduleResponse.header("Location").split("/");
         scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
-        reservationRequest = new ReservationRequest(scheduleId);
+        ReservationRequest reservationRequest = new ReservationRequest(scheduleId);
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(notAdminToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(reservationRequest)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+
+        waitingRequest = new WaitingRequest(scheduleId);
     }
 
-    @DisplayName("예약을 생성한다")
+    @DisplayName("예약 대기를 생성한다")
     @Test
     void create() {
-        String reservationLocation = RestAssured
+        String waitingLocation = RestAssured
                 .given().log().all()
                 .auth().oauth2(adminToken)
-                .body(reservationRequest)
+                .body(waitingRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservations")
+                .when().post("/reservations-waitings")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().header("Location");
-        assertTrue(reservationLocation.matches("/reservations/[1-9][0-9]*"));
+        assertTrue(waitingLocation.matches("/reservations-waitings/[1-9][0-9]*"));
     }
 
-    @DisplayName("비로그인 사용자가 예약을 생성 시 실패한다")
+    @DisplayName("비로그인 사용자가 예약 대기를 생성 시 실패한다")
     @Test
     void createWithoutLoginFail() {
         RestAssured
                 .given().log().all()
-                .body(reservationRequest)
+                .body(waitingRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservations")
+                .when().post("/reservations-waitings")
                 .then().log().all()
                 .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
-    @DisplayName("예약을 조회한다")
-    @Test
-    void show() {
-        createReservation();
-
-        var response = RestAssured
-                .given().log().all()
-                .param("themeId", themeId)
-                .param("date", DATE)
-                .when().get("/reservations")
-                .then().log().all()
-                .extract();
-
-        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
-        assertThat(reservations).hasSize(1);
-    }
-
-    @DisplayName("예약을 삭제한다")
+    @DisplayName("예약 대기를 삭제한다")
     @Test
     void delete() {
-        var reservation = createReservation();
+        var waiting = createWaiting();
 
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(notAdminToken)
-                .when().delete(reservation.header("Location"))
+                .when().delete(waiting.header("Location"))
                 .then().log().all()
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("중복 예약을 생성한다")
+    @DisplayName("없는 예약 대기를 삭제할 수 없다.")
     @Test
-    void createDuplicateReservation() {
-        createReservation();
-
-        var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(adminToken)
-                .body(reservationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservations")
-                .then().log().all()
-                .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @DisplayName("예약이 없을 때 예약 목록을 조회한다")
-    @Test
-    void showEmptyReservations() {
-        var response = RestAssured
-                .given().log().all()
-                .param("themeId", themeId)
-                .param("date", DATE)
-                .when().get("/reservations")
-                .then().log().all()
-                .extract();
-
-        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
-        assertThat(reservations).isEmpty();
-    }
-
-    @DisplayName("없는 예약을 삭제한다")
-    @Test
-    void createNotExistReservation() {
+    void createNotExistWaiting() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(notAdminToken)
-                .when().delete("/reservations/1")
+                .when().delete("/reservations-waitings/1")
                 .then().log().all()
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("다른 사람의 예약을 삭제한다")
+    @DisplayName("다른 사람의 예약 대기를 삭제할 수 없다.")
     @Test
-    void deleteReservationOfOtherUser() {
-        var reservation = createReservation();
+    void deleteWaitingOfOtherUser() {
+        var waiting = createWaiting();
 
         RestAssured
                 .given().log().all()
                 .auth().oauth2(adminToken)
-                .when().delete(reservation.header("Location"))
+                .when().delete(waiting.header("Location"))
                 .then().log().all()
                 .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
-    private ExtractableResponse<Response> createReservation() {
-        return RestAssured
-                .given().log().all()
-                .auth().oauth2(notAdminToken)
-                .body(reservationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservations")
-                .then().log().all()
-                .extract();
-    }
-
-    @DisplayName("내 예약을 조회한다")
+    @DisplayName("내 예약 대기 목록을 조회한다")
     @Test
-    void showMyReservations() {
-        createReservation();
+    void showMyWaitings() {
+        createWaiting();
 
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(notAdminToken)
-                .when().get("/reservations/mine")
+                .when().get("/reservations-waitings/mine")
                 .then().log().all()
                 .extract();
 
-        List<ReservationResponse> reservations = response.jsonPath().getList(".", ReservationResponse.class);
-        assertThat(reservations).hasSize(1);
+        List<WaitingResponse> waitings = response.jsonPath().getList(".", WaitingResponse.class);
+        assertThat(waitings).hasSize(1);
+    }
+
+    ExtractableResponse<Response> createWaiting() {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(notAdminToken)
+                .body(waitingRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservations-waitings")
+                .then().log().all()
+                .extract();
     }
 }

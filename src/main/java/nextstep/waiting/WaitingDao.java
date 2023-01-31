@@ -141,7 +141,7 @@ public class WaitingDao {
     }
 
     public int countWaitingNumber(Waiting waiting) {
-        String sql = "SELECT COUNT(*) FROM waiting WHERE schedule.id = ? AND id <= ?";
+        String sql = "SELECT COUNT(*) FROM waiting WHERE schedule_id = ? AND id <= ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, waiting.getSchedule().getId(), waiting.getId());
     }
 }

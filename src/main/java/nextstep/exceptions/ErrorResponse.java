@@ -18,4 +18,10 @@ public class ErrorResponse {
         this.code = errorCode.getCode();
         this.message = errorCode.getReason();
     }
+
+    public ErrorResponse(ErrorCode errorCode, String message) {
+        this.status = errorCode.getStatus();
+        this.code = errorCode.getCode();
+        this.message = message;
+    }
 }

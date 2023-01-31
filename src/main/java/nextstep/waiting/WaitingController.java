@@ -28,7 +28,7 @@ public class WaitingController {
     public ResponseEntity<URI> createWaiting(@LoginMember UserDetails userDetails, @RequestBody WaitingRequest waitingRequest) {
         Member member = memberService.findById(userDetails.getId());
         Long id = waitingService.create(member, waitingRequest);
-        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
+        return ResponseEntity.created(URI.create("/reservations-waitings/" + id)).build();
     }
 
     @GetMapping("/mine")

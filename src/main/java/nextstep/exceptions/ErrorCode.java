@@ -12,7 +12,8 @@ public enum ErrorCode {
     LOGIN_FAIL(400, "Bad Request", "로그인에 실패하였습니다."),
     DUPLICATED_ENTITY(400, "Bad Request", "이미 존재하여 생성할 수 없습니다."),
     NOT_EXIST_ENTITY(400, "Bad Request", "이미 존재하여 생성할 수 없습니다."),
-    DATA_ACCESS_ERROR(500, "Internal Server Error", "오류가 발생했습니다. 관리자에게 문의하세요.");
+    DATA_ACCESS_ERROR(500, "Internal Server Error", "오류가 발생했습니다. 관리자에게 문의하세요."),
+    WAITING_UNAVAILABLE(400, "Bad Request", "대기 신청이 불가능합니다.");
 
 
     private final int status;
