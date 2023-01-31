@@ -5,7 +5,8 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 
 public class JwtTokenProvider {
@@ -18,13 +19,14 @@ public class JwtTokenProvider {
     public String createToken(final String principal, final String role) {
         Claims claims = Jwts.claims()
             .setSubject(principal);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        Long validityInSeconds = validityInMilliseconds / 1000;
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime validity = now.plusSeconds(validityInSeconds);
 
         return Jwts.builder()
             .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(validity)
+            .setIssuedAt(Timestamp.valueOf(now))
+            .setExpiration(Timestamp.valueOf(validity))
             .claim("role", role)
             .signWith(SignatureAlgorithm.HS256, secretKey)
             .compact();
@@ -48,13 +50,14 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
+            LocalDateTime now = LocalDateTime.now();
             Jws<Claims> claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token);
 
             return !claims.getBody()
                 .getExpiration()
-                .before(new Date());
+                .before(Timestamp.valueOf(now));
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
