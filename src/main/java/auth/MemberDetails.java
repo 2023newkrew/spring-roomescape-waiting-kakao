@@ -1,12 +1,12 @@
 package auth;
 
 public class MemberDetails {
-    private Long id;
-    private String username;
-    private String password;
-    private String name;
-    private String phone;
-    private String role;
+    private final Long id;
+    private final String username;
+    private final String password;
+    private final String name;
+    private final String phone;
+    private final String role;
 
     public MemberDetails(Long id, String username, String password, String name, String phone, String role) {
         this.id = id;

@@ -14,8 +14,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/reservation-waitings")
 public class ReservationWaitingController {
-    private ReservationWaitingService reservationWaitingService;
-    public ReservationService reservationService;
+    private final ReservationWaitingService reservationWaitingService;
+    public final ReservationService reservationService;
 
     public ReservationWaitingController(ReservationWaitingService reservationWaitingService, ReservationService reservationService) {
         this.reservationWaitingService = reservationWaitingService;

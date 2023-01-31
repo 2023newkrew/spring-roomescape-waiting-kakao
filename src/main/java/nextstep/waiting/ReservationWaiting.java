@@ -3,8 +3,8 @@ package nextstep.waiting;
 import nextstep.reservation.Reservation;
 
 public class ReservationWaiting {
-    public Reservation reservation;
-    public Long waitingSeq;
+    private Reservation reservation;
+    private Long waitingSeq;
 
     public ReservationWaiting() {
     }

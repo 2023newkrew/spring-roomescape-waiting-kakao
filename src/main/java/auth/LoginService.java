@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LoginService {
-    private MemberDetailsService memberDetailsService;
-    private JwtTokenProvider jwtTokenProvider;
+    private final MemberDetailsService memberDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public LoginService(MemberDetailsService memberDetailsService, JwtTokenProvider jwtTokenProvider) {
         this.memberDetailsService = memberDetailsService;

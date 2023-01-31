@@ -59,7 +59,7 @@ public class ReservationDao {
 
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return keyHolder.getKeyAs(Long.class);
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
