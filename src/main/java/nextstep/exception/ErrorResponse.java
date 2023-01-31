@@ -1,4 +1,4 @@
-package exception;
+package nextstep.exception;
 
 public class ErrorResponse {
 

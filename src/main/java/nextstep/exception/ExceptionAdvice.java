@@ -1,8 +1,8 @@
-package exception;
+package nextstep.exception;
 
 import auth.exception.AuthException;
-import exception.business.BusinessException;
-import exception.dataaccess.DataAccessException;
+import nextstep.exception.business.BusinessException;
+import nextstep.exception.dataaccess.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;

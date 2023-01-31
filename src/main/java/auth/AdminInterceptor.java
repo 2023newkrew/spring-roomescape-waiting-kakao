@@ -1,7 +1,7 @@
 package auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import exception.ErrorResponse;
+import nextstep.exception.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;

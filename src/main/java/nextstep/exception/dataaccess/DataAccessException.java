@@ -1,4 +1,4 @@
-package exception.dataaccess;
+package nextstep.exception.dataaccess;
 
 import org.springframework.http.HttpStatus;
 

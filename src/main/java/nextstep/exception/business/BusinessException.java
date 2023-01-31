@@ -1,4 +1,4 @@
-package exception.business;
+package nextstep.exception.business;
 
 import org.springframework.http.HttpStatus;
 
