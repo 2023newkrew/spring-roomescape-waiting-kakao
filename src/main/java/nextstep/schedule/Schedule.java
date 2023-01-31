@@ -1,11 +1,10 @@
 package nextstep.schedule;
 
-import static nextstep.utils.Validator.*;
+import static nextstep.utils.Validator.checkFieldIsNull;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import nextstep.theme.Theme;
-import nextstep.utils.Validator;
 
 public class Schedule {
     private Long id;

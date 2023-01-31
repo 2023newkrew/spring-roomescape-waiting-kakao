@@ -3,7 +3,6 @@ package nextstep.reservationwaiting;
 import static nextstep.utils.Validator.checkFieldIsNull;
 
 import nextstep.schedule.Schedule;
-import nextstep.utils.Validator;
 
 public class ReservationWaiting {
     private Long id;

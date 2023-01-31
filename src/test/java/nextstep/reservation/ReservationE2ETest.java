@@ -10,7 +10,7 @@ import nextstep.AbstractE2ETest;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
 import nextstep.schedule.dto.ScheduleRequest;
-import nextstep.theme.ThemeRequest;
+import nextstep.theme.dto.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

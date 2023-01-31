@@ -16,12 +16,11 @@ public class ThemeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("desc"),
-            resultSet.getInt("price")
-    );
+    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> Theme.giveId(Theme.builder()
+            .name(resultSet.getString("name"))
+            .desc(resultSet.getString("desc"))
+            .price(resultSet.getInt("price"))
+            .build(), resultSet.getLong("id"));
 
     public Long save(Theme theme) {
         String sql = "INSERT INTO theme (name, desc, price) VALUES (?, ?, ?);";

@@ -22,12 +22,12 @@ public class ScheduleDao {
 
     private final RowMapper<Schedule> rowMapper = (resultSet, rowNum) ->
             Schedule.giveId(Schedule.builder()
-                            .theme(new Theme(
-                                    resultSet.getLong("theme.id"),
-                                    resultSet.getString("theme.name"),
-                                    resultSet.getString("theme.desc"),
-                                    resultSet.getInt("theme.price")
-                            ))
+                            .theme(Theme.giveId(Theme.builder()
+                                    .name(resultSet.getString("theme.name"))
+                                    .desc(resultSet.getString("theme.desc"))
+                                    .price(resultSet.getInt("theme.price"))
+                                    .build(), resultSet.getLong("theme.id"))
+                            )
                             .time(resultSet.getTime("schedule.time").toLocalTime())
                             .date(resultSet.getDate("schedule.date").toLocalDate())
                             .build()

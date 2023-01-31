@@ -7,6 +7,7 @@ import auth.dto.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
 import nextstep.member.dto.MemberRequest;
+import nextstep.theme.dto.ThemeRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

@@ -33,9 +33,9 @@ class ReservationWaitingDaoTest {
         createDao();
         dropTables();
         createTable();
-        Theme theme = new Theme("name", "desc", 210000);
+        Theme theme = Theme.builder().name("name").desc("desc").price(210000).build();
         themeId = themeDao.save(theme);
-        Theme scheduleTheme = new Theme(themeId, theme.getName(), theme.getDesc(), theme.getPrice());
+        Theme scheduleTheme = Theme.giveId(theme, themeId);
         Schedule schedule = Schedule.builder().theme(scheduleTheme).date(LocalDate.parse("2023-01-26"))
                 .time(LocalTime.parse("13:00:00")).build();
         scheduleId = scheduleDao.save(schedule);
@@ -106,7 +106,11 @@ class ReservationWaitingDaoTest {
         return ReservationWaiting.builder()
                 .schedule(
                         Schedule.giveId(Schedule.builder()
-                                .theme(new Theme(themeId, "name", "desc", 210000))
+                                .theme(Theme.giveId(Theme.builder()
+                                                .name("name")
+                                                .desc("desc")
+                                                .price(210000)
+                                        .build(),themeId))
                                 .time(LocalTime.parse("13:00:00"))
                                 .date(LocalDate.parse("2023-01-26"))
                                 .build(), scheduleId))

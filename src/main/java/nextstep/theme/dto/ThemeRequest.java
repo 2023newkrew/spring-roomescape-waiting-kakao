@@ -1,4 +1,6 @@
-package nextstep.theme;
+package nextstep.theme.dto;
+
+import nextstep.theme.Theme;
 
 public class ThemeRequest {
     private final String name;
@@ -24,10 +26,10 @@ public class ThemeRequest {
     }
 
     public Theme toEntity() {
-        return new Theme(
-                this.name,
-                this.desc,
-                this.price
-        );
+        return Theme.builder()
+                .desc(desc)
+                .name(name)
+                .price(price)
+                .build();
     }
 }

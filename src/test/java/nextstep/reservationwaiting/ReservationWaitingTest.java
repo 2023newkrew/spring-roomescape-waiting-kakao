@@ -15,8 +15,12 @@ class ReservationWaitingTest {
             .builder()
             .time(LocalTime.parse("13:00:00"))
             .date(LocalDate.parse("2023-01-26"))
-            .theme(new Theme(1L, "theme", "desc", 123))
-            .build(), 1L);
+            .theme(Theme.giveId(Theme.builder()
+                            .name("theme")
+                            .desc("desc")
+                            .price(123)
+                            .build()
+                    , 1L)).build(),1L);
 
     @Test
     @DisplayName("Reservation Waiting은 id 없이 생성이 가능하다.")
