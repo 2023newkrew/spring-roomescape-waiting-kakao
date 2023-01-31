@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ReservationWaitingService {
-    public final ReservationWaitingDao reservationWaitingDao;
+    private final ReservationWaitingDao reservationWaitingDao;
     public final ReservationDao reservationDao;
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
@@ -37,11 +37,10 @@ public class ReservationWaitingService {
         Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId())
                 .orElseThrow(() -> new NotExistEntityException(ErrorCode.SCHEDULE_NOT_FOUND));
 
-        List<Reservation> reservations = new ArrayList<>(
-                reservationWaitingDao.findByScheduleId(schedule.getId())
-                        .stream()
-                        .map(ReservationWaiting::getReservation)
-                        .toList());
+        List<Reservation> reservations = reservationWaitingDao.findByScheduleId(schedule.getId())
+                .stream()
+                .map(ReservationWaiting::getReservation)
+                .collect(Collectors.toList());
 
         reservations.addAll(reservationDao.findByScheduleId(schedule.getId()));
 

@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class ReservationWaitingDao {
 
-    public final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public ReservationWaitingDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -58,10 +58,9 @@ public class ReservationWaitingDao {
             ps.setLong(2, reservationWaiting.getReservation().getMember().getId());
             ps.setLong(3, reservationWaiting.getWaitingSeq());
             return ps;
-
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return keyHolder.getKeyAs(Long.class);
     }
 
     public ReservationWaiting findById(Long id) {
@@ -93,11 +92,8 @@ public class ReservationWaitingDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
                 "where member.id = ? and reservation.waiting_seq > 0;";
-        try {
+
             return jdbcTemplate.query(sql, rowMapper, memberId);
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
     }
 
     public List<ReservationWaiting> findByScheduleId(Long id) {
@@ -112,11 +108,7 @@ public class ReservationWaitingDao {
                 "inner join member on reservation.member_id = member.id " +
                 "where schedule.id = ? and reservation.waiting_seq > 0;";
 
-        try {
             return jdbcTemplate.query(sql, rowMapper, id);
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
     }
 
     public void updateWaitingSeq(ReservationWaiting reservationWaiting) {
