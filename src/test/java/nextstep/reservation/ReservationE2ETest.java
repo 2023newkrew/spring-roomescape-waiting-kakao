@@ -94,10 +94,12 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
+                .auth().oauth2(token.getAccessToken())
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
@@ -116,7 +118,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        List<ReservationResponse> reservations = response.jsonPath().getList(".", ReservationResponse.class);
         assertThat(reservations.size()).isEqualTo(1);
     }
 
@@ -157,6 +159,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void showEmptyReservations() {
         var response = RestAssured
                 .given().log().all()
+                .auth().oauth2(token.getAccessToken())
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")

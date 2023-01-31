@@ -39,9 +39,19 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         return new JwtTokenProvider();
     }
 
+    @Bean
+    public TokenExtractor tokenExtractor() {
+        return new TokenExtractor();
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider(), userAuthenticator)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new LoginInterceptor(jwtTokenProvider(), userAuthenticator, tokenExtractor()))
+                .order(1)
+                .addPathPatterns("/admin/**", "/reservations/**", "/reservation-waitings/**");
+        registry.addInterceptor(new AdminInterceptor())
+                .order(2)
+                .addPathPatterns("/admin/**");
     }
 
     @Override

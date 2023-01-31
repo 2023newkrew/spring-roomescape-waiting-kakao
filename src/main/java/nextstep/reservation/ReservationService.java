@@ -46,11 +46,14 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
         themeDao.findById(themeId)
                 .orElseThrow(DoesNotExistEntityException::new);
 
-        return reservationDao.findAllByThemeIdAndDate(themeId, date);
+        return reservationDao.findAllByThemeIdAndDate(themeId, date)
+                .stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Long memberId, Long id) {

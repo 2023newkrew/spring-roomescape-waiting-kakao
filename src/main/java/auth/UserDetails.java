@@ -7,4 +7,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class UserDetails {
     private final Long id;
+    private final String role;
 }

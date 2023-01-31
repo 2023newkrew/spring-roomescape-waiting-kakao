@@ -4,7 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
-import nextstep.reservation.Reservation;
+import nextstep.reservation.ReservationResponse;
 import nextstep.reservationwaiting.ReservationWaitingRequest;
 import nextstep.reservationwaiting.ReservationWaitingResponse;
 import nextstep.schedule.ScheduleRequest;
@@ -148,13 +148,14 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
+                .auth().oauth2(token.getAccessToken())
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
                 .then().log().all()
                 .extract();
 
-        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        List<ReservationResponse> reservations = response.jsonPath().getList(".", ReservationResponse.class);
         assertThat(reservations.size()).isEqualTo(1);
     }
 

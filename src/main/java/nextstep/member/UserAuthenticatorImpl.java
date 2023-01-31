@@ -17,12 +17,12 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         if (member.checkWrongPassword(password)) {
             throw new AuthenticationException();
         }
-        return new UserDetails(member.getId());
+        return new UserDetails(member.getId(), member.getRole().name());
     }
 
     @Override
-    public boolean isAdmin(Long id) {
-        return memberDao.findById(id)
-                .filter(member -> member.getRole() == Role.ADMIN).isPresent();
+    public String getRole(Long id) {
+        Member member = memberDao.findById(id).orElseThrow(AuthenticationException::new);
+        return member.getRole().name();
     }
 }

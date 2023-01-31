@@ -3,6 +3,7 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import auth.LoginMember;
 import lombok.RequiredArgsConstructor;
+import nextstep.support.DuplicateEntityException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,19 +19,19 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity createReservation(@LoginMember Long memberId, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<Void> createReservation(@LoginMember Long memberId, @RequestBody ReservationRequest reservationRequest) {
         Long reservationId = reservationService.create(memberId, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservationId)).build();
     }
 
     @GetMapping
-    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
-        List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
+    public ResponseEntity<List<ReservationResponse>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
+        List<ReservationResponse> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Long memberId, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@LoginMember Long memberId, @PathVariable Long id) {
         reservationService.deleteById(memberId, id);
 
         return ResponseEntity.noContent().build();
@@ -41,13 +42,13 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findByMemberId(memberId));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    @ExceptionHandler(DuplicateEntityException.class)
+    public ResponseEntity<Void> onDuplicateEntityException(DuplicateEntityException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
