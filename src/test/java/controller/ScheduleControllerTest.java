@@ -14,6 +14,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.emptyString;
@@ -87,15 +89,13 @@ public class ScheduleControllerTest extends AbstractControllerTest {
                     Arguments.of(new ScheduleRequest(null, null, null)),
                     Arguments.of(new ScheduleRequest(null, request.getTime(), request.getThemeId())),
                     Arguments.of(new ScheduleRequest(request.getDate(), null, request.getThemeId())),
-                    Arguments.of(new ScheduleRequest(request.getDate(), request.getTime(), null)),
-                    Arguments.of(new ScheduleRequest("2021-13-31", request.getTime(), request.getThemeId())),
-                    Arguments.of(new ScheduleRequest(request.getDate(), "25:00", request.getThemeId()))
+                    Arguments.of(new ScheduleRequest(request.getDate(), request.getTime(), null))
             );
         }
     }
 
     ScheduleRequest createRequest() {
-        return new ScheduleRequest("2022-08-11", "13:00", 1L);
+        return new ScheduleRequest(LocalDate.of(2022, 8, 11), LocalTime.of(11, 0), 1L);
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)

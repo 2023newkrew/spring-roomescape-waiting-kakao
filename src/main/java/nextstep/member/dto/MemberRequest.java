@@ -1,27 +1,25 @@
 package nextstep.member.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class MemberRequest {
 
     @NotBlank(message = "username은 공백일 수 없습니다.")
-    private final String username;
+    private String username;
 
     @NotBlank(message = "password는 공백일 수 없습니다.")
-    private final String password;
+    private String password;
 
     @NotBlank(message = "name은 공백일 수 없습니다.")
-    private final String name;
+    private String name;
 
     @NotBlank(message = "phone은 공백일 수 없습니다.")
-    private final String phone;
-
-    MemberRequest() {
-        this(null, null, null, null);
-    }
+    private String phone;
 }

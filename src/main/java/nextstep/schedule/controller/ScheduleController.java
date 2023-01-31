@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,13 +31,12 @@ public class ScheduleController {
 
     @GetMapping("/search")
     public ResponseEntity<List<ScheduleResponse>> search(@RequestBody @Validated ScheduleSearchRequest request) {
-        String date = request.getDate();
 
-        return ResponseEntity.ok(getSchedules(request.getThemeId(), LocalDate.parse(date)));
+        return ResponseEntity.ok(getSchedules(request));
     }
 
-    private List<ScheduleResponse> getSchedules(Long themeId, LocalDate date) {
-        return service.getByThemeIdAndDate(themeId, date)
+    private List<ScheduleResponse> getSchedules(ScheduleSearchRequest request) {
+        return service.getByThemeIdAndDate(request.getThemeId(), request.getDate())
                 .stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
