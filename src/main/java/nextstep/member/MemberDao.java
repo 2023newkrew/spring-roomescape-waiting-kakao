@@ -56,12 +56,12 @@ public class MemberDao implements UserDetailsDao {
     }
 
     @Override
-    public UserDetails findUserById(Long id) {
+    public UserDetails findUserDetailsById(Long id) {
         return findById(id).toUserDetails();
     }
 
     @Override
-    public UserDetails findUserByUsername(String username) {
+    public UserDetails findUserDetailsByUsername(String username) {
         return findByUsername(username).toUserDetails();
     }
 }

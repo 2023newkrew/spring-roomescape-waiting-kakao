@@ -13,7 +13,7 @@ public class LoginService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetails userDetails = userDetailsDao.findUserByUsername(tokenRequest.getUsername());
+        UserDetails userDetails = userDetailsDao.findUserDetailsByUsername(tokenRequest.getUsername());
         if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
@@ -29,6 +29,6 @@ public class LoginService {
 
     public UserDetails extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return userDetailsDao.findUserById(id);
+        return userDetailsDao.findUserDetailsById(id);
     }
 }

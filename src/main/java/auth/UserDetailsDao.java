@@ -1,6 +1,6 @@
 package auth;
 
 public interface UserDetailsDao {
-    UserDetails findUserById(Long id);
-    UserDetails findUserByUsername(String username);
+    UserDetails findUserDetailsById(Long id);
+    UserDetails findUserDetailsByUsername(String username);
 }
