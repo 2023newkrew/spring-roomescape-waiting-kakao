@@ -30,7 +30,7 @@ public class MemberDaoImpl implements MemberDao {
     );
 
     @Override
-    public Long save(Member member) {
+    public Long save(MemberDetail member) {
         String sql = "INSERT INTO member (username, password, name, phone, role) VALUES (?, ?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 

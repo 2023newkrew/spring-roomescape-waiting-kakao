@@ -2,7 +2,6 @@ package auth.login;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import nextstep.web.member.Member;
 
 @Getter
 @AllArgsConstructor
@@ -17,9 +16,5 @@ public class MemberDetail {
 
     public boolean checkWrongPassword(String password) {
         return !this.password.equals(password);
-    }
-
-    public Member toMember() {
-        return new Member(id, username, password, name, phone, role);
     }
 }

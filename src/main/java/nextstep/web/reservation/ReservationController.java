@@ -2,6 +2,7 @@ package nextstep.web.reservation;
 
 import auth.login.LoginMember;
 import auth.login.MemberDetail;
+import nextstep.web.member.Member;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<Void> createReservation(@LoginMember MemberDetail member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(member.toMember(), reservationRequest);
+        Long id = reservationService.create(Member.fromMemberDetail(member), reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -31,13 +32,13 @@ public class ReservationController {
 
     @GetMapping("/reservations/mine")
     public ResponseEntity<List<Reservation>> readAllReservation(@LoginMember MemberDetail member){
-        List<Reservation> results = reservationService.findAllByMember(member.toMember());
+        List<Reservation> results = reservationService.findAllByMember(Member.fromMemberDetail(member));
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@LoginMember MemberDetail member, @PathVariable Long id) {
-        reservationService.deleteById(member.toMember(), id);
+        reservationService.deleteById(Member.fromMemberDetail(member), id);
 
         return ResponseEntity.noContent().build();
     }

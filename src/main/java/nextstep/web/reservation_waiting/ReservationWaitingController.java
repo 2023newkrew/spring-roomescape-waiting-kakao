@@ -3,6 +3,7 @@ package nextstep.web.reservation_waiting;
 import auth.login.LoginMember;
 import auth.login.MemberDetail;
 import lombok.RequiredArgsConstructor;
+import nextstep.web.member.Member;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,20 +22,20 @@ public class ReservationWaitingController {
             @LoginMember MemberDetail member,
             @RequestBody ReservationWaitingRequest reservationWaitingRequest
     ) {
-        String location = reservationWaitingService.create(member.toMember(), reservationWaitingRequest);
+        String location = reservationWaitingService.create(Member.fromMemberDetail(member), reservationWaitingRequest);
         return ResponseEntity.created(URI.create(location)).build();
     }
 
     @GetMapping("/mine")
     public ResponseEntity<List<ReservationWaitingResponse>> readMyReservationWaiting(@LoginMember MemberDetail member) {
-        List<ReservationWaitingResponse> results = reservationWaitingService.readMine(member.toMember());
+        List<ReservationWaitingResponse> results = reservationWaitingService.readMine(Member.fromMemberDetail(member));
 
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationWaiting(@LoginMember MemberDetail member, @PathVariable Long id) {
-        reservationWaitingService.deleteById(member.toMember(), id);
+        reservationWaitingService.deleteById(Member.fromMemberDetail(member), id);
 
         return ResponseEntity.noContent().build();
     }

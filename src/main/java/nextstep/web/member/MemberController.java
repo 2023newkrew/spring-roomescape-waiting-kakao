@@ -24,6 +24,6 @@ public class MemberController {
 
     @GetMapping("/me")
     public ResponseEntity<Member> me(@LoginMember MemberDetail member) {
-        return ResponseEntity.ok(member.toMember());
+        return ResponseEntity.ok(Member.fromMemberDetail(member));
     }
 }

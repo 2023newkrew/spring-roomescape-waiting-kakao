@@ -29,4 +29,15 @@ public class Member {
     public MemberDetail toMemberDetail() {
         return new MemberDetail(id, username, password, name, phone, role);
     }
+
+    public static Member fromMemberDetail(MemberDetail memberDetail) {
+        return new Member(
+                memberDetail.getId(),
+                memberDetail.getUsername(),
+                memberDetail.getPassword(),
+                memberDetail.getName(),
+                memberDetail.getPhone(),
+                memberDetail.getRole()
+        );
+    }
 }
