@@ -67,7 +67,7 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteById(String username, Long id) {
+    public void deleteById(String username, Long id, ReservationStatus status) {
         Reservation reservation = reservationDao.findById(id);
         Member member = memberDao.findByUsername(username);
         if (reservation == null) {
@@ -78,20 +78,26 @@ public class ReservationService {
             throw new AuthenticationException();
         }
 
+        if (reservation.getStatus() != status) {
+            throw new IllegalArgumentException();
+        }
         reservationDao.deleteById(id);
+        reservationDao.updateLatestReservationToConfirmed(reservation.getSchedule().getId());
     }
 
-    public List<ReservationWaiting> findAllByUsername(String username) {
+    public List<ReservationWaiting> findWaitingReservationsByUsername(String username) {
         return reservationDao.findAllByUsername(username)
                 .stream()
-                .map(e -> {
-                    return new ReservationWaiting(e, reservationDao.getWaitingNumber(e.getSchedule().getId(), e.getId()));
-                })
+                .filter(e -> e.getStatus() == ReservationStatus.WAITING)
+                .map(e -> new ReservationWaiting(e, reservationDao.getWaitingNumber(e.getSchedule().getId(), e.getId())))
                 .collect(Collectors.toList());
     }
 
-    public Long getWaitingNum(ReservationRequest reservationRequest, Long id) {
-        return reservationDao.getWaitingNumber(reservationRequest.getScheduleId(), id);
+    public List<Reservation> findReservationsByUsername(String username) {
+        return reservationDao.findAllByUsername(username)
+                .stream()
+                .filter(e -> e.getStatus() == ReservationStatus.CONFIRMED)
+                .collect(Collectors.toList());
     }
 
 }
