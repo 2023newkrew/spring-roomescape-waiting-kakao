@@ -1,6 +1,5 @@
 package nextstep.exception.handler;
 
-import auth.exception.AuthenticationException;
 import nextstep.exception.AuthorizationWebException;
 import nextstep.exception.BaseWebException;
 import org.slf4j.Logger;
@@ -17,20 +16,19 @@ public class BaseExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> onException(Exception e) {
+        e.printStackTrace();
+        logger.error(e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
     @ExceptionHandler(BaseWebException.class)
-    public ResponseEntity<String> onBaseException(BaseWebException e){
+    public ResponseEntity<String> onBaseException(BaseWebException e) {
         logger.error(e.getFullMessage());
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
+
     @ExceptionHandler(AuthorizationWebException.class)
-    public ResponseEntity<String> onUnAuthorizationException(AuthorizationWebException e){
+    public ResponseEntity<String> onUnAuthorizationException(AuthorizationWebException e) {
         logger.error(e.getFullMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }

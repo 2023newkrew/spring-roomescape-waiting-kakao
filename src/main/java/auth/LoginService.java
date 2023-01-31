@@ -4,7 +4,7 @@ import auth.config.LoginMemberDao;
 import auth.config.MemberDetails;
 import auth.dto.TokenRequest;
 import auth.dto.TokenResponse;
-import auth.exception.AuthenticationException;
+import auth.exception.AuthAuthenticationException;
 import auth.utils.JwtTokenProvider;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +22,9 @@ public class LoginService {
     public TokenResponse createToken(TokenRequest tokenRequest) {
         MemberDetails memberDetails = loginMemberDao.findByUsername(tokenRequest.getUsername());
         if (memberDetails == null || memberDetails.checkWrongPassword(tokenRequest.getPassword())) {
-            throw new AuthenticationException();
+            throw new AuthAuthenticationException("토큰이 유효해야 합니다.","invalid token","create Token", LoginService.class.getSimpleName());
         }
-
         String accessToken = jwtTokenProvider.createToken(memberDetails.getId() + "", memberDetails.getRole());
-
         return new TokenResponse(accessToken);
     }
 

@@ -1,6 +1,6 @@
 package auth.config;
 
-import auth.exception.AuthenticationException;
+import auth.exception.AuthAuthorizationException;
 import auth.utils.JwtTokenProvider;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +20,8 @@ public class AdminInterceptor implements HandlerInterceptor {
         String credential = request.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
         String role = jwtTokenProvider.getRole(credential);
         if (!Objects.equals(role, "ADMIN")) {
-            throw new AuthenticationException();
+            throw new AuthAuthorizationException("admin만 접근해야 합니다.", "admin이 아닌 유저가 접근하였습니다.", "preHandle",
+                    AdminInterceptor.class.getSimpleName());
         }
         return true;
     }

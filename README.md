@@ -45,3 +45,9 @@
   - [x] reservation-waiting delete 구현
     - [x] 자신의 reservation-waiting 이 아니면 취소가 불가능 하다.
 - [x] 통합테스트 작성
+- [x] 변하지 않는 값들 final 적용
+- [x] Builder 적용
+- [x] Validator 구현
+- [x] dao sql 분리
+- [x] dao interface 분리
+- [x] schema comment 추가

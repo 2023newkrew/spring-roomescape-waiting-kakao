@@ -1,6 +1,6 @@
 package nextstep.exception;
 
-public class BaseWebException extends RuntimeException {
+public abstract class BaseWebException extends RuntimeException{
 
     private final int status;
 

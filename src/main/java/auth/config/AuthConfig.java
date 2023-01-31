@@ -30,7 +30,8 @@ public class AuthConfig {
     }
 
     @Bean
-    WebMvcAuthConfiguration webMvcAuthConfiguration(){
+    public WebMvcAuthConfiguration webMvcAuthConfiguration(){
         return new WebMvcAuthConfiguration(jwtTokenProvider(), loginService());
     }
+
 }
