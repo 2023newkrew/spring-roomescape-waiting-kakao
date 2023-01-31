@@ -67,7 +67,7 @@ public class WaitingDao {
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role, " +
-                "(SELECT count(*) FROM waiting WHERE waiting.schedule_id = schedule.id) as wait_num " +
+                "(SELECT count(*) FROM waiting w WHERE w.schedule_id = schedule.id AND w.id <= waiting.id) as wait_num " +
                 "from waiting " +
                 "inner join schedule on waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
@@ -83,7 +83,7 @@ public class WaitingDao {
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role, " +
-                "(SELECT count(*) FROM waiting WHERE waiting.schedule_id = schedule.id) as wait_num " +
+                "(SELECT count(*) FROM waiting w WHERE w.schedule_id = schedule.id AND w.id <= waiting.id) as wait_num " +
                 "from waiting " +
                 "inner join schedule on waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
