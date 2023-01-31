@@ -14,6 +14,7 @@ import nextstep.web.reservation_waiting.dto.ReservationWaitingResponse;
 import nextstep.web.schedule.domain.Schedule;
 import nextstep.web.schedule.dao.ScheduleDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class ReservationWaitingService {
     private final ReservationDao reservationDao;
     private final ScheduleDao scheduleDao;
 
+    @Transactional
     public String create(Member member, ReservationWaitingRequest reservationWaitingRequest) {
         Long scheduleId = reservationWaitingRequest.getScheduleId();
         Schedule schedule = scheduleDao.findById(scheduleId);
