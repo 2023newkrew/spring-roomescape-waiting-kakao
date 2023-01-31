@@ -16,6 +16,7 @@ public class Theme {
     }
 
     public static Theme giveId(Theme theme, Long id){
+        checkFieldIsNull(theme, "theme");
         checkFieldIsNull(id, "id");
         theme.id = id;
         return theme;

@@ -20,6 +20,7 @@ public class Schedule {
     }
 
     public static Schedule giveId(Schedule schedule, Long id){
+        checkFieldIsNull(schedule,"schedule");
         checkFieldIsNull(id, "id");
         schedule.id = id;
         return schedule;

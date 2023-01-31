@@ -1,7 +1,8 @@
 package nextstep.member;
 
+import static nextstep.utils.Validator.checkFieldIsNull;
+
 import auth.config.MemberDetails;
-import nextstep.utils.Validator;
 
 public class Member implements MemberDetails {
     private Long id;
@@ -17,10 +18,12 @@ public class Member implements MemberDetails {
         this.name = name;
         this.phone = phone;
         this.role = role;
+        validateFields();
     }
 
     public static Member giveId(Member member, Long id) {
-        Validator.checkFieldIsNull(id, "id");
+        checkFieldIsNull(member, "member");
+        checkFieldIsNull(id, "id");
         member.id = id;
         return member;
     }
@@ -57,15 +60,7 @@ public class Member implements MemberDetails {
             return this;
         }
         public Member build(){
-            validateFields();
             return new Member(username, password, name, phone, role);
-        }
-        private void validateFields() {
-            Validator.checkFieldIsNull(username, "username");
-            Validator.checkFieldIsNull(password, "password");
-            Validator.checkFieldIsNull(name, "name");
-            Validator.checkFieldIsNull(phone, "phone");
-            Validator.checkFieldIsNull(role, "role");
         }
     }
 
@@ -95,5 +90,12 @@ public class Member implements MemberDetails {
 
     public boolean checkWrongPassword(String password) {
         return !this.password.equals(password);
+    }
+    private void validateFields() {
+        checkFieldIsNull(username, "username");
+        checkFieldIsNull(password, "password");
+        checkFieldIsNull(name, "name");
+        checkFieldIsNull(phone, "phone");
+        checkFieldIsNull(role, "role");
     }
 }

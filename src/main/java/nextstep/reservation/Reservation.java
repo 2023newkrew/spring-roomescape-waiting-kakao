@@ -1,9 +1,10 @@
 package nextstep.reservation;
 
+import static nextstep.utils.Validator.checkFieldIsNull;
+
 import java.util.Objects;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
-import nextstep.utils.Validator;
 
 public class Reservation {
     private Long id;
@@ -11,9 +12,9 @@ public class Reservation {
     private final Member member;
 
     private Reservation(Schedule schedule, Member member) {
-        validateFields(schedule, member);
         this.schedule = schedule;
         this.member = member;
+        validateFields();
     }
 
     public Long getId() {
@@ -37,6 +38,8 @@ public class Reservation {
     }
 
     public static Reservation giveId(Reservation reservation, Long id) {
+        checkFieldIsNull(reservation, "reservation");
+        checkFieldIsNull(id,"id");
         reservation.id = id;
         return reservation;
     }
@@ -63,8 +66,8 @@ public class Reservation {
 
     }
 
-    private static void validateFields(Schedule schedule, Member member) {
-        Validator.checkFieldIsNull(schedule, "schedule");
-        Validator.checkFieldIsNull(member, "member");
+    private void validateFields() {
+        checkFieldIsNull(schedule, "schedule");
+        checkFieldIsNull(member, "member");
     }
 }

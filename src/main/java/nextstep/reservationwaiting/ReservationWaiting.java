@@ -20,6 +20,7 @@ public class ReservationWaiting {
     }
 
     public static ReservationWaiting giveId(ReservationWaiting reservationWaiting, Long id) {
+        checkFieldIsNull(reservationWaiting, "reservationWaiting");
         checkFieldIsNull(id, "id");
         reservationWaiting.id = id;
         return reservationWaiting;

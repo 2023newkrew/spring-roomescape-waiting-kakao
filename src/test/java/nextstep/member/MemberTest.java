@@ -10,7 +10,7 @@ class MemberTest {
     @Test
     void nullBuild() {
         Assertions.assertThatThrownBy(() -> Member.builder().build()).isInstanceOf(NullFieldException.class)
-                .hasMessageContaining("MemberBuilder");
+                .hasMessageContaining("Member");
 
     }
 
@@ -23,7 +23,7 @@ class MemberTest {
                         .password("")
                         .role("")
                         .build()).isInstanceOf(BlankStringException.class)
-                .hasMessageContaining("MemberBuilder");
+                .hasMessageContaining("Member");
     }
 
 }
