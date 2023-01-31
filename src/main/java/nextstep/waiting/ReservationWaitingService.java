@@ -68,10 +68,8 @@ public class ReservationWaitingService {
     }
 
     public void deleteById(Member member, Long id) {
-        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
-        if (reservationWaiting == null) {
-            throw new NotExistEntityException(ErrorCode.RESERVATION_NOT_FOUND);
-        }
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id)
+                .orElseThrow(() -> new NotExistEntityException(ErrorCode.RESERVATION_NOT_FOUND));
 
         if (!reservationWaiting.getReservation().checkMemberIsOwner(member)) {
             throw new UnauthorizedException(ErrorCode.FORBIDDEN);

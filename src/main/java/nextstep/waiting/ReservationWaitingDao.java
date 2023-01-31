@@ -4,6 +4,7 @@ import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,8 +12,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ReservationWaitingDao {
@@ -63,7 +64,7 @@ public class ReservationWaitingDao {
         return keyHolder.getKeyAs(Long.class);
     }
 
-    public ReservationWaiting findById(Long id) {
+    public Optional<ReservationWaiting> findById(Long id) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, reservation.waiting_seq, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -74,10 +75,11 @@ public class ReservationWaitingDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
                 "where reservation.id = ? and reservation.waiting_seq > 0;";
+
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
-            return null;
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
         }
     }
 
