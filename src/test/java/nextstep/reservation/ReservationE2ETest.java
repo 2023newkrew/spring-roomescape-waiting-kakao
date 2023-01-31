@@ -4,8 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
-import nextstep.schedule.ScheduleRequest;
-import nextstep.theme.ThemeRequest;
+import nextstep.domain.dto.ReservationRequest;
+import nextstep.domain.dto.ReservationResponse;
+import nextstep.domain.dto.ScheduleRequest;
+import nextstep.domain.dto.ThemeRequest;
+import nextstep.domain.persist.Reservation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -104,6 +107,22 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservations.size()).isEqualTo(1);
     }
 
+    @DisplayName("내 예약을 조회한다")
+    @Test
+    void showMine() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservationResponses.size()).isEqualTo(1);
+    }
+
     @DisplayName("예약을 삭제한다")
     @Test
     void delete() {
@@ -164,7 +183,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("다른 사람이 예약을삭제한다")
+    @DisplayName("다른 사람이 예약을 삭제한다")
     @Test
     void deleteReservationOfOthers() {
         createReservation();

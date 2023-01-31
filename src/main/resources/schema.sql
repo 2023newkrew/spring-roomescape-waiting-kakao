@@ -1,4 +1,18 @@
+DROP TABLE IF EXISTS reservation;
+DROP TABLE IF EXISTS waiting;
+DROP TABLE IF EXISTS theme;
+DROP TABLE IF EXISTS schedule;
+DROP TABLE IF EXISTS member;
+
 CREATE TABLE reservation
+(
+    id          bigint not null auto_increment,
+    schedule_id bigint not null,
+    member_id   bigint not null,
+    primary key (id)
+);
+
+CREATE TABLE waiting
 (
     id          bigint not null auto_increment,
     schedule_id bigint not null,
@@ -32,5 +46,6 @@ CREATE TABLE member
     name     varchar(20) not null,
     phone    varchar(20) not null,
     role     varchar(20) not null,
-    primary key (id)
+    primary key (id),
+    unique (username)
 );
