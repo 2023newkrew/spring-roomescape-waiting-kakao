@@ -1,18 +1,16 @@
 package nextstep.reservation;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import nextstep.schedule.Schedule;
+import lombok.RequiredArgsConstructor;
+import nextstep.schedule.ScheduleResponse;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public class ReservationResponse {
-    private Long id;
-    private Schedule schedule;
+    private final Long id;
+    private final ScheduleResponse scheduleResponse;
 
     public static ReservationResponse from(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(), reservation.getSchedule());
+        return new ReservationResponse(reservation.getId(), ScheduleResponse.from(reservation.getSchedule()));
     }
 }

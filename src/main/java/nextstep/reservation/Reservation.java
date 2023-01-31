@@ -1,20 +1,21 @@
 package nextstep.reservation;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
 import java.util.Objects;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public class Reservation {
-    private Long id;
-    private Schedule schedule;
-    private Member member;
+    private final Long id;
+    @NonNull
+    private final Schedule schedule;
+    @NonNull
+    private final Member member;
 
     public Reservation(Schedule schedule, Member member) {
         this(null, schedule, member);

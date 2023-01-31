@@ -1,22 +1,16 @@
 package nextstep.member;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public class MemberRequest {
-    private String username;
-    private String password;
-    private String name;
-    private String phone;
-    private String role;
-
-    public MemberRequest(String username, String password, String name, String phone) {
-        this(username, password, name, phone, null);
-    }
+    private final String username;
+    private final String password;
+    private final String name;
+    private final String phone;
+    private final String role;
 
     public Member toEntity() {
         Member.MemberBuilder memberBuilder = Member.builder()

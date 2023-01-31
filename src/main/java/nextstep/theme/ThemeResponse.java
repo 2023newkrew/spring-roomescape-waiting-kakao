@@ -5,16 +5,13 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class ThemeRequest {
+public class ThemeResponse {
+    private final Long id;
     private final String name;
     private final String desc;
     private final int price;
 
-    public Theme toEntity() {
-        return new Theme(
-                this.name,
-                this.desc,
-                this.price
-        );
+    public static ThemeResponse from(Theme theme) {
+        return new ThemeResponse(theme.getId(), theme.getName(), theme.getDesc(), theme.getPrice());
     }
 }

@@ -2,16 +2,16 @@ package nextstep.reservationwaiting;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import nextstep.schedule.Schedule;
+import nextstep.schedule.ScheduleResponse;
 
 @RequiredArgsConstructor
 @Getter
 public class ReservationWaitingResponse {
     private final Long id;
-    private final Schedule schedule;
+    private final ScheduleResponse scheduleResponse;
     private final Long waitNum;
 
     public static ReservationWaitingResponse from(ReservationWaiting reservationWaiting) {
-        return new ReservationWaitingResponse(reservationWaiting.getId(), reservationWaiting.getSchedule(), reservationWaiting.getWaitNum());
+        return new ReservationWaitingResponse(reservationWaiting.getId(), ScheduleResponse.from(reservationWaiting.getSchedule()), reservationWaiting.getWaitNum());
     }
 }

@@ -102,7 +102,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        List<ReservationResponse> reservations = response.jsonPath().getList(".", ReservationResponse.class);
         assertThat(reservations.size()).isEqualTo(1);
     }
 

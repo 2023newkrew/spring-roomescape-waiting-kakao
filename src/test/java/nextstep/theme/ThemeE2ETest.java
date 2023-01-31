@@ -31,7 +31,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
     @Test
     public void createFromNormalUser() {
 
-        MemberRequest memberBody = new MemberRequest(USERNAME + 1, PASSWORD, "name", "010-1234-5678");
+        MemberRequest memberBody = new MemberRequest(USERNAME + 1, PASSWORD, "name", "010-1234-5678", "MEMBER");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
