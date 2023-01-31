@@ -4,6 +4,7 @@ import auth.JwtTokenProvider;
 import auth.LoginController;
 import auth.LoginService;
 import auth.MemberDetailsService;
+import nextstep.member.MemberDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,6 +35,6 @@ public class AuthConfiguration {
 
     @Bean
     public MemberDetailsService memberDetailsService() {
-        return new MemberDetailsService(jdbcTemplate);
+        return new MemberDetailsServiceImpl(jdbcTemplate);
     }
 }
