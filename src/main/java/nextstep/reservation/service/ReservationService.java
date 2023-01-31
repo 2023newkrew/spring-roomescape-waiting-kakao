@@ -5,6 +5,7 @@ import nextstep.member.domain.Member;
 import nextstep.member.repository.MemberDao;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.dto.ReservationRequest;
+import nextstep.reservation.dto.ReservationResponse;
 import nextstep.reservation.repository.ReservationDao;
 import nextstep.reservationwaiting.domain.ReservationWaiting;
 import nextstep.reservationwaiting.repository.ReservationWaitingDao;
@@ -16,6 +17,7 @@ import nextstep.theme.repository.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -82,10 +84,13 @@ public class ReservationService {
         }
     }
 
-    public List<Reservation> findAllByMemberId(Member member) {
+    public List<ReservationResponse> findAllByMemberId(Member member) {
         checkEmptyMember(member);
 
-        return reservationDao.findAllByMemberId(member.getId());
+        return reservationDao.findAllByMemberId(member.getId())
+                .stream()
+                .map(ReservationResponse::of)
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Member member, Long id) {

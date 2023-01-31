@@ -32,7 +32,7 @@ public class ReservationWaitingController {
     @GetMapping("/reservation-waitings/mine")
     public ResponseEntity readReservationWaitings(@LoginMember Long memberId) {
         List<ReservationWaitingResponse> results = reservationWaitingService.findAllByMemberId(memberId);
-        return ResponseEntity.ok().body(results);
+        return ResponseEntity.ok(results);
     }
 
     @DeleteMapping("/reservation-waitings/{id}")

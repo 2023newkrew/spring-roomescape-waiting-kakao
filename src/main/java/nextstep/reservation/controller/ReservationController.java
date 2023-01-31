@@ -4,6 +4,7 @@ import auth.support.AuthenticationException;
 import auth.support.LoginMember;
 import nextstep.member.service.MemberService;
 import nextstep.reservation.dto.ReservationRequest;
+import nextstep.reservation.dto.ReservationResponse;
 import nextstep.reservation.service.ReservationService;
 import nextstep.reservation.domain.Reservation;
 import org.springframework.http.HttpStatus;
@@ -33,13 +34,13 @@ public class ReservationController {
     @GetMapping("/reservations")
     public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
-        return ResponseEntity.ok().body(results);
+        return ResponseEntity.ok(results);
     }
 
     @GetMapping("/reservations/mine")
     public ResponseEntity readMyReservations(@LoginMember Long memberId) {
-        List<Reservation> results = reservationService.findAllByMemberId(memberService.findById(memberId));
-        return ResponseEntity.ok().body(results);
+        List<ReservationResponse> results = reservationService.findAllByMemberId(memberService.findById(memberId));
+        return ResponseEntity.ok(results);
     }
 
     @DeleteMapping("/reservations/{id}")
