@@ -63,7 +63,7 @@ public class MemberE2ETest {
     public void showThemes() {
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().get("/members/me")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())

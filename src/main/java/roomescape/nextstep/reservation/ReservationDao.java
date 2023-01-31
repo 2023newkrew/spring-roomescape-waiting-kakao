@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class ReservationDao {
@@ -61,7 +61,7 @@ public class ReservationDao {
 
         }, keyHolder);
 
-        return Reservation.of(keyHolder.getKey().longValue(), reservation);
+        return Reservation.of(Objects.requireNonNull(keyHolder.getKey()).longValue(), reservation);
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {

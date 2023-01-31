@@ -5,7 +5,6 @@ import roomescape.nextstep.member.Member;
 import roomescape.nextstep.member.MemberDao;
 import roomescape.nextstep.schedule.Schedule;
 import roomescape.nextstep.schedule.ScheduleDao;
-import roomescape.nextstep.support.DuplicateEntityException;
 import roomescape.nextstep.theme.Theme;
 import roomescape.nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ public class ReservationService {
         if (member == null) {
             throw new AuthenticationException();
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+        Schedule schedule = scheduleDao.findById(reservationRequest.scheduledId());
         if (schedule == null) {
             throw new NullPointerException();
         }

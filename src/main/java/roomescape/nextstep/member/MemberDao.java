@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.Objects;
 
 @Component
 public class MemberDao implements UserDetailsDao {
@@ -41,12 +42,7 @@ public class MemberDao implements UserDetailsDao {
 
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
-    }
-
-    public Member findById(Long id) {
-        String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public Member findByUsername(String username) {

@@ -1,6 +1,5 @@
 package roomescape.auth;
 
-import org.springframework.stereotype.Service;
 
 public class LoginService {
 
@@ -13,9 +12,9 @@ public class LoginService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetails member = userDetailsDao.findByUsername(tokenRequest.getUsername());
+        UserDetails member = userDetailsDao.findByUsername(tokenRequest.username());
 
-        if (member == null || member.checkWrongPassword(tokenRequest.getPassword())) {
+        if (member == null || member.checkWrongPassword(tokenRequest.password())) {
             throw new AuthenticationException();
         }
 

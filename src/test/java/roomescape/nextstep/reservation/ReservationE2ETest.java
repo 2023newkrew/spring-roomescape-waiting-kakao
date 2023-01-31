@@ -30,7 +30,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
         var themeResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(themeRequest)
                 .when().post("/admin/themes")
@@ -43,7 +43,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(scheduleRequest)
                 .when().post("/admin/schedules")
@@ -63,7 +63,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void create() {
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
@@ -111,7 +111,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().delete(reservation.header("Location"))
                 .then().log().all()
                 .extract();
@@ -139,7 +139,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void createNotExistReservation() {
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();
@@ -165,7 +165,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
@@ -213,7 +213,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().get("/reservations-waitings/mine")
                 .then().log().all()
                 .extract();
@@ -231,7 +231,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().get("/reservations/mine")
                 .then().log().all()
                 .extract();
@@ -250,7 +250,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().delete(reservation.header("Location"))
                 .then().log().all()
                 .extract();
@@ -263,7 +263,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void createNotExistWaiting() {
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().delete("/reservations-waitings/1")
                 .then().log().all()
                 .extract();
@@ -296,14 +296,14 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().get("/reservations-waitings/mine")
                 .then().log().all()
                 .extract();
@@ -313,7 +313,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response2 = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().get("/reservations/mine")
                 .then().log().all()
                 .extract();

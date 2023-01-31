@@ -19,7 +19,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
                 .when().post("/admin/themes")
@@ -55,7 +55,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
                 .when().post("/admin/themes")
@@ -85,7 +85,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .when().delete("/admin/themes/" + id)
                 .then().log().all()
                 .extract();
@@ -97,7 +97,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         String location = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(token.accessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
                 .when().post("/admin/themes")
