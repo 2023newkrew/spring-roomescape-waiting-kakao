@@ -1,12 +1,12 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
+import auth.AuthorizationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
-import nextstep.theme.Theme;
+import nextstep.support.NotExistEntityException;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
@@ -27,14 +27,10 @@ public class ReservationService {
     }
 
     public Long create(Long memberId, ReservationRequest reservationRequest) {
-        Member member = memberDao.findById(memberId);
-        if (member == null) {
-            throw new AuthenticationException();
-        }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(NotExistEntityException::new);
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(NotExistEntityException::new);
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
@@ -50,22 +46,19 @@ public class ReservationService {
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NullPointerException();
+        if (themeDao.findById(themeId).isEmpty()) {
+            throw new NotExistEntityException();
         }
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
     public void deleteById(Long memberId, Long reservationId) {
-        Reservation reservation = reservationDao.findById(reservationId);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
+        Reservation reservation = reservationDao.findById(reservationId)
+                .orElseThrow(NotExistEntityException::new);
 
         if (!reservation.sameMember(memberId)) {
-            throw new AuthenticationException();
+            throw new AuthorizationException();
         }
 
         reservationDao.deleteById(reservationId);

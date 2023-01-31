@@ -55,6 +55,6 @@ public class Member {
     }
 
     public UserDetails toUserDetails() {
-        return new UserDetails(id, username, password, role);
+        return new UserDetails(id, password, role);
     }
 }

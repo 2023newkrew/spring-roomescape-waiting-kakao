@@ -1,9 +1,9 @@
 package nextstep.waiting;
 
 import nextstep.member.Member;
-import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,8 +11,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ReservationWaitingDao {
@@ -63,7 +63,7 @@ public class ReservationWaitingDao {
         return keyHolder.getKey().longValue();
     }
 
-    public ReservationWaiting findById(Long id) {
+    public Optional<ReservationWaiting> findById(Long id) {
         String sql = "SELECT " +
                 "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, schedule.next_wait_num, " +
@@ -75,9 +75,9 @@ public class ReservationWaitingDao {
                 "inner join member on reservation_waiting.member_id = member.id " +
                 "where reservation_waiting.id = ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
-            return null;
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
     }
 
@@ -98,12 +98,7 @@ public class ReservationWaitingDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation_waiting.member_id = member.id " +
                 "where reservation_waiting.member_id = ?;";
-        try {
-            return jdbcTemplate.query(sql, rowMapper, memberId);
-        }
-        catch (RuntimeException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
+
+        return jdbcTemplate.query(sql, rowMapper, memberId);
     }
 }

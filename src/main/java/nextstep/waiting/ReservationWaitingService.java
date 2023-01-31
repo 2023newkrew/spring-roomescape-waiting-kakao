@@ -1,12 +1,11 @@
 package nextstep.waiting;
 
-import auth.AuthenticationException;
 import auth.AuthorizationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
-import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.support.NotExistEntityException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,15 +24,11 @@ public class ReservationWaitingService {
     }
 
     public Long save(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
-        Member member = memberDao.findById(memberId);
-        if (member == null) {
-            throw new AuthenticationException();
-        }
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(NotExistEntityException::new);
 
-        Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId())
+                .orElseThrow(NotExistEntityException::new);
 
         ReservationWaiting reservationWaiting = new ReservationWaiting(
                 schedule,
@@ -46,10 +41,8 @@ public class ReservationWaitingService {
     }
 
     public void deleteById(Long memberId, Long reservationWaitingId) {
-        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId);
-        if (reservationWaiting == null) {
-            throw new NullPointerException();
-        }
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId)
+                .orElseThrow(NotExistEntityException::new);
 
         if (!reservationWaiting.sameMember(memberId)) {
             throw new AuthorizationException();
