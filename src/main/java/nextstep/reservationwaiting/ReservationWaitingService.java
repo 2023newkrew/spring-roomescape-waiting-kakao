@@ -1,6 +1,12 @@
 package nextstep.reservationwaiting;
 
+import auth.AuthenticationException;
+import auth.UserDetails;
 import java.util.List;
+import nextstep.member.Member;
+import nextstep.member.MemberDao;
+import nextstep.reservation.Reservation;
+import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
@@ -9,13 +15,21 @@ import org.springframework.stereotype.Service;
 public class ReservationWaitingService {
     public final ReservationWaitingDao reservationWaitingDao;
     public final ScheduleDao scheduleDao;
+    public final ReservationDao reservationDao;
+    public final MemberDao memberDao;
 
-    public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ScheduleDao scheduleDao) {
+    public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ScheduleDao scheduleDao, ReservationDao reservationDao, MemberDao memberDao) {
         this.reservationWaitingDao = reservationWaitingDao;
         this.scheduleDao = scheduleDao;
+        this.reservationDao = reservationDao;
+        this.memberDao = memberDao;
     }
 
-    public Long create(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
+    public Long create(UserDetails userDetails, ReservationWaitingRequest reservationWaitingRequest) {
+        if (userDetails == null) {
+            throw new AuthenticationException();
+        }
+        Long memberId = userDetails.getId();
         Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId());
         if (schedule == null) {
             throw new NullPointerException();
@@ -36,12 +50,18 @@ public class ReservationWaitingService {
         return reservationWaitingDao.save(newReservationWaiting);
     }
 
-    public List<ReservationWaiting> findAllByMemberId(Long memberId) {
-        return reservationWaitingDao.findAllByMemberId(memberId);
+    public List<ReservationWaiting> findAllByUserDetails(UserDetails userDetails) {
+        if (userDetails == null) {
+            throw new AuthenticationException();
+        }
+        return reservationWaitingDao.findAllByMemberId(userDetails.getId());
     }
 
-    public int deleteById(Long memberId, Long id) {
-        return reservationWaitingDao.deleteById(id);
+    public int deleteById(UserDetails userDetails, Long id) {
+        if (userDetails == null) {
+            throw new AuthenticationException();
+        }
+        return reservationWaitingDao.deleteById(userDetails.getId());
     }
 
     public Long findTopPriorityMemberIdBySchedule(Schedule schedule) {

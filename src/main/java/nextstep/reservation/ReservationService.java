@@ -3,6 +3,8 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservationwaiting.ReservationWaiting;
+import nextstep.reservationwaiting.ReservationWaitingDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -15,15 +17,17 @@ import java.util.List;
 @Service
 public class ReservationService {
     public final ReservationDao reservationDao;
+    public final ReservationWaitingDao reservationWaitingDao;
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, ReservationWaitingDao reservationWaitingDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.reservationWaitingDao = reservationWaitingDao;
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
@@ -37,7 +41,12 @@ public class ReservationService {
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
+            Long maxPriority = reservationWaitingDao.getMaxPriorityNumber(schedule);
+            if (maxPriority == null) {
+                maxPriority = 0L;
+            }
+            Long newPriority = maxPriority + 1;
+            reservationWaitingDao.save(new ReservationWaiting(schedule, member.getId(), newPriority));
         }
 
         Reservation newReservation = new Reservation(
@@ -72,5 +81,13 @@ public class ReservationService {
 
     public List<Reservation> findByMemberId(Long memberId) {
         return reservationDao.findByMemberId(memberId);
+    }
+
+    public boolean isScheduleReserved(Long scheduleId) {
+        List<Reservation> reservations = reservationDao.findByScheduleId(scheduleId);
+        if (reservations.size() == 0) {
+            return false;
+        }
+        return true;
     }
 }
