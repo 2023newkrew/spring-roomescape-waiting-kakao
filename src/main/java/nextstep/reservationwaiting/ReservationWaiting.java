@@ -1,7 +1,9 @@
 package nextstep.reservationwaiting;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import static nextstep.utils.Validator.checkFieldIsNull;
+
 import nextstep.schedule.Schedule;
+import nextstep.utils.Validator;
 
 public class ReservationWaiting {
     private Long id;
@@ -9,18 +11,23 @@ public class ReservationWaiting {
     private final Long memberId;
     private final Long waitNum;
 
-    @JsonCreator
-    public ReservationWaiting(Schedule schedule, Long memberId, Long waitNum) {
+    private ReservationWaiting(Schedule schedule, Long memberId, Long waitNum) {
+        checkFieldIsNull(schedule, "schedule");
+        checkFieldIsNull(memberId, "memberId");
+        checkFieldIsNull(waitNum, "waitNum");
         this.schedule = schedule;
         this.memberId = memberId;
         this.waitNum = waitNum;
     }
 
-    public ReservationWaiting(Long id, Schedule schedule, Long memberId, Long waitNum) {
-        this.id = id;
-        this.schedule = schedule;
-        this.memberId = memberId;
-        this.waitNum = waitNum;
+    public static ReservationWaiting giveId(ReservationWaiting reservationWaiting, Long id) {
+        checkFieldIsNull(id, "id");
+        reservationWaiting.id = id;
+        return reservationWaiting;
+    }
+
+    public static ReservationWaitingBuilder builder() {
+        return new ReservationWaitingBuilder();
     }
 
     public Long getId() {
@@ -37,5 +44,32 @@ public class ReservationWaiting {
 
     public Long getWaitNum() {
         return waitNum;
+    }
+
+    public static class ReservationWaitingBuilder {
+        private Schedule schedule;
+        private Long memberId;
+        private Long waitNum;
+
+        public ReservationWaitingBuilder schedule(Schedule schedule) {
+            this.schedule = schedule;
+            return this;
+
+        }
+
+        public ReservationWaitingBuilder memberId(Long memberId) {
+            this.memberId = memberId;
+            return this;
+
+        }
+
+        public ReservationWaitingBuilder waitNum(Long waitNum) {
+            this.waitNum = waitNum;
+            return this;
+        }
+
+        public ReservationWaiting build() {
+            return new ReservationWaiting(schedule, memberId, waitNum);
+        }
     }
 }

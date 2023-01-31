@@ -3,6 +3,7 @@ package nextstep.reservationwaiting;
 import java.util.List;
 import nextstep.exception.NotFoundException;
 import nextstep.member.Member;
+import nextstep.reservationwaiting.dto.ReservationWaitingRequest;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,11 @@ public class ReservationWaitingService {
     public Long create(Member member, ReservationWaitingRequest reservationWaitingRequest) {
         Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId());
 
-        ReservationWaiting newReservationWaiting = new ReservationWaiting(
-                schedule,
-                member.getId(),
-                reservationWaitingDao.findMaxWaitNumByScheduleId(reservationWaitingRequest.getScheduleId()) + 1
-        );
-
+        ReservationWaiting newReservationWaiting = ReservationWaiting.builder()
+                .schedule(schedule)
+                .memberId(member.getId())
+                .waitNum(reservationWaitingDao.findMaxWaitNumByScheduleId(reservationWaitingRequest.getScheduleId()) + 1)
+                .build();
         return reservationWaitingDao.save(newReservationWaiting);
     }
 

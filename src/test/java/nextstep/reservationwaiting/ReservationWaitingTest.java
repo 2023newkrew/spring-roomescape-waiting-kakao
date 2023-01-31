@@ -11,18 +11,29 @@ import org.junit.jupiter.api.Test;
 
 class ReservationWaitingTest {
 
+    private final Schedule schedule = new Schedule(1L, new Theme(1L, "theme", "desc", 123),
+            LocalDate.parse("2023-01-26"), LocalTime.parse("13:00:00"));
+
     @Test
     @DisplayName("Reservation Waiting은 id 없이 생성이 가능하다.")
     void create() {
-        assertThatCode(() -> new ReservationWaiting(new Schedule(1L, new Theme(1L, "theme", "desc", 123),
-                LocalDate.parse("2023-01-26"), LocalTime.parse("13:00:00")), 1L, 1L));
+        assertThatCode(() -> ReservationWaiting.builder()
+                .waitNum(1L)
+                .memberId(1L)
+                .schedule(schedule)
+                .build()).doesNotThrowAnyException();
+
     }
 
     @Test
     @DisplayName("Reservation Waiting은 id 있이 생성이 가능하다.")
     void createWithId() {
-        assertThatCode(() -> new ReservationWaiting(1L, new Schedule(1L, new Theme(1L, "theme", "desc", 123),
-                LocalDate.parse("2023-01-26"), LocalTime.parse("13:00:00")), 1L, 1L));
+        assertThatCode(() -> ReservationWaiting.giveId(
+                ReservationWaiting.builder()
+                        .schedule(schedule)
+                        .waitNum(1L)
+                        .memberId(1L).build(),
+                1L)).doesNotThrowAnyException();
     }
 
 }

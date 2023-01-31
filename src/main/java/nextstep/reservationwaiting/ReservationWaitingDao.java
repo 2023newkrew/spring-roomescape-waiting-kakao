@@ -20,22 +20,22 @@ public class ReservationWaitingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<ReservationWaiting> rowMapper = (resultSet, rowNum) -> new ReservationWaiting(
-            resultSet.getLong("reservation_waiting.id"),
-            new Schedule(
-                    resultSet.getLong("schedule.id"),
-                    new Theme(
-                            resultSet.getLong("theme.id"),
-                            resultSet.getString("theme.name"),
-                            resultSet.getString("theme.desc"),
-                            resultSet.getInt("theme.price")
-                    ),
-                    resultSet.getDate("schedule.date").toLocalDate(),
-                    resultSet.getTime("schedule.time").toLocalTime()
-            ),
-            resultSet.getLong("reservation_waiting.member_id"),
-            resultSet.getLong("reservation_waiting.wait_num")
-    );
+    private final RowMapper<ReservationWaiting> rowMapper = (resultSet, rowNum) -> ReservationWaiting.giveId(
+            ReservationWaiting.builder()
+                    .schedule(new Schedule(
+                            resultSet.getLong("schedule.id"),
+                            new Theme(
+                                    resultSet.getLong("theme.id"),
+                                    resultSet.getString("theme.name"),
+                                    resultSet.getString("theme.desc"),
+                                    resultSet.getInt("theme.price")
+                            ),
+                            resultSet.getDate("schedule.date").toLocalDate(),
+                            resultSet.getTime("schedule.time").toLocalTime()
+                    ))
+                    .waitNum(resultSet.getLong("reservation_waiting.wait_num"))
+                    .memberId(resultSet.getLong("reservation_waiting.member_id"))
+                    .build(), resultSet.getLong("reservation_waiting.id"));
 
     public Long save(ReservationWaiting reservationWaiting) {
         String sql = "INSERT INTO reservation_waiting (schedule_id, member_id, wait_num) VALUES (?, ?, ?);";

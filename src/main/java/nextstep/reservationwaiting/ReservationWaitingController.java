@@ -8,6 +8,8 @@ import nextstep.exception.DuplicateEntityException;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationService;
 import nextstep.reservation.dto.ReservationRequest;
+import nextstep.reservationwaiting.dto.ReservationWaitingRequest;
+import nextstep.reservationwaiting.dto.ReservationWaitingResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +47,7 @@ public class ReservationWaitingController {
         return ResponseEntity.ok(reservationWaitingService
                 .findAllByMemberId(member)
                 .stream()
-                .map(ReservationWaitingResponse::new)
+                .map(ReservationWaitingResponse::of)
                 .collect(Collectors.toList()));
     }
 

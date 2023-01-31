@@ -100,9 +100,11 @@ class ReservationWaitingDaoTest {
     }
 
     private ReservationWaiting createReservationWaitingByWaitNum(Long waitNum) {
-        return new ReservationWaiting(
-                new Schedule(scheduleId, new Theme(themeId, "name", "desc", 210000),
-                LocalDate.parse("2023-01-26"), LocalTime.parse("13:00:00")), 1L, waitNum);
+        return ReservationWaiting.builder()
+                .schedule(new Schedule(scheduleId, new Theme(themeId, "name", "desc", 210000),
+                        LocalDate.parse("2023-01-26"), LocalTime.parse("13:00:00")))
+                .waitNum(waitNum)
+                .memberId(1L).build();
     }
 
     private Integer countRows() {
