@@ -1,4 +1,4 @@
-package nextstep.etc.interceptor;
+package nextstep.config.web.interceptor;
 
 import auth.domain.UserDetails;
 import auth.provider.JwtTokenProvider;
@@ -7,9 +7,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 
 @RequiredArgsConstructor
-public class AdminInterceptor implements HandlerInterceptor {
+public class JwtInterceptor implements HandlerInterceptor {
+
+    private final String accessTokenName;
 
     private final String loginUserName;
 
@@ -21,8 +24,12 @@ public class AdminInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler
     ) {
-        UserDetails userDetails = (UserDetails) request.getAttribute(loginUserName);
-        provider.validateAdmin(userDetails);
+        String bearerToken = request.getHeader(accessTokenName);
+        if (Objects.isNull(bearerToken)) {
+            return true;
+        }
+        UserDetails userDetails = provider.getUserDetails(bearerToken);
+        request.setAttribute(loginUserName, userDetails);
 
         return true;
     }

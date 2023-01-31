@@ -1,7 +1,7 @@
 package controller;
 
 import auth.provider.JwtTokenProvider;
-import nextstep.etc.exception.ErrorMessage;
+import nextstep.exception.message.ErrorMessage;
 import nextstep.schedule.dto.ScheduleRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

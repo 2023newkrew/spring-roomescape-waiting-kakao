@@ -1,7 +1,7 @@
 package nextstep.reservation.controller;
 
+import auth.domain.LoginUser;
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.resolver.LoginUser;
 import nextstep.member.domain.Member;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;

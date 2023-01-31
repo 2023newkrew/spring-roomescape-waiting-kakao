@@ -1,5 +1,6 @@
-package nextstep.etc.resolver;
+package nextstep.config.web.resolver;
 
+import auth.domain.LoginUser;
 import auth.domain.UserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

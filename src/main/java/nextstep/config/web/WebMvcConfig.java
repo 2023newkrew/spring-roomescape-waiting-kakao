@@ -1,11 +1,11 @@
-package nextstep.etc.config;
+package nextstep.config.web;
 
 import auth.provider.JwtTokenProvider;
+import auth.service.AuthenticationPrincipal;
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.interceptor.AdminInterceptor;
-import nextstep.etc.interceptor.JwtInterceptor;
-import nextstep.etc.resolver.LoginUserArgumentResolver;
-import nextstep.member.service.MemberPrincipal;
+import nextstep.config.web.interceptor.AdminInterceptor;
+import nextstep.config.web.interceptor.JwtInterceptor;
+import nextstep.config.web.resolver.LoginUserArgumentResolver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,11 +33,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${security.jwt.token.login-user-name}")
     private String loginUserName;
 
-    private final MemberPrincipal memberPrincipal;
+    private final AuthenticationPrincipal principal;
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
-        return new JwtTokenProvider(secretKey, validityInMilliseconds, memberPrincipal);
+        return new JwtTokenProvider(secretKey, validityInMilliseconds, principal);
     }
 
     @Bean
@@ -57,10 +57,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry
-                .addInterceptor(jwtInterceptor()).order(1);
-        registry
-                .addInterceptor(adminInterceptor()).order(2)
+        registry.addInterceptor(jwtInterceptor()).order(1);
+        registry.addInterceptor(adminInterceptor()).order(2)
                 .addPathPatterns("/admin/**");
     }
 

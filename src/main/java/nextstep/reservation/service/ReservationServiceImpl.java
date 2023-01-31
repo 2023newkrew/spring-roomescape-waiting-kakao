@@ -1,8 +1,8 @@
 package nextstep.reservation.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.exception.ErrorMessage;
-import nextstep.etc.exception.ReservationException;
+import nextstep.exception.ReservationException;
+import nextstep.exception.message.ErrorMessage;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;

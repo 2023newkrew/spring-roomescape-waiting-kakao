@@ -1,6 +1,6 @@
 package controller;
 
-import nextstep.etc.exception.ErrorMessage;
+import nextstep.exception.message.ErrorMessage;
 import nextstep.member.dto.MemberRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

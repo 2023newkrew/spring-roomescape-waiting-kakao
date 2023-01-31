@@ -1,8 +1,9 @@
-package nextstep.etc.exception;
+package nextstep.exception;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
+import nextstep.exception.message.ErrorMessage;
 import org.springframework.http.HttpStatus;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -1,4 +1,4 @@
-package nextstep.etc.exception;
+package nextstep.exception.message;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

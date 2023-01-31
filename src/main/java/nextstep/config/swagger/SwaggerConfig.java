@@ -1,4 +1,4 @@
-package nextstep.etc.config;
+package nextstep.config.swagger;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

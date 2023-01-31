@@ -1,10 +1,10 @@
 package nextstep.member.controller;
 
+import auth.domain.LoginUser;
 import auth.dto.TokenRequest;
 import auth.dto.TokenResponse;
 import auth.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.resolver.LoginUser;
 import nextstep.member.domain.Member;
 import nextstep.member.dto.MemberRequest;
 import nextstep.member.dto.MemberResponse;

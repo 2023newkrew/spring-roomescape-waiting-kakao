@@ -2,8 +2,8 @@ package nextstep.member.service;
 
 import auth.domain.UserRole;
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.exception.ErrorMessage;
-import nextstep.etc.exception.MemberException;
+import nextstep.exception.MemberException;
+import nextstep.exception.message.ErrorMessage;
 import nextstep.member.domain.Member;
 import nextstep.member.dto.MemberRequest;
 import nextstep.member.dto.MemberResponse;

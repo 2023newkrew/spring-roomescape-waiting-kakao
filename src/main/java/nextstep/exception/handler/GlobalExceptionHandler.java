@@ -1,8 +1,8 @@
-package nextstep.etc.handler;
+package nextstep.exception.handler;
 
 import auth.exception.ForbiddenException;
 import auth.exception.UnauthorizedException;
-import nextstep.etc.exception.BaseException;
+import nextstep.exception.BaseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

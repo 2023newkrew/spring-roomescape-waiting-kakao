@@ -1,9 +1,9 @@
 package nextstep.schedule.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.exception.ErrorMessage;
-import nextstep.etc.exception.ScheduleException;
-import nextstep.etc.exception.ThemeException;
+import nextstep.exception.ScheduleException;
+import nextstep.exception.ThemeException;
+import nextstep.exception.message.ErrorMessage;
 import nextstep.schedule.domain.Schedule;
 import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.schedule.dto.ScheduleResponse;
