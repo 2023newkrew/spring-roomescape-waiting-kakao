@@ -104,6 +104,22 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservations.size()).isEqualTo(1);
     }
 
+    @DisplayName("나의 예약 목록을 조회한다")
+    @Test
+    void myList() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservations = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservations.size()).isEqualTo(1);
+    }
+
     @DisplayName("예약을 삭제한다")
     @Test
     void delete() {
