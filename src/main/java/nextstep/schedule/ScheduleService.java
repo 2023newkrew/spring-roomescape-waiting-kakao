@@ -1,21 +1,18 @@
 package nextstep.schedule;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class ScheduleService {
 
-    private ScheduleDao scheduleDao;
-    private ThemeDao themeDao;
-
-    public ScheduleService(ScheduleDao scheduleDao, ThemeDao themeDao) {
-        this.scheduleDao = scheduleDao;
-        this.themeDao = themeDao;
-    }
+    private final ScheduleDao scheduleDao;
+    private final ThemeDao themeDao;
 
     public Long create(ScheduleRequest scheduleRequest) {
         Theme theme = themeDao.findById(scheduleRequest.getThemeId());

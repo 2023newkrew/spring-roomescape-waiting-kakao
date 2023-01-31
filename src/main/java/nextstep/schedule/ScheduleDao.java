@@ -16,6 +16,7 @@ import java.util.List;
 @Component
 public class ScheduleDao {
 
+    private JdbcTemplate jdbcTemplate;
     private final RowMapper<Schedule> rowMapper = (resultSet, rowNum) -> new Schedule(
             resultSet.getLong("schedule.id"),
             new Theme(
@@ -27,7 +28,6 @@ public class ScheduleDao {
             resultSet.getDate("schedule.date").toLocalDate(),
             resultSet.getTime("schedule.time").toLocalTime()
     );
-    private JdbcTemplate jdbcTemplate;
 
     public ScheduleDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

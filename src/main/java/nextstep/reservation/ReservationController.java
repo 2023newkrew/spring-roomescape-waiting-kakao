@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import lombok.RequiredArgsConstructor;
 import nextstep.config.annotation.LoginMember;
 import nextstep.member.Member;
 import nextstep.reservation.dto.response.ReservationResponseDto;
@@ -13,14 +14,11 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @RestController
 public class ReservationController {
 
     public final ReservationService reservationService;
-
-    public ReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
 
     @PostMapping("/reservations")
     public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {

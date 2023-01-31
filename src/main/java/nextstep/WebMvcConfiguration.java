@@ -4,6 +4,7 @@ import auth.AdminInterceptor;
 import auth.JwtTokenProvider;
 import auth.LoginService;
 import auth.LoginUserDetailsArgumentResolver;
+import lombok.RequiredArgsConstructor;
 import nextstep.config.annotation.LoginMemberArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -11,16 +12,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private LoginService loginService;
-    private JwtTokenProvider jwtTokenProvider;
-
-    public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
-        this.loginService = loginService;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
+    private final LoginService loginService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

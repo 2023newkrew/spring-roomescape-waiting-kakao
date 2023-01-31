@@ -1,7 +1,12 @@
 package auth;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.Objects;
 
+@Getter
+@AllArgsConstructor
 public class UserDetails {
 
     private Long id;
@@ -11,40 +16,7 @@ public class UserDetails {
     private String phone;
     private String role;
 
-    public UserDetails(Long id, String username, String password, String name, String phone, String role) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.phone = phone;
-        this.role = role;
-    }
-
     public boolean checkWrongPassword(String password) {
         return !Objects.equals(this.password, password);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getRole() {
-        return role;
     }
 }

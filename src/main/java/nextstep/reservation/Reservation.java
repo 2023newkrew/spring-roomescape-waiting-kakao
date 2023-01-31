@@ -1,10 +1,17 @@
 package nextstep.reservation;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
 import java.util.Objects;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class Reservation {
 
     private Long id;
@@ -12,35 +19,9 @@ public class Reservation {
     private Member member;
     private Long waitTicketNumber;
 
-    public Reservation() {
-    }
-
     public Reservation(Schedule schedule, Member member) {
         this.schedule = schedule;
         this.member = member;
-    }
-
-    public Reservation(Long id, Schedule schedule, Member member, Long waitTicketNumber) {
-        this.id = id;
-        this.schedule = schedule;
-        this.member = member;
-        this.waitTicketNumber = waitTicketNumber;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Schedule getSchedule() {
-        return schedule;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public Long getWaitTicketNumber() {
-        return waitTicketNumber;
     }
 
     public boolean sameMember(Member member) {

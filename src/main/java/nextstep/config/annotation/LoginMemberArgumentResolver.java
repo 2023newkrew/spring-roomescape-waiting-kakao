@@ -1,6 +1,7 @@
 package nextstep.config.annotation;
 
 import auth.LoginService;
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -9,13 +10,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private LoginService loginService;
-
-    public LoginMemberArgumentResolver(LoginService loginService) {
-        this.loginService = loginService;
-    }
+    private final LoginService loginService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

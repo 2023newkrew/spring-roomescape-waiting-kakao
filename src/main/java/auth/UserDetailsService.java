@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 public class UserDetailsService {
 
-    public final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
     private final RowMapper<UserDetails> rowMapper = (resultSet, rowNum) -> new UserDetails(
             resultSet.getLong("id"),
             resultSet.getString("username"),

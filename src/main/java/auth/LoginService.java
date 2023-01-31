@@ -1,17 +1,14 @@
 package auth;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class LoginService {
 
-    private UserDetailsService userDetailsService;
-    private JwtTokenProvider jwtTokenProvider;
-
-    public LoginService(UserDetailsService userDetailsService, JwtTokenProvider jwtTokenProvider) {
-        this.userDetailsService = userDetailsService;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
+    private final UserDetailsService userDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
         UserDetails userDetails = userDetailsService.findByUsername(tokenRequest.getUsername());
