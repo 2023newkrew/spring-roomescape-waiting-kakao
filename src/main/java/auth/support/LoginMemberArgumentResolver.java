@@ -1,8 +1,9 @@
 package auth.support;
 
 import auth.annotation.LoginMember;
-import auth.exception.UnauthenticatedException;
+import nextstep.exception.UnauthenticatedException;
 import auth.service.LoginService;
+import nextstep.error.ErrorCode;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -28,7 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
             return loginService.extractMemberDetails(credential);
         } catch (Exception e) {
-            throw new UnauthenticatedException();
+            throw new UnauthenticatedException(ErrorCode.AUTHENTICATION_FAIL);
         }
     }
 }

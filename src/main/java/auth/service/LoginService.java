@@ -1,10 +1,11 @@
 package auth.service;
 
 import auth.dto.MemberDetails;
-import auth.exception.UnauthenticatedException;
+import nextstep.exception.UnauthenticatedException;
 import auth.dto.TokenRequest;
 import auth.dto.TokenResponse;
 import auth.token.JwtTokenProvider;
+import nextstep.error.ErrorCode;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,8 +20,11 @@ public class LoginService {
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
         MemberDetails memberDetails = memberDetailsService.loadMemberDetailsByUsername(tokenRequest.getUsername());
-        if (memberDetails == null || !memberDetails.getPassword().equals(tokenRequest.getPassword())) {
-            throw new UnauthenticatedException();
+        if (memberDetails == null) {
+            throw new UnauthenticatedException(ErrorCode.USER_NOT_FOUND);
+        }
+        if (!memberDetails.getPassword().equals(tokenRequest.getPassword())) {
+            throw new UnauthenticatedException(ErrorCode.AUTHENTICATION_FAIL);
         }
 
         String accessToken = jwtTokenProvider.createToken(memberDetails.getId() + "", memberDetails.getUsername(), memberDetails.getRole());

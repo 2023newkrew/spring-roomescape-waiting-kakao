@@ -1,6 +1,8 @@
 package nextstep.waiting;
 
-import auth.exception.UnauthenticatedException;
+import nextstep.exception.UnauthorizedException;
+import nextstep.error.ErrorCode;
+import nextstep.exception.NotExistEntityException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,12 +34,9 @@ public class ReservationWaitingService {
     }
 
     public Long create(Member member, ReservationWaitingRequest reservationWaitingRequest) {
-        if (member == null) {
-            throw new UnauthenticatedException();
-        }
         Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new NotExistEntityException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
 
         List<Reservation> reservations = new ArrayList<>(
@@ -53,7 +51,7 @@ public class ReservationWaitingService {
                 .filter(v -> v.sameMember(member))
                 .findAny()
                 .ifPresent(v -> {
-                    throw new DuplicateEntityException();
+                    throw new DuplicateEntityException(ErrorCode.DUPLICATE_RESERVATION);
                 });
 
         Long waitingSeq = (long) reservations.size();
@@ -75,14 +73,11 @@ public class ReservationWaitingService {
     public void deleteById(Member member, Long id) {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
         if (reservationWaiting == null) {
-            throw new NullPointerException();
-        }
-        if (reservationWaiting.getWaitingSeq() == 0) {
-            throw new NoSuchElementException();
+            throw new NotExistEntityException(ErrorCode.RESERVATION_NOT_FOUND);
         }
 
         if (!reservationWaiting.getReservation().sameMember(member)) {
-            throw new UnauthenticatedException();
+            throw new UnauthorizedException(ErrorCode.FORBIDDEN);
         }
 
         reservationWaitingDao.deleteById(id);

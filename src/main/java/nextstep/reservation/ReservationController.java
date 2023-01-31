@@ -1,6 +1,6 @@
 package nextstep.reservation;
 
-import auth.exception.UnauthenticatedException;
+import nextstep.exception.UnauthenticatedException;
 import auth.annotation.LoginMember;
 import auth.dto.MemberDetails;
 import nextstep.member.Member;
@@ -43,15 +43,5 @@ public class ReservationController {
         reservationService.deleteById(Member.from(memberDetails), id);
 
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(UnauthenticatedException.class)
-    public ResponseEntity onAuthenticationException(UnauthenticatedException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
     }
 }

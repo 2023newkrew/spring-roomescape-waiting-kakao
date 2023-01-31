@@ -1,8 +1,8 @@
-package auth.exception;
+package nextstep.exception;
 
 import nextstep.error.ErrorCode;
 
-public class UnauthorizedException extends AuthException {
+public class UnauthorizedException extends RoomEscapeException {
 
     private ErrorCode errorCode;
 

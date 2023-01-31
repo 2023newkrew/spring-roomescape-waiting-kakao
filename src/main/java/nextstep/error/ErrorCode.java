@@ -12,7 +12,7 @@ public enum ErrorCode {
 
     INVALID_TOKEN(401, "AUTH-001", "유효하지 않은 토큰"),
     TOKEN_EXPIRED(401, "AUTH-002", "만료된 토큰"),
-    UNAUTHORIZED(401, "AUTH-003", "인증 실패"),
+    AUTHENTICATION_FAIL(401, "AUTH-003", "인증 실패"),
     USER_NOT_FOUND(404, "AUTH-004", "존재하지 않는 사용자"),
     FORBIDDEN(403, "AUTH-005", "권한 부족");
 
