@@ -154,6 +154,20 @@ public class ReservationDao {
         }
     }
 
+    // 특정 scheduleId를 가진 Reservation들 중 waitTicketNumber가 특정 값 미만인 개수 조회
+    public Long getWaitNum(Long scheduleId, Long waitTicketNumber) {
+        String sql = "SELECT COUNT(*) " +
+                "from reservation " +
+                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "where schedule.id = ? " +
+                "and reservation.wait_ticket_num < ?;";
+        try {
+            return jdbcTemplate.queryForObject(sql, Long.class, scheduleId, waitTicketNumber);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation where id = ?;";
         jdbcTemplate.update(sql, id);
