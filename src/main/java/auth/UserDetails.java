@@ -1,22 +1,31 @@
-package nextstep.member;
+package auth;
 
-public class MemberRequest {
+import java.util.Objects;
 
+public class UserDetails {
+
+    private Long id;
     private String username;
     private String password;
     private String name;
     private String phone;
     private String role;
 
-    private MemberRequest() {
-    }
-
-    public MemberRequest(String username, String password, String name, String phone, String role) {
+    public UserDetails(Long id, String username, String password, String name, String phone, String role) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.name = name;
         this.phone = phone;
         this.role = role;
+    }
+
+    public boolean checkWrongPassword(String password) {
+        return !Objects.equals(this.password, password);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getUsername() {
@@ -37,9 +46,5 @@ public class MemberRequest {
 
     public String getRole() {
         return role;
-    }
-
-    public Member toEntity() {
-        return new Member(username, password, name, phone, role);
     }
 }
