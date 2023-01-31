@@ -50,35 +50,6 @@ public class AuthE2ETest {
         assertThat(response.as(TokenResponse.class)).isNotNull();
     }
 
-//    @DisplayName("테마 목록을 조회한다")
-//    @Test
-//    public void showThemes() {
-//        createTheme();
-//
-//        var response = RestAssured
-//                .given().log().all()
-//                .param("date", "2022-08-11")
-//                .when().get("/themes")
-//                .then().log().all()
-//                .statusCode(HttpStatus.OK.value())
-//                .extract();
-//        assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
-//    }
-//
-//    @DisplayName("테마를 삭제한다")
-//    @Test
-//    void delete() {
-//        Long id = createTheme();
-//
-//        var response = RestAssured
-//                .given().log().all()
-//                .when().delete("/themes/" + id)
-//                .then().log().all()
-//                .extract();
-//
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//    }
-
     public Long createTheme() {
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         String location = RestAssured
