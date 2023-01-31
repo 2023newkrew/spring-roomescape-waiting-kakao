@@ -1,19 +1,18 @@
 package nextstep;
 
-import auth.AdminInterceptor;
-import auth.AuthenticationProvider;
-import auth.JwtTokenProvider;
 import auth.LoginController;
-import auth.LoginMemberArgumentResolver;
 import auth.LoginService;
+import auth.utils.AdminInterceptor;
+import auth.utils.AuthenticationProvider;
+import auth.utils.JwtTokenProvider;
+import auth.utils.LoginMemberArgumentResolver;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor

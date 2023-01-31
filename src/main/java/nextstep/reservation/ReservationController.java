@@ -1,7 +1,7 @@
 package nextstep.reservation;
 
-import auth.LoginMember;
 import auth.UserDetails;
+import auth.utils.LoginMember;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
