@@ -1,6 +1,6 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
+import auth.exception.UnauthenticatedException;
 import auth.LoginMember;
 import auth.MemberDetails;
 import nextstep.member.Member;
@@ -45,8 +45,8 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ResponseEntity onAuthenticationException(UnauthenticatedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 

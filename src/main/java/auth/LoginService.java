@@ -1,5 +1,6 @@
 package auth;
 
+import auth.exception.UnauthenticatedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +16,7 @@ public class LoginService {
     public TokenResponse createToken(TokenRequest tokenRequest) {
         MemberDetails memberDetails = memberDetailsService.loadMemberDetailsByUsername(tokenRequest.getUsername());
         if (memberDetails == null || !memberDetails.getPassword().equals(tokenRequest.getPassword())) {
-            throw new AuthenticationException();
+            throw new UnauthenticatedException();
         }
 
         String accessToken = jwtTokenProvider.createToken(memberDetails.getId() + "", memberDetails.getUsername(), memberDetails.getRole());

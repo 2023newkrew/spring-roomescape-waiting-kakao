@@ -1,11 +1,11 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
+import auth.exception.UnauthenticatedException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
+import nextstep.exception.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class ReservationService {
 
     public Long create(Member member, ReservationRequest reservationRequest) {
         if (member == null) {
-            throw new AuthenticationException();
+            throw new UnauthenticatedException();
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
@@ -68,7 +68,7 @@ public class ReservationService {
         }
 
         if (!reservation.sameMember(member)) {
-            throw new AuthenticationException();
+            throw new UnauthenticatedException();
         }
 
         reservationDao.deleteById(id);

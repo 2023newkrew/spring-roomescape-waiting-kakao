@@ -1,13 +1,13 @@
 package nextstep.waiting;
 
-import auth.AuthenticationException;
+import auth.exception.UnauthenticatedException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
+import nextstep.exception.DuplicateEntityException;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public class ReservationWaitingService {
 
     public Long create(Member member, ReservationWaitingRequest reservationWaitingRequest) {
         if (member == null) {
-            throw new AuthenticationException();
+            throw new UnauthenticatedException();
         }
         Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId());
         if (schedule == null) {
@@ -82,7 +82,7 @@ public class ReservationWaitingService {
         }
 
         if (!reservationWaiting.getReservation().sameMember(member)) {
-            throw new AuthenticationException();
+            throw new UnauthenticatedException();
         }
 
         reservationWaitingDao.deleteById(id);
