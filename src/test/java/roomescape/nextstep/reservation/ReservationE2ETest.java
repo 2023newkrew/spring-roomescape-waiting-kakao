@@ -3,14 +3,14 @@ package roomescape.nextstep.reservation;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import roomescape.nextstep.AbstractE2ETest;
-import roomescape.nextstep.schedule.ScheduleRequest;
-import roomescape.nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import roomescape.nextstep.AbstractE2ETest;
+import roomescape.nextstep.schedule.ScheduleRequest;
+import roomescape.nextstep.theme.ThemeRequest;
 
 import java.util.List;
 
@@ -58,7 +58,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         );
     }
 
-    @DisplayName("예약을 생성한다")
+    @DisplayName("로그인 사용자가 예약을 생성한다")
     @Test
     void create() {
         var response = RestAssured
@@ -92,13 +92,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void show() {
         createReservation();
 
-        var response = RestAssured
-                .given().log().all()
-                .param("themeId", themeId)
-                .param("date", DATE)
-                .when().get("/reservations")
-                .then().log().all()
-                .extract();
+        var response = getReservationsWithParam();
 
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(1);
@@ -122,13 +116,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약이 없을 때 예약 목록을 조회한다")
     @Test
     void showEmptyReservations() {
-        var response = RestAssured
-                .given().log().all()
-                .param("themeId", themeId)
-                .param("date", DATE)
-                .when().get("/reservations")
-                .then().log().all()
-                .extract();
+        var response = getReservationsWithParam();
 
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(0);
@@ -181,16 +169,20 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(waitingResponse.header("Location")).isEqualTo("/reservations/1");
 
-        var response = RestAssured
+        var response = getReservationsWithParam();
+
+        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        assertThat(reservations.size()).isEqualTo(1);
+    }
+
+    ExtractableResponse<Response> getReservationsWithParam() {
+        return RestAssured
                 .given().log().all()
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
                 .then().log().all()
                 .extract();
-
-        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
-        assertThat(reservations.size()).isEqualTo(1);
     }
 
     @DisplayName("예약이 있을 때 예약 대기 신청") //reservations-waiting/1
@@ -211,12 +203,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().get("/reservations-waitings/mine")
-                .then().log().all()
-                .extract();
+        var response = getReservation(token.getAccessToken(), "/reservations-waitings/mine");
 
         List<ReservationWaiting> reservationWaitings = response.jsonPath().getList(".", ReservationWaiting.class);
         assertThat(reservationWaitings).hasSize(1);
@@ -229,12 +216,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().get("/reservations/mine")
-                .then().log().all()
-                .extract();
+        var response = getReservation(token.getAccessToken(), "/reservations/mine");
 
         List<Reservation> reservation = response.jsonPath().getList(".", Reservation.class);
         assertThat(reservation).hasSize(1);
@@ -300,25 +282,24 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();
-
-        var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().get("/reservations-waitings/mine")
-                .then().log().all()
-                .extract();
+        var response = getReservation(token.getAccessToken(), "/reservations-waitings/mine");
 
         List<ReservationWaiting> reservationWaitings = response.jsonPath().getList(".", ReservationWaiting.class);
         assertThat(reservationWaitings).hasSize(1);
 
-        var response2 = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().get("/reservations/mine")
-                .then().log().all()
-                .extract();
+        var response2 = getReservation(token.getAccessToken(), "/reservations/mine");
 
         List<Reservation> reservation = response2.jsonPath().getList(".", Reservation.class);
         assertThat(reservation.get(0).getId()).isEqualTo(2);
+    }
+
+
+    ExtractableResponse<Response> getReservation(String accessToken, String path) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .when().get(path)
+                .then().log().all()
+                .extract();
     }
 }
