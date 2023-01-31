@@ -1,9 +1,9 @@
 package auth.interceptor;
 
+import auth.token.JwtTokenExtractor;
 import nextstep.exception.UnauthorizedException;
 import auth.token.JwtTokenProvider;
 import nextstep.error.ErrorCode;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,15 +12,17 @@ import java.util.Objects;
 
 public class AdminInterceptor implements HandlerInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenExtractor jwtTokenExtractor;
 
-    public AdminInterceptor(JwtTokenProvider jwtTokenProvider) {
+    public AdminInterceptor(JwtTokenProvider jwtTokenProvider, JwtTokenExtractor jwtTokenExtractor) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtTokenExtractor = jwtTokenExtractor;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String credential = request.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
-        String role = jwtTokenProvider.getRole(credential);
+        String token = jwtTokenExtractor.extract(request);
+        String role = jwtTokenProvider.getRole(token);
 
         if (!Objects.equals(role, "ADMIN")) {
             throw new UnauthorizedException(ErrorCode.FORBIDDEN);

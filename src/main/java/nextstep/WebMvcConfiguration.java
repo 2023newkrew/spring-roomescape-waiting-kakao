@@ -3,6 +3,7 @@ package nextstep;
 import auth.*;
 import auth.interceptor.AdminInterceptor;
 import auth.support.LoginMemberArgumentResolver;
+import auth.token.JwtTokenExtractor;
 import auth.token.JwtTokenProvider;
 import auth.service.LoginService;
 import org.springframework.context.annotation.Configuration;
@@ -17,19 +18,21 @@ import java.util.List;
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final LoginService loginService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenExtractor jwtTokenExtractor;
 
-    public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
+    public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider, JwtTokenExtractor jwtTokenExtractor) {
         this.loginService = loginService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtTokenExtractor = jwtTokenExtractor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider, jwtTokenExtractor)).addPathPatterns("/admin/**");
     }
 
     @Override
     public void addArgumentResolvers(List argumentResolvers) {
-        argumentResolvers.add(new LoginMemberArgumentResolver(loginService));
+        argumentResolvers.add(new LoginMemberArgumentResolver(loginService, jwtTokenExtractor));
     }
 }

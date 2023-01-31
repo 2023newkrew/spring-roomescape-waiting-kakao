@@ -1,6 +1,7 @@
 package auth;
 
 import auth.controller.LoginController;
+import auth.token.JwtTokenExtractor;
 import auth.token.JwtTokenProvider;
 import auth.service.LoginService;
 import auth.service.MemberDetailsService;
@@ -25,6 +26,11 @@ public class AuthConfig {
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
         return new JwtTokenProvider();
+    }
+
+    @Bean
+    JwtTokenExtractor jwtTokenExtractor() {
+        return new JwtTokenExtractor(jwtTokenProvider());
     }
 
     @Bean
