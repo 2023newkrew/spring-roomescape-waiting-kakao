@@ -1,12 +1,14 @@
 package nextstep.member;
 
 import auth.UserDetails;
-import auth.UserDetailsFactory;
+import auth.AuthenticateProvider;
 import lombok.RequiredArgsConstructor;
 import nextstep.support.exception.AuthenticationException;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
-public class UserDetailsFactoryImpl implements UserDetailsFactory {
+public class MemberAuthenticateProvider implements AuthenticateProvider {
 
     private final MemberDao memberDao;
 
