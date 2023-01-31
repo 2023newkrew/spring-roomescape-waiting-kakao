@@ -16,13 +16,13 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("예약 E2E 테스트")
 class ReservationE2ETest extends AbstractE2ETest {
     public static final String DATE = "2022-08-11";
     public static final String TIME = "13:00";
 
     private ReservationRequest request;
     private Long themeId;
-    private Long scheduleId;
 
     @BeforeEach
     public void setUp() {
@@ -51,10 +51,9 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
         String[] scheduleLocation = scheduleResponse.header("Location").split("/");
-        scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
+        Long scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
-        request = new ReservationRequest(
-                scheduleId
+        request = new ReservationRequest(scheduleId
         );
     }
 

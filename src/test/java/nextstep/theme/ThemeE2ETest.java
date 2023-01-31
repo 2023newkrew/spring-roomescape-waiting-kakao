@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("테마 E2E 테스트")
 public class ThemeE2ETest extends AbstractE2ETest {
     @DisplayName("테마를 생성한다")
     @Test

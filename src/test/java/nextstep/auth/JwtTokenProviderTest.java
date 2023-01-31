@@ -8,12 +8,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("JwtTokenProvider 학습 테스트")
+@DisplayName("JwtTokenProvider 테스트")
 @SpringBootTest
 class JwtTokenProviderTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("토큰 생성 테스트")
     @Test
     void createToken() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
@@ -21,6 +22,7 @@ class JwtTokenProviderTest {
         assertThat(jwtTokenProvider.validateToken(token)).isTrue();
     }
 
+    @DisplayName("토큰에서 아이디 가져오기 테스트")
     @Test
     void getPrincipal() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
@@ -28,6 +30,7 @@ class JwtTokenProviderTest {
         assertThat(jwtTokenProvider.getPrincipal(token)).isEqualTo("1");
     }
 
+    @DisplayName("토큰에서 권한 가져오기 테스트")
     @Test
     void getRole() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
