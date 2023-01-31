@@ -1,11 +1,14 @@
 package nextstep.reservation;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.exception.AlreadyReservedScheduleException;
+import nextstep.exception.AuthenticationException;
+import nextstep.exception.DuplicateEntityException;
+import nextstep.exception.NoReservationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.exception.*;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;

@@ -3,7 +3,7 @@ package nextstep.member;
 import auth.UserDetails;
 import auth.UserDetailsFactory;
 import lombok.RequiredArgsConstructor;
-import nextstep.support.exception.AuthenticationException;
+import nextstep.exception.AuthenticationException;
 
 @RequiredArgsConstructor
 public class UserDetailsFactoryImpl implements UserDetailsFactory {

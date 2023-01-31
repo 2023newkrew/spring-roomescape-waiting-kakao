@@ -5,9 +5,9 @@ import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
-import nextstep.support.exception.DuplicateEntityException;
-import nextstep.support.exception.NoReservationWaitingException;
-import nextstep.support.exception.NotOwnReservationWaitingException;
+import nextstep.exception.DuplicateEntityException;
+import nextstep.exception.NoReservationWaitingException;
+import nextstep.exception.NotOwnReservationWaitingException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

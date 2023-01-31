@@ -1,4 +1,4 @@
-package nextstep.support.exception;
+package nextstep.exception;
 
 public class NotOwnReservationWaitingException extends RuntimeException{
     public NotOwnReservationWaitingException() {
