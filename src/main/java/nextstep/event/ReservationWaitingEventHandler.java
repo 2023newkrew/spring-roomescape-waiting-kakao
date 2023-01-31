@@ -1,8 +1,9 @@
-package nextstep.reservationwaiting;
+package nextstep.event;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.reservation.ReservationDao;
-import nextstep.reservation.ReservationDeleteEvent;
+import nextstep.reservationwaiting.ReservationWaiting;
+import nextstep.reservationwaiting.ReservationWaitingDao;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

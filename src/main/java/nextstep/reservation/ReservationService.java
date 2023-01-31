@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.event.ReservationDeleteEvent;
 import nextstep.exception.*;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
