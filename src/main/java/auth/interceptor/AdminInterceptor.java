@@ -1,9 +1,9 @@
 package auth.interceptor;
 
 import auth.token.JwtTokenExtractor;
-import nextstep.exception.UnauthorizedException;
 import auth.token.JwtTokenProvider;
 import nextstep.error.ErrorCode;
+import nextstep.exception.UnauthorizedException;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;

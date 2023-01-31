@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,7 +90,7 @@ public class ReservationDao {
                 "inner join member on reservation.member_id = member.id " +
                 "where member.id = ? and reservation.waiting_seq = 0;";
 
-            return jdbcTemplate.query(sql, rowMapper, memberId);
+        return jdbcTemplate.query(sql, rowMapper, memberId);
     }
 
     public Optional<Reservation> findById(Long id) {
@@ -125,7 +124,7 @@ public class ReservationDao {
                 "inner join member on reservation.member_id = member.id " +
                 "where schedule.id = ? and reservation.waiting_seq = 0;";
 
-            return jdbcTemplate.query(sql, rowMapper, id);
+        return jdbcTemplate.query(sql, rowMapper, id);
     }
 
     public void deleteById(Long id) {

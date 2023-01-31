@@ -1,11 +1,11 @@
 package auth.service;
 
 import auth.dto.MemberDetails;
-import nextstep.exception.UnauthenticatedException;
 import auth.dto.TokenRequest;
 import auth.dto.TokenResponse;
 import auth.token.JwtTokenProvider;
 import nextstep.error.ErrorCode;
+import nextstep.exception.UnauthenticatedException;
 import org.springframework.stereotype.Service;
 
 @Service
