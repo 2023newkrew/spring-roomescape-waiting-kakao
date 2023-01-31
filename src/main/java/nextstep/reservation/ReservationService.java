@@ -103,17 +103,15 @@ public class ReservationService {
         // 멤버의 모든 예약 조회
         List<Reservation> reservations = reservationDao.findByMemberId(member.getId());
 
-        // 멤버가 가진 모든 예약의 scheduleId를 활용하여 첫 번째 순서인 예약들 조회
-        List<Reservation> firstReservations = reservations.stream()
-                .map(Reservation::getSchedule)
-                .map(Schedule::getId)
-                .map(reservationDao::findFirstByScheduleId)
-                .toList();
+        List<Reservation> result = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            Long waitNum = reservationDao.getWaitNum(reservation.getSchedule().getId(), reservation.getWaitTicketNumber());
+            if (waitNum == 0) {
+                result.add(reservation);
+            }
+        }
 
-        // 멤버가 가진 예약들 중 첫 번째 순서인 예약들을 반환
-        return reservations.stream()
-                .filter(firstReservations::contains)
-                .collect(Collectors.toList());
+        return result;
     }
 
     public List<ReservationWaitingResponseDto> getReservationWaitingsByMember(Member member) {
