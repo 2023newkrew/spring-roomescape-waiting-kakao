@@ -44,3 +44,5 @@ CREATE TABLE IF NOT EXISTS reservation_waiting
     status      varchar(20) not null,
     primary key (id)
 );
+
+CREATE INDEX ON member(username);
