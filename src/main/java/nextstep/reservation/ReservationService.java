@@ -14,6 +14,7 @@ import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +33,8 @@ public class ReservationService {
             throw new NullPointerException();
         }
 
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
-        }
+        reservationDao.findByScheduleId(schedule.getId())
+                .orElseThrow(DuplicateEntityException::new);
 
         Reservation newReservation = new Reservation(
                 schedule,
@@ -43,6 +42,10 @@ public class ReservationService {
         );
 
         return reservationDao.save(newReservation);
+    }
+
+    public Optional<Reservation> findByScheduleId(Long scheduleId) {
+        return reservationDao.findByScheduleId(scheduleId);
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
@@ -55,10 +58,8 @@ public class ReservationService {
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NoReservationException();
-        }
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(NoReservationException::new);
 
         if (!reservation.sameMember(member)) {
             throw new AuthenticationException();
