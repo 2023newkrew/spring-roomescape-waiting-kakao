@@ -84,4 +84,9 @@ public class ReservationService {
 
         reservationDao.deleteById(id);
     }
+
+    @Transactional
+    public void approveById(Long id) {
+        reservationDao.approveById(id);
+    }
 }

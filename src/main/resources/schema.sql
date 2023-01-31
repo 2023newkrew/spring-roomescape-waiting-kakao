@@ -1,8 +1,9 @@
 CREATE TABLE reservation
 (
-    id          bigint not null auto_increment,
-    schedule_id bigint not null,
-    member_id   bigint not null,
+    id          bigint        not null auto_increment,
+    schedule_id bigint        not null,
+    member_id   bigint        not null,
+    status      varchar(20)   not null default 'not_approved',
     primary key (id)
 );
 

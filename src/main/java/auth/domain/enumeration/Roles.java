@@ -9,9 +9,9 @@ import java.util.Arrays;
 @Getter
 public enum Roles {
 
-    ADMIN("admin", 3),
-    GUEST("guest", 2),
-    USER("user", 1);
+    ADMIN("ADMIN", 3),
+    GUEST("GUEST", 2),
+    USER("USER", 1);
 
     private final String role;
     private final int accessLevel;

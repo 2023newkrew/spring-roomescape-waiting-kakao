@@ -34,7 +34,11 @@ public class JwtTokenProvider {
     }
 
     public String getRole(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("role", String.class);
+        try {
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("role", String.class);
+        } catch (MalformedJwtException e) {
+            throw new AuthorizationException();
+        }
     }
 
     public boolean validateToken(String token) {

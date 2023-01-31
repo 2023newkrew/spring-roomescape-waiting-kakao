@@ -16,7 +16,7 @@ public class DatabaseCleaner {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private final List<String> tableNames = List.of("member", "schedule", "reservation", "theme", "waiting");
+    private final List<String> tableNames = List.of("member", "schedule", "reservation", "theme", "waiting", "profit");
 
     @Transactional
     public void execute() {

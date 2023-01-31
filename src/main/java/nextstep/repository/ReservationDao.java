@@ -44,7 +44,8 @@ public class ReservationDao {
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
-            )
+            ),
+            resultSet.getString("reservation.status")
     );
 
     public Long save(Reservation reservation) {
@@ -64,7 +65,7 @@ public class ReservationDao {
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -79,7 +80,7 @@ public class ReservationDao {
 
     public Reservation findById(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -97,7 +98,7 @@ public class ReservationDao {
 
     public List<Reservation> findByScheduleId(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -116,7 +117,7 @@ public class ReservationDao {
 
     public List<Reservation> findAllByUserId(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -135,5 +136,10 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation where id = ?;";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void approveById(Long id) {
+        String sql = "UPDATE reservation SET status = 'approved'";
+        jdbcTemplate.update(sql);
     }
 }

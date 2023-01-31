@@ -4,6 +4,7 @@ import auth.support.interceptor.AdminInterceptor;
 import auth.support.JwtTokenProvider;
 import auth.support.LoginMemberArgumentResolver;
 import auth.service.LoginService;
+import auth.support.interceptor.CommonInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -19,7 +20,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new CommonInterceptor(jwtTokenProvider)).addPathPatterns("/**").order(1);
+        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider)).addPathPatterns("/admin/**").order(2);
     }
 
     @Override

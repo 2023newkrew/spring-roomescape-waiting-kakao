@@ -50,7 +50,9 @@ public class ReservationController {
 
     @Secured(role = Roles.ADMIN)
     @PatchMapping("/{id}/approve")
-    public ResponseEntity approveReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
-
+    public ResponseEntity approveReservation(@PathVariable Long id) {
+        reservationService.approveById(id);
+        // todo : 테스트 코드 작성하기 1/31 대자마자
+        return ResponseEntity.ok().build();
     }
 }

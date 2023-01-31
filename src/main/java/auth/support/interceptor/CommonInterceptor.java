@@ -22,7 +22,6 @@ public class CommonInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (getSecuredAnnotation(handler).isPresent()) {
             String credential = request.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
-
             validateAccessLevel(handler, credential);
         }
         return true;

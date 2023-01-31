@@ -9,6 +9,7 @@ import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
 import nextstep.domain.dto.request.ScheduleRequest;
 import nextstep.domain.dto.request.ThemeRequest;
+import nextstep.domain.enumeration.ReservationStatus;
 import nextstep.domain.persist.Reservation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +21,7 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ReservationE2ETest extends AbstractE2ETest {
@@ -41,8 +43,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 생성한다")
     @Test
     void Should_CreateReservation_When_Request() {
-        var response = RestAssured
-                .given().log().all()
+        var response = given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -56,8 +57,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("비로그인 사용자가 예약을 생성한다")
     @Test
     void Should_ThrowUnAuthorized_When_IfUserIsNotLoggedIn() {
-        var response = RestAssured
-                .given().log().all()
+        var response = given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
@@ -72,8 +72,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void Should_GetAllReservationInfo_When_Request() {
         createReservation();
 
-        var response = RestAssured
-                .given().log().all()
+        var response = given().log().all()
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
@@ -89,8 +88,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void Should_GetMyReservationInfo_When_Request() {
         createReservation();
 
-        var response = RestAssured
-                .given().log().all()
+        var response = given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .when().get("/reservations/mine")
                 .then().log().all()
@@ -105,8 +103,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void Should_DeleteReservation_When_Request() {
         var reservation = createReservation();
 
-        var response = RestAssured
-                .given().log().all()
+        var response = given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .when().delete(reservation.header("Location"))
                 .then().log().all()
@@ -120,8 +117,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void Should_ThrowBadRequest_When_RequestCreateDuplicateReservation() {
         createReservation();
 
-        var response = RestAssured
-                .given().log().all()
+        var response = given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -135,8 +131,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약이 없을 때 예약 목록을 조회한다")
     @Test
     void Should_ReturnEmptyList_When_IfNoReservationExists() {
-        var response = RestAssured
-                .given().log().all()
+        var response = given().log().all()
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
@@ -150,8 +145,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("없는 예약을 삭제한다")
     @Test
     void Should_ThrowNotFound_When_IfAttemptToDeleteNotExists() {
-        var response = RestAssured
-                .given().log().all()
+        var response = given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
@@ -165,8 +159,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void Should_ThrowUnAuthorized_When_IfAttemptToDeleteNotMine() {
         createReservation();
 
-        var response = RestAssured
-                .given().log().all()
+        var response = given().log().all()
                 .auth().oauth2("other-token")
                 .when().delete("/reservations/1")
                 .then().log().all()
@@ -175,9 +168,44 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    @Test
+    void Should_ThrowUnAuthorized_When_IfAttemptToApproveNotAdmin() {
+        createReservation();
+
+        given().
+                auth().oauth2("other-token").
+        when().
+                patch("/reservations/1/approve").
+        then().
+                assertThat().
+                statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void Should_ChangeReservationStatus_When_IfAttemptToApproveAdmin() {
+        createReservation();
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/approve").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        var response = given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservationResponses.get(0).getStatus()).isEqualTo(ReservationStatus.APPROVED);
+    }
+
+
     private ExtractableResponse<Response> createReservation() {
-        return RestAssured
-                .given().log().all()
+        return given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

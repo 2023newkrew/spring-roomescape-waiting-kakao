@@ -1,39 +1,31 @@
 package nextstep.domain.persist;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.domain.enumeration.ReservationStatus;
 
+import javax.management.relation.Role;
 import java.util.Objects;
 
+@Getter
+@NoArgsConstructor
 public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
     private ReservationStatus status;
-    public Reservation() {
-        this.status = ReservationStatus.NOT_APPROVED;
-    }
 
     public Reservation(Schedule schedule, Member member) {
         this.schedule = schedule;
         this.member = member;
+        this.status = ReservationStatus.NOT_APPROVED;
     }
 
-    public Reservation(Long id, Schedule schedule, Member member) {
+    public Reservation(Long id, Schedule schedule, Member member, String status) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Schedule getSchedule() {
-        return schedule;
-    }
-
-    public Member getMember() {
-        return member;
+        this.status = ReservationStatus.of(status);
     }
 
     public boolean sameMember(Member member) {
