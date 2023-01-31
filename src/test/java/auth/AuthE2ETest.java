@@ -1,10 +1,11 @@
-package nextstep.auth;
+package auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import auth.dto.TokenRequest;
 import auth.dto.TokenResponse;
 import io.restassured.RestAssured;
+import nextstep.RoomEscapeApplication;
 import nextstep.member.dto.MemberRequest;
 import nextstep.theme.dto.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = RoomEscapeApplication.class)
 public class AuthE2ETest {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
