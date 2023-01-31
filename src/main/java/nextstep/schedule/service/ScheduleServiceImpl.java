@@ -1,15 +1,16 @@
 package nextstep.schedule.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.exception.ScheduleException;
-import nextstep.exception.ThemeException;
-import nextstep.exception.message.ErrorMessage;
 import nextstep.schedule.domain.Schedule;
 import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.schedule.dto.ScheduleResponse;
+import nextstep.schedule.exception.ScheduleErrorMessage;
+import nextstep.schedule.exception.ScheduleException;
 import nextstep.schedule.mapper.ScheduleMapper;
 import nextstep.schedule.repository.ScheduleRepository;
 import nextstep.theme.domain.Theme;
+import nextstep.theme.exception.ThemeErrorMessage;
+import nextstep.theme.exception.ThemeException;
 import nextstep.theme.repository.ThemeRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleResponse create(ScheduleRequest request) {
         Theme theme = themeRepository.getById(request.getThemeId());
         if (Objects.isNull(theme)) {
-            throw new ThemeException(ErrorMessage.THEME_NOT_EXISTS);
+            throw new ThemeException(ThemeErrorMessage.NOT_EXISTS);
         }
         Schedule schedule = mapper.fromRequest(request);
 
@@ -49,7 +50,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             return repository.insert(schedule);
         }
         catch (DataIntegrityViolationException ignore) {
-            throw new ScheduleException(ErrorMessage.SCHEDULE_CONFLICT);
+            throw new ScheduleException(ScheduleErrorMessage.CONFLICT);
         }
     }
 

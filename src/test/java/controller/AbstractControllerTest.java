@@ -10,7 +10,7 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import nextstep.RoomEscapeApplication;
-import nextstep.exception.message.ErrorMessage;
+import nextstep.exception.ErrorMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;

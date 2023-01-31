@@ -1,7 +1,7 @@
 package controller;
 
-import nextstep.exception.message.ErrorMessage;
 import nextstep.member.dto.MemberRequest;
+import nextstep.member.exception.MemberErrorMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ public class MemberControllerTest extends AbstractControllerTest {
         @DisplayName("username이 중복될 경우 예외 발생")
         @Test
         void should_throwException_when_usernameDuplicate() {
-            var expectedException = ErrorMessage.MEMBER_CONFLICT;
+            var expectedException = MemberErrorMessage.CONFLICT;
             var request = createRequest();
 
             post(MemberControllerTest.this.given(), DEFAULT_PATH, request);

@@ -2,11 +2,11 @@ package nextstep.member.service;
 
 import auth.domain.UserRole;
 import lombok.RequiredArgsConstructor;
-import nextstep.exception.MemberException;
-import nextstep.exception.message.ErrorMessage;
 import nextstep.member.domain.Member;
 import nextstep.member.dto.MemberRequest;
 import nextstep.member.dto.MemberResponse;
+import nextstep.member.exception.MemberErrorMessage;
+import nextstep.member.exception.MemberException;
 import nextstep.member.mapper.MemberMapper;
 import nextstep.member.repository.MemberRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,7 +35,7 @@ public class MemberServiceImpl implements MemberService {
             return repository.insert(member);
         }
         catch (DataIntegrityViolationException ignore) {
-            throw new MemberException(ErrorMessage.MEMBER_CONFLICT);
+            throw new MemberException(MemberErrorMessage.CONFLICT);
         }
     }
 

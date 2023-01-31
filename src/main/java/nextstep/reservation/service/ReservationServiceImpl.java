@@ -1,11 +1,11 @@
 package nextstep.reservation.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.exception.ReservationException;
-import nextstep.exception.message.ErrorMessage;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
+import nextstep.reservation.exception.ReservationErrorMessage;
+import nextstep.reservation.exception.ReservationException;
 import nextstep.reservation.mapper.ReservationMapper;
 import nextstep.reservation.repository.ReservationRepository;
 import nextstep.schedule.dto.ScheduleResponse;
@@ -38,10 +38,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     private void validateSchedule(ScheduleResponse schedule) {
         if (Objects.isNull(schedule)) {
-            throw new ReservationException(ErrorMessage.SCHEDULE_NOT_EXISTS);
+            throw new ReservationException(ReservationErrorMessage.NOT_EXISTS);
         }
         if (repository.existsByScheduleId(schedule.getId())) {
-            throw new ReservationException(ErrorMessage.RESERVATION_CONFLICT);
+            throw new ReservationException(ReservationErrorMessage.CONFLICT);
         }
     }
 
@@ -63,10 +63,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     private void validateReservation(Reservation reservation, Long memberId) {
         if (Objects.isNull(reservation)) {
-            throw new ReservationException(ErrorMessage.RESERVATION_NOT_EXISTS);
+            throw new ReservationException(ReservationErrorMessage.NOT_EXISTS);
         }
         if (!memberId.equals(reservation.getMemberId())) {
-            throw new ReservationException(ErrorMessage.NOT_RESERVER);
+            throw new ReservationException(ReservationErrorMessage.NOT_OWNER);
         }
     }
 }

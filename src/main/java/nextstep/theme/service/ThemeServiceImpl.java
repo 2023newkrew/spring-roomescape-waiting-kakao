@@ -1,11 +1,11 @@
 package nextstep.theme.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.exception.ThemeException;
-import nextstep.exception.message.ErrorMessage;
 import nextstep.theme.domain.Theme;
 import nextstep.theme.dto.ThemeRequest;
 import nextstep.theme.dto.ThemeResponse;
+import nextstep.theme.exception.ThemeErrorMessage;
+import nextstep.theme.exception.ThemeException;
 import nextstep.theme.mapper.ThemeMapper;
 import nextstep.theme.repository.ThemeRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,7 +33,7 @@ public class ThemeServiceImpl implements ThemeService {
             theme = repository.insert(theme);
         }
         catch (DuplicateKeyException ignore) {
-            throw new ThemeException(ErrorMessage.THEME_CONFLICT);
+            throw new ThemeException(ThemeErrorMessage.CONFLICT);
         }
 
         return mapper.toResponse(theme);
@@ -63,10 +63,10 @@ public class ThemeServiceImpl implements ThemeService {
             updated = repository.update(id, theme);
         }
         catch (DuplicateKeyException ignore) {
-            throw new ThemeException(ErrorMessage.THEME_CONFLICT);
+            throw new ThemeException(ThemeErrorMessage.CONFLICT);
         }
         if (!updated) {
-            throw new ThemeException(ErrorMessage.THEME_NOT_EXISTS);
+            throw new ThemeException(ThemeErrorMessage.NOT_EXISTS);
         }
 
         return getById(id);
@@ -79,7 +79,7 @@ public class ThemeServiceImpl implements ThemeService {
             return repository.delete(id);
         }
         catch (DataIntegrityViolationException ignore) {
-            throw new ThemeException(ErrorMessage.THEME_RESERVATION_EXISTS);
+            throw new ThemeException(ThemeErrorMessage.RESERVATION_EXISTS);
         }
     }
 }
