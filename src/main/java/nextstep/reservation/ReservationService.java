@@ -16,7 +16,9 @@ import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -93,16 +95,12 @@ public class ReservationService {
         }
         List<Reservation> reservations = reservationDao.findByMemberId(member.getId());
         return reservations.stream()
-                .filter(reservation -> Objects.equals(reservation.getWaitTicketNumber(),
-                        getReservationHasMinWaitTicketNumber(reservation.getSchedule().getId()).getWaitTicketNumber()))
+                .filter(reservation -> {
+                    Long scheduleId = reservation.getSchedule().getId();
+                    Long waitTicketNumber = reservation.getWaitTicketNumber();
+                    return !isWaitingReservation(reservationDao.getPriority(scheduleId, waitTicketNumber));
+                })
                 .collect(Collectors.toList());
-    }
-
-    private Reservation getReservationHasMinWaitTicketNumber(Long scheduleId) {
-        return reservationDao.findAllByScheduleId(scheduleId)
-                .stream()
-                .min(Comparator.comparing(Reservation::getWaitTicketNumber))
-                .orElseThrow();
     }
 
     public List<ReservationWaitingResponseDto> getReservationWaitingsByMember(Member member) {
