@@ -37,4 +37,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(exception.getMessage());
     }
+    @ExceptionHandler(NoReservationWaitingException.class)
+    ResponseEntity<String> handleNoReservationWaitingException(Exception exception) {
+        return ResponseEntity.badRequest()
+                .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(NotOwnReservationWaitingException.class)
+    ResponseEntity<String> handleNotOwnReservationWaitingException(Exception exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(exception.getMessage());
+    }
 }
