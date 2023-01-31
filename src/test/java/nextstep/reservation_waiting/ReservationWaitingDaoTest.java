@@ -12,7 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Sql("classpath:reservation_data.sql")
+@Sql({"classpath:schema.sql", "classpath:reservation_data.sql"})
 public class ReservationWaitingDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
