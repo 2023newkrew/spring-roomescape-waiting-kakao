@@ -3,6 +3,8 @@ package nextstep.waiting;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
+import java.util.Objects;
+
 public class Waiting {
     private Long id;
     private Schedule schedule;
@@ -41,5 +43,9 @@ public class Waiting {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean sameMember(Member member) {
+        return member != null && Objects.equals(this.member.getId(), member.getId());
     }
 }

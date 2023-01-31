@@ -2,11 +2,9 @@ package nextstep.waiting;
 
 import auth.LoginMember;
 import nextstep.member.Member;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -33,5 +31,11 @@ public class WaitingController {
     public ResponseEntity<List<MyWaitingResponse>> myWaitings(@LoginMember Member member) {
         List<MyWaitingResponse> response = waitingService.findAllWaitingsByMemberId(member.getId());
         return ResponseEntity.ok().body(response);
+    }
+
+    @DeleteMapping("/reservation-waitings/{id}")
+    public ResponseEntity<Void> deleteWaiting(@LoginMember Member member, @PathVariable Long id) {
+        waitingService.deleteById(member, id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

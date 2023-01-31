@@ -1,5 +1,6 @@
 package nextstep.waiting;
 
+import auth.ForbiddenException;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
@@ -45,5 +46,14 @@ public class WaitingService {
         return myWaitings.stream()
                 .map(MyWaitingResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteById(Member member, Long id) {
+        Waiting waiting = waitingDao.findById(id);
+        if (!waiting.sameMember(member)) {
+            throw new ForbiddenException();
+        }
+
+        waitingDao.deleteById(id);
     }
 }

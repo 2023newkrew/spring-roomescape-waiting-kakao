@@ -61,6 +61,21 @@ public class WaitingDao {
         waiting.setId(keyHolder.getKey().longValue());
         return waiting;
     }
+    public Waiting findById(Long id) {
+        String sql = "SELECT " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role, " +
+                "(SELECT count(*) FROM waiting WHERE waiting.schedule_id = schedule.id) as wait_num " +
+                "from waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on waiting.member_id = member.id " +
+                "where member.id = ?;";
+
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
 
     public List<Waiting> findAllByMemberId(Long id) {
         String sql = "SELECT " +
@@ -80,5 +95,10 @@ public class WaitingDao {
         } catch (Exception e) {
             return Collections.emptyList();
         }
+    }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM waiting where id = ?;";
+        jdbcTemplate.update(sql, id);
     }
 }

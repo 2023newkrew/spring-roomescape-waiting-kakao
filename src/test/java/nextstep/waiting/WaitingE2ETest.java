@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 
@@ -151,6 +152,63 @@ class WaitingE2ETest extends AbstractE2ETest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @DisplayName("예약 대기를 삭제한다")
+    @Test
+    void deleteWaiting() {
+        createReservation();
+        createWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete("/reservation-waitings/1")
+                .then().log().all()
+                .extract();
+
+        var findAfterDeletion = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        List<MyWaitingResponse> waitingsAfterDeletion = findAfterDeletion.jsonPath().getList(".", MyWaitingResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(waitingsAfterDeletion).isEmpty();
+    }
+
+    @DisplayName("예약 대기 삭제를 토큰 없이 요청하면 401을 반환한다")
+    @Test
+    void deleteWaitingWithoutToken() {
+        createReservation();
+        createWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .when().delete("/reservation-waitings/1")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @DisplayName("다른 사람의 예약 대기 삭제를 요청하면 403을 반환한다")
+    @Test
+    void deleteWaitingOfOtherPerson() {
+        createReservation();
+        createWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(otherPersonToken.getAccessToken())
+                .when().delete("/reservation-waitings/1")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
 
