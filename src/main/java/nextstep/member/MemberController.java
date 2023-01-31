@@ -32,7 +32,7 @@ public class MemberController {
     public ResponseEntity<MemberResponse> getById(@LoginMember Member member, @PathVariable Long id) {
         if (!member.getId().equals(id)) {
             throw new MemberAuthorizationWebException("로그인 멤버와 path의 id는 같아야 합니다.", id.toString(),
-                    "member 정보 조회", MemberController.class);
+                    "member 정보 조회", MemberController.class.getSimpleName());
         }
         return ResponseEntity.ok(MemberResponse.of(member));
     }
