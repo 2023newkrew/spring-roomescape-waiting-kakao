@@ -1,5 +1,7 @@
 package auth;
 
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.RoomEscapeApplication;
 import nextstep.member.MemberRequest;

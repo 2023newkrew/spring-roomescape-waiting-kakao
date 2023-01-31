@@ -1,5 +1,9 @@
 package auth;
 
+import auth.controller.LoginController;
+import auth.token.JwtTokenProvider;
+import auth.service.LoginService;
+import auth.service.MemberDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;

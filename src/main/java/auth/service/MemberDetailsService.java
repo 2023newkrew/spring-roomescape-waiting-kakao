@@ -1,5 +1,6 @@
-package auth;
+package auth.service;
 
+import auth.dto.MemberDetails;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,11 @@ public class MemberDetailsService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public MemberDetails loadMemberDetailsByUsername(String username) {
+        String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
+        return jdbcTemplate.queryForObject(sql, rowMapper, username);
+    }
+
     private final RowMapper<MemberDetails> rowMapper = (resultSet, rowNum) -> new MemberDetails(
             resultSet.getLong("id"),
             resultSet.getString("username"),
@@ -21,9 +27,4 @@ public class MemberDetailsService {
             resultSet.getString("phone"),
             resultSet.getString("role")
     );
-
-    public MemberDetails loadMemberDetailsByUsername(String username) {
-        String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username);
-    }
 }

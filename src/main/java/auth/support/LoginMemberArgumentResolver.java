@@ -1,6 +1,8 @@
-package auth;
+package auth.support;
 
+import auth.annotation.LoginMember;
 import auth.exception.UnauthenticatedException;
+import auth.service.LoginService;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;

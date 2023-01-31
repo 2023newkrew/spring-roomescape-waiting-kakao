@@ -1,4 +1,4 @@
-package auth;
+package auth.dto;
 
 public class MemberDetails {
     private final Long id;

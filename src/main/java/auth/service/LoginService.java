@@ -1,6 +1,10 @@
-package auth;
+package auth.service;
 
+import auth.dto.MemberDetails;
 import auth.exception.UnauthenticatedException;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
+import auth.token.JwtTokenProvider;
 import org.springframework.stereotype.Service;
 
 @Service
