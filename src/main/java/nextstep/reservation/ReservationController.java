@@ -65,8 +65,8 @@ public class ReservationController {
 
     @GetMapping("/reservation-waitings/mine")
     public ResponseEntity<List<ReservationWaitingResponseDto>> createReservationWaiting(@LoginMember Member member) {
-        List<ReservationWaitingResponseDto> dtos = reservationService.getReservationWaitingsByMember(member);
-        return ResponseEntity.ok(dtos);
+        List<ReservationWaitingResponseDto> reservationWaitings = reservationService.getReservationWaitingsByMember(member);
+        return ResponseEntity.ok(reservationWaitings);
     }
 
     @ExceptionHandler(Exception.class)

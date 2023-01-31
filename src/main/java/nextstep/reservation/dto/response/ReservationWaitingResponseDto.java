@@ -4,6 +4,7 @@ import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 
+// Reservation 관련 정보에 waitNum(대기순번)을 포함하여 돌려주기 위한 DTO
 public class ReservationWaitingResponseDto {
 
     private long id;
