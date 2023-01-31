@@ -1,5 +1,8 @@
-package auth;
+package nextstep;
 
+import auth.JwtTokenProvider;
+import auth.LoginController;
+import auth.UserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
