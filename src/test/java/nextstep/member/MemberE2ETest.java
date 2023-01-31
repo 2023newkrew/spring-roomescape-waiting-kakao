@@ -2,6 +2,7 @@ package nextstep.member;
 
 import auth.TokenRequest;
 import auth.TokenResponse;
+import auth.UserDetails;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,7 +61,7 @@ public class MemberE2ETest {
 
     @DisplayName("내 정보를 조회한다")
     @Test
-    public void showThemes() {
+    public void me() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -69,7 +70,7 @@ public class MemberE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        Member member = response.as(Member.class);
-        assertThat(member.getUsername()).isNotNull();
+        UserDetails member = response.as(UserDetails.class);
+        assertThat(member.getId()).isNotNull();
     }
 }

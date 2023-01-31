@@ -1,5 +1,6 @@
 package nextstep.reservation;
 
+import auth.UserDetails;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
@@ -36,7 +37,7 @@ public class Reservation {
         return member;
     }
 
-    public boolean sameMember(Member member) {
+    public boolean sameMember(UserDetails member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }
 }
