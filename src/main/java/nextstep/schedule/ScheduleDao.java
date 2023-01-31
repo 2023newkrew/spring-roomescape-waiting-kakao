@@ -1,9 +1,9 @@
 package nextstep.schedule;
 
+import static nextstep.utils.RowMapperUtil.scheduleRowMapper;
+
 import java.util.Optional;
-import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -16,23 +16,11 @@ import java.util.List;
 
 @Component
 public class ScheduleDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public ScheduleDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    private final RowMapper<Schedule> rowMapper = (resultSet, rowNum) -> new Schedule(
-            resultSet.getLong("schedule.id"),
-            new Theme(
-                    resultSet.getLong("theme.id"),
-                    resultSet.getString("theme.name"),
-                    resultSet.getString("theme.desc"),
-                    resultSet.getInt("theme.price")
-            ),
-            resultSet.getDate("schedule.date").toLocalDate(),
-            resultSet.getTime("schedule.time").toLocalTime()
-    );
 
     public Long save(Schedule schedule) {
         String sql = "INSERT INTO schedule (theme_id, date, time) VALUES (?, ?, ?);";
@@ -56,7 +44,7 @@ public class ScheduleDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "where schedule.id = ?;";
 
-        return jdbcTemplate.query(sql, rowMapper, id).stream().findAny();
+        return jdbcTemplate.query(sql, scheduleRowMapper, id).stream().findAny();
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
@@ -65,7 +53,7 @@ public class ScheduleDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "where schedule.theme_id = ? and schedule.date = ?;";
 
-        return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(LocalDate.parse(date)));
+        return jdbcTemplate.query(sql, scheduleRowMapper, themeId, Date.valueOf(LocalDate.parse(date)));
     }
 
     public void deleteById(Long id) {
