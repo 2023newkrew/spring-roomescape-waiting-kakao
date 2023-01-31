@@ -1,92 +1,51 @@
 package nextstep.auth;
 
-import io.restassured.RestAssured;
-import nextstep.member.MemberRequest;
-import nextstep.theme.ThemeRequest;
-import org.junit.jupiter.api.BeforeEach;
+import auth.model.TokenRequest;
+import auth.model.TokenResponse;
+import nextstep.auth.util.AuthTestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class AuthE2ETest {
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-    private Long memberId;
-
-    @BeforeEach
-    void setUp() {
-        MemberRequest body = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
-        RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(body)
-                .when().post("/members")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-    }
-
-    @DisplayName("토큰을 생성한다")
+class AuthE2ETest {
     @Test
-    public void create() {
-        TokenRequest body = new TokenRequest(USERNAME, PASSWORD);
-        var response = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(body)
-                .when().post("/login/token")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        assertThat(response.as(TokenResponse.class)).isNotNull();
+    @DisplayName("존재하는 유저는 엑세스 토큰을 발급 받을 수 있다.")
+    void test1() {
+        TokenResponse tokenResponse = AuthTestUtil.tokenLoginForReservationExistMember();
+        assertThat(tokenResponse.getAccessToken()).isNotNull();
     }
 
-//    @DisplayName("테마 목록을 조회한다")
-//    @Test
-//    public void showThemes() {
-//        createTheme();
-//
-//        var response = RestAssured
-//                .given().log().all()
-//                .param("date", "2022-08-11")
-//                .when().get("/themes")
-//                .then().log().all()
-//                .statusCode(HttpStatus.OK.value())
-//                .extract();
-//        assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
-//    }
-//
-//    @DisplayName("테마를 삭제한다")
-//    @Test
-//    void delete() {
-//        Long id = createTheme();
-//
-//        var response = RestAssured
-//                .given().log().all()
-//                .when().delete("/themes/" + id)
-//                .then().log().all()
-//                .extract();
-//
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//    }
+    @Test
+    @DisplayName("존재하지 않는 유저는 엑세스 토큰을 받을 수 없다.")
+    void test2() {
+        TokenRequest tokenRequest = AuthTestUtil.getNotExistMemberTokenRequest();
+        AuthTestUtil.createTokenAndGetValidatableResponse(tokenRequest)
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
 
-    public Long createTheme() {
-        ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
-        String location = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(body)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract().header("Location");
-        return Long.parseLong(location.split("/")[2]);
+    @DisplayName("token에는 memberName이 반드시 포함되어야 한다.")
+    @ParameterizedTest
+    @NullAndEmptySource
+    void test3(String memberName) {
+        TokenRequest tokenRequest = new TokenRequest(memberName, "");
+        AuthTestUtil.createTokenAndGetValidatableResponse(tokenRequest)
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("token에는 password가 반드시 포함되어야 한다.")
+    @ParameterizedTest
+    @NullAndEmptySource
+    void test4(String password) {
+        TokenRequest tokenRequest = new TokenRequest("memberName", password);
+        AuthTestUtil.createTokenAndGetValidatableResponse(tokenRequest)
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }

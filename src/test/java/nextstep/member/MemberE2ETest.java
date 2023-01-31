@@ -1,75 +1,56 @@
 package nextstep.member;
 
-import io.restassured.RestAssured;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.auth.util.AuthTestUtil;
+import auth.model.TokenRequest;
+import auth.model.TokenResponse;
+import nextstep.member.model.Member;
+import nextstep.member.model.MemberRequest;
+import nextstep.member.util.MemberTestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class MemberE2ETest {
+class MemberE2ETest {
 
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-    private TokenResponse token;
-
-    @BeforeEach
-    void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
-        RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(memberBody)
-                .when().post("/members")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-
-        TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
-        var response = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(tokenBody)
-                .when().post("/login/token")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        token = response.as(TokenResponse.class);
-    }
-
-    @DisplayName("멤버를 생성한다")
+    @DisplayName("존재하지 않는 memberName으로 멤버를 생성할 수 있다.")
     @Test
-    public void create() {
-        MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", "ADMIN");
-        RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(body)
-                .when().post("/members")
-                .then().log().all()
+    void test1() {
+        MemberRequest memberRequest = new MemberRequest(MemberTestUtil.NOT_EXIST_MEMBER);
+
+        MemberTestUtil.createMemberAndGetValidatableResponse(memberRequest)
                 .statusCode(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("내 정보를 조회한다")
+    @DisplayName("이미 존재하는 memberName으로는 멤버를 생성할 수 없다.")
     @Test
-    public void showThemes() {
-        var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().get("/members/me")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+    void test2() {
+        MemberRequest memberRequest = new MemberRequest(MemberTestUtil.RESERVATION_EXIST_MEMBER_1);
 
-        Member member = response.as(Member.class);
-        assertThat(member.getUsername()).isNotNull();
+        MemberTestUtil.createMemberAndGetValidatableResponse(memberRequest)
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("토큰을 발급받은 유저는 자신의 정보를 조회할 수 있다.")
+    @Test
+    void test3() {
+        TokenRequest tokenRequest = AuthTestUtil.RESERVATION_EXIST_MEMBER_TOKEN_REQUEST;
+        final TokenResponse tokenResponse = AuthTestUtil.tokenLogin(tokenRequest);
+        final String accessToken = tokenResponse.getAccessToken();
+
+        Member member = MemberTestUtil.getMemberSelfInfo(accessToken);
+        assertThat(member.getMemberName()).isEqualTo(tokenRequest.getMemberName());
+    }
+
+    @DisplayName("토큰이 유효하지 않은 유저는 내 정보를 조회할 수 없다.")
+    @Test
+    void test4() {
+        MemberTestUtil.getMemberSelfInfoAndGetValidatableResponse("")
+                        .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 }
