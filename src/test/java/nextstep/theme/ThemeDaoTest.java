@@ -16,7 +16,7 @@ class ThemeDaoTest {
     @Test
     void save() {
         ThemeDao themeDao = new ThemeDao(dataSource);
-        Long id = themeDao.save(new Theme(null, "테마 이름", "테마 설명", 22_000));
+        Long id = themeDao.save(Theme.builder().name("테마 이름").desc("테마 설명").price(22_000).build());
         assertThat(id).isNotNull();
     }
 }

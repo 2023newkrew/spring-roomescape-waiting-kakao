@@ -22,18 +22,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/reservations")
 public class ReservationController {
 
-    public final ReservationService reservationService;
-    public final MemberService memberService;
+    private final ReservationService reservationService;
+    private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<URI> createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<URI> createReservation(@LoginMember UserDetails userDetails,
+                                                 @RequestBody ReservationRequest reservationRequest) {
         Member member = memberService.findById(userDetails.getId());
         Long id = reservationService.create(member, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<List<ReservationResponse>> readReservations(@RequestParam Long themeId,
+                                                                      @RequestParam String date) {
         List<ReservationResponse> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }

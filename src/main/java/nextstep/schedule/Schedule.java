@@ -1,5 +1,7 @@
 package nextstep.schedule;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,11 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.theme.Theme;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
 public class Schedule {
