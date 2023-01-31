@@ -42,8 +42,7 @@ public class ReservationWaitingService {
         if (tryInsertReservation(schedule, member)) {
             currentStatus = ReservationWaitingStatus.RESERVED;
         }
-        Long id = reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus));
-        return id;
+        return reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus));
     }
 
     private boolean tryInsertReservation(Schedule schedule, Member member) {
@@ -59,10 +58,9 @@ public class ReservationWaitingService {
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {
         try {
-            List<ReservationWaitingResponse> res = reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()).stream()
+            return reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()).stream()
                     .map(ReservationWaitingResponse::from)
                     .collect(Collectors.toList());
-            return res;
         } catch (RuntimeException e) {
             e.printStackTrace();
             return Collections.emptyList();
