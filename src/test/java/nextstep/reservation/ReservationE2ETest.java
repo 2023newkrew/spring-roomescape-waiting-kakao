@@ -169,6 +169,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     }
 
     @Test
+    @DisplayName("관리자가 아니면 예약을 승인할 수 없다.")
     void Should_ThrowUnAuthorized_When_IfAttemptToApproveNotAdmin() {
         createReservation();
 
@@ -182,6 +183,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     }
 
     @Test
+    @DisplayName("관리자는 예약을 승인할 수 있다.")
     void Should_ChangeReservationStatus_When_IfAttemptToApproveAdmin() {
         createReservation();
 
@@ -203,6 +205,26 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservationResponses.get(0).getStatus()).isEqualTo(ReservationStatus.APPROVED);
     }
 
+    @Test
+    @DisplayName("승인 대기 상태가 아닌 예약은 승인할 수 없다.")
+    void Should_ThrowBadRequest_When_IfAttemptToApproveInvalidStatus() {
+        createReservation();
+        given().
+                auth().oauth2(token.getAccessToken()).
+                when().
+                patch("/reservations/1/approve").
+                then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+                when().
+                patch("/reservations/1/approve").
+                then().
+                assertThat().
+                statusCode(HttpStatus.BAD_REQUEST.value());
+    }
 
     private ExtractableResponse<Response> createReservation() {
         return given().log().all()

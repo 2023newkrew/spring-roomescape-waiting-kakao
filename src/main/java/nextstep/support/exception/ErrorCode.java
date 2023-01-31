@@ -13,7 +13,8 @@ public enum ErrorCode {
     NO_SUCH_SCHEDULE("없는 스케줄입니다.", 2004, HttpStatus.NOT_FOUND),
     NO_SUCH_WAITING("없는 대기열입니다.", 2005, HttpStatus.NOT_FOUND),
     NOT_WAITING_OWNER("본인의 대기가 아닙니다.", 2006, HttpStatus.UNAUTHORIZED),
-    NOT_RESERVATION_OWNER("본인의 예약이 아닙니다.", 2007, HttpStatus.UNAUTHORIZED);
+    NOT_RESERVATION_OWNER("본인의 예약이 아닙니다.", 2007, HttpStatus.UNAUTHORIZED),
+    ILLEGAL_APPROVE_ATTEMPT("예약 대기 상태가 아닙니다.", 2008, HttpStatus.BAD_REQUEST);
 
     private final String message;
     private final int errorCode;

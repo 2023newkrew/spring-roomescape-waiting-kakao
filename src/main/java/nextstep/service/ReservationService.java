@@ -5,6 +5,7 @@ import auth.support.AuthorizationException;
 import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
+import nextstep.domain.enumeration.ReservationStatus;
 import nextstep.domain.persist.Member;
 import nextstep.domain.persist.Reservation;
 import nextstep.domain.persist.Schedule;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.domain.enumeration.ReservationStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -85,6 +88,9 @@ public class ReservationService {
 
     @Transactional
     public void approveById(Long id) {
+        if (!reservationDao.findById(id).getStatus().equals(NOT_APPROVED)) {
+            throw new IllegalApproveException();
+        }
         reservationDao.approveById(id);
         eventPublisher.publishEvent(new ReservationApproveEvent(APPROVED));
     }
