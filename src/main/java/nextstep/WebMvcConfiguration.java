@@ -2,7 +2,7 @@ package nextstep;
 
 import auth.*;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.MemberDao;
+import nextstep.member.MemberService;
 import nextstep.member.UserAuthenticatorImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +15,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private final MemberDao memberDao;
+    private final MemberService memberService;
 
     private final UserAuthenticator userAuthenticator;
 
     @Bean
     public UserAuthenticator userValidator() {
-        return new UserAuthenticatorImpl(memberDao);
+        return new UserAuthenticatorImpl(memberService);
     }
 
     @Bean
