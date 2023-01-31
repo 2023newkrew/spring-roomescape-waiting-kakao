@@ -1,11 +1,9 @@
-package auth;
+package nextstep.web.member;
 
-import auth.login.dto.TokenRequest;
-import auth.login.dto.TokenResponse;
 import io.restassured.RestAssured;
-import nextstep.RoomEscapeApplication;
+import nextstep.AbstractE2ETest;
+import nextstep.web.member.domain.Member;
 import nextstep.web.member.dto.MemberRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,14 +14,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = RoomEscapeApplication.class)
-public class AuthE2ETest {
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+public class MemberE2ETest extends AbstractE2ETest {
 
-    @BeforeEach
-    void setUp() {
-        MemberRequest body = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+    @DisplayName("멤버를 생성한다")
+    @Test
+    public void create() {
+        MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -33,19 +30,18 @@ public class AuthE2ETest {
                 .statusCode(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("토큰을 생성한다")
+    @DisplayName("내 정보를 조회한다")
     @Test
-    public void create() {
-        TokenRequest body = new TokenRequest(USERNAME, PASSWORD);
+    public void showThemes() {
         var response = RestAssured
                 .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(body)
-                .when().post("/login/token")
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/members/me")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        assertThat(response.as(TokenResponse.class)).isNotNull();
+        Member member = response.as(Member.class);
+        assertThat(member.getUsername()).isNotNull();
     }
 }
