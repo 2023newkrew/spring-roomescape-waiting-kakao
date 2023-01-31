@@ -6,6 +6,9 @@ public class ReservationWaiting {
     public Reservation reservation;
     public Long waitingSeq;
 
+    public ReservationWaiting() {
+    }
+
     public ReservationWaiting(Reservation reservation, Long waitingSeq) {
         this.reservation = reservation;
         this.waitingSeq = waitingSeq;
@@ -17,6 +20,14 @@ public class ReservationWaiting {
 
     public Long getWaitingSeq() {
         return waitingSeq;
+    }
+
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
+    }
+
+    public void setWaitingSeq(Long waitingSeq) {
+        this.waitingSeq = waitingSeq;
     }
 
     public void decreaseWaitingSeq() {
