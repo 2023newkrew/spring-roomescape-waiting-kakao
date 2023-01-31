@@ -1,7 +1,7 @@
 package nextstep.member;
 
-import auth.TokenRequest;
-import auth.TokenResponse;
+import auth.login.TokenRequest;
+import auth.login.TokenResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

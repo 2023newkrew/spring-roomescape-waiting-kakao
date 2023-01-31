@@ -3,7 +3,7 @@ package nextstep.config;
 import auth.AdminInterceptor;
 import auth.JwtTokenProvider;
 import auth.LoginMemberArgumentResolver;
-import auth.LoginService;
+import auth.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

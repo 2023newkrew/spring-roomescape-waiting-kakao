@@ -1,5 +1,6 @@
-package auth;
+package auth.login;
 
+import auth.*;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
