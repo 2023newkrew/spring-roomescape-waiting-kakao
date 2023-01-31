@@ -110,22 +110,17 @@ public class ReservationService {
             throw new AuthException(AuthErrorCode.INVALID_USER);
         }
         List<Reservation> reservationsByMemberId = reservationDao.findByMemberId(member.getId());
-        List<List<Reservation>> reservationsPerSchedule = reservationsByMemberId.stream()
-                .map(Reservation::getSchedule)
-                .map(Schedule::getId)
-                .map(reservationDao::findAllByScheduleId)
-                .collect(Collectors.toList());
-
-        List<ReservationWaitingResponseDto> responseDto = new ArrayList<>();
-        for (int i = 0; i < reservationsPerSchedule.size(); i++) {
-            List<Reservation> reservationList = reservationsPerSchedule.get(i);
-            reservationList.sort(Comparator.comparing(Reservation::getWaitTicketNumber));
-            Reservation reservation = reservationsByMemberId.get(i);
-            int waitNum = reservationList.indexOf(reservation);
-            if (waitNum != 0) {
-                responseDto.add(ReservationWaitingResponseDto.of(reservation, waitNum));
+        List<ReservationWaitingResponseDto> result = new ArrayList<>();
+        for (Reservation reservation : reservationsByMemberId) {
+            Long waitNum = reservationDao.getPriority(reservation.getSchedule().getId(), reservation.getWaitTicketNumber());
+            if (isWaitingReservation(waitNum)) {
+                result.add(ReservationWaitingResponseDto.of(reservation, waitNum));
             }
         }
-        return responseDto;
+        return result;
+    }
+
+    private static boolean isWaitingReservation(Long waitNum) {
+        return waitNum != 0;
     }
 }
