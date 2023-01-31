@@ -2,6 +2,7 @@ package nextstep.theme;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
+import nextstep.web.theme.ThemeRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

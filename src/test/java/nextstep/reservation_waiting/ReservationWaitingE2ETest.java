@@ -2,7 +2,9 @@ package nextstep.reservation_waiting;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.reservation.ReservationRequest;
+import nextstep.web.reservation.ReservationRequest;
+import nextstep.web.reservation_waiting.ReservationWaitingRequest;
+import nextstep.web.reservation_waiting.ReservationWaitingResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

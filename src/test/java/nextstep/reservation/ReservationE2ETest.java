@@ -2,10 +2,12 @@ package nextstep.reservation;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.reservation_waiting.ReservationWaitingRequest;
-import nextstep.reservation_waiting.ReservationWaitingResponse;
-import nextstep.schedule.ScheduleRequest;
-import nextstep.theme.ThemeRequest;
+import nextstep.web.reservation.Reservation;
+import nextstep.web.reservation.ReservationRequest;
+import nextstep.web.reservation_waiting.ReservationWaitingRequest;
+import nextstep.web.reservation_waiting.ReservationWaitingResponse;
+import nextstep.web.schedule.ScheduleRequest;
+import nextstep.web.theme.ThemeRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

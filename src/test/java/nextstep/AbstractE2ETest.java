@@ -1,12 +1,12 @@
 package nextstep;
 
-import auth.TokenRequest;
-import auth.TokenResponse;
+import auth.login.dto.TokenRequest;
+import auth.login.dto.TokenResponse;
 import io.restassured.RestAssured;
-import nextstep.member.MemberRequest;
-import nextstep.reservation.ReservationRequest;
-import nextstep.reservation_waiting.ReservationWaitingRequest;
-import nextstep.schedule.ScheduleRequest;
+import nextstep.web.member.MemberRequest;
+import nextstep.web.reservation.ReservationRequest;
+import nextstep.web.reservation_waiting.ReservationWaitingRequest;
+import nextstep.web.schedule.ScheduleRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
