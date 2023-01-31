@@ -101,31 +101,31 @@ public class ReservationDao {
         }
     }
 
-    public List<Reservation> findByScheduleId(Long id) {
+    public List<Reservation> findByScheduleId(Long scheduleId) {
         String sql = DEFAULT_SELECT_FROM_SQL +
                 "where schedule.id = ?;";
         try {
-            return jdbcTemplate.query(sql, rowMapper, id);
+            return jdbcTemplate.query(sql, rowMapper, scheduleId);
         } catch (Exception e) {
             return Collections.emptyList();
         }
     }
 
-    public List<Reservation> findAllByMemberId(Long id) {
+    public List<Reservation> findAllByMemberId(Long memberId) {
         String sql = DEFAULT_SELECT_FROM_SQL +
                 "where member.id = ? and reservation.wait_num = 0;";
         try {
-            return jdbcTemplate.query(sql, rowMapper, id);
+            return jdbcTemplate.query(sql, rowMapper, memberId);
         } catch (Exception e) {
             return Collections.emptyList();
         }
     }
 
-    public List<Reservation> findAllWaitingByMemberId(Long id) {
+    public List<Reservation> findAllWaitingByMemberId(Long memberId) {
         String sql = DEFAULT_SELECT_FROM_SQL +
                 "where member.id = ? and reservation.wait_num > 0;";
         try {
-            return jdbcTemplate.query(sql, rowMapper, id);
+            return jdbcTemplate.query(sql, rowMapper, memberId);
         } catch (Exception e) {
             return Collections.emptyList();
         }
