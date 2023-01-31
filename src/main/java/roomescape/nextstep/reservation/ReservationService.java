@@ -1,14 +1,13 @@
 package roomescape.nextstep.reservation;
 
+import org.springframework.stereotype.Service;
 import roomescape.auth.AuthenticationException;
 import roomescape.nextstep.member.Member;
 import roomescape.nextstep.member.MemberDao;
 import roomescape.nextstep.schedule.Schedule;
 import roomescape.nextstep.schedule.ScheduleDao;
-import roomescape.nextstep.support.DuplicateEntityException;
 import roomescape.nextstep.theme.Theme;
 import roomescape.nextstep.theme.ThemeDao;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;

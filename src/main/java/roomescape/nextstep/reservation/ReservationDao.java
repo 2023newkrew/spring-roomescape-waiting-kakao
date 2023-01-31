@@ -1,17 +1,16 @@
 package roomescape.nextstep.reservation;
 
-import roomescape.nextstep.member.Member;
-import roomescape.nextstep.schedule.Schedule;
-import roomescape.nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import roomescape.nextstep.member.Member;
+import roomescape.nextstep.schedule.Schedule;
+import roomescape.nextstep.theme.Theme;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -125,7 +124,7 @@ public class ReservationDao {
         String sql = "UPDATE reservation SET status = 'CONFIRMED' WHERE id = (SELECT min(id) FROM reservation WHERE schedule_id = ?);";
         try {
             jdbcTemplate.update(sql, scheduleId);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

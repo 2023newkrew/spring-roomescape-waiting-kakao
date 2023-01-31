@@ -1,15 +1,15 @@
 package roomescape.nextstep.schedule;
 
+import org.springframework.stereotype.Service;
 import roomescape.nextstep.theme.Theme;
 import roomescape.nextstep.theme.ThemeDao;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ScheduleService {
-    private ScheduleDao scheduleDao;
-    private ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final ThemeDao themeDao;
 
     public ScheduleService(ScheduleDao scheduleDao, ThemeDao themeDao) {
         this.scheduleDao = scheduleDao;
