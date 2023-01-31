@@ -12,7 +12,7 @@ public class ThemeService {
 
     private final ThemeDao themeDao;
 
-    public Long create(ThemeRequest themeRequest) {
+    public Long create(final ThemeRequest themeRequest) {
         return themeDao.save(themeRequest.toEntity());
     }
 
@@ -20,7 +20,7 @@ public class ThemeService {
         return themeDao.findAll();
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         themeDao.findById(id)
             .orElseThrow(() -> new NullPointerException(NOT_EXIST_THEME.getMessage()));
 

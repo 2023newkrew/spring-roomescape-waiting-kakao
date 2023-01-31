@@ -8,15 +8,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ThemeRequest {
+
     private String name;
     private String desc;
     private int price;
 
     public Theme toEntity() {
         return new Theme(
-                this.name,
-                this.desc,
-                this.price
+            this.name,
+            this.desc,
+            this.price
         );
     }
 }
