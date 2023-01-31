@@ -13,10 +13,88 @@
       - [x] 예약과 예약 대기를 나눠서 조회한다.
       - [x] 예약은 reservation을 조회하고 예약 대기는 reservation-wating을 조회한다.
       - [x] 예약 대기의 경우 대기 순번도 함께 조회할 수 있다.
-  
-- DB 설계
-  - Table. Schedule, member_id, priority
-    - Table. ADD Schedule, member_id, (GET MAX priority in Scedule ++)
-    - Table. DELETE Schedule, member_id
-    - 예약 취소 시 예약 대기 순번이 가장 빠른 예약 대기를 예약으로 전환한다.
-    - 예약 대기 순번은 현재까지 발급된 대기 순번 다음 번호로 발급되며 고정된다(ex. 은행 대기번호).
+
+- 추가 정의
+  - 예약 취소 시 예약 대기 순번이 가장 빠른 예약 대기를 예약으로 전환한다.
+  - 예약 대기 순번은 현재까지 발급된 대기 순번 다음 번호로 발급되며 고정된다(ex. 은행 대기번호).
+
+
+- API 명세
+  - 예약 대기
+```
+POST /reservation-waitings HTTP/1.1
+authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjYzMjk4NTkwLCJleHAiOjE2NjMzMDIxOTAsInJvbGUiOiJBRE1JTiJ9.-OO1QxEpcKhmC34HpmuBhlnwhKdZ39U8q91QkTdH9i0
+content-type: application/json; charset=UTF-8
+host: localhost:8080
+
+{
+    "scheduleId": 1
+}
+```
+```
+HTTP/1.1 201 Created
+Location: /reservation-waitings/1
+```
+- 예약 목록 조회
+```
+GET /reservations/mine HTTP/1.1
+authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjYzMjk4NTkwLCJleHAiOjE2NjMzMDIxOTAsInJvbGUiOiJBRE1JTiJ9.-OO1QxEpcKhmC34HpmuBhlnwhKdZ39U8q91QkTdH9i0
+
+```
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "schedule": {
+            "id": 1,
+            "theme": {
+                "id": 1,
+                "name": "테마이름",
+                "desc": "테마설명",
+                "price": 22000
+            },
+            "date": "2022-08-11",
+            "time": "13:00:00"
+        }
+    }
+]
+```
+- 예약 대기 목록 조회
+```
+GET /reservation-waitings/mine HTTP/1.1
+authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjYzMjk4NTkwLCJleHAiOjE2NjMzMDIxOTAsInJvbGUiOiJBRE1JTiJ9.-OO1QxEpcKhmC34HpmuBhlnwhKdZ39U8q91QkTdH9i0
+```
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "schedule": {
+            "id": 3,
+            "theme": {
+                "id": 2,
+                "name": "테마이름2",
+                "desc": "테마설명2",
+                "price": 20000
+            },
+            "date": "2022-08-20",
+            "time": "13:00:00"
+        },
+        "memberId": 1,
+        "priority": 12
+    }
+]
+```
+- 예약 대기 취소
+```
+DELETE /reservation-waitings/1 HTTP/1.1
+authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjYzMjk5MDcwLCJleHAiOjE2NjMzMDI2NzAsInJvbGUiOiJBRE1JTiJ9.zgz7h7lrKLNw4wP9I0W8apQnMUn3WHnmqQ1N2jNqwlQ
+```
+```
+HTTP/1.1 204 
+```
