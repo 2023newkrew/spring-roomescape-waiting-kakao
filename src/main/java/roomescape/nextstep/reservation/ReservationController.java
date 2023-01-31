@@ -19,18 +19,21 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/reservations")
+    @PostMapping({"/reservations", "/reservations-waitings"})
     public ResponseEntity createReservation(@LoginMember UserDetails member, @RequestBody ReservationRequest reservationRequest) {
         if (member == null) {
             throw new AuthenticationException();
         }
-        Long id = reservationService.create(member.getUsername(), reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + id)).build();
+        Reservation reservation = reservationService.create(member.getUsername(), reservationRequest);
+        if (reservation.getStatus() == ReservationStatus.CONFIRMED) {
+            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).build();
+        }
+        return ResponseEntity.created(URI.create("/reservations-waitings/" + reservation.getId())).build();
     }
 
     @GetMapping("/reservations")
     public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
-        List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
+        List<Reservation> results = reservationService.findFilteredReservationsByThemeIdAndDate(themeId, date, ReservationStatus.CONFIRMED);
         return ResponseEntity.ok().body(results);
     }
 
@@ -40,8 +43,17 @@ public class ReservationController {
             throw new AuthenticationException();
         }
         reservationService.deleteById(member.getUsername(), id);
-
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-waitings/mine")
+    public ResponseEntity<List<ReservationWaiting>> findMyReservationsWaitings(@LoginMember UserDetails member) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+        return ResponseEntity.ok(
+                reservationService.findAllByUsername(member.getUsername())
+        );
     }
 
     @ExceptionHandler(Exception.class)

@@ -8,7 +8,7 @@ public class ReservationWaiting extends Reservation {
     }
 
     public ReservationWaiting(Reservation reservation, Long waitNum) {
-        super(reservation.getId(), reservation.getSchedule(), reservation.getMember());
+        super(reservation.getId(), reservation.getSchedule(), reservation.getMember(), reservation.getStatus());
         this.waitNum = waitNum;
     }
 

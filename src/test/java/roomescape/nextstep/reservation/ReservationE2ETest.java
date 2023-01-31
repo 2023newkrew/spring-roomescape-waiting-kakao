@@ -21,7 +21,6 @@ class ReservationE2ETest extends AbstractE2ETest {
     public static final String TIME = "13:00";
 
     private ReservationRequest request;
-    private ReservationWaitingRequest waitingRequest;
     private Long themeId;
     private Long scheduleId;
 
@@ -55,10 +54,6 @@ class ReservationE2ETest extends AbstractE2ETest {
         scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
         request = new ReservationRequest(
-                scheduleId
-        );
-
-        waitingRequest = new ReservationWaitingRequest(
                 scheduleId
         );
     }
@@ -124,23 +119,6 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("중복 예약을 생성한다")
-    @Test
-    void createDuplicateReservation() {
-        createReservation();
-
-        var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservations")
-                .then().log().all()
-                .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
     @DisplayName("예약이 없을 때 예약 목록을 조회한다")
     @Test
     void showEmptyReservations() {
@@ -195,21 +173,10 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> makeReservationWaiting() {
-        return RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .body(waitingRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservations-waitings")
-                .then().log().all()
-                .extract();
-    }
-
     @DisplayName("예약이 없을 때 예약 대기 신청") // reservation/1
     @Test
     void reservationWaiting() {
-        var waitingResponse = makeReservationWaiting();
+        var waitingResponse = createReservation();
 
         assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(waitingResponse.header("Location")).isEqualTo("/reservations/1");
@@ -230,41 +197,16 @@ class ReservationE2ETest extends AbstractE2ETest {
     @Test
     void reservationWaiting2() {
         create(); //예약 생성
-        var waitingResponse = makeReservationWaiting();
+        var waitingResponse = createReservation();
 
         assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(waitingResponse.header("Location")).isEqualTo("/reservations-waitings/2");
     }
 
-    /**
-     * GET /reservations/mine HTTP/1.1
-     * authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF
-     * --
-     * HTTP/1.1 200
-     * Content-Type: application/json
-     *
-     * [
-     *     {
-     *         "id": 1,
-     *         "schedule": {
-     *             "id": 1,
-     *             "theme": {
-     *                 "id": 1,
-     *                 "name": "테마이름",
-     *                 "desc": "테마설명",
-     *                 "price": 22000
-     *             },
-     *             "date": "2022-08-11",
-     *             "time": "13:00:00"
-     *         }
-     *     }
-     * ]
-     */
-
     @DisplayName("내 예약대기 조회")
     @Test
     void findMyReservationsWaitings() {
-        var waitingResponse = makeReservationWaiting();
+        var waitingResponse = createReservation();
 
         assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
