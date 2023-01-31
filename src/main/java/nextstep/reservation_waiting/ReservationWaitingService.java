@@ -2,18 +2,24 @@ package nextstep.reservation_waiting;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
+import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
+import nextstep.reservation.ReservationDao;
 import nextstep.support.exception.DuplicateEntityException;
 import nextstep.support.exception.NoReservationWaitingException;
 import nextstep.support.exception.NotOwnReservationWaitingException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationWaitingService {
     private final ReservationWaitingDao reservationWaitingDao;
+    private final ReservationDao reservationDao;
+    private final MemberDao memberDao;
 
     public Long create(Reservation reservation, Member member) {
         if (reservationWaitingDao.findByMemberId(member.getId())
@@ -26,6 +32,12 @@ public class ReservationWaitingService {
     public ReservationWaiting findById(Long id) {
         return reservationWaitingDao.findById(id)
                 .orElseThrow(NoReservationWaitingException::new);
+    }
+
+    public Optional<ReservationWaiting> findByScheduleId(Long scheduleId) {
+        return reservationWaitingDao.findAllByScheduleId(scheduleId)
+                .stream()
+                .findFirst();
     }
 
     public void delete(Long reservationWaitingId) {
@@ -56,7 +68,26 @@ public class ReservationWaitingService {
         return reservationWaitingDao.findAllByScheduleId(reservationWaiting.getSchedule()
                         .getId())
                 .stream()
-                .filter(rw ->  rw.getId() <= reservationWaiting.getId())
+                .filter(rw -> rw.getId() <= reservationWaiting.getId())
                 .count();
+    }
+
+
+    public void confirm(Reservation reservation) {
+        findByScheduleId(reservation.getSchedule()
+                .getId())
+                .map(reservationWaiting -> {
+                    delete(reservationWaiting.getId());
+                    return memberDao.findById(reservationWaiting.getMember()
+                            .getId());
+                })
+                .ifPresent(getMemberConsumer(reservation));
+    }
+
+    private Consumer<Member> getMemberConsumer(Reservation reservation) {
+        return reservationWaitingMember -> reservationDao.save(Reservation.builder()
+                .schedule(reservation.getSchedule())
+                .member(reservationWaitingMember)
+                .build());
     }
 }

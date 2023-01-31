@@ -1,7 +1,9 @@
 package nextstep.reservation_waiting;
 
 import nextstep.member.Member;
+import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
+import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.support.exception.DuplicateEntityException;
 import nextstep.support.exception.NotOwnReservationWaitingException;
@@ -18,12 +20,16 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationWaitingServiceTest {
     @Mock
     private ReservationWaitingDao reservationWaitingDao;
+    @Mock
+    private MemberDao memberDao;
+    @Mock
+    private ReservationDao reservationDao;
     @InjectMocks
     private ReservationWaitingService reservationWaitingService;
 
@@ -90,7 +96,7 @@ class ReservationWaitingServiceTest {
                 .build());
         ReservationWaiting reservationWaiting = reservationWaitings.get(2);
         when(reservationWaitingDao.findAllByScheduleId(anyLong())).thenReturn(reservationWaitings);
-        assertThat(reservationWaitingService.calculateWaitNumber(reservationWaiting)).isEqualTo(2L);
+        assertThat(reservationWaitingService.calculateWaitNumber(reservationWaiting)).isEqualTo(3L);
     }
 
     @Test
@@ -98,7 +104,6 @@ class ReservationWaitingServiceTest {
     void deleteTest() {
         ReservationWaiting reservationWaiting = ReservationWaiting.builder()
                 .build();
-        when(reservationWaitingDao.findById(anyLong())).thenReturn(Optional.ofNullable(reservationWaiting));
         assertThatCode(() -> reservationWaitingService.delete(1L)).doesNotThrowAnyException();
     }
 
@@ -115,5 +120,36 @@ class ReservationWaitingServiceTest {
                 .member(owner)
                 .build();
         assertThatThrownBy(() -> reservationWaitingService.validateByMember(reservationWaiting, other)).isInstanceOf(NotOwnReservationWaitingException.class);
+    }
+
+    @Test
+    @DisplayName("예약 대기에서 예약 확정 기능 테스트")
+    void confirmTest() {
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+        ReservationWaiting reservationWaiting1 = ReservationWaiting.builder()
+                .id(1L)
+                .member(member)
+                .build();
+        ReservationWaiting reservationWaiting2 = ReservationWaiting.builder()
+                .id(2L)
+                .build();
+        Reservation reservation = Reservation.builder()
+                .id(1L)
+                .schedule(Schedule.builder()
+                        .id(1L)
+                        .build())
+                .build();
+        when(reservationWaitingDao.findAllByScheduleId(anyLong())).thenReturn((List.of(reservationWaiting1, reservationWaiting2)));
+        doNothing().when(reservationWaitingDao)
+                .deleteById(reservationWaiting1.getId());
+        when(memberDao.findById(anyLong())).thenReturn(member);
+        when(reservationDao.save(any(Reservation.class))).thenReturn(1L);
+
+        reservationWaitingService.confirm(reservation);
+
+        verify(memberDao, times(1)).findById(anyLong());
+        verify(reservationDao, times(1)).save(any(Reservation.class));
     }
 }

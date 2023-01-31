@@ -5,6 +5,7 @@ import auth.UserDetails;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberService;
+import nextstep.reservation_waiting.ReservationWaitingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +16,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationController {
 
-    public final ReservationService reservationService;
-    public final MemberService memberService;
+    private final ReservationWaitingService reservationWaitingService;
+    private final ReservationService reservationService;
+    private final MemberService memberService;
 
     @PostMapping("/reservations")
     public ResponseEntity createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
@@ -44,8 +46,9 @@ public class ReservationController {
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
         Member member = memberService.findById(userDetails.getId());
-        reservationService.deleteById(member, id);
-
+        Reservation reservation = reservationService.findById(id);
+        reservationService.deleteById(reservation, member);
+        reservationWaitingService.confirm(reservation);
         return ResponseEntity.noContent()
                 .build();
     }
