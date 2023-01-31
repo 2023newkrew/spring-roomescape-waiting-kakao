@@ -27,7 +27,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("어드민이 아닌 사람이 테마를 생성한다")
+    @DisplayName("어드민이 아닌 사람이 테마를 생성하면 403 코드가 반환된다.")
     @Test
     public void createFromNormalUser() {
 

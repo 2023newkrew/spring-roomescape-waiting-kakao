@@ -23,6 +23,7 @@ public class MemberE2ETest {
 
     @BeforeEach
     void setUp() {
+        // 관리자 생성
         MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()
@@ -32,6 +33,7 @@ public class MemberE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
+        // 토큰 생성
         TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
         var response = RestAssured
                 .given().log().all()
@@ -60,7 +62,7 @@ public class MemberE2ETest {
 
     @DisplayName("내 정보를 조회한다")
     @Test
-    public void showThemes() {
+    public void me() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
