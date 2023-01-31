@@ -9,6 +9,7 @@ import nextstep.schedule.Schedule;
 @Builder
 @AllArgsConstructor
 public class ReservationWaitingResponse {
+
     private final Long id;
 
     private final Schedule schedule;
