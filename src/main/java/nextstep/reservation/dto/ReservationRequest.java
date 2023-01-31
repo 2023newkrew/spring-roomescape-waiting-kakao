@@ -12,7 +12,7 @@ public class ReservationRequest {
 
     private final Long scheduleId;
 
-    public ReservationRequest() {
+    ReservationRequest() {
         this(null);
     }
 }

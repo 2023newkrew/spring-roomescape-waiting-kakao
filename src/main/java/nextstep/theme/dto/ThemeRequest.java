@@ -21,7 +21,7 @@ public class ThemeRequest {
     @Min(value = 1, message = "가격은 1원 이상입니다.")
     private final Integer price;
 
-    public ThemeRequest() {
+    ThemeRequest() {
         this(null, null, null);
     }
 }

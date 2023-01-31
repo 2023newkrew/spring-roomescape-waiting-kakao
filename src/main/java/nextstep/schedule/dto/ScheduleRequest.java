@@ -30,7 +30,7 @@ public class ScheduleRequest {
     @NotNull(message = "테마 ID가 없습니다.")
     private final Long themeId;
 
-    public ScheduleRequest() {
+    ScheduleRequest() {
         this(null, null, null);
     }
 }

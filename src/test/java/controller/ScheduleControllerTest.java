@@ -84,7 +84,7 @@ public class ScheduleControllerTest extends AbstractControllerTest {
             var request = createRequest();
 
             return List.of(
-                    Arguments.of(new ScheduleRequest()),
+                    Arguments.of(new ScheduleRequest(null, null, null)),
                     Arguments.of(new ScheduleRequest(null, request.getTime(), request.getThemeId())),
                     Arguments.of(new ScheduleRequest(request.getDate(), null, request.getThemeId())),
                     Arguments.of(new ScheduleRequest(request.getDate(), request.getTime(), null)),

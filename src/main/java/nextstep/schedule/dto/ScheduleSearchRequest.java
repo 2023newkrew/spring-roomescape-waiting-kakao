@@ -23,7 +23,7 @@ public class ScheduleSearchRequest {
     @NotNull
     private final Long themeId;
 
-    public ScheduleSearchRequest() {
+    ScheduleSearchRequest() {
         this(null, null);
     }
 }
