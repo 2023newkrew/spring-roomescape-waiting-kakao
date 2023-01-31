@@ -11,6 +11,8 @@ public class ReservationResponse {
         this.schedule = reservation.getSchedule();
     }
 
+    /* RestAssured에서 사용 */
+    @SuppressWarnings("unused")
     public ReservationResponse() {
     }
 

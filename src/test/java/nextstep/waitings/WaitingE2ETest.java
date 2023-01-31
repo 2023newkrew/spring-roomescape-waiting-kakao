@@ -23,8 +23,6 @@ public class WaitingE2ETest extends AbstractE2ETest {
     public static final String GUEST_PASSWORD = "guest_password";
 
     private ReservationRequest request;
-    private Long themeId;
-    private Long scheduleId;
 
     @BeforeEach
     public void setUp() {
@@ -40,7 +38,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
         String[] themeLocation = themeResponse.header("Location").split("/");
-        themeId = Long.parseLong(themeLocation[themeLocation.length - 1]);
+        Long themeId = Long.parseLong(themeLocation[themeLocation.length - 1]);
 
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
@@ -53,7 +51,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
         String[] scheduleLocation = scheduleResponse.header("Location").split("/");
-        scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
+        Long scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
         request = new ReservationRequest(
                 scheduleId
@@ -231,10 +229,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     }
 
     private TokenResponse createMemberAndToken(String username, String password) {
-        final String OTHER_USERNAME = username;
-        final String OTHER_PASSWORD = password;
-
-        MemberRequest otherMemberBody = new MemberRequest(OTHER_USERNAME, OTHER_PASSWORD, "name", "010-1234-5678", "USER");
+        MemberRequest otherMemberBody = new MemberRequest(username, password, "name", "010-1234-5678", "USER");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -243,7 +238,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        TokenRequest otherTokenBody = new TokenRequest(OTHER_USERNAME, OTHER_PASSWORD);
+        TokenRequest otherTokenBody = new TokenRequest(username, password);
         var response = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

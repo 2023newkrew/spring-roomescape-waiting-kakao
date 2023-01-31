@@ -1,11 +1,3 @@
-CREATE TABLE reservation
-(
-    id          bigint not null auto_increment,
-    schedule_id bigint not null,
-    member_id   bigint not null,
-    primary key (id)
-);
-
 CREATE TABLE theme
 (
     id    bigint       not null auto_increment,
@@ -21,6 +13,7 @@ CREATE TABLE schedule
     theme_id bigint not null,
     date     date   not null,
     time     time   not null,
+    foreign key (theme_id) references theme(id),
     primary key (id)
 );
 
@@ -40,5 +33,17 @@ CREATE TABLE waiting
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
-    primary key (id)
+    primary key (id),
+    foreign key (schedule_id) references schedule(id),
+    foreign key (member_id) references member(id)
+);
+
+CREATE TABLE reservation
+(
+    id          bigint not null auto_increment,
+    schedule_id bigint not null,
+    member_id   bigint not null,
+    primary key (id),
+    foreign key (schedule_id) references schedule(id),
+    foreign key (member_id) references member(id)
 );

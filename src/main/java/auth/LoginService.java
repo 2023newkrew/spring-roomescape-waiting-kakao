@@ -2,19 +2,30 @@ package auth;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Service
 public class LoginService {
-    private UserDetailService userDetailService;
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsRepository userDetailsRepository;
+    private final Map<Long, UserDetails> cache = new ConcurrentHashMap<>();
 
-    public LoginService(UserDetailService userDetailService, JwtTokenProvider jwtTokenProvider) {
-        this.userDetailService = userDetailService;
+    public LoginService(final JwtTokenProvider jwtTokenProvider, final UserDetailsRepository userDetailsRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userDetailsRepository = userDetailsRepository;
     }
 
+    /* member로 향하는 의존을 제거 */
     public TokenResponse createToken(TokenRequest tokenRequest) {
+        UserDetails userDetails;
+        try {
+            userDetails = userDetailsRepository.findByUsername(tokenRequest.getUsername());
+            cache.put(userDetails.getId(), userDetails);
+        } catch(Exception e){
+            throw new AuthenticationException();
+        }
 
-        UserDetails userDetails = userDetailService.loadUserByUsername(tokenRequest.getUsername());
         if (userDetails.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
@@ -28,8 +39,9 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
+    /* DB에 접근하지 않기 위해 cache 사용 */
     public UserDetails extractMember(String credential) {
         Long id = extractPrincipal(credential);
-        return userDetailService.loadUserById(id);
+        return cache.get(id);
     }
 }

@@ -3,11 +3,13 @@ package nextstep.config;
 import auth.JwtTokenProvider;
 import auth.LoginController;
 import auth.LoginService;
-import auth.UserDetailService;
-import nextstep.member.MemberDao;
+import nextstep.member.UserDetailsDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * auth패키지의 LoginController를 nextstep에서 사용 하기 위해 Bean을 등록하는 클래스
+ */
 @Configuration
 public class AppConfig {
     @Bean
@@ -16,16 +18,12 @@ public class AppConfig {
     }
 
     @Bean
-    public UserDetailService userDetailService(MemberDao memberDao) {
-        return new UserDetailService(memberDao);
+    public LoginService loginService(UserDetailsDao userDetailsDao) {
+        return new LoginService(jwtTokenProvider(), userDetailsDao);
     }
 
     @Bean
-    public LoginService loginService(MemberDao memberDao) {
-        return new LoginService(userDetailService(memberDao), jwtTokenProvider());
-    }
-    @Bean
-    public LoginController loginController(MemberDao memberDao) {
-        return new LoginController(loginService(memberDao));
+    public LoginController loginController(UserDetailsDao userDetailsDao) {
+        return new LoginController(loginService(userDetailsDao));
     }
 }

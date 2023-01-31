@@ -22,7 +22,6 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     private ReservationRequest request;
     private Long themeId;
-    private Long scheduleId;
 
     @BeforeEach
     public void setUp() {
@@ -51,7 +50,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
         String[] scheduleLocation = scheduleResponse.header("Location").split("/");
-        scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
+        Long scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
         request = new ReservationRequest(
                 scheduleId

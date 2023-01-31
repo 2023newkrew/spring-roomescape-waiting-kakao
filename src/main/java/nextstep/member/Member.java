@@ -10,6 +10,8 @@ public class Member {
     private String phone;
     private String role;
 
+    /* RestAssured에서 사용 */
+    @SuppressWarnings("unused")
     public Member() {
     }
 
@@ -57,9 +59,5 @@ public class Member {
 
     public String getRole() {
         return role;
-    }
-
-    public boolean checkWrongPassword(String password) {
-        return !this.password.equals(password);
     }
 }

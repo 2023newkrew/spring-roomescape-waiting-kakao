@@ -1,9 +1,9 @@
 package nextstep.theme;
 
 public class ThemeRequest {
-    private String name;
-    private String desc;
-    private int price;
+    private final String name;
+    private final String desc;
+    private final int price;
 
     public ThemeRequest(String name, String desc, int price) {
         this.name = name;
@@ -15,10 +15,14 @@ public class ThemeRequest {
         return name;
     }
 
+    /* RequestBody에서 사용 */
+    @SuppressWarnings("unused")
     public String getDesc() {
         return desc;
     }
 
+    /* RequestBody에서 사용 */
+    @SuppressWarnings("unused")
     public int getPrice() {
         return price;
     }

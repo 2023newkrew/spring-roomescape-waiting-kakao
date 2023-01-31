@@ -13,6 +13,8 @@ public class WaitingResponse {
         this.waitNum = waitNum;
     }
 
+    /* RestAssured에서 사용 */
+    @SuppressWarnings("unused")
     public WaitingResponse() {
     }
 
@@ -24,6 +26,8 @@ public class WaitingResponse {
         return schedule;
     }
 
+    /* RestAssured에서 사용 */
+    @SuppressWarnings("unused")
     public long getWaitNum() {
         return waitNum;
     }

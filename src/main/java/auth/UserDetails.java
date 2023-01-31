@@ -1,17 +1,16 @@
 package auth;
 
-import nextstep.member.Member;
-
 /**
  * Username, Password 등 사용자 로그인 정보를 저장하는 클래스
+ * Member에 대한 의존을 제거하기 위해 생성
  */
 public class UserDetails {
-    private Long id;
-    private String username;
-    private String password;
-    private String name;
-    private String phone;
-    private String role;
+    private final Long id;
+    private final String username;
+    private final String password;
+    private final String name;
+    private final String phone;
+    private final String role;
 
     public UserDetails(final Long id, final String username, final String password, final String name, final String phone, final String role) {
         this.id = id;
@@ -20,11 +19,6 @@ public class UserDetails {
         this.name = name;
         this.phone = phone;
         this.role = role;
-    }
-
-    public UserDetails(Member member){
-        this(member.getId(), member.getUsername(), member.getPassword(),
-                member.getName(), member.getPhone(), member.getRole());
     }
 
     public Long getId() {

@@ -10,6 +10,8 @@ public class Reservation {
     private Schedule schedule;
     private Member member;
 
+    /* RestAssured에서 사용 */
+    @SuppressWarnings("unused")
     public Reservation() {
     }
 
