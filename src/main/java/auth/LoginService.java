@@ -1,8 +1,5 @@
 package auth;
 
-import auth.*;
-import nextstep.member.Member;
-import nextstep.member.MemberDao;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,12 +14,12 @@ public class LoginService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        Member member = userDetailsDao.findByUsername(tokenRequest.getUsername());
-        if (member == null || member.checkWrongPassword(tokenRequest.getPassword())) {
+        UserDetails userDetails = userDetailsDao.findUserDetailsByUsername(tokenRequest.getUsername());
+        if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
 
-        String accessToken = jwtTokenProvider.createToken(member.getId() + "", member.getRole());
+        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
 
         return new TokenResponse(accessToken);
     }
@@ -31,8 +28,8 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public Member extractMember(String credential) {
+    public UserDetails extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return userDetailsDao.findById(id);
+        return userDetailsDao.findUserDetailsById(id);
     }
 }
