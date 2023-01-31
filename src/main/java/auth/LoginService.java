@@ -9,7 +9,7 @@ public class LoginService {
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
         UserDetails userDetails = userValidator.authenticate(tokenRequest.getUsername(), tokenRequest.getPassword());
-        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
+        String accessToken = jwtTokenProvider.createToken(userDetails.getId().toString());
 
         return new TokenResponse(accessToken);
     }

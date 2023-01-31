@@ -16,22 +16,15 @@ class JwtTokenProviderTest {
 
     @Test
     void createToken() {
-        String token = jwtTokenProvider.createToken("1", "ADMIN");
+        String token = jwtTokenProvider.createToken("1");
 
         assertThat(jwtTokenProvider.validateToken(token)).isTrue();
     }
 
     @Test
     void getPrincipal() {
-        String token = jwtTokenProvider.createToken("1", "ADMIN");
+        String token = jwtTokenProvider.createToken("1");
 
         assertThat(jwtTokenProvider.getPrincipal(token)).isEqualTo("1");
-    }
-
-    @Test
-    void getRole() {
-        String token = jwtTokenProvider.createToken("1", "ADMIN");
-
-        assertThat(jwtTokenProvider.getRole(token)).isEqualTo("ADMIN");
     }
 }

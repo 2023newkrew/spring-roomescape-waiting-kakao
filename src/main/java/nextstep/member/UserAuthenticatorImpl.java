@@ -17,6 +17,12 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         if (member.checkWrongPassword(password)) {
             throw new AuthenticationException();
         }
-        return new UserDetails(member.getId(), member.getRole());
+        return new UserDetails(member.getId());
+    }
+
+    @Override
+    public boolean isAdmin(Long id) {
+        return memberDao.findById(id)
+                .filter(member -> member.getRole() == Role.ADMIN).isPresent();
     }
 }

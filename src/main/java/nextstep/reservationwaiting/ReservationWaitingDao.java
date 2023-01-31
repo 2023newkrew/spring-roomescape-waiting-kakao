@@ -2,6 +2,7 @@ package nextstep.reservationwaiting;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
+import nextstep.member.Role;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,14 +33,14 @@ public class ReservationWaitingDao {
                     resultSet.getDate("schedule.date").toLocalDate(),
                     resultSet.getTime("schedule.time").toLocalTime()
             ),
-            new Member(
-                    resultSet.getLong("member.id"),
-                    resultSet.getString("member.username"),
-                    resultSet.getString("member.password"),
-                    resultSet.getString("member.name"),
-                    resultSet.getString("member.phone"),
-                    resultSet.getString("member.role")
-            ),
+            Member.builder()
+                    .id(resultSet.getLong("member.id"))
+                    .username(resultSet.getString("member.username"))
+                    .password(resultSet.getString("member.password"))
+                    .name(resultSet.getString("member.name"))
+                    .phone(resultSet.getString("member.phone"))
+                    .role(Role.valueOf(resultSet.getString("member.role")))
+                    .build(),
             resultSet.getLong("wait_num")
     );
 

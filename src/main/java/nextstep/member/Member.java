@@ -1,23 +1,23 @@
 package nextstep.member;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Getter
 public class Member {
-    private Long id;
-    private String username;
-    private String password;
-    private String name;
-    private String phone;
-    private String role;
-
-    public Member(String username, String password, String name, String phone, String role) {
-        this(null, username, password, name, phone, role);
-    }
+    private final Long id;
+    @NonNull
+    private final String username;
+    @NonNull
+    private final String password;
+    @NonNull
+    private final String name;
+    @NonNull
+    private final String phone;
+    @NonNull
+    @Builder.Default
+    private final Role role = Role.MEMBER;
 
     public boolean checkWrongPassword(String password) {
         return !this.password.equals(password);
