@@ -2,7 +2,7 @@ package nextstep.reservation;
 
 import auth.AuthenticationException;
 import auth.LoginMember;
-import nextstep.member.Member;
+import auth.UserDetail;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +20,8 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(member, reservationRequest);
+    public ResponseEntity createReservation(@LoginMember UserDetail userDetail, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.create(userDetail, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -32,15 +32,15 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
-        reservationService.deleteById(member, id);
+    public ResponseEntity deleteReservation(@LoginMember UserDetail userDetail, @PathVariable Long id) {
+        reservationService.deleteById(userDetail, id);
 
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/reservations/mine")
-    public ResponseEntity<List<ReservationResponse>> showMyReservations(@LoginMember Member member) {
-        List<ReservationResponse> reservations = reservationService.findAllByMember(member);
+    public ResponseEntity<List<ReservationResponse>> showMyReservations(@LoginMember UserDetail userDetail) {
+        List<ReservationResponse> reservations = reservationService.findAllByMember(userDetail);
         return ResponseEntity.ok(reservations);
     }
 

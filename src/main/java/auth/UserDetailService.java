@@ -14,10 +14,12 @@ public class UserDetailService {
         if (member == null) {
             throw new AuthenticationException();
         }
-        return new UserDetail(member);
-    }
 
-    public Member getMemberById(Long id) {
-        return memberDao.findById(id);
+        return UserDetail.builder()
+                .id(member.getId())
+                .username(member.getUsername())
+                .password(member.getPassword())
+                .role(member.getRole())
+                .build();
     }
 }

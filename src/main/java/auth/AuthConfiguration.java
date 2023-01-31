@@ -37,6 +37,6 @@ public class AuthConfiguration {
 
     @Bean
     public LoginMemberArgumentResolver loginMemberArgumentResolver() {
-        return new LoginMemberArgumentResolver(authenticationProvider());
+        return new LoginMemberArgumentResolver(jwtTokenProvider(), userDetailService());
     }
 }

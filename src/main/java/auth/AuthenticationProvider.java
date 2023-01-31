@@ -1,7 +1,6 @@
 package auth;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.member.Member;
 
 @RequiredArgsConstructor
 public class AuthenticationProvider {
@@ -12,12 +11,7 @@ public class AuthenticationProvider {
         UserDetail userDetail = userDetailService.getUserDetailByUsername(tokenRequest.getUsername());
         checkAuthentication(userDetail, tokenRequest);
 
-        return jwtTokenProvider.createToken(userDetail.getId() + "", userDetail.getRole());
-    }
-
-    public Member extractMember(String token) {
-        Long id = Long.parseLong(jwtTokenProvider.getPrincipal(token));
-        return userDetailService.getMemberById(id);
+        return jwtTokenProvider.createToken(userDetail.getUsername(), userDetail.getRole());
     }
 
     private void checkAuthentication(UserDetail userDetail, TokenRequest tokenRequest) {

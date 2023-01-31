@@ -1,19 +1,15 @@
 package auth;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import nextstep.member.Member;
 
 @AllArgsConstructor
 @Getter
+@Builder
 public class UserDetail {
     private Long id;
+    private String username;
     private String password;
     private String role;
-
-    public UserDetail (Member member) {
-        this.id = member.getId();
-        this.password = member.getPassword();
-        this.role = member.getRole();
-    }
 }

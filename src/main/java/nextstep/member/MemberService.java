@@ -1,5 +1,6 @@
 package nextstep.member;
 
+import auth.UserDetail;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,5 +17,9 @@ public class MemberService {
 
     public Member findById(Long id) {
         return memberDao.findById(id);
+    }
+
+    public Member toMember(UserDetail userDetail) {
+        return memberDao.findById(userDetail.getId());
     }
 }

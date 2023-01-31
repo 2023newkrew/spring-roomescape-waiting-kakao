@@ -1,8 +1,9 @@
 package nextstep.reservation_waiting;
 
 import auth.AuthenticationException;
+import auth.UserDetail;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.Member;
+import nextstep.member.MemberService;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.reservation.ReservationRequest;
@@ -17,9 +18,10 @@ import java.util.List;
 public class ReservationWaitingService {
     private final ReservationDao reservationDao;
     private final ScheduleDao scheduleDao;
+    private final MemberService memberService;
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
+    public Long create(UserDetail userDetail, ReservationRequest reservationRequest) {
+        if (userDetail == null) {
             throw new AuthenticationException();
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
@@ -29,26 +31,26 @@ public class ReservationWaitingService {
 
         Reservation newReservation = new Reservation(
                 schedule,
-                member
+                memberService.toMember(userDetail)
         );
 
         return reservationDao.save(newReservation);
     }
 
-    public void deleteById(Member member, Long id) {
+    public void deleteById(UserDetail userDetail, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
-            throw new IllegalArgumentException("예약대기가 존재하지 않습니다.");
+            throw new NullPointerException();
         }
-        if (!reservation.sameMember(member)) {
-            throw new IllegalArgumentException("예약을 한 당사자만이 지울 수 있습니다.");
+        if (userDetail == null || !reservation.getMember().getId().equals(userDetail.getId())) {
+            throw new AuthenticationException();
         }
 
         reservationDao.deleteById(id);
     }
 
-    public List<ReservationWaitingResponse> findAllByMember(Member member) {
-        return reservationDao.findAllWaitingByMemberId(member.getId())
+    public List<ReservationWaitingResponse> findAllByMember(UserDetail userDetail) {
+        return reservationDao.findAllWaitingByMemberId(userDetail.getId())
                 .stream()
                 .map(ReservationWaitingResponse::new)
                 .toList();
