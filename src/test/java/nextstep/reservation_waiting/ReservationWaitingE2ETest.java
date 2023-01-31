@@ -111,7 +111,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete(location)
                 .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .statusCode(HttpStatus.FORBIDDEN.value())
                 .extract();
     }
 

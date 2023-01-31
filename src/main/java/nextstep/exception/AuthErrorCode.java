@@ -10,7 +10,7 @@ public enum AuthErrorCode implements ErrorCode {
 
     TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "토큰이 필요합니다."),
 
-    UNAUTHORIZED_DELETE(HttpStatus.UNAUTHORIZED, "본인만 예약을 삭제할 수 있습니다.");
+    UNAUTHORIZED_DELETE(HttpStatus.FORBIDDEN, "본인만 예약을 삭제할 수 있습니다.");
 
     private final HttpStatus httpStatus;
 
