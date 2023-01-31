@@ -24,8 +24,8 @@ public class UserDetailsFactoryImpl implements UserDetailsFactory {
     @Override
     public UserDetails convertToUserDetails(final Long id, final String role) {
         return UserDetails.builder()
-                .id(id)
-                .role(role)
-                .build();
+            .id(id)
+            .role(role)
+            .build();
     }
 }
