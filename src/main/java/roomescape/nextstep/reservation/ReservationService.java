@@ -11,6 +11,7 @@ import roomescape.nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -26,8 +27,9 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(String username, ReservationRequest reservationRequest) {
+    public Reservation create(String username, ReservationRequest reservationRequest) {
         Member member = memberDao.findByUsername(username);
+        ReservationStatus status = ReservationStatus.CONFIRMED;
         if (member == null) {
             throw new AuthenticationException();
         }
@@ -38,24 +40,31 @@ public class ReservationService {
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
+            status = ReservationStatus.WAITING;
         }
 
         Reservation newReservation = new Reservation(
                 schedule,
-                member
+                member,
+                status
         );
 
         return reservationDao.save(newReservation);
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+    private List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
             throw new NullPointerException();
         }
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
+    }
+
+    public List<Reservation> findFilteredReservationsByThemeIdAndDate(Long themeId, String date, ReservationStatus status) {
+        return findAllByThemeIdAndDate(themeId, date).stream()
+                .filter(e -> e.getStatus().equals(status))
+                .collect(Collectors.toList());
     }
 
     public void deleteById(String username, Long id) {
@@ -71,4 +80,18 @@ public class ReservationService {
 
         reservationDao.deleteById(id);
     }
+
+    public List<ReservationWaiting> findAllByUsername(String username) {
+        return reservationDao.findAllByUsername(username)
+                .stream()
+                .map(e -> {
+                    return new ReservationWaiting(e, reservationDao.getWaitingNumber(e.getSchedule().getId(), e.getId()));
+                })
+                .collect(Collectors.toList());
+    }
+
+    public Long getWaitingNum(ReservationRequest reservationRequest, Long id) {
+        return reservationDao.getWaitingNumber(reservationRequest.getScheduleId(), id);
+    }
+
 }
