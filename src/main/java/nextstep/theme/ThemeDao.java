@@ -11,11 +11,6 @@ import java.util.List;
 
 @Component
 public class ThemeDao {
-    private JdbcTemplate jdbcTemplate;
-
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
@@ -23,13 +18,18 @@ public class ThemeDao {
             resultSet.getString("desc"),
             resultSet.getInt("price")
     );
+    private JdbcTemplate jdbcTemplate;
+
+    public ThemeDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public Long save(Theme theme) {
         String sql = "INSERT INTO theme (name, desc, price) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
             ps.setString(1, theme.getName());
             ps.setString(2, theme.getDesc());
             ps.setInt(3, theme.getPrice());

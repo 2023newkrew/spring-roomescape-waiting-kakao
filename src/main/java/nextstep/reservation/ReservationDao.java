@@ -18,11 +18,6 @@ import java.util.List;
 public class ReservationDao {
 
     public final JdbcTemplate jdbcTemplate;
-
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation.id"),
             new Schedule(
@@ -47,12 +42,16 @@ public class ReservationDao {
             resultSet.getLong("reservation.wait_ticket_num")
     );
 
+    public ReservationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     public Long save(Reservation reservation) {
         String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
             ps.setLong(1, reservation.getSchedule().getId());
             ps.setLong(2, reservation.getMember().getId());
             return ps;

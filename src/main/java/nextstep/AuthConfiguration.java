@@ -4,7 +4,6 @@ import auth.JwtTokenProvider;
 import auth.LoginController;
 import auth.LoginService;
 import auth.UserDetailsService;
-import nextstep.member.MemberDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;

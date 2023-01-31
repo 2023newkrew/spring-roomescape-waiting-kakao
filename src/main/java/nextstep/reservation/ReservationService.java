@@ -12,7 +12,6 @@ import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -95,7 +94,7 @@ public class ReservationService {
 
     public void deleteWaitingById(Member member, Long id) {
         deleteById(member, id);
-	}
+    }
 
     public List<Reservation> getReservationsByMember(Member member) {
         if (member == null) {

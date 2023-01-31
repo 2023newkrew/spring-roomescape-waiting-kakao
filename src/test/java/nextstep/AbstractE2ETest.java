@@ -1,8 +1,8 @@
 package nextstep;
 
-import io.restassured.RestAssured;
 import auth.TokenRequest;
 import auth.TokenResponse;
+import io.restassured.RestAssured;
 import nextstep.member.MemberRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AbstractE2ETest {
+
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
 

@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScheduleE2ETest extends AbstractE2ETest {
+
     private Long themeId;
 
     @BeforeEach

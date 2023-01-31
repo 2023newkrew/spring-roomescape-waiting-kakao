@@ -6,11 +6,6 @@ import org.springframework.jdbc.core.RowMapper;
 public class UserDetailsService {
 
     public final JdbcTemplate jdbcTemplate;
-
-    public UserDetailsService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<UserDetails> rowMapper = (resultSet, rowNum) -> new UserDetails(
             resultSet.getLong("id"),
             resultSet.getString("username"),
@@ -19,6 +14,10 @@ public class UserDetailsService {
             resultSet.getString("phone"),
             resultSet.getString("role")
     );
+
+    public UserDetailsService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public UserDetails findById(Long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
