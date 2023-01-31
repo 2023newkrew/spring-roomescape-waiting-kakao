@@ -1,6 +1,6 @@
 package nextstep.support.exception;
 
-public class NoReservationWaitingException extends RuntimeException{
+public class NoReservationWaitingException extends RuntimeException {
     public NoReservationWaitingException() {
     }
 

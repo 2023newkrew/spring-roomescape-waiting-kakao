@@ -19,10 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuthE2ETest {
-    @LocalServerPort
-    int port;
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
+    @LocalServerPort
+    int port;
 
     @BeforeEach
     void setUp() {

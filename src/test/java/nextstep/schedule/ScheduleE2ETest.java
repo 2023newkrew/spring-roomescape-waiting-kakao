@@ -19,16 +19,23 @@ class ScheduleE2ETest extends AbstractE2ETest {
         super.setUp();
         ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
         var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2(token.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(themeRequest)
-                .when().post("/admin/themes")
-                .then().log().all()
+                .when()
+                .post("/admin/themes")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
 
-        String[] themeLocation = response.header("Location").split("/");
+        String[] themeLocation = response.header("Location")
+                .split("/");
         themeId = Long.parseLong(themeLocation[themeLocation.length - 1]);
     }
 
@@ -37,12 +44,18 @@ class ScheduleE2ETest extends AbstractE2ETest {
     void createSchedule() {
         ScheduleRequest body = new ScheduleRequest(themeId, "2022-08-11", "13:00");
         RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2(token.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
-                .when().post("/admin/schedules")
-                .then().log().all()
+                .when()
+                .post("/admin/schedules")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.CREATED.value());
     }
 
@@ -52,15 +65,21 @@ class ScheduleE2ETest extends AbstractE2ETest {
         requestCreateSchedule();
 
         var response = RestAssured
-                .given().log().all()
+                .given()
+                .log()
+                .all()
                 .param("themeId", themeId)
                 .param("date", "2022-08-11")
-                .when().get("/schedules")
-                .then().log().all()
+                .when()
+                .get("/schedules")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        assertThat(response.jsonPath().getList(".")).hasSize(1);
+        assertThat(response.jsonPath()
+                .getList(".")).hasSize(1);
     }
 
     @DisplayName("예약을 삭제한다")
@@ -69,10 +88,16 @@ class ScheduleE2ETest extends AbstractE2ETest {
         String location = requestCreateSchedule();
 
         var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().delete("/admin" + location)
-                .then().log().all()
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2(token.getAccessToken())
+                .when()
+                .delete("/admin" + location)
+                .then()
+                .log()
+                .all()
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -81,12 +106,18 @@ class ScheduleE2ETest extends AbstractE2ETest {
     public String requestCreateSchedule() {
         ScheduleRequest body = new ScheduleRequest(1L, "2022-08-11", "13:00");
         return RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2(token.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
-                .when().post("/admin/schedules")
-                .then().log().all()
+                .when()
+                .post("/admin/schedules")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
                 .header("Location");

@@ -1,7 +1,7 @@
 package nextstep.member;
 
-import auth.UserDetails;
 import auth.AuthenticateProvider;
+import auth.UserDetails;
 import lombok.RequiredArgsConstructor;
 import nextstep.support.exception.AuthenticationException;
 import org.springframework.stereotype.Component;

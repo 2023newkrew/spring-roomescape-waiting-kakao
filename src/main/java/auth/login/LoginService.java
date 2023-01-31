@@ -1,6 +1,8 @@
 package auth.login;
 
-import auth.*;
+import auth.AuthenticateProvider;
+import auth.JwtTokenProvider;
+import auth.UserDetails;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -14,10 +16,6 @@ public class LoginService {
         String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
 
         return new TokenResponse(accessToken);
-    }
-
-    public Long extractPrincipal(String credential) {
-        return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
     public UserDetails extractMember(String credential) {

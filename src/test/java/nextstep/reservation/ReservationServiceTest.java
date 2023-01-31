@@ -1,9 +1,6 @@
 package nextstep.reservation;
 
 import nextstep.member.Member;
-import nextstep.member.MemberDao;
-import nextstep.schedule.ScheduleDao;
-import nextstep.theme.ThemeDao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,17 +17,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
-    @InjectMocks
-    private ReservationService reservationService;
-
     @Mock
     public ReservationDao reservationDao;
-    @Mock
-    public ThemeDao themeDao;
-    @Mock
-    public ScheduleDao scheduleDao;
-    @Mock
-    public MemberDao memberDao;
+    @InjectMocks
+    private ReservationService reservationService;
 
     @Test
     @DisplayName("자신의 예약 내역을 조회한다.")

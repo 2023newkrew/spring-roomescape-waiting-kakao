@@ -1,6 +1,9 @@
 package nextstep.reservation;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 

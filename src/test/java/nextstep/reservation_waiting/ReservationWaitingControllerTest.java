@@ -1,7 +1,7 @@
 package nextstep.reservation_waiting;
 
-import auth.login.LoginService;
 import auth.UserDetails;
+import auth.login.LoginService;
 import io.restassured.RestAssured;
 import nextstep.member.Member;
 import nextstep.member.MemberService;
@@ -77,7 +77,7 @@ class ReservationWaitingControllerTest {
 
     @Test
     @DisplayName("자신의 예약 대기 목록 조회 테스트")
-    void readOwnReservationWaitingsTest(){
+    void readOwnReservationWaitingsTest() {
         List<ReservationWaiting> reservationWaitings = List.of(ReservationWaiting.builder()
                 .id(1L)
                 .build(), ReservationWaiting.builder()

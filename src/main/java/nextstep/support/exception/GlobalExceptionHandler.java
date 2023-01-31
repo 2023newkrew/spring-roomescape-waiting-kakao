@@ -37,6 +37,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(exception.getMessage());
     }
+
     @ExceptionHandler(NoReservationWaitingException.class)
     ResponseEntity<String> handleNoReservationWaitingException(Exception exception) {
         return ResponseEntity.badRequest()

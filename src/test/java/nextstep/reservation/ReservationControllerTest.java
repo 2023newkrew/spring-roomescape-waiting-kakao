@@ -1,7 +1,7 @@
 package nextstep.reservation;
 
-import auth.login.LoginService;
 import auth.UserDetails;
+import auth.login.LoginService;
 import io.restassured.RestAssured;
 import nextstep.member.Member;
 import nextstep.member.MemberService;
