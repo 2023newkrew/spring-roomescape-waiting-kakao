@@ -32,7 +32,7 @@ public class AuthE2ETest {
                 .statusCode(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("토큰을 생성한다")
+    @DisplayName("토큰 생성 성공 시 (로그인 성공 시) 토큰과 OK 응답")
     @Test
     public void create() {
         TokenRequest body = new TokenRequest(USERNAME, PASSWORD);

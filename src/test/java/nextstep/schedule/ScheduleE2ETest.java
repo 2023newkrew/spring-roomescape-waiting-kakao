@@ -32,7 +32,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
         themeId = Long.parseLong(themeLocation[themeLocation.length - 1]);
     }
 
-    @DisplayName("스케줄을 생성한다")
+    @DisplayName("스케줄 생성 성공 시 CREATED 응답")
     @Test
     public void createSchedule() {
         ScheduleRequest body = new ScheduleRequest(themeId, "2022-08-11", "13:00");
@@ -46,7 +46,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("스케줄을 조회한다")
+    @DisplayName("스케줄 조회 성공 시 스케줄 리스트와 함께 OK 응답")
     @Test
     public void showSchedules() {
         requestCreateSchedule();
@@ -63,7 +63,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
         assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
     }
 
-    @DisplayName("예약을 삭제한다")
+    @DisplayName("예약 삭제 성공 시 NO CONTENT 응답")
     @Test
     void delete() {
         String location = requestCreateSchedule();

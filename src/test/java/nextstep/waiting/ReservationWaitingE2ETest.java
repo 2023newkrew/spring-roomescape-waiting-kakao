@@ -65,7 +65,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         );
     }
 
-    @DisplayName("예약 대기를 생성한다")
+    @DisplayName("예약 대기 성공 시 Location 헤더와 함께 CREATED 응답")
     @Test
     void create() {
         var response = RestAssured
@@ -80,7 +80,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     }
 
 
-    @DisplayName("내 예약 대기를 취소한다")
+    @DisplayName("내 예약 대기 취소 성공 시 NO CONTENT 응답")
     @Test
     void cancel() {
         var reservation = createReservationWaiting(token);
@@ -95,7 +95,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("다른 사람이 예약 대기를 취소한다")
+    @DisplayName("다른 사람이 예약 대기를 취소하면 UNAUTHORIZED 응답")
     @Test
     void deleteReservationOfOthers() {
         createReservationWaiting(token);
@@ -109,7 +109,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
-    @DisplayName("내 예약 대기를 조회한다 - 처음 예약 대기 신청은 예약으로 전환, 나머지는 예약 대기 상태")
+    @DisplayName("내 예약 대기를 순번과 함께 조회한다 - 처음 예약 대기 신청은 예약으로 전환, 나머지는 예약 대기 상태")
     @Test
     void findMine() {
         createReservationWaiting(token);

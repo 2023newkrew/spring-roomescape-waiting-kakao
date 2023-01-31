@@ -73,7 +73,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("비로그인 사용자가 예약을 생성한다")
+    @DisplayName("비로그인 사용자가 예약을 생성하면 UNAUTORIZED 응답")
     @Test
     void createWithoutLogin() {
         var response = RestAssured
@@ -87,7 +87,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
-    @DisplayName("예약을 조회한다")
+    @DisplayName("테마와 날짜로 예약 조회 시 예약 리스트를 응답")
     @Test
     void show() {
         createReservation();
@@ -104,7 +104,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservations.size()).isEqualTo(1);
     }
 
-    @DisplayName("예약을 삭제한다")
+    @DisplayName("예약 삭제 성공 시 NO CONTENT 응답")
     @Test
     void delete() {
         var reservation = createReservation();
@@ -119,7 +119,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("중복 예약을 생성한다")
+    @DisplayName("같은 스케줄에 대해 중복 예약을 생성하면 BAD REQUEST 응답")
     @Test
     void createDuplicateReservation() {
         createReservation();
@@ -136,7 +136,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("예약이 없을 때 예약 목록을 조회한다")
+    @DisplayName("예약이 없을 때 예약 목록을 조회하면 사이즈 0 리스트 응답")
     @Test
     void showEmptyReservations() {
         var response = RestAssured
@@ -151,7 +151,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservations.size()).isEqualTo(0);
     }
 
-    @DisplayName("없는 예약을 삭제한다")
+    @DisplayName("없는 예약을 삭제하면 BAD REQUEST 응답")
     @Test
     void createNotExistReservation() {
         var response = RestAssured
@@ -164,7 +164,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("다른 사람이 예약을삭제한다")
+    @DisplayName("다른 사람이 예약을 삭제하면 UNAUTHORIZED 응답")
     @Test
     void deleteReservationOfOthers() {
         createReservation();
