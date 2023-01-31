@@ -121,7 +121,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         assertThat(id).isNotNull();
     }
 
-    @DisplayName("예약 대기 목록을 조회한다")
+    @DisplayName("자신의 예약 대기 목록을 조회한다")
     @Test
     void getReservationWaitings() {
         ReservationWaitingRequest request = new ReservationWaitingRequest(reservedScheduleId);
