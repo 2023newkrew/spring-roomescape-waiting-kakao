@@ -52,4 +52,8 @@ public class ReservationWaitingService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public Long getWaitingNum(ReservationWaitingRequest reservationWaitingRequest, Long id) {
+        return reservationDao.getWaitingNumber(reservationWaitingRequest.getScheduleId(), id);
+    }
 }

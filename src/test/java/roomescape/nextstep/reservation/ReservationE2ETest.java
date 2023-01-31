@@ -212,6 +212,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         var waitingResponse = makeReservationWaiting();
 
         assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(waitingResponse.header("Location")).isEqualTo("/reservations/1");
 
         var response = RestAssured
                 .given().log().all()
@@ -232,17 +233,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         var waitingResponse = makeReservationWaiting();
 
         assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        var response = RestAssured
-                .given().log().all()
-                .param("themeId", themeId)
-                .param("date", DATE)
-                .when().get("/reservations-waitings")
-                .then().log().all()
-                .extract();
-
-        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
-        assertThat(reservations.size()).isEqualTo(2);
+        assertThat(waitingResponse.header("Location")).isEqualTo("/reservations-waitings/2");
     }
 
     /**
