@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 import static nextstep.support.constant.DepositSettings.DEPOSIT;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class AsyncReservationApproveEventHandler {
     private final ProfitDao profitDao;
 
@@ -23,8 +23,10 @@ public class AsyncReservationApproveEventHandler {
     public void handleAsync(ReservationApproveEvent reservationApproveEvent) {
         if (reservationApproveEvent.isApproveTrue()) {
             profitDao.save(LocalDateTime.now(), DEPOSIT);
+            reservationApproveEvent.callBack();
             return;
         }
         profitDao.save(LocalDateTime.now(), -DEPOSIT);
+        reservationApproveEvent.callBack();
     }
 }

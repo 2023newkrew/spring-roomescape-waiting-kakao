@@ -2,6 +2,7 @@ package nextstep.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -16,7 +17,7 @@ public class AsyncConfig extends AsyncConfigurerSupport {
     private static final int MAX_CORE_POOL_SIZE = 5;
     private static final int MAX_POOL_SIZE = 10;
     private static final int QUEUE_CAPACITY = 20;
-    private static final String THREAD_NAME_PREFIX = "[PROFIT ASYNC] - ";
+    private static final String THREAD_NAME_PREFIX = "PROFIT-ASYNC-";
 
     @Override
     public Executor getAsyncExecutor() {
