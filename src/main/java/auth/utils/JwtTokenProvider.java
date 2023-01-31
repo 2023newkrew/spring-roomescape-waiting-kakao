@@ -6,20 +6,15 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-@Component
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final String secretKey;
+    private final long validityInMilliseconds;
 
     public String createToken(String principal, Role role) {
         Claims claims = Jwts.claims().setSubject(principal);

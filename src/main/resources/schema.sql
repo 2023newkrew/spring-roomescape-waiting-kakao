@@ -6,6 +6,14 @@ CREATE TABLE IF NOT EXISTS reservation
     primary key (id)
 );
 
+CREATE TABLE IF NOT EXISTS waiting
+(
+    id          bigint not null auto_increment,
+    schedule_id bigint not null,
+    member_id   bigint not null,
+    primary key (id)
+    );
+
 CREATE TABLE IF NOT EXISTS theme
 (
     id    bigint       not null auto_increment,
@@ -32,15 +40,8 @@ CREATE TABLE IF NOT EXISTS member
     name     varchar(20) not null,
     phone    varchar(20) not null,
     role     varchar(20) not null,
-    primary key (id)
-);
-
-CREATE TABLE IF NOT EXISTS waiting
-(
-    id          bigint not null auto_increment,
-    schedule_id bigint not null,
-    member_id   bigint not null,
-    primary key (id)
+    primary key (id),
+    unique (username)
 );
 
 DELETE MEMBER;

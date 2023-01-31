@@ -3,8 +3,6 @@ spring:
     console:
       enabled: true
       path: /h2-console
-  properties:
-    active: local
 
   datasource:
     driver-class-name: org.h2.Driver
@@ -18,10 +16,12 @@ spring:
   sql:
     init:
       mode: always
+
 server:
   error:
     include-message: always
     include-binding-errors: always
+
 security:
   jwt:
     token:
