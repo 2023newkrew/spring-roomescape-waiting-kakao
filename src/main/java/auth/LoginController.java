@@ -1,5 +1,7 @@
-package nextstep.auth;
+package auth;
 
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

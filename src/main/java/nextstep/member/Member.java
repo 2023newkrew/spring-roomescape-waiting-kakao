@@ -1,5 +1,7 @@
 package nextstep.member;
 
+import auth.dto.UserDetails;
+
 public class Member {
     private Long id;
     private String username;
@@ -9,6 +11,17 @@ public class Member {
     private String role;
 
     public Member() {
+    }
+
+    public static Member from(UserDetails userDetails) {
+        return new Member(
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getPassword(),
+                userDetails.getName(),
+                userDetails.getRole(),
+                userDetails.getRole()
+        );
     }
 
     public Member(Long id, String username, String password, String name, String phone, String role) {
@@ -50,9 +63,5 @@ public class Member {
 
     public String getRole() {
         return role;
-    }
-
-    public boolean checkWrongPassword(String password) {
-        return !this.password.equals(password);
     }
 }

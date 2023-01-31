@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;

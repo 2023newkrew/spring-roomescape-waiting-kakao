@@ -1,9 +1,13 @@
-package nextstep.theme;
+package nextstep.theme.dto;
+
+import nextstep.theme.Theme;
 
 public class ThemeRequest {
     private String name;
     private String desc;
     private int price;
+
+    private ThemeRequest() {}
 
     public ThemeRequest(String name, String desc, int price) {
         this.name = name;

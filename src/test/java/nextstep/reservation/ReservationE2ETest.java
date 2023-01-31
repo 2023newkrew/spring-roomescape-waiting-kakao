@@ -4,8 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
-import nextstep.schedule.ScheduleRequest;
-import nextstep.theme.ThemeRequest;
+import nextstep.reservation.dto.ReservationRequest;
+import nextstep.reservation.dto.ReservationResponse;
+import nextstep.schedule.dto.ScheduleRequest;
+import nextstep.theme.dto.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,6 +65,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void create() {
         var response = RestAssured
                 .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .auth().oauth2(token.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -76,8 +79,11 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("비로그인 사용자가 예약을 생성한다")
     @Test
     void createWithoutLogin() {
+
+
         var response = RestAssured
                 .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
@@ -102,6 +108,38 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(1);
+    }
+
+    @DisplayName("자신의 예약 목록을 조회한다")
+    @Test
+    void showReservations() {
+        var scheduleResponse = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new ScheduleRequest(themeId, "2023-12-31", "20:30"))
+                .when().post("/admin/schedules")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+        String[] scheduleLocation = scheduleResponse.header("Location").split("/");
+        Long otherScheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
+
+        createReservation();
+        createReservation(new ReservationRequest(otherScheduleId));
+
+
+        List<ReservationResponse> responses = List.of(RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract().as(ReservationResponse[].class));
+
+        assertThat(responses.size()).isEqualTo(2);
+        assertThat(responses.get(0).getId()).isNotNull();
+        assertThat(responses.get(0).getSchedule().getId()).isEqualTo(scheduleId);
     }
 
     @DisplayName("예약을 삭제한다")
@@ -133,7 +171,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @DisplayName("예약이 없을 때 예약 목록을 조회한다")
@@ -171,6 +209,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .auth().oauth2("other-token")
                 .when().delete("/reservations/1")
                 .then().log().all()
@@ -187,6 +226,19 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+    }
+
+    private ExtractableResponse<Response> createReservation(ReservationRequest request) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
                 .extract();
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import nextstep.schedule.dto.ScheduleRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,6 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -26,11 +26,8 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+    public Long create(Member member, Long scheduleId) {
+        Schedule schedule = scheduleDao.findById(scheduleId);
         if (schedule == null) {
             throw new NullPointerException();
         }
@@ -68,5 +65,9 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public List<Reservation> findAllByMemberId(Long memberId) {
+        return reservationDao.findByMemberId(memberId);
     }
 }

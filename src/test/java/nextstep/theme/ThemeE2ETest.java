@@ -2,9 +2,10 @@ package nextstep.theme;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
-import nextstep.member.MemberRequest;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
+import nextstep.member.dto.MemberRequest;
+import nextstep.theme.dto.ThemeRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
