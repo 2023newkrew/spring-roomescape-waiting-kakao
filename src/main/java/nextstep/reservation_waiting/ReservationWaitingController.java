@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -36,6 +37,13 @@ public class ReservationWaitingController {
         Long reservationWaitingId = reservationWaitingService.create(reservation, member);
         return ResponseEntity.created(URI.create("/reservation-waitings/" + reservationWaitingId))
                 .build();
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<ReservationWaiting>> readOwnReservationWaitings(@LoginMember UserDetails userDetails) {
+        Member member = memberService.findById(userDetails.getId());
+        return ResponseEntity.ok()
+                .body(reservationWaitingService.findOwn(member));
     }
 
     @DeleteMapping("/{id}")

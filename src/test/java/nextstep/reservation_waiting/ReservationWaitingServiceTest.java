@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -49,6 +50,21 @@ class ReservationWaitingServiceTest {
                 .build();
         when(reservationWaitingDao.findByMemberId(anyLong())).thenReturn(Optional.of(reservationWaiting));
         assertThatThrownBy(() -> reservationWaitingService.create(reservation, member)).isInstanceOf(DuplicateEntityException.class);
+    }
+
+    @Test
+    @DisplayName("자신의 예약 대기 목록 조회 테스트")
+    void showOwnTest() {
+        List<ReservationWaiting> reservationWaitings = List.of(ReservationWaiting.builder()
+                .id(1L)
+                .build(), ReservationWaiting.builder()
+                .id(2L)
+                .build());
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+        when(reservationWaitingDao.findAllByMemberId(anyLong())).thenReturn(reservationWaitings);
+        assertThat(reservationWaitingService.findOwn(member)).hasSize(2);
     }
 
     @Test

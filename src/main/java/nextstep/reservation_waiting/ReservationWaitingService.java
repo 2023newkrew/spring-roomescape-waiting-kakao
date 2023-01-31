@@ -8,6 +8,8 @@ import nextstep.support.exception.NoReservationWaitingException;
 import nextstep.support.exception.NotOwnReservationWaitingException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReservationWaitingService {
@@ -34,5 +36,9 @@ public class ReservationWaitingService {
         if (!reservationWaiting.sameMember(member)) {
             throw new NotOwnReservationWaitingException("자신의 예약 대기가 아닙니다.");
         }
+    }
+
+    public List<ReservationWaiting> findOwn(Member member) {
+        return reservationWaitingDao.findAllByMemberId(member.getId());
     }
 }

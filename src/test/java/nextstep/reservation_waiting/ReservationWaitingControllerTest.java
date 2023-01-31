@@ -16,8 +16,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -71,6 +73,40 @@ class ReservationWaitingControllerTest {
                 .all()
                 .statusCode(HttpStatus.CREATED.value())
                 .header("Location", "/reservation-waitings/1");
+    }
+
+    @Test
+    @DisplayName("자신의 예약 대기 목록 조회 테스트")
+    void readOwnReservationWaitingsTest(){
+        List<ReservationWaiting> reservationWaitings = List.of(ReservationWaiting.builder()
+                .id(1L)
+                .build(), ReservationWaiting.builder()
+                .id(2L)
+                .build());
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+
+        when(loginService.extractMember(anyString())).thenReturn(UserDetails.builder()
+                .id(1L)
+                .build());
+        when(memberService.findById(anyLong())).thenReturn(member);
+        when(reservationWaitingService.findOwn(any(Member.class))).thenReturn(reservationWaitings);
+
+        RestAssured
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2("token")
+                .when()
+                .get("/reservation-waitings/mine")
+                .then()
+                .log()
+                .all()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(2));
+
     }
 
     @Test
