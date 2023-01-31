@@ -1,10 +1,8 @@
 package nextstep.config;
 
-import auth.JwtTokenProvider;
-import auth.LoginController;
-import auth.LoginService;
-import auth.UserDetailService;
-import nextstep.member.MemberDao;
+import auth.*;
+import auth.userauth.UserAuthRepository;
+import auth.userauth.UserAuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,16 +14,21 @@ public class AppConfig {
     }
 
     @Bean
-    public UserDetailService userDetailService(MemberDao memberDao) {
-        return new UserDetailService(memberDao);
+    public UserAuthService userAuthService(UserAuthRepository userAuthRepository) {
+        return new UserAuthService(userAuthRepository);
     }
 
     @Bean
-    public LoginService loginService(MemberDao memberDao) {
-        return new LoginService(userDetailService(memberDao), jwtTokenProvider());
+    public UserAuthRepository userAuthRepository(){
+        return new UserAuthRepository();
+    }
+
+    @Bean
+    public LoginService loginService() {
+        return new LoginService(userAuthService(userAuthRepository()), jwtTokenProvider());
     }
     @Bean
-    public LoginController loginController(MemberDao memberDao) {
-        return new LoginController(loginService(memberDao));
+    public LoginController loginController() {
+        return new LoginController(loginService());
     }
 }

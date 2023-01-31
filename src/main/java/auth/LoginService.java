@@ -1,35 +1,40 @@
 package auth;
 
+import auth.userauth.UserAuth;
+import auth.userauth.UserAuthService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LoginService {
-    private UserDetailService userDetailService;
-    private JwtTokenProvider jwtTokenProvider;
+    private final UserAuthService userAuthService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(UserDetailService userDetailService, JwtTokenProvider jwtTokenProvider) {
-        this.userDetailService = userDetailService;
+    public LoginService(UserAuthService userAuthService, JwtTokenProvider jwtTokenProvider) {
+        this.userAuthService = userAuthService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
 
-        UserDetails userDetails = userDetailService.loadUserByUsername(tokenRequest.getUsername());
-        if (userDetails.checkWrongPassword(tokenRequest.getPassword())) {
+        UserAuth userAuth = userAuthService.loadUserByUsername(tokenRequest.getUsername());
+        if (userAuth.checkWrongPassword(tokenRequest.getPassword())) {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!");
             throw new AuthenticationException();
         }
 
-        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
+        String accessToken = jwtTokenProvider.createToken(userAuth.getId() + "", userAuth.getRole());
+        System.out.println("GetId() : " + userAuth.getId());
 
         return new TokenResponse(accessToken);
     }
 
     public Long extractPrincipal(String credential) {
+        System.out.println(credential);
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public UserDetails extractMember(String credential) {
+    public UserAuth extractMember(String credential) {
         Long id = extractPrincipal(credential);
-        return userDetailService.loadUserById(id);
+        return userAuthService.loadUserById(id);
     }
 }

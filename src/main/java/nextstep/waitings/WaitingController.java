@@ -2,7 +2,7 @@ package nextstep.waitings;
 
 import auth.AuthorizationException;
 import auth.LoginMember;
-import auth.UserDetails;
+import auth.userauth.UserAuth;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationRequest;
 import org.springframework.http.HttpStatus;
@@ -22,15 +22,15 @@ public class WaitingController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
-        URI Uri = URI.create(waitingService.create(new Member(userDetails), reservationRequest));
+    public ResponseEntity<Void> create(@LoginMember UserAuth userAuth, @RequestBody ReservationRequest reservationRequest) {
+        URI Uri = URI.create(waitingService.create(new Member(userAuth), reservationRequest));
         return ResponseEntity.created(Uri).build();
     }
 
     @DeleteMapping("/{waitingId}")
-    public ResponseEntity<Void> delete(@LoginMember UserDetails userDetails, @PathVariable Long waitingId){
+    public ResponseEntity<Void> delete(@LoginMember UserAuth userAuth, @PathVariable Long waitingId){
         try {
-            waitingService.delete(new Member(userDetails), waitingId);
+            waitingService.delete(new Member(userAuth), waitingId);
         } catch (NullPointerException e) {
             return ResponseEntity.badRequest().build();
         } catch (AuthorizationException e) {
@@ -40,8 +40,8 @@ public class WaitingController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<WaitingResponse>> readMyWaitings(@LoginMember UserDetails userDetails) {
-        List<WaitingResponse> waitingResponses = waitingService.findAllByMemberId(new Member(userDetails));
+    public ResponseEntity<List<WaitingResponse>> readMyWaitings(@LoginMember UserAuth userAuth) {
+        List<WaitingResponse> waitingResponses = waitingService.findAllByMemberId(new Member(userAuth));
 
         return ResponseEntity.ok().body(waitingResponses);
     }

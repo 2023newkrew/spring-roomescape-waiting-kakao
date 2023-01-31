@@ -1,19 +1,17 @@
-package auth;
-
-import nextstep.member.Member;
+package auth.userauth;
 
 /**
  * Username, Password 등 사용자 로그인 정보를 저장하는 클래스
  */
-public class UserDetails {
-    private Long id;
-    private String username;
-    private String password;
-    private String name;
-    private String phone;
-    private String role;
+public class UserAuth {
+    private final Long id;
+    private final String username;
+    private final String password;
+    private final String name;
+    private final String phone;
+    private final String role;
 
-    public UserDetails(final Long id, final String username, final String password, final String name, final String phone, final String role) {
+    public UserAuth(final Long id, final String username, final String password, final String name, final String phone, final String role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -22,10 +20,6 @@ public class UserDetails {
         this.role = role;
     }
 
-    public UserDetails(Member member){
-        this(member.getId(), member.getUsername(), member.getPassword(),
-                member.getName(), member.getPhone(), member.getRole());
-    }
 
     public Long getId() {
         return id;
