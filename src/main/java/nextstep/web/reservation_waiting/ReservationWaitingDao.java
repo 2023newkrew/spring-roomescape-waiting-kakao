@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -61,7 +60,10 @@ public class ReservationWaitingDao {
 
         }, keyHolder);
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        if (keyHolder.getKey() == null) {
+            return null;
+        }
+        return keyHolder.getKey().longValue();
     }
 
     public List<ReservationWaiting> findAllByScheduleIdOrderByDesc(Long scheduleId) {
