@@ -2,10 +2,12 @@ package nextstep.theme;
 
 import nextstep.support.NoEntityException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ThemeService {
     private ThemeDao themeDao;
 
