@@ -36,10 +36,8 @@ public class ReservationWaitingService {
         if (member == null) {
             throw new AuthenticationException();
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(() -> new NotExistEntityException(ScheduleDao.class));
         ReservationWaitingStatus currentStatus = ReservationWaitingStatus.WAITING;
         if (tryInsertReservation(schedule, member)) {
             currentStatus = ReservationWaitingStatus.RESERVED;

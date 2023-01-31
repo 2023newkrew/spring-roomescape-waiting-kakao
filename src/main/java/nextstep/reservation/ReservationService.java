@@ -33,10 +33,8 @@ public class ReservationService {
         if (member == null) {
             throw new AuthenticationException();
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(() -> new NotExistEntityException(Schedule.class));
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
