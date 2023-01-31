@@ -1,8 +1,9 @@
 package auth;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.support.exception.AuthenticationException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,9 +20,8 @@ public class AdminInterceptor implements HandlerInterceptor {
                 .split(" ")[1];
         String role = jwtTokenProvider.getRole(credential);
         if (!Objects.equals(role, "ADMIN")) {
-            throw new AuthenticationException();
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "관리자 권한이 없습니다.");
         }
-
         return true;
     }
 }

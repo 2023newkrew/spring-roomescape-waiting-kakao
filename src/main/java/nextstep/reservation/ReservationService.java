@@ -5,10 +5,7 @@ import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.exception.AlreadyReservedScheduleException;
-import nextstep.support.exception.AuthenticationException;
-import nextstep.support.exception.DuplicateEntityException;
-import nextstep.support.exception.NoReservationException;
+import nextstep.support.exception.*;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -32,10 +29,10 @@ public class ReservationService {
         if (schedule == null) {
             throw new NullPointerException();
         }
-
-        reservationDao.findByScheduleId(schedule.getId())
+        Optional<Reservation> byScheduleId = reservationDao.findByScheduleId(schedule.getId());
+        byScheduleId
                 .ifPresent(reservation -> {
-                    throw new DuplicateEntityException();
+                    throw new DuplicateReservationException();
                 });
 
         Reservation newReservation = new Reservation(
@@ -69,13 +66,13 @@ public class ReservationService {
 
     public void validateByMember(Reservation reservation, Member member) {
         if (reservation.sameMember(member)) {
-            throw new AlreadyReservedScheduleException("이미 예약된 스케줄에 예약 대기를 생성할 수 없습니다.");
+            throw new AlreadyReservedScheduleException();
         }
     }
 
     public Reservation findById(Long id) {
         return reservationDao.findById(id)
-                .orElseThrow(NoReservationException::new);
+                .orElseThrow(NonExistReservationException::new);
     }
 
     public List<Reservation> findOwn(Member member) {

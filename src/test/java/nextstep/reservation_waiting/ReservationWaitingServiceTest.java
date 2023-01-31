@@ -5,7 +5,7 @@ import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
-import nextstep.support.exception.DuplicateEntityException;
+import nextstep.support.exception.DuplicateReservationWaitingException;
 import nextstep.support.exception.NotOwnReservationWaitingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ class ReservationWaitingServiceTest {
     }
 
     @Test
-    @DisplayName("자신의 대기 내역이 있으면 DUPLICATED 예외 발생 테스트")
+    @DisplayName("자신의 대기 내역이 있으면 DuplicateReservationWaitingException 발생 테스트")
     void createDuplicateTest() {
         Member member = Member.builder()
                 .id(1L)
@@ -56,7 +56,7 @@ class ReservationWaitingServiceTest {
         ReservationWaiting reservationWaiting = ReservationWaiting.builder()
                 .build();
         when(reservationWaitingDao.findByMemberId(anyLong())).thenReturn(Optional.of(reservationWaiting));
-        assertThatThrownBy(() -> reservationWaitingService.create(reservation, member)).isInstanceOf(DuplicateEntityException.class);
+        assertThatThrownBy(() -> reservationWaitingService.create(reservation, member)).isInstanceOf(DuplicateReservationWaitingException.class);
     }
 
     @Test
