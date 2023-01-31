@@ -15,4 +15,5 @@ public interface ScheduleService {
     List<ScheduleResponse> getByThemeIdAndDate(Long themeId, LocalDate date);
 
     boolean deleteById(Long id);
+
 }

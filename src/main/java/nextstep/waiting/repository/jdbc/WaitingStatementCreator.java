@@ -34,7 +34,7 @@ public class WaitingStatementCreator {
             "     FROM waiting AS W) AS waiting \n" +
             "INNER JOIN schedule ON waiting.schedule_id = schedule.id \n" +
             "INNER JOIN theme ON schedule.theme_id = theme.id \n" +
-            "WHERE schedule.id = ? " +
+            "WHERE schedule.id = (SELECT schedule_id from reservation where id = ?) " +
             "ORDER BY waiting.id ASC " +
             "LIMIT 1";
 

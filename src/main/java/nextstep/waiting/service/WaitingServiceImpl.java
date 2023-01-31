@@ -2,9 +2,7 @@ package nextstep.waiting.service;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.etc.exception.ErrorMessage;
-import nextstep.etc.exception.ReservationException;
 import nextstep.etc.exception.WaitingException;
-import nextstep.reservation.repository.ReservationRepository;
 import nextstep.waiting.domain.Waiting;
 import nextstep.waiting.dto.WaitingRequest;
 import nextstep.waiting.dto.WaitingResponse;
@@ -25,8 +23,6 @@ public class WaitingServiceImpl implements WaitingService {
 
     private final WaitingRepository repository;
 
-    private final ReservationRepository reservationRepository;
-
     private final WaitingMapper mapper;
 
 
@@ -39,9 +35,6 @@ public class WaitingServiceImpl implements WaitingService {
     }
 
     private Waiting tryInsert(Waiting waiting) {
-        if (reservationRepository.existsByMemberIdAndScheduleId(waiting.getMemberId(), waiting.getScheduleId())) {
-            throw new ReservationException(ErrorMessage.RESERVATION_CONFLICT);
-        }
         try {
             return repository.insert(waiting);
         }
@@ -53,6 +46,11 @@ public class WaitingServiceImpl implements WaitingService {
     @Override
     public WaitingResponse getById(Long id) {
         return mapper.toResponse(repository.getById(id));
+    }
+
+    @Override
+    public Waiting getFirstByScheduleId(Long reservationId) {
+        return repository.getFirstByReservationId(reservationId);
     }
 
     @Override

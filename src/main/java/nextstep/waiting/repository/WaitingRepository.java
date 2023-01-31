@@ -10,7 +10,7 @@ public interface WaitingRepository {
 
     Waiting getById(Long id);
 
-    Waiting getFirstByScheduleId(Long scheduleId);
+    Waiting getFirstByReservationId(Long reservationId);
 
     List<Waiting> getByMemberId(Long memberId);
 
