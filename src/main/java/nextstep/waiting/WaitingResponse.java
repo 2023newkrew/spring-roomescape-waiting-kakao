@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WaitingResponse {
-    private final Long id;
-    private final Schedule schedule;
-    private final Long waitNum;
+    private Long id;
+    private Schedule schedule;
+    private Long waitNum;
+
+    public WaitingResponse() {
+    }
 
     public WaitingResponse(Long id, Schedule schedule, Long waitNum) {
         this.id = id;
