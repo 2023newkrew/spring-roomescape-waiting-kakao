@@ -12,6 +12,7 @@ import nextstep.web.schedule.ScheduleDao;
 import nextstep.web.theme.Theme;
 import nextstep.web.theme.ThemeDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,25 +25,16 @@ public class ReservationService {
     private final ScheduleDao scheduleDao;
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new BusinessException(AuthErrorCode.TOKEN_REQUIRED);
-        }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
             throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
         }
-
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
             throw new BusinessException(CommonErrorCode.DUPLICATE_ENTITY);
         }
 
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
-
-        return reservationDao.save(newReservation);
+        return reservationDao.save(new Reservation(schedule, member));
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
@@ -54,6 +46,7 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
+    @Transactional
     public void deleteById(Member member, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
@@ -62,6 +55,12 @@ public class ReservationService {
         if (!reservation.sameMember(member)) {
             throw new BusinessException(AuthErrorCode.UNAUTHORIZED_DELETE);
         }
+        convertReservationWaiting(reservation);
+
+        reservationDao.deleteById(id);
+    }
+
+    private void convertReservationWaiting(Reservation reservation) {
         List<ReservationWaiting> reservationWaitings = reservationWaitingDao.findAllByScheduleIdOrderByDesc(reservation.getSchedule().getId());
         if (!reservationWaitings.isEmpty()) {
             ReservationWaiting reservationWaiting = reservationWaitings.get(reservationWaitings.size() - 1);
@@ -69,8 +68,6 @@ public class ReservationService {
             reservationDao.save(toSave);
             reservationWaitingDao.deleteById(reservationWaiting.getId());
         }
-
-        reservationDao.deleteById(id);
     }
 
     public List<Reservation> findAllByMember(Member member) {
