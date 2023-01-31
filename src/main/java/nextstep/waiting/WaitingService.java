@@ -38,7 +38,7 @@ public class WaitingService {
             throw new NullPointerException();
         }
 
-        List<Reservation> reservations = reservationDao.findByMemberIdAndScheduleId(member.getId(), schedule.getId());
+        List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
         if (reservations.isEmpty()) {
             Long reservationId = reservationDao.save(new Reservation(schedule, member));
             return WaitingRegisterStatus.ofReservation(reservationId);

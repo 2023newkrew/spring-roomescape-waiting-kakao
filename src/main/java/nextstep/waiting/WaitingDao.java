@@ -108,7 +108,7 @@ public class WaitingDao {
         String sql = "SELECT " +
                 "count(*) " +
                 "FROM waiting " +
-                "where waiting.id < ? and waiting.schedule_id = ?";
+                "where waiting.id <= ? and waiting.schedule_id = ?";
 
         return jdbcTemplate.queryForObject(sql, Long.class, waiting.getId(), waiting.getSchedule().getId());
     }

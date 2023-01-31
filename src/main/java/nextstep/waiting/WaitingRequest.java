@@ -1,8 +1,9 @@
 package nextstep.waiting;
 
 public class WaitingRequest {
+    private Long scheduleId;
 
-    private final Long scheduleId;
+    public WaitingRequest() {}
 
     public WaitingRequest(Long scheduleId) {
         this.scheduleId = scheduleId;
