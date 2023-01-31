@@ -1,7 +1,13 @@
 package auth.userauth;
 
 /**
- * Username, Password 등 사용자 로그인 정보를 저장하는 클래스
+ * <b>"요구사항 1 - auth package에서 nextstep(MemberDao 및 Member)를 의존하지 말 것"</b> 에 따라,<br>
+ * 인증을 위한 데이터를 auth 패키지 내에서 해결하기 위해 생성한 Entity 클래스. <br>
+ * <br>
+ *
+ * 기존 코딩에서는 username, password만을 가져오는 것으로 구현하였으나 <br>
+ * 확장성(추후 name, phone 등도 인증정보에 포함시키는 경우)을 대비해서 <br>
+ * step 2 기준 Member Entity와 동일한 필드를 가지도록 현재 구현하였다. <br>
  */
 public class UserAuth {
     private final Long id;
