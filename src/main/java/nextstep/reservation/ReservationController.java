@@ -1,7 +1,8 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
-import nextstep.auth.LoginMember;
+import auth.AuthenticationException;
+import auth.LoginMember;
+import auth.UserDetails;
 import nextstep.member.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ReservationController {
@@ -20,8 +22,9 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(member, reservationRequest);
+    public ResponseEntity createcReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
+        Member member = Member.of(userDetails);
+        Long id = reservationService.create(Member.of(userDetails), reservationRequest.getScheduleId());
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -31,20 +34,21 @@ public class ReservationController {
         return ResponseEntity.ok().body(results);
     }
 
+    @GetMapping("/reservations/mine")
+    public ResponseEntity readMyReservations(@LoginMember UserDetails userDetails) {
+        List<ReservationResponse> results = reservationService.findAllByMemberId(Member.of(userDetails).getId())
+                .stream()
+                .map(ReservationResponse::of)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(results);
+    }
+
+
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
-        reservationService.deleteById(member, id);
+    public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+        reservationService.deleteById(Member.of(userDetails), id);
 
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
