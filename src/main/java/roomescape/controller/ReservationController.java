@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.annotation.JWTBearerTokenSubject;
+import roomescape.annotation.JWTMemberId;
 import roomescape.controller.dto.ReservationControllerGetMineResponse;
 import roomescape.controller.dto.ReservationControllerGetResponse;
 import roomescape.controller.dto.ReservationsControllerPostBody;
@@ -21,8 +21,8 @@ public class ReservationController {
     private final ReservationService service;
 
     @PostMapping(produces = "application/json;charset=utf-8")
-    public ResponseEntity<Object> createReservation(@JWTBearerTokenSubject String subject, @Valid @RequestBody ReservationsControllerPostBody body) {
-        var id = service.createReservation(Long.parseLong(subject), body);
+    public ResponseEntity<Object> createReservation(@JWTMemberId Long memberId, @Valid @RequestBody ReservationsControllerPostBody body) {
+        var id = service.createReservation(memberId, body);
         return ResponseEntity.status(HttpStatus.CREATED)
                              .header("Location", String.format("/api/reservations/%d", id))
                              .build();
@@ -45,15 +45,15 @@ public class ReservationController {
     }
 
     @GetMapping(value = "/mine", produces = "application/json;charset=utf-8")
-    public ResponseEntity<ReservationControllerGetMineResponse> findMyReservation(@JWTBearerTokenSubject String subject) {
-        var reservations = service.findMyReservation(Long.parseLong(subject));
+    public ResponseEntity<ReservationControllerGetMineResponse> findMyReservation(@JWTMemberId Long memberId) {
+        var reservations = service.findMyReservation(memberId);
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ReservationControllerGetMineResponse.from(reservations));
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json;charset=utf-8")
-    public ResponseEntity<Object> deleteReservation(@JWTBearerTokenSubject String subject, @PathVariable Long id) {
-        service.deleteReservation(Long.parseLong(subject), id);
+    public ResponseEntity<Object> deleteReservation(@JWTMemberId Long memberId, @PathVariable Long id) {
+        service.deleteReservation(memberId, id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                              .build();
     }

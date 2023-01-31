@@ -22,9 +22,9 @@ public enum ErrorCode {
     INVALID_LOGIN_INFORMATION(HttpStatus.UNAUTHORIZED, "A-002", "올바르지 않은 아이디, 혹은 비밀번호입니다."),
     UNAUTHORIZED_RESERVATION(HttpStatus.FORBIDDEN, "A-003", "해당 예약에 대해 권한이 없습니다."),
     UNAUTHORIZED_WAITING(HttpStatus.FORBIDDEN, "A-004", "해당 예약 대기에 대해 권한이 없습니다."),
-
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A-004", "올바르지 않은 형식의 토큰입니다."),
-    INVALID_BEARER(HttpStatus.UNAUTHORIZED, "A-005", "올바르지 않은 형식의 전달자입니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A-005", "올바르지 않은 형식의 토큰입니다."),
+    INVALID_BEARER(HttpStatus.UNAUTHORIZED, "A-006", "올바르지 않은 형식의 전달자입니다."),
+    REQUIRE_TOKEN(HttpStatus.UNAUTHORIZED, "A-007", "토큰이 필요합니다."),
 
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E-000", "서버의 에러입니다.");

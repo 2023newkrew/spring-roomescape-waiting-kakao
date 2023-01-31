@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.annotation.JWTBearerTokenSubject;
+import roomescape.annotation.JWTMemberId;
 import roomescape.controller.dto.ReservationsControllerPostBody;
 import roomescape.controller.dto.WaitingControllerGetResponse;
 import roomescape.service.WaitingService;
@@ -19,9 +19,9 @@ public class WaitingController {
 
 
     @PostMapping(produces = "application/json;charset=utf-8")
-    public ResponseEntity<Void> createReservation(@JWTBearerTokenSubject String subject, @Valid @RequestBody ReservationsControllerPostBody body) {
+    public ResponseEntity<Void> createReservation(@JWTMemberId Long memberId, @Valid @RequestBody ReservationsControllerPostBody body) {
         var location = service.createWaiting(
-                Long.parseLong(subject), body,
+                memberId, body,
                 (reservationId) -> String.format("/api/reservations/%d", reservationId),
                 (waitingId) -> String.format("/api/waiting/%d", waitingId)
         );
@@ -31,15 +31,15 @@ public class WaitingController {
     }
 
     @GetMapping(value = "/mine", produces = "application/json;charset=utf-8")
-    public ResponseEntity<WaitingControllerGetResponse> findReservation(@JWTBearerTokenSubject String subject) {
-        var waitings = service.findMyWaiting(Long.parseLong(subject));
+    public ResponseEntity<WaitingControllerGetResponse> findReservation(@JWTMemberId Long memberId) {
+        var waitings = service.findMyWaiting(memberId);
         return ResponseEntity.status(HttpStatus.OK)
                              .body(WaitingControllerGetResponse.from(waitings));
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json;charset=utf-8")
-    public ResponseEntity<Void> deleteReservation(@JWTBearerTokenSubject String subject, @PathVariable Long id) {
-        service.deleteWaiting(Long.parseLong(subject), id);
+    public ResponseEntity<Void> deleteReservation(@JWTMemberId Long memberId, @PathVariable Long id) {
+        service.deleteWaiting(memberId, id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                              .build();
     }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.annotation.JWTBearerTokenSubject;
+import roomescape.annotation.JWTMemberId;
 import roomescape.controller.dto.MemberControllerGetResponse;
 import roomescape.controller.dto.MemberControllerPostBody;
 import roomescape.controller.dto.MemberControllerPostResponse;
@@ -29,8 +29,8 @@ public class MemberController {
     }
 
     @GetMapping(path = "/me", produces = "application/json;charset=utf-8")
-    public ResponseEntity<MemberControllerGetResponse> me(@JWTBearerTokenSubject String subject) {
-        var member = service.me(Long.parseLong(subject));
+    public ResponseEntity<MemberControllerGetResponse> me(@JWTMemberId Long memberId) {
+        var member = service.me(memberId);
         return ResponseEntity.status(HttpStatus.OK)
                              .body(new MemberControllerGetResponse(
                                      member.getId(),

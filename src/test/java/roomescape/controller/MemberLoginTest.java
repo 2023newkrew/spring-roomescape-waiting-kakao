@@ -86,7 +86,11 @@ public class MemberLoginTest {
         var accessToken = mapper.readValue(res.getResponse()
                                               .getContentAsString(), LoginControllerTokenPostResponse.class)
                                 .getAccessToken();
-        assertThat(jwtProvider.getSubject(accessToken)).isEqualTo(Long.toString(2));
+        var token = jwtProvider.parse(accessToken);
+        assertAll(
+                () -> assertThat(token.getBody().getSubject()).isEqualTo("2"),
+                () -> assertThat(token.getBody().get("is_admin")).isEqualTo(false)
+        );
     }
 
     @DisplayName("자기 자신의 정보 확인")
