@@ -5,7 +5,6 @@ public class ReservationWaitingRequest {
 
     private ReservationWaitingRequest() {}
 
-
     public ReservationWaitingRequest(Long scheduleId) {
         this.scheduleId = scheduleId;
     }

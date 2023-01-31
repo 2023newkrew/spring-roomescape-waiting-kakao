@@ -1,15 +1,12 @@
 package nextstep.theme;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Theme {
     private Long id;
     private String name;
     private String desc;
     private int price;
 
-    public Theme() {
+    private Theme() {
     }
 
     public Theme(Long id, String name, String desc, int price) {

@@ -11,8 +11,7 @@ public class ScheduleRequest {
     private String date;
     private String time;
 
-    public ScheduleRequest() {
-    }
+    private ScheduleRequest() {}
 
     public ScheduleRequest(Long themeId, String date, String time) {
         this.themeId = themeId;

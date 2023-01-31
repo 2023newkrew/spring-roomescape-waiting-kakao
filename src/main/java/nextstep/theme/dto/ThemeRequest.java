@@ -1,7 +1,5 @@
 package nextstep.theme.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import nextstep.theme.Theme;
 
 public class ThemeRequest {
@@ -9,10 +7,9 @@ public class ThemeRequest {
     private String desc;
     private int price;
 
-    @JsonCreator
-    public ThemeRequest(@JsonProperty(value = "name") String name,
-                        @JsonProperty(value = "desc") String desc,
-                        @JsonProperty(value = "price") int price) {
+    private ThemeRequest() {}
+
+    public ThemeRequest(String name, String desc, int price) {
         this.name = name;
         this.desc = desc;
         this.price = price;
