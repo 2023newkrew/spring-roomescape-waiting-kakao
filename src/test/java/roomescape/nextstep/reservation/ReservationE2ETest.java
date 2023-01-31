@@ -195,25 +195,8 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
     }
 
-    /**
-     * POST /reservation-waitings HTTP/1.1
-     * authorization: Bearer 토큰~~
-     * content-type: application/json; charset=UTF-8
-     * host: localhost:8080
-     * {
-     * "scheduleId": 1
-     * }
-     * ---
-     * HTTP/1.1 201 Created
-     * Location: /reservation-waitings/1
-     * <p>
-     * 1) 예약이 이미 있을 때 예약 대기 신청
-     * 2) 예약이 없을 때 예약 대기 신청 - 예약 신청이 됨
-     */
-    @DisplayName("예약이 없을 때 예약 대기 신청")
-    @Test
-    void reservationWaiting() {
-        var response = RestAssured
+    private ExtractableResponse<Response> makeReservationWaiting() {
+        return RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .body(waitingRequest)
@@ -221,6 +204,87 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().post("/reservations-waitings")
                 .then().log().all()
                 .extract();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("예약이 없을 때 예약 대기 신청") // reservation/1
+    @Test
+    void reservationWaiting() {
+        var waitingResponse = makeReservationWaiting();
+
+        assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        var response = RestAssured
+                .given().log().all()
+                .param("themeId", themeId)
+                .param("date", DATE)
+                .when().get("/reservations")
+                .then().log().all()
+                .extract();
+
+        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        assertThat(reservations.size()).isEqualTo(1);
+    }
+
+    @DisplayName("예약이 있을 때 예약 대기 신청") //reservations-waiting/1
+    @Test
+    void reservationWaiting2() {
+        create(); //예약 생성
+        var waitingResponse = makeReservationWaiting();
+
+        assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        var response = RestAssured
+                .given().log().all()
+                .param("themeId", themeId)
+                .param("date", DATE)
+                .when().get("/reservations-waitings")
+                .then().log().all()
+                .extract();
+
+        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        assertThat(reservations.size()).isEqualTo(2);
+    }
+
+    /**
+     * GET /reservations/mine HTTP/1.1
+     * authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF
+     * --
+     * HTTP/1.1 200
+     * Content-Type: application/json
+     *
+     * [
+     *     {
+     *         "id": 1,
+     *         "schedule": {
+     *             "id": 1,
+     *             "theme": {
+     *                 "id": 1,
+     *                 "name": "테마이름",
+     *                 "desc": "테마설명",
+     *                 "price": 22000
+     *             },
+     *             "date": "2022-08-11",
+     *             "time": "13:00:00"
+     *         }
+     *     }
+     * ]
+     */
+
+    @DisplayName("내 예약대기 조회")
+    @Test
+    void findMyReservationsWaitings() {
+        var waitingResponse = makeReservationWaiting();
+
+        assertThat(waitingResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationWaiting> reservationWaitings = response.jsonPath().getList(".", ReservationWaiting.class);
+        assertThat(reservationWaitings).hasSize(1);
     }
 }

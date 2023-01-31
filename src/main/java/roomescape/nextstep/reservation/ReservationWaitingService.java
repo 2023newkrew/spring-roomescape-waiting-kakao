@@ -11,6 +11,7 @@ import roomescape.nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationWaitingService {
@@ -41,5 +42,14 @@ public class ReservationWaitingService {
                 member
         );
         return reservationDao.save(newReservation);
+    }
+
+    public List<ReservationWaiting> findAllByUsername(String username) {
+        return reservationDao.findAllByUsername(username)
+                .stream()
+                .map(e -> {
+                    return new ReservationWaiting(e, reservationDao.getWaitingNumber(e.getSchedule().getId(), e.getId()));
+                })
+                .collect(Collectors.toList());
     }
 }
