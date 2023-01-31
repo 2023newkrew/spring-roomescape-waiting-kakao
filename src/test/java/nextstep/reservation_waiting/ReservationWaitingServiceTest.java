@@ -2,7 +2,7 @@ package nextstep.reservation_waiting;
 
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
-import nextstep.support.DuplicateEntityException;
+import nextstep.support.exception.DuplicateEntityException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

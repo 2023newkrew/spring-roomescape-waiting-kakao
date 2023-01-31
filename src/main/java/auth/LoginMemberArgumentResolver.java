@@ -1,7 +1,7 @@
 package auth;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.support.NoMemberException;
+import nextstep.support.exception.NoMemberException;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
