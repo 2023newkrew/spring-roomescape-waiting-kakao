@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import auth.AuthenticationException;
+import auth.TokenMember;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -68,5 +69,9 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public List<MyReservation> findAllByMember(TokenMember member) {
+        return reservationDao.findAllByMemberId(member.getId());
     }
 }
