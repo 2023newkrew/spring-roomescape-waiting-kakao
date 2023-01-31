@@ -1,4 +1,4 @@
-package auth;
+package auth.login;
 
 public class LoginRequestEvent {
     private Long id;

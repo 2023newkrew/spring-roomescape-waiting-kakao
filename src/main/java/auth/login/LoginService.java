@@ -1,5 +1,9 @@
-package auth;
+package auth.login;
 
+import auth.JwtTokenProvider;
+import auth.UserDetails;
+import auth.token.TokenRequest;
+import auth.token.TokenResponse;
 import org.springframework.context.ApplicationEventPublisher;
 
 public class LoginService {

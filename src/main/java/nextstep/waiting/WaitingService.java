@@ -71,7 +71,7 @@ public class WaitingService {
         }
 
         Waiting waiting = waitingDao.findById(id);
-        if (waiting == null){
+        if (waiting == null) {
             throw new NullPointerException();
         }
 

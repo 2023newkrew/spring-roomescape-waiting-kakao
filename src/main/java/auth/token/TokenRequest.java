@@ -1,4 +1,4 @@
-package auth;
+package auth.token;
 
 public class TokenRequest {
     private String username;

@@ -1,7 +1,9 @@
 package nextstep;
 
 import auth.*;
-import nextstep.member.MemberDao;
+import auth.login.LoginController;
+import auth.login.LoginMemberArgumentResolver;
+import auth.login.LoginService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;

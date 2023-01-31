@@ -1,7 +1,7 @@
 package nextstep.member;
 
 import auth.AuthenticationException;
-import auth.LoginRequestEvent;
+import auth.login.LoginRequestEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 

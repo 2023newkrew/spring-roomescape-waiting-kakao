@@ -45,7 +45,7 @@ public class WaitingDao {
             )
 //            resultSet.getLong("waiting.waitNum")
     );
-    
+
 
     public Waiting findById(Long id) {
         String sql = "SELECT " +
