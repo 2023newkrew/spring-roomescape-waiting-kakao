@@ -7,6 +7,7 @@ import nextstep.reservation.ReservationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -14,8 +15,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/reservation-waitings")
 public class ReservationWaitingController {
+    public static final String RESERVATION_WAITINGS_URI = "reservation-waitings";
+    public static final String RESERVATIONS_URI = "reservations";
+
     private final ReservationWaitingService reservationWaitingService;
-    public final ReservationService reservationService;
+    private final ReservationService reservationService;
 
     public ReservationWaitingController(ReservationWaitingService reservationWaitingService, ReservationService reservationService) {
         this.reservationWaitingService = reservationWaitingService;
@@ -25,13 +29,10 @@ public class ReservationWaitingController {
     @PostMapping
     public ResponseEntity createReservation(@LoginMember MemberDetails memberDetails,
                                             @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
-        String location = "/reservations/";
-        if (reservationService.hasReservation(reservationWaitingRequest.getScheduleId())) {
-            location = "/reservation-waitings/";
-        }
-
+        boolean isReservationWaiting = reservationService.hasReservation(reservationWaitingRequest.getScheduleId());
         Long id = reservationWaitingService.create(Member.from(memberDetails), reservationWaitingRequest);
-        return ResponseEntity.created(URI.create(location + id)).build();
+        URI uri = generateLocationUri(id, isReservationWaiting);
+        return ResponseEntity.created(uri).build();
     }
 
     @GetMapping("/mine")
@@ -44,5 +45,13 @@ public class ReservationWaitingController {
     public ResponseEntity deleteReservationWaiting(@LoginMember MemberDetails memberDetails, @PathVariable Long id) {
         reservationWaitingService.deleteById(Member.from(memberDetails), id);
         return ResponseEntity.noContent().build();
+    }
+
+    private URI generateLocationUri(Long id, boolean isReservationWaiting) {
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("/{reservation}/{id}");
+        if (isReservationWaiting) {
+            return uriComponentsBuilder.buildAndExpand(RESERVATION_WAITINGS_URI, id).toUri();
+        }
+        return uriComponentsBuilder.buildAndExpand(RESERVATIONS_URI, id).toUri();
     }
 }
