@@ -57,12 +57,12 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> findByMemberId(Long memberId, Long loginId){
-        if(!memberId.equals(loginId)){
+    public List<Reservation> findByMemberId(String memberName, String loginMemberName){
+        if(!memberName.equals(loginMemberName)){
             throw new AuthorizationException();
         }
 
-        return reservationDao.findByMemberId(memberId);
+        return reservationDao.findByMemberName(memberName);
     }
 
     @Transactional

@@ -1,9 +1,9 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthTestUtil;
 import auth.model.TokenResponse;
-import nextstep.member.model.Member;
+import nextstep.auth.AuthTestUtil;
 import nextstep.member.MemberTestUtil;
+import nextstep.member.model.Member;
 import nextstep.reservation.model.Reservation;
 import nextstep.reservation.model.ReservationRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -87,6 +87,35 @@ class ReservationE2ETest {
         TokenResponse tokenResponse = AuthTestUtil.tokenLogin(reservationExistMember);
 
         ReservationTestUtil.removeReservation(5L, tokenResponse.getAccessToken())
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @DisplayName("인증된 사용자는 자신의 예약 목록을 조회할 수 있다.")
+    @Test
+    void test9() {
+        Member reservationExistMember = MemberTestUtil.getReservationExistMember(1L);
+        TokenResponse tokenResponse = AuthTestUtil.tokenLogin(reservationExistMember);
+
+        ReservationTestUtil.requestMyReservationsAndGetValidatableResponse(tokenResponse.getAccessToken())
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("자신의 예약 목록을 조회할 때, 다른 사람의 예약 목록이 포함되지 않아야 한다.")
+    @Test
+    void test10() {
+        Member reservationExistMember = MemberTestUtil.getReservationExistMember(1L);
+        TokenResponse tokenResponse = AuthTestUtil.tokenLogin(reservationExistMember);
+
+        List<Reservation> reservations = ReservationTestUtil.getMyReservations(tokenResponse.getAccessToken());
+        for(Reservation reservation : reservations){
+            assertThat(reservation.getMemberName()).isEqualTo(reservationExistMember.getMemberName());
+        }
+    }
+
+    @DisplayName("인증되지 않은 사용자는 자신의 예약 목록을 조회할 수 없다.")
+    @Test
+    void test11() {
+        ReservationTestUtil.requestMyReservationsAndGetValidatableResponse("")
                 .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 }

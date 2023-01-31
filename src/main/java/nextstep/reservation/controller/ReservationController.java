@@ -23,10 +23,10 @@ public class ReservationController {
     public final ReservationService reservationService;
 
     @LoginRequired
-    @GetMapping("/reservations/mine")
+    @GetMapping("/mine")
     public ResponseEntity<List<Reservation>> getMyReservationWaiting(@AuthenticationPrincipal MemberDetails userDetail){
-        Long memberId = userDetail.getId();
-        List<Reservation> reservations = reservationService.findByMemberId(memberId, memberId);
+        String memberName = userDetail.getMemberName();
+        List<Reservation> reservations = reservationService.findByMemberId(memberName, memberName);
         return ResponseEntity.ok().body(reservations);
     }
 
