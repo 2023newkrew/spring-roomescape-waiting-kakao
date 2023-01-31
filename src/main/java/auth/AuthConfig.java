@@ -1,14 +1,26 @@
 package auth;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
 @SpringBootConfiguration
+@PropertySource("db.properties")
 public class AuthConfig {
+
+    @Value("${db.driver}")
+    private String dbDriver;
+    @Value("${db.url}")
+    private String dbUrl;
+    @Value("${db.username}")
+    private String dbUsername;
+    @Value("${db.password}")
+    private String dbPassword;
 
     @Bean
     public LoginController loginController() {
@@ -37,12 +49,11 @@ public class AuthConfig {
 
     @Bean
     public DataSource dataSource() {
-        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName("org.h2.Driver");
-        dataSourceBuilder.url("jdbc:h2:mem:test");
-        dataSourceBuilder.username("SA");
-        dataSourceBuilder.password("");
-        System.out.println("asdddddddddd");
+        DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.driverClassName(dbDriver);
+        dataSourceBuilder.url(dbUrl);
+        dataSourceBuilder.username(dbUsername);
+        dataSourceBuilder.password(dbPassword);
         return dataSourceBuilder.build();
     }
 }
