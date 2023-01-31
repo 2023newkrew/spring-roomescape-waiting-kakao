@@ -57,7 +57,7 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Member member, Long id) {
+    public Schedule deleteByIdAndGetSchedule(Member member, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
             throw new NullPointerException();
@@ -66,8 +66,8 @@ public class ReservationService {
         if (!reservation.sameMember(member)) {
             throw new AuthenticationException();
         }
-
         reservationDao.deleteById(id);
+        return reservation.getSchedule();
     }
 
     public List<Reservation> findByMemberId(Long memberId) {

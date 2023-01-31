@@ -25,6 +25,10 @@ public class ReservationWaiting {
         this.priority = priority;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Schedule getSchedule() {
         return schedule;
     }

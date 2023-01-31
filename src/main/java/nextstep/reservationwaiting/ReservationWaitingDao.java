@@ -51,7 +51,7 @@ public class ReservationWaitingDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Long getMaxPriority(Schedule schedule) {
+    public Long getMaxPriorityNumber(Schedule schedule) {
         String sql = "SELECT MAX(priority) FROM reservationWaiting WHERE schedule_id = ?;";
         try {
             return jdbcTemplate.query(sql,
@@ -61,7 +61,7 @@ public class ReservationWaitingDao {
                         } else {
                             throw new SQLException();
                         }
-                    });
+                    }, schedule.getId());
         } catch (Exception e) {
             return null;
         }
@@ -72,8 +72,8 @@ public class ReservationWaitingDao {
                 "reservationWaiting.id, "+
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
-                "reservationWaiting.member_id, reservationWaiting.priority" +
-                "from reservationWaiting " +
+                "reservationWaiting.member_id, reservationWaiting.priority " +
+                "FROM reservationWaiting " +
                 "inner join schedule on reservationWaiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
                 "where reservationWaiting.member_id = ?;";
@@ -87,5 +87,25 @@ public class ReservationWaitingDao {
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservationWaiting where id = ?;";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public ReservationWaiting findTopPriorityByScheduleId(Long scheduleId) {
+        String sql = "SELECT " +
+                "reservationWaiting.id, "+
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "reservationWaiting.member_id, reservationWaiting.priority " +
+                "FROM reservationWaiting " +
+                "inner join schedule on reservationWaiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "where reservationWaiting.schedule_id = ? and " +
+                "reservationWaiting.priority = " +
+                "(SELECT MIN(priority) FROM reservationWaiting " +
+                "WHERE reservationWaiting.schedule_id = ?);";
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, scheduleId, scheduleId);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

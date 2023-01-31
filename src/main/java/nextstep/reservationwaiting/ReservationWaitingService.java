@@ -21,7 +21,11 @@ public class ReservationWaitingService {
             throw new NullPointerException();
         }
 
-        Long newPriority = reservationWaitingDao.getMaxPriority(schedule) + 1;
+        Long maxPriority = reservationWaitingDao.getMaxPriorityNumber(schedule);
+        if (maxPriority == null) {
+            maxPriority = 0L;
+        }
+        Long newPriority = maxPriority + 1;
 
         ReservationWaiting newReservationWaiting = new ReservationWaiting(
                 schedule,
@@ -38,5 +42,14 @@ public class ReservationWaitingService {
 
     public int deleteById(Long memberId, Long id) {
         return reservationWaitingDao.deleteById(id);
+    }
+
+    public Long findTopPriorityMemberIdBySchedule(Schedule schedule) {
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findTopPriorityByScheduleId(schedule.getId());
+        if (reservationWaiting == null) {
+            return null;
+        }
+        reservationWaitingDao.deleteById(reservationWaiting.getId());
+        return reservationWaiting.getMemberId();
     }
 }

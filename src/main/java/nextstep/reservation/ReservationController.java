@@ -3,7 +3,10 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import auth.LoginMember;
 import auth.UserDetails;
+import nextstep.member.Member;
 import nextstep.member.MemberService;
+import nextstep.reservationwaiting.ReservationWaitingService;
+import nextstep.schedule.Schedule;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,15 +19,17 @@ public class ReservationController {
 
     public final ReservationService reservationService;
     public final MemberService memberService;
+    public final ReservationWaitingService reservationWaitingService;
 
-    public ReservationController(ReservationService reservationService, MemberService memberService) {
+    public ReservationController(ReservationService reservationService, MemberService memberService, ReservationWaitingService reservationWaitingService) {
         this.reservationService = reservationService;
         this.memberService = memberService;
+        this.reservationWaitingService = reservationWaitingService;
     }
 
     @PostMapping("/reservations")
     public ResponseEntity createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(memberService.findById(userDetails.getId()), reservationRequest);
+        Long id = reservationService.create(memberService.findByUserDetatils(userDetails), reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -42,9 +47,16 @@ public class ReservationController {
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
-        reservationService.deleteById(memberService.findById(userDetails.getId()), id);
+        Schedule schedule = reservationService.deleteByIdAndGetSchedule(memberService.findByUserDetatils(userDetails), id);
+        Long topPriorityMemberId = reservationWaitingService.findTopPriorityMemberIdBySchedule(schedule);
+        if (topPriorityMemberId == null) {
+            return ResponseEntity.noContent().build();
+        }
 
-        return ResponseEntity.noContent().build();
+        Member topPriorityMember = memberService.findById(topPriorityMemberId);
+        Long newId = reservationService.create(topPriorityMember, new ReservationRequest(schedule.getId()));
+
+        return ResponseEntity.created(URI.create("/reservations/" + newId)).build();
     }
 
     @ExceptionHandler(Exception.class)
