@@ -1,9 +1,9 @@
 package nextstep.web.reservation_waiting;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.support.exception.AuthErrorCode;
-import nextstep.support.exception.BusinessException;
-import nextstep.support.exception.CommonErrorCode;
+import nextstep.exception.AuthErrorCode;
+import nextstep.exception.BusinessException;
+import nextstep.exception.CommonErrorCode;
 import nextstep.web.member.Member;
 import nextstep.web.reservation.Reservation;
 import nextstep.web.reservation.ReservationDao;

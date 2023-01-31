@@ -1,7 +1,7 @@
-package nextstep.support.exception.handler;
+package nextstep.exception.handler;
 
 import auth.exception.AuthenticationException;
-import nextstep.support.exception.*;
+import nextstep.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
