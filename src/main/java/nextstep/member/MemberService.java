@@ -1,6 +1,7 @@
 package nextstep.member;
 
 import org.springframework.stereotype.Service;
+import nextstep.exceptions.exception.NotFoundObjectException;
 
 @Service
 public class MemberService {
@@ -15,6 +16,6 @@ public class MemberService {
     }
 
     public Member findById(Long id) {
-        return memberDao.findById(id).orElseThrow(NullPointerException::new);
+        return memberDao.findById(id).orElseThrow(NotFoundObjectException::new);
     }
 }

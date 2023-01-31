@@ -1,14 +1,13 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
-import java.util.Optional;
 import nextstep.exceptions.exception.DuplicatedReservationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import nextstep.exceptions.exception.NotFoundObjectException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,7 +31,7 @@ public class ReservationService {
             throw new AuthenticationException();
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
-                .orElseThrow(NullPointerException::new);
+                .orElseThrow(NotFoundObjectException::new);
 
         reservationDao.findByScheduleId(schedule.getId())
                 .ifPresent((reservation) ->

@@ -11,7 +11,7 @@ import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+import nextstep.exceptions.exception.NotFoundObjectException;
 @Service
 @RequiredArgsConstructor
 public class ReservationWaitingService {
@@ -22,7 +22,7 @@ public class ReservationWaitingService {
         if (member == null) {
             throw new AuthenticationException();
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId()).orElseThrow(NullPointerException::new);
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId()).orElseThrow(NotFoundObjectException::new);
         Reservation newReservation = new Reservation(
                 schedule,
                 member
@@ -32,7 +32,7 @@ public class ReservationWaitingService {
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id).orElseThrow(NullPointerException::new);
+        Reservation reservation = reservationDao.findById(id).orElseThrow(NotFoundObjectException::new);
         if (!reservation.sameMember(member)) {
             throw new AuthenticationException();
         }

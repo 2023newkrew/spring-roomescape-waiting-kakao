@@ -2,6 +2,7 @@ package nextstep.reservation_waiting;
 
 import auth.AuthenticationException;
 import java.util.Optional;
+import nextstep.exceptions.exception.NotFoundObjectException;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
@@ -50,7 +51,7 @@ public class ReservationWaitingServiceTest {
     void delete() {
         given(reservationDao.findById(reservation.getId())).willReturn(Optional.empty());
         assertThatThrownBy(() -> reservationWaitingService.deleteById(member, reservation.getId()))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NotFoundObjectException.class);
     }
 
     @DisplayName("다른 사람의 예약 대기를 취소하면 예외가 발생한다")

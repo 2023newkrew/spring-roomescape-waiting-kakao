@@ -3,7 +3,7 @@ package nextstep.theme;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+import nextstep.exceptions.exception.NotFoundObjectException;
 @Service
 public class ThemeService {
     private ThemeDao themeDao;
@@ -21,7 +21,7 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
-        themeDao.findById(id).orElseThrow(NullPointerException::new);
+        themeDao.findById(id).orElseThrow(NotFoundObjectException::new);
         themeDao.delete(id);
     }
 }
