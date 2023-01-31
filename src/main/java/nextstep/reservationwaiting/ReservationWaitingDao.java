@@ -1,5 +1,11 @@
 package nextstep.reservationwaiting;
 
+import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.DELETE_BY_ID_STATEMENT;
+import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.EXIST_BY_ID_STATEMENT;
+import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.INSERT_INTO_STATEMENT;
+import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.SELECT_BY_MEMBER_ID_STATEMENT;
+import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.SELECT_MAX_WAIT_NUM_BY_SCHEDULE_ID_STATEMENT;
+
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
@@ -39,11 +45,10 @@ public class ReservationWaitingDao {
                     .build(), resultSet.getLong("reservation_waiting.id"));
 
     public Long save(ReservationWaiting reservationWaiting) {
-        String sql = "INSERT INTO reservation_waiting (schedule_id, member_id, wait_num) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(INSERT_INTO_STATEMENT, new String[]{"id"});
             ps.setLong(1, reservationWaiting.getSchedule().getId());
             ps.setLong(2, reservationWaiting.getMemberId());
             ps.setLong(3, reservationWaiting.getWaitNum());
@@ -51,53 +56,35 @@ public class ReservationWaitingDao {
 
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return keyHolder.getKeyAs(Long.class);
     }
 
     public List<ReservationWaiting> findByMemberId(Long memberId) {
-        String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                "theme.id, theme.name, theme.desc, theme.price, " +
-                "from reservation_waiting " +
-                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "where reservation_waiting.member_id = ?;";
         try {
-            return jdbcTemplate.query(sql, rowMapper, memberId);
+            return jdbcTemplate.query(SELECT_BY_MEMBER_ID_STATEMENT, rowMapper, memberId);
         } catch (Exception e) {
             return null;
         }
     }
 
     public boolean existById(Long id, Long memberId) {
-        String sql = "SELECT " +
-                "1 " +
-                "from reservation_waiting " +
-                "where member_id = ? and id = ? " +
-                "LIMIT 1;";
         try {
-            return jdbcTemplate.queryForObject(sql, Integer.class, memberId, id) == 1;
+            return Objects.requireNonNull(jdbcTemplate.queryForObject(EXIST_BY_ID_STATEMENT, Integer.class, memberId, id)) == 1;
         } catch (Exception e) {
             return false;
         }
     }
 
     public Long findMaxWaitNumByScheduleId(Long scheduleId) {
-        String sql = "SELECT " +
-                "max(reservation_waiting.wait_num) " +
-                "from reservation_waiting " +
-                "where reservation_waiting.schedule_id = ?;";
         try {
-            return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Long.class, scheduleId));
+            return Objects.requireNonNull(jdbcTemplate.queryForObject(SELECT_MAX_WAIT_NUM_BY_SCHEDULE_ID_STATEMENT, Long.class, scheduleId));
         } catch (Exception e) {
             return 0L;
         }
     }
 
     public void deleteById(Long id) {
-        String sql = "DELETE FROM reservation_waiting where id = ?;";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(DELETE_BY_ID_STATEMENT, id);
     }
 }
 
