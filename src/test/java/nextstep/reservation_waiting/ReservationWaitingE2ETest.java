@@ -143,5 +143,18 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     }
 
+    @Test
+    void getMyReservationWaitingListTest() {
+        createReservationWaiting();
 
+        var response = RestAssured
+                .given().auth().oauth2(token.getAccessToken()).log().all()
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        List<ReservationWaitingResponse> reservationWaiting = response.jsonPath().getList(".", ReservationWaitingResponse.class);
+        assertThat(reservationWaiting.size()).isEqualTo(1);
+    }
 }

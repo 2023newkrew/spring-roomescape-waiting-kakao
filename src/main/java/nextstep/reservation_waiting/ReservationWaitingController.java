@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,5 +26,13 @@ public class ReservationWaitingController {
     public ResponseEntity<Void> delete(@LoginMember Member member, @PathVariable Long id) {
         reservationWaitingService.deleteById(member, id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<ReservationWaitingResponse>> showMyReservationWaiting(
+            @LoginMember Member member
+    ) {
+        List<ReservationWaitingResponse> reservationWaiting = reservationWaitingService.findAllByMember(member);
+        return ResponseEntity.ok(reservationWaiting);
     }
 }

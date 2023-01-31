@@ -10,6 +10,8 @@ import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReservationWaitingService {
@@ -43,5 +45,12 @@ public class ReservationWaitingService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public List<ReservationWaitingResponse> findAllByMember(Member member) {
+        return reservationDao.findAllWaitingByMemberId(member.getId())
+                .stream()
+                .map(ReservationWaitingResponse::new)
+                .toList();
     }
 }
