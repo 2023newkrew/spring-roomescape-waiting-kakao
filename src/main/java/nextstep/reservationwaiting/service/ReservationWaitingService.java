@@ -33,16 +33,13 @@ public class ReservationWaitingService {
 
     public String create(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
         Member member = memberDao.findById(memberId);
-        if (member == null) {
-            throw new AuthenticationException();
-        }
+        checkEmptyMember(member);
 
         Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        checkEmptySchedule(schedule);
 
         List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
+        // if there is no reservation, add reservation. (not reservation waiting)
         if (reservations.isEmpty()) {
             Reservation reservation = new Reservation(schedule, member);
             return "/reservations/" + reservationDao.save(reservation);
@@ -56,32 +53,45 @@ public class ReservationWaitingService {
         return "/reservation-waitings/" + reservationWaitingDao.save(newReservationWaiting);
     }
 
-    public List<ReservationWaitingResponse> findAllByMemberId(Long memberId) {
-        Member member = memberDao.findById(memberId);
+    private void checkEmptyMember(Member member) {
         if (member == null) {
             throw new AuthenticationException();
         }
+    }
 
-        List<ReservationWaiting> reservationWaitings = reservationWaitingDao.findAllByMemberId(memberId);
-        if (reservationWaitings.isEmpty()) {
-            return new ArrayList<ReservationWaitingResponse>();
+    private void checkEmptySchedule(Schedule schedule) {
+        if (schedule == null) {
+            throw new NullPointerException();
         }
+    }
 
-        return reservationWaitings.stream()
+    public List<ReservationWaitingResponse> findAllByMemberId(Long memberId) {
+        Member member = memberDao.findById(memberId);
+        checkEmptyMember(member);
+
+        return reservationWaitingDao.findAllByMemberId(memberId)
+                .stream()
                 .map(v -> ReservationWaitingResponse.of(v, reservationWaitingDao.getWaitNum(v.getSchedule().getId(), v.getId())))
                 .collect(Collectors.toList());
     }
 
     public void deleteById(Member member, Long id) {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
+        checkEmptyReservationWaiting(reservationWaiting);
+        checkReservationWaitingIsMine(member, reservationWaiting);
+
+        reservationWaitingDao.deleteById(id);
+    }
+
+    private void checkEmptyReservationWaiting(ReservationWaiting reservationWaiting) {
         if (reservationWaiting == null) {
             throw new NullPointerException();
         }
+    }
 
+    private void checkReservationWaitingIsMine(Member member, ReservationWaiting reservationWaiting) {
         if (!reservationWaiting.sameMember(member)) {
             throw new AuthenticationException();
         }
-
-        reservationWaitingDao.deleteById(id);
     }
 }

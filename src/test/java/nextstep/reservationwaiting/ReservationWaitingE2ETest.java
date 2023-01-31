@@ -113,6 +113,22 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
         assertThat(reservationWaitingResponses.size()).isEqualTo(1);
     }
 
+    @DisplayName("예약 대기가 없을 때 조회하면 빈 json이 반환된다.")
+    @Test
+    void showEmptyList() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationWaitingResponse> reservationWaitingResponses = response.jsonPath().getList(".", ReservationWaitingResponse.class);
+        assertThat(reservationWaitingResponses.size()).isEqualTo(0);
+    }
+
     @DisplayName("예약 대기를 삭제한다")
     @Test
     void delete() {
