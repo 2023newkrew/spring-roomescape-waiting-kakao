@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.auth.AuthenticationException;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class ReservationWaitingController {
@@ -27,6 +28,17 @@ public class ReservationWaitingController {
 
     }
 
+    @GetMapping("/reservations-waitings/mine")
+    public ResponseEntity<List<ReservationWaiting>> findMyReservationsWaitings(@LoginMember UserDetails member) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+        return ResponseEntity.ok(
+                reservationWaitingService.findAllByUsername(member.getUsername())
+        );
+    }
+    
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         e.printStackTrace();
