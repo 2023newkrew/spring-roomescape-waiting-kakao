@@ -21,7 +21,7 @@ public class AuthConfiguration {
     }
 
     @Bean
-    public LoginService loginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        return new LoginService(memberDao, jwtTokenProvider);
+    public LoginService loginService(MemberDao memberDao) {
+        return new LoginService(memberDao, jwtTokenProvider());
     }
 }
