@@ -283,6 +283,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약 취소 가능 상태가 아닌 예약은 취소할 수 없다.")
     void Should_ThrowBadRequest_When_IfAttemptToCancelInvalidStatus() {
         createReservation();
+
         given().
                 auth().oauth2(token.getAccessToken()).
         when().

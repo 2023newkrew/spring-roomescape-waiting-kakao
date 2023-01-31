@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ReservationApproveEvent extends ApplicationEvent {
+public class ReservationApproveEvent {
     private Boolean isApprove;
 
     public Boolean isApproveTrue() {

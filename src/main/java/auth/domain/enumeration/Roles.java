@@ -21,6 +21,9 @@ public enum Roles {
                 .filter(role -> role.getRole().equals(string))
                 .findAny()
                 .orElseThrow(NoSuchFieldError::new);
+
         /* todo: 커스텀익셉션 정의 */
+        /* todo: 테스트 코드 작성 */
+        /* todo: 코드 리팩토링 */
     }
 }

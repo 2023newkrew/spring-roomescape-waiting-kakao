@@ -19,7 +19,7 @@ import static nextstep.support.constant.DepositSettings.*;
 public class AsyncReservationApproveEventHandler {
     private final ProfitDao profitDao;
     @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)
     public void handleAsync(ReservationApproveEvent reservationApproveEvent) {
         if (reservationApproveEvent.isApproveTrue()) {
             profitDao.save(LocalDateTime.now(), DEPOSIT);

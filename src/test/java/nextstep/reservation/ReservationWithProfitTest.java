@@ -60,6 +60,66 @@ public class ReservationWithProfitTest extends AbstractE2ETest {
         assertThat(profitDao.findAll().size()).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("미승인 상태의 예약을 거절할 경우 환불 없이 예약이 거절된다.")
+    void Should_NotInsertProfitAndRejectReservation_When_IfRejectReservationIsNotApproved() throws InterruptedException {
+        createReservation();
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/reject").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        threadPoolTaskExecutor.getThreadPoolExecutor().awaitTermination(1, TimeUnit.SECONDS);
+        assertThat(profitDao.findAll().size()).isEqualTo(0);
+
+        var response = given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservationResponses.get(0).getStatus()).isEqualTo(ReservationStatus.REJECTED);
+    }
+
+    @Test
+    @DisplayName("승인 상태의 예약을 거절할 경우 환불 이력이 추가되고 예약이 거절된다.")
+    void Should_InsertProfitAndRejectReservation_When_IfRejectReservationIsApproved() throws InterruptedException {
+        createReservation();
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/approve").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        given().
+                auth().oauth2(token.getAccessToken()).
+        when().
+                patch("/reservations/1/reject").
+        then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+
+        threadPoolTaskExecutor.getThreadPoolExecutor().awaitTermination(1, TimeUnit.SECONDS);
+        assertThat(profitDao.findAll().size()).isEqualTo(1);
+
+        var response = given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservationResponses.get(0).getStatus()).isEqualTo(ReservationStatus.REJECTED);
+    }
+
     private ExtractableResponse<Response> createReservation() {
         return given().log().all()
                 .auth().oauth2(token.getAccessToken())
