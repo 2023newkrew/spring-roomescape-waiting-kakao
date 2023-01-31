@@ -108,13 +108,13 @@ public class ReservationService {
         reservationDao.save(Reservation.of(reservationWaiting));
     }
 
-    private static void checkReservationIsMine(Member member, Reservation reservation) {
+    private void checkReservationIsMine(Member member, Reservation reservation) {
         if (!reservation.sameMember(member)) {
             throw new AuthenticationException();
         }
     }
 
-    private static void checkEmptyReservation(Reservation reservation) {
+    private void checkEmptyReservation(Reservation reservation) {
         if (reservation == null) {
             throw new NullPointerException();
         }

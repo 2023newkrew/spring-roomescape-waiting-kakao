@@ -83,11 +83,7 @@ public class ReservationWaitingDao {
     public Integer getWaitNum(Long scheduleId, Long reservationWaitingId) {
         String sql = "SELECT COUNT(id) FROM reservation_waiting WHERE schedule_id = ? AND id <= ?";
 
-        try {
-            return jdbcTemplate.queryForObject(sql, Integer.class, scheduleId, reservationWaitingId);
-        } catch (Exception e) {
-            return 0;
-        }
+        return jdbcTemplate.queryForObject(sql, Integer.class, scheduleId, reservationWaitingId);
     }
 
     public ReservationWaiting findById(Long id) {
