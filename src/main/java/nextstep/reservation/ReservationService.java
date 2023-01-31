@@ -31,7 +31,7 @@ public class ReservationService {
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
+    public Long create(final Member member, final ReservationRequest reservationRequest) {
         if (member == null) {
             throw new AuthenticationException(NOT_AUTHORIZED.getMessage());
         }
@@ -53,18 +53,18 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
-    public Optional<Reservation> findByScheduleId(Long scheduleId) {
+    public Optional<Reservation> findByScheduleId(final Long scheduleId) {
         return reservationDao.findByScheduleId(scheduleId);
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+    public List<Reservation> findAllByThemeIdAndDate(final Long themeId, final String date) {
         themeDao.findById(themeId)
             .orElseThrow(() -> new NullPointerException(NOT_EXIST_THEME.getMessage()));
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Reservation reservation, Member member) {
+    public void deleteById(final Reservation reservation, final Member member) {
         if (!reservation.sameMember(member)) {
             throw new AuthenticationException(NOT_OWN_RESERVATION.getMessage());
         }
@@ -72,18 +72,18 @@ public class ReservationService {
         reservationDao.deleteById(reservation.getId());
     }
 
-    public void validateReservationOwner(Reservation reservation, Member member) {
+    public void validateReservationOwner(final Reservation reservation, final Member member) {
         if (reservation.sameMember(member)) {
             throw new AlreadyReservedScheduleException(CANNOT_MAKE_RESERVATION_WAITING.getMessage());
         }
     }
 
-    public Reservation findById(Long id) {
+    public Reservation findById(final Long id) {
         return reservationDao.findById(id)
             .orElseThrow(() -> new NoReservationException(NOT_EXIST_RESERVATION.getMessage()));
     }
 
-    public List<Reservation> findOwn(Member member) {
+    public List<Reservation> findOwn(final Member member) {
         return reservationDao.findAllByMemberId(member.getId());
     }
 }
