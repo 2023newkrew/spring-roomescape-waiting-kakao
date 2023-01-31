@@ -3,7 +3,6 @@ package nextstep.waiting;
 import auth.Role;
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -19,8 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class WaitingDao {
 
-    public final JdbcTemplate jdbcTemplate;
-
+    private final JdbcTemplate jdbcTemplate;
 
     public WaitingDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -109,11 +107,7 @@ public class WaitingDao {
                 "inner join member on waiting.member_id = member.id " +
                 "where schedule.id = ?;";
 
-        try {
-            return jdbcTemplate.query(sql, rowMapper, id);
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
+        return jdbcTemplate.query(sql, rowMapper, id);
     }
 
     public void deleteById(Long id) {
@@ -132,12 +126,7 @@ public class WaitingDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on waiting.member_id = member.id " +
                 "where member.id = ?;";
-
-        try {
-            return jdbcTemplate.query(sql, rowMapper, id);
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
+        return jdbcTemplate.query(sql, rowMapper, id);
     }
 
     public int countWaitingNumber(Waiting waiting) {
