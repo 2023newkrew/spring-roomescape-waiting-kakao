@@ -8,16 +8,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginService {
 
-    private final MemberDao memberDao;
+    private final UserDetailsDao userDetailsDao;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
+    public LoginService(UserDetailsDao userDetailsDao, JwtTokenProvider jwtTokenProvider) {
+        this.userDetailsDao = userDetailsDao;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        Member member = memberDao.findByUsername(tokenRequest.getUsername());
+        Member member = userDetailsDao.findByUsername(tokenRequest.getUsername());
         if (member == null || member.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
@@ -33,6 +33,6 @@ public class LoginService {
 
     public Member extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return memberDao.findById(id);
+        return userDetailsDao.findById(id);
     }
 }
