@@ -4,6 +4,6 @@ package auth;
 import nextstep.member.Member;
 
 public interface UserDetailsDao {
-    Member findById(Long id);
-    Member findByUsername(String username);
+    UserDetails findUserDetailsById(Long id);
+    UserDetails findUserDetailsByUsername(String username);
 }

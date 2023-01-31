@@ -1,5 +1,6 @@
 package nextstep.member;
 
+import auth.UserDetails;
 import auth.UserDetailsDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,7 +27,6 @@ public class MemberDao implements UserDetailsDao {
             resultSet.getString("role")
     );
 
-    @Override
     public Long save(Member member) {
         String sql = "INSERT INTO member (username, password, name, phone, role) VALUES (?, ?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -45,15 +45,23 @@ public class MemberDao implements UserDetailsDao {
         return keyHolder.getKey().longValue();
     }
 
-    @Override
     public Member findById(Long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    @Override
     public Member findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, username);
+    }
+
+    @Override
+    public UserDetails findUserDetailsById(Long id) {
+        return UserDetails.of(findById(id));
+    }
+
+    @Override
+    public UserDetails findUserDetailsByUsername(String username) {
+        return UserDetails.of(findByUsername(username));
     }
 }
