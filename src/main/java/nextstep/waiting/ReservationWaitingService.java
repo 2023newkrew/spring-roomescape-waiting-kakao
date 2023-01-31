@@ -46,7 +46,7 @@ public class ReservationWaitingService {
         reservations.addAll(reservationDao.findByScheduleId(schedule.getId()));
 
         reservations.stream()
-                .filter(v -> v.sameMember(member))
+                .filter(v -> v.checkMemberIsOwner(member))
                 .findAny()
                 .ifPresent(v -> {
                     throw new DuplicateEntityException(ErrorCode.DUPLICATE_RESERVATION);
@@ -74,7 +74,7 @@ public class ReservationWaitingService {
             throw new NotExistEntityException(ErrorCode.RESERVATION_NOT_FOUND);
         }
 
-        if (!reservationWaiting.getReservation().sameMember(member)) {
+        if (!reservationWaiting.getReservation().checkMemberIsOwner(member)) {
             throw new UnauthorizedException(ErrorCode.FORBIDDEN);
         }
 

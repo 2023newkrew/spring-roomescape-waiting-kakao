@@ -50,9 +50,8 @@ public class ReservationService {
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId)
+        themeDao.findById(themeId)
                 .orElseThrow(() -> new NotExistEntityException(ErrorCode.THEME_NOT_FOUND));
-
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
@@ -60,7 +59,7 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new NotExistEntityException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if (!reservation.sameMember(member)) {
+        if (!reservation.checkMemberIsOwner(member)) {
             throw new UnauthorizedException(ErrorCode.FORBIDDEN);
         }
 
