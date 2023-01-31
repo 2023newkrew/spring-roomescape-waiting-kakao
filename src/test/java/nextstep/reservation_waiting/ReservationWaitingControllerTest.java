@@ -1,7 +1,7 @@
 package nextstep.reservation_waiting;
 
-import auth.LoginService;
-import auth.UserDetails;
+import auth.login.LoginService;
+import auth.login.UserDetails;
 import io.restassured.RestAssured;
 import nextstep.member.Member;
 import nextstep.member.MemberService;

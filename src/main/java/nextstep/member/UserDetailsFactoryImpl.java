@@ -2,8 +2,8 @@ package nextstep.member;
 
 import static nextstep.exception.ErrorMessage.NOT_AUTHORIZED;
 
-import auth.UserDetails;
-import auth.UserDetailsFactory;
+import auth.login.UserDetails;
+import auth.login.UserDetailsFactory;
 import lombok.RequiredArgsConstructor;
 import nextstep.exception.AuthenticationException;
 
@@ -13,7 +13,7 @@ public class UserDetailsFactoryImpl implements UserDetailsFactory {
     private final MemberDao memberDao;
 
     @Override
-    public UserDetails createUserDetails(String username, String password) {
+    public UserDetails makeUserDetails(String username, String password) {
         Member member = memberDao.findByUsername(username);
         if (member == null || member.checkWrongPassword(password)) {
             throw new AuthenticationException(NOT_AUTHORIZED.getMessage());
@@ -22,9 +22,9 @@ public class UserDetailsFactoryImpl implements UserDetailsFactory {
     }
 
     @Override
-    public UserDetails createUserDetails(Long principal, String role) {
+    public UserDetails convertToUserDetails(Long id, String role) {
         return UserDetails.builder()
-                .id(principal)
+                .id(id)
                 .role(role)
                 .build();
     }

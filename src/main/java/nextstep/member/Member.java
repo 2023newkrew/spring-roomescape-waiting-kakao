@@ -1,6 +1,6 @@
 package nextstep.member;
 
-import auth.UserDetails;
+import auth.login.UserDetails;
 import lombok.*;
 
 @Getter

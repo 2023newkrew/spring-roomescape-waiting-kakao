@@ -1,5 +1,6 @@
-package auth;
+package auth.login;
 
+import auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -8,7 +9,7 @@ public class LoginService {
     private final UserDetailsFactory userDetailsFactory;
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetails userDetails = userDetailsFactory.createUserDetails(tokenRequest.getUsername(), tokenRequest.getPassword());
+        UserDetails userDetails = userDetailsFactory.makeUserDetails(tokenRequest.getUsername(), tokenRequest.getPassword());
 
         String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
 
@@ -22,6 +23,6 @@ public class LoginService {
     public UserDetails extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
         String role = jwtTokenProvider.getRole(credential);
-        return userDetailsFactory.createUserDetails(id, role);
+        return userDetailsFactory.convertToUserDetails(id, role);
     }
 }

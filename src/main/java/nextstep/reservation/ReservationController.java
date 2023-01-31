@@ -1,7 +1,7 @@
 package nextstep.reservation;
 
 import auth.LoginMember;
-import auth.UserDetails;
+import auth.login.UserDetails;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberService;

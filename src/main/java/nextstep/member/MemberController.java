@@ -1,7 +1,7 @@
 package nextstep.member;
 
 import auth.LoginMember;
-import auth.UserDetails;
+import auth.login.UserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
