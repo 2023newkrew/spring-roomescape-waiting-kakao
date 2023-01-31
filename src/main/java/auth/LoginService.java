@@ -4,7 +4,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class LoginService {
-    // private MemberDao memberDao;
     private BiFunction<String, String, TokenMember> findByUsernameCheckPassword;
     private Function<Long, TokenMember> findById;
     private JwtTokenProvider jwtTokenProvider;
