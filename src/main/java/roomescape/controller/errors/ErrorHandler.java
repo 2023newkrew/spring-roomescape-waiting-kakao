@@ -13,7 +13,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
         var errorCode = e.getErrorCode();
         return ResponseEntity
                 .status(errorCode.getStatus())
-                .body(ErrorResponse.fromErrorCode(errorCode));
+                .body(ErrorResponse.from(errorCode));
 
     }
 }

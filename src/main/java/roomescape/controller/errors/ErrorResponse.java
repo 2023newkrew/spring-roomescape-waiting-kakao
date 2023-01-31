@@ -12,7 +12,7 @@ public class ErrorResponse {
     private final String code;
     private final String message;
 
-    public static ErrorResponse fromErrorCode(ErrorCode code) {
+    public static ErrorResponse from(ErrorCode code) {
 
         return new ErrorResponse(
                 code.getStatus().value(),
@@ -24,9 +24,9 @@ public class ErrorResponse {
     @Override
     public String toString() {
         return "ErrorResponse{" +
-                "status=" + status +
-                ", code='" + code + '\'' +
-                ", message='" + message + '\'' +
-                '}';
+               "status=" + status +
+               ", code='" + code + '\'' +
+               ", message='" + message + '\'' +
+               '}';
     }
 }
