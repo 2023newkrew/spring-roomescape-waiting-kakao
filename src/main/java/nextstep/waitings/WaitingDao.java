@@ -78,14 +78,18 @@ public class WaitingDao {
     }
 
     public List<Waiting> findByMemberId(Long memberId) {
-        String sql = "SELECT " +
-                "waiting.id, waiting.schedule_id, waiting.member_id, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                "theme.id, theme.name, theme.desc, theme.price, " +
-                "from waiting " +
-                "inner join schedule on waiting.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "where waiting.member_id = ?;";
-        return jdbcTemplate.query(sql, rowMapper, memberId);
+        try {
+            String sql = "SELECT " +
+                    "waiting.id, waiting.schedule_id, waiting.member_id, " +
+                    "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                    "theme.id, theme.name, theme.desc, theme.price, " +
+                    "from waiting " +
+                    "inner join schedule on waiting.schedule_id = schedule.id " +
+                    "inner join theme on schedule.theme_id = theme.id " +
+                    "where waiting.member_id = ?;";
+            return jdbcTemplate.query(sql, rowMapper, memberId);
+        } catch(DataAccessException e){
+            return null;
+        }
     }
 }

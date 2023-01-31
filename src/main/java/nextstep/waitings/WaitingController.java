@@ -31,7 +31,9 @@ public class WaitingController {
     public ResponseEntity<Void> delete(@LoginMember UserDetails userDetails, @PathVariable Long waitingId){
         try {
             waitingService.delete(new Member(userDetails), waitingId);
-        } catch (AuthorizationException e){
+        } catch (NullPointerException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (AuthorizationException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.noContent().build();
