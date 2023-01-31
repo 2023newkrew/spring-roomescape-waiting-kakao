@@ -26,7 +26,9 @@ public class MemberService {
         return member;
     }
 
-    public Member findById(Long id) {
-        return memberDao.findById(id).orElseThrow(() -> new MemberException(RoomEscapeExceptionCode.MEMBER_NOT_FOUND));
+    public MemberResponse findById(Long id) {
+        Member member = memberDao.findById(id).orElseThrow(() -> new MemberException(RoomEscapeExceptionCode.MEMBER_NOT_FOUND));
+        return MemberResponse.from(member);
+
     }
 }

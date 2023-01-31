@@ -25,13 +25,13 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
     @Override
     public Optional<String> getRole(Long id) {
-        Member member;
+        MemberResponse memberResponse;
         try {
-            member = memberService.findById(id);
+            memberResponse = memberService.findById(id);
         } catch (MemberException e) {
             return Optional.empty();
         }
 
-        return Optional.of(member.getRole().name());
+        return Optional.of(memberResponse.getRole());
     }
 }
