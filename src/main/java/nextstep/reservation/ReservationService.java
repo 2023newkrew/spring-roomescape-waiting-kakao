@@ -7,6 +7,7 @@ import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
+import nextstep.support.NoEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import nextstep.waiting.Waiting;
@@ -39,7 +40,7 @@ public class ReservationService {
 
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new NoEntityException();
         }
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
@@ -58,7 +59,7 @@ public class ReservationService {
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
-            throw new NullPointerException();
+            throw new NoEntityException();
         }
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
@@ -72,7 +73,7 @@ public class ReservationService {
 
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
-            throw new NullPointerException();
+            throw new NoEntityException();
         }
 
         if (!reservation.sameMember(member)) {
