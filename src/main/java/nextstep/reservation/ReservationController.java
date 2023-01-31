@@ -33,6 +33,14 @@ public class ReservationController {
                 .body(results);
     }
 
+    @GetMapping("/reservations/mine")
+    public ResponseEntity<List<Reservation>> readOwnReservations(@LoginMember UserDetails userDetails) {
+        Member member = memberService.findById(userDetails.getId());
+        List<Reservation> own = reservationService.findOwn(member);
+        return ResponseEntity.ok()
+                .body(own);
+    }
+
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
         Member member = memberService.findById(userDetails.getId());

@@ -73,4 +73,8 @@ public class ReservationService {
             throw new AlreadyReservedScheduleException("이미 예약된 스케줄에 예약 대기를 생성할 수 없습니다.");
         }
     }
+
+    public List<Reservation> findOwn(Member member) {
+        return reservationDao.findAllByMemberId(member.getId());
+    }
 }
