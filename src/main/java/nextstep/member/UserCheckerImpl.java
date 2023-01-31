@@ -1,9 +1,11 @@
 package nextstep.member;
 
-import auth.AuthenticationException;
-import auth.TokenRequest;
+import auth.support.AuthenticationException;
+import auth.dto.TokenRequest;
 import auth.UserChecker;
 import auth.UserDetails;
+import nextstep.member.domain.Member;
+import nextstep.member.repository.MemberDao;
 
 public class UserCheckerImpl implements UserChecker {
     private final MemberDao memberDao;

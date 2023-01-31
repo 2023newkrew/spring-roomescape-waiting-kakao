@@ -1,7 +1,12 @@
 package nextstep;
 
 import auth.*;
-import nextstep.member.MemberDao;
+import auth.controller.LoginController;
+import auth.service.LoginService;
+import auth.support.AdminInterceptor;
+import auth.support.JwtTokenProvider;
+import auth.support.LoginMemberArgumentResolver;
+import nextstep.member.repository.MemberDao;
 import nextstep.member.UserCheckerImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
