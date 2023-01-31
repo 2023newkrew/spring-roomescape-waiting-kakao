@@ -14,10 +14,10 @@ public class MemberService {
     }
 
     public Long create(MemberRequest memberRequest) {
-        return memberDao.save(memberRequest.toEntity().toMemberDetail());
+        return memberDao.save(memberRequest.toEntity());
     }
 
     public Member findById(Long id) {
-        return Member.fromMemberDetail(memberDao.findById(id));
+        return memberDao.findById(id);
     }
 }

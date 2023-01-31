@@ -1,43 +1,28 @@
 package nextstep.web.member.domain;
 
-import auth.login.MemberDetail;
-import lombok.AllArgsConstructor;
+import auth.login.AbstractMember;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
-public class Member {
-    private Long id;
-    private String username;
-    private String password;
+@EqualsAndHashCode(callSuper = true)
+public class Member extends AbstractMember {
     private String name;
     private String phone;
-    private String role;
 
     public Member(String username, String password, String name, String phone, String role) {
-        this.username = username;
-        this.password = password;
+        super(username, password, role);
         this.name = name;
         this.phone = phone;
-        this.role = role;
     }
 
-    public MemberDetail toMemberDetail() {
-        return new MemberDetail(id, username, password, name, phone, role);
+    public Member(Long id, String username, String password, String name, String phone, String role) {
+        super(id, username, password, role);
+        this.name = name;
+        this.phone = phone;
     }
 
-    public static Member fromMemberDetail(MemberDetail memberDetail) {
-        return new Member(
-                memberDetail.getId(),
-                memberDetail.getUsername(),
-                memberDetail.getPassword(),
-                memberDetail.getName(),
-                memberDetail.getPhone(),
-                memberDetail.getRole()
-        );
+    public Member() {
+        super();
     }
 }

@@ -1,7 +1,7 @@
 package auth.login;
 
-public interface MemberDao {
-    Long save(MemberDetail member);
-    MemberDetail findById(Long id);
-    MemberDetail findByUsername(String username);
+public interface MemberDao<T extends AbstractMember> {
+    Long save(T entity);
+    T findById(Long id);
+    T findByUsername(String username);
 }

@@ -1,10 +1,9 @@
 package nextstep.web.member.controller;
 
 import auth.login.LoginMember;
-import auth.login.MemberDetail;
+import nextstep.web.member.domain.Member;
 import nextstep.web.member.dto.MemberRequest;
 import nextstep.web.member.service.MemberService;
-import nextstep.web.member.domain.Member;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +25,7 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Member> me(@LoginMember MemberDetail member) {
-        return ResponseEntity.ok(Member.fromMemberDetail(member));
+    public ResponseEntity<Member> me(@LoginMember Member member) {
+        return ResponseEntity.ok(member);
     }
 }

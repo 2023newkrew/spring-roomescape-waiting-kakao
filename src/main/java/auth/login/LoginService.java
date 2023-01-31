@@ -5,17 +5,17 @@ import auth.util.JwtTokenProvider;
 import auth.login.dto.TokenRequest;
 import auth.login.dto.TokenResponse;
 
-public class LoginService {
-    private final MemberDao memberDao;
+public class LoginService<T extends AbstractMember> {
+    private final MemberDao<T> memberDao;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
+    public LoginService(MemberDao<T> memberDao, JwtTokenProvider jwtTokenProvider) {
         this.memberDao = memberDao;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        MemberDetail member = memberDao.findByUsername(tokenRequest.getUsername());
+        T member = memberDao.findByUsername(tokenRequest.getUsername());
         if (member == null || member.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
@@ -29,7 +29,7 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public MemberDetail extractMember(String credential) {
+    public T extractMember(String credential) {
         Long id = extractPrincipal(credential);
         return memberDao.findById(id);
     }

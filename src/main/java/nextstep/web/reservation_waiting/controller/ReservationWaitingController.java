@@ -1,7 +1,6 @@
 package nextstep.web.reservation_waiting.controller;
 
 import auth.login.LoginMember;
-import auth.login.MemberDetail;
 import lombok.RequiredArgsConstructor;
 import nextstep.web.member.domain.Member;
 import nextstep.web.reservation_waiting.dto.ReservationWaitingRequest;
@@ -22,23 +21,23 @@ public class ReservationWaitingController {
 
     @PostMapping
     public ResponseEntity<Void> createReservationWaiting(
-            @LoginMember MemberDetail member,
+            @LoginMember Member member,
             @RequestBody ReservationWaitingRequest reservationWaitingRequest
     ) {
-        String location = reservationWaitingService.create(Member.fromMemberDetail(member), reservationWaitingRequest);
+        String location = reservationWaitingService.create(member, reservationWaitingRequest);
         return ResponseEntity.created(URI.create(location)).build();
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<ReservationWaitingResponse>> readMyReservationWaiting(@LoginMember MemberDetail member) {
-        List<ReservationWaitingResponse> results = reservationWaitingService.readMine(Member.fromMemberDetail(member));
+    public ResponseEntity<List<ReservationWaitingResponse>> readMyReservationWaiting(@LoginMember Member member) {
+        List<ReservationWaitingResponse> results = reservationWaitingService.readMine(member);
 
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationWaiting(@LoginMember MemberDetail member, @PathVariable Long id) {
-        reservationWaitingService.deleteById(Member.fromMemberDetail(member), id);
+    public ResponseEntity<Void> deleteReservationWaiting(@LoginMember Member member, @PathVariable Long id) {
+        reservationWaitingService.deleteById(member, id);
 
         return ResponseEntity.noContent().build();
     }

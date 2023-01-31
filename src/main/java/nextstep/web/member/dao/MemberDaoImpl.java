@@ -1,7 +1,6 @@
 package nextstep.web.member.dao;
 
 import auth.login.MemberDao;
-import auth.login.MemberDetail;
 import nextstep.web.member.domain.Member;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,7 +13,8 @@ import java.sql.PreparedStatement;
 import java.util.Objects;
 
 @Component
-public class MemberDaoImpl implements MemberDao {
+public class MemberDaoImpl implements MemberDao<Member> {
+
     public final JdbcTemplate jdbcTemplate;
 
     public MemberDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -31,7 +31,7 @@ public class MemberDaoImpl implements MemberDao {
     );
 
     @Override
-    public Long save(MemberDetail member) {
+    public Long save(Member member) {
         String sql = "INSERT INTO member (username, password, name, phone, role) VALUES (?, ?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -53,20 +53,20 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     @Override
-    public MemberDetail findById(Long id) {
+    public Member findById(Long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
         try {
-            return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, rowMapper, id)).toMemberDetail();
+            return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (DataAccessException e) {
             return null;
         }
     }
 
     @Override
-    public MemberDetail findByUsername(String username) {
+    public Member findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
         try {
-            return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, rowMapper, username)).toMemberDetail();
+            return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, rowMapper, username));
         } catch (DataAccessException e) {
             return null;
         }
