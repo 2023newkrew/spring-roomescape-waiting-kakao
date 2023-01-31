@@ -2,12 +2,10 @@ package auth.token;
 
 import nextstep.error.ErrorCode;
 import nextstep.exception.InvalidAuthorizationTokenException;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Component
 public class JwtTokenExtractor {
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER_TYPE = "Bearer";

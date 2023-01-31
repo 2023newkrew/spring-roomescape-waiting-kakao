@@ -4,11 +4,9 @@ import io.jsonwebtoken.*;
 import nextstep.error.ErrorCode;
 import nextstep.exception.InvalidAuthorizationTokenException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-@Component
 public class JwtTokenProvider {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
