@@ -1,4 +1,4 @@
-package nextstep.theme;
+package nextstep.theme.util;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;

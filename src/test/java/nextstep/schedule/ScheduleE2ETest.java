@@ -1,6 +1,7 @@
 package nextstep.schedule;
 
 import nextstep.schedule.model.Schedule;
+import nextstep.schedule.util.ScheduleTestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,9 +1,10 @@
 package nextstep.auth;
 
-import nextstep.member.MemberTestUtil;
-import nextstep.schedule.ScheduleTestUtil;
+import nextstep.auth.util.AuthTestUtil;
+import nextstep.member.util.MemberTestUtil;
+import nextstep.schedule.util.ScheduleTestUtil;
 import nextstep.schedule.model.ScheduleRequest;
-import nextstep.theme.ThemeTestUtil;
+import nextstep.theme.util.ThemeTestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

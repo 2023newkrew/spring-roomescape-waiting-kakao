@@ -1,4 +1,4 @@
-package nextstep.schedule;
+package nextstep.schedule.util;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;

@@ -1,11 +1,11 @@
-package nextstep.auth;
+package nextstep.auth.util;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import auth.model.TokenRequest;
 import auth.model.TokenResponse;
 import nextstep.member.model.Member;
-import nextstep.member.MemberTestUtil;
+import nextstep.member.util.MemberTestUtil;
 import org.springframework.http.MediaType;
 
 public class AuthTestUtil {

@@ -1,4 +1,4 @@
-package nextstep.reservation;
+package nextstep.reservation.util;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;

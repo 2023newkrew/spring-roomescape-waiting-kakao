@@ -1,11 +1,12 @@
 package nextstep.reservation;
 
 import auth.model.TokenResponse;
-import nextstep.auth.AuthTestUtil;
-import nextstep.member.MemberTestUtil;
+import nextstep.auth.util.AuthTestUtil;
+import nextstep.member.util.MemberTestUtil;
 import nextstep.member.model.Member;
 import nextstep.reservation.model.Reservation;
 import nextstep.reservation.model.ReservationRequest;
+import nextstep.reservation.util.ReservationTestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
