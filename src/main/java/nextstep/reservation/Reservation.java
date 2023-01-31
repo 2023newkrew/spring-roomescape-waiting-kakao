@@ -1,14 +1,13 @@
 package nextstep.reservation;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
 import java.util.Objects;
 
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Reservation {

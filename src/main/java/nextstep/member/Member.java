@@ -1,13 +1,12 @@
 package nextstep.member;
 
 import auth.UserDetails;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Member {
     private Long id;
     private String username;
