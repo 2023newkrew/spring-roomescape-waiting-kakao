@@ -63,4 +63,12 @@ public class ReservationController {
 
         return ResponseEntity.ok().build();
     }
+
+    @Secured(role = Roles.ADMIN)
+    @PatchMapping("/{id}/reject")
+    public ResponseEntity rejectReservation(@PathVariable Long id) {
+        reservationService.rejectById(id);
+
+        return ResponseEntity.ok().build();
+    }
 }

@@ -47,6 +47,7 @@ public class ReservationWithProfitTest extends AbstractE2ETest {
     @DisplayName("예약을 승인하면 예약금 내역이 추가된다.")
     void Should_InsertProfit_When_IfApprovedReservation() throws InterruptedException {
         createReservation();
+
         given().
                 auth().oauth2(token.getAccessToken()).
         when().

@@ -87,7 +87,7 @@ public class ReservationService {
 
     @Transactional
     public void approveById(Long id) {
-        if (!reservationDao.findById(id).getStatus().equals(NOT_APPROVED)) {
+        if (!isStatusEquals(reservationDao.findById(id), NOT_APPROVED)) {
             throw new IllegalApproveException();
         }
 
@@ -120,5 +120,23 @@ public class ReservationService {
 
     private boolean isAdmin(UserDetails userDetails) {
         return userDetails.getRole().equals(ADMIN);
+    }
+
+    public void rejectById(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+
+        if (reservation == null) {
+            throw new NoSuchReservationException();
+        }
+
+        if (isStatusEquals(reservation, APPROVED)) {
+            eventPublisher.publishEvent(new ReservationApproveEvent(false));
+        }
+
+        reservationDao.updateStatusById(id, REJECTED.getStatus());
+    }
+
+    private boolean isStatusEquals(Reservation reservation, ReservationStatus status) {
+        return reservation.getStatus().equals(status);
     }
 }
