@@ -13,8 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/reservation-waitings")
 public class WaitingReservationController {
-
-    public final WaitingReservationService waitingReservationService;
+    private final WaitingReservationService waitingReservationService;
 
     public WaitingReservationController(WaitingReservationService waitingReservationService) {
         this.waitingReservationService = waitingReservationService;

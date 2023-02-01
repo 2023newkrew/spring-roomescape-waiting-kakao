@@ -1,7 +1,6 @@
 package nextstep.waitingreservation;
 
 import nextstep.member.Member;
-import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -78,6 +77,16 @@ public class WaitingReservationDao {
                 "where waiting_reservation.id = ?;";
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public WaitingReservation findByScheduleIdAndWaitNum(Long scheduleId, Long waitNum) {
+        String sql = DEFAULT_SELECT_FROM_SQL +
+                "where schedule.id = ? and waiting_reservation.wait_num = ?;";
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, scheduleId, waitNum);
         } catch (Exception e) {
             return null;
         }

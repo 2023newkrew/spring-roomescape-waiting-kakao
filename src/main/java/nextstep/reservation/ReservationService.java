@@ -9,6 +9,8 @@ import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import nextstep.waitingreservation.WaitingReservation;
+import nextstep.waitingreservation.WaitingReservationDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,13 +18,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    private final ReservationDao reservationDao;
+    private final WaitingReservationDao waitingReservationDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final MemberDao memberDao;
+    private static final Long LOWEST_WAIT_NUM = 0L;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, WaitingReservationDao waitingReservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
+        this.waitingReservationDao = waitingReservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
@@ -82,5 +87,18 @@ public class ReservationService {
             throw new AuthenticationException();
         }
         reservationDao.deleteById(id);
+        moveOneFromWaitByScheduleId(reservation.getSchedule().getId());
+    }
+
+    private void moveOneFromWaitByScheduleId(Long scheduleId) {
+        WaitingReservation firstWaitingReservation = waitingReservationDao
+                .findByScheduleIdAndWaitNum(scheduleId, LOWEST_WAIT_NUM);
+
+        if (firstWaitingReservation == null) return;
+
+        waitingReservationDao.deleteById(firstWaitingReservation.getId());
+        waitingReservationDao.adjustWaitNumByScheduleIdAndBaseNum(scheduleId, LOWEST_WAIT_NUM);
+        Reservation reservation = new Reservation(firstWaitingReservation.getSchedule(), firstWaitingReservation.getMember());
+        reservationDao.save(reservation);
     }
 }

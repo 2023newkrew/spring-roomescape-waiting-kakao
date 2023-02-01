@@ -4,9 +4,10 @@ import auth.AuthenticationException;
 import auth.UserDetails;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservation.Reservation;
+import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,14 +15,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class WaitingReservationService {
-    public final WaitingReservationDao waitingReservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    private final ReservationDao reservationDao;
+    private final WaitingReservationDao waitingReservationDao;
+    private final ScheduleDao scheduleDao;
+    private final MemberDao memberDao;
 
-    public WaitingReservationService(WaitingReservationDao waitingReservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public WaitingReservationService(ReservationDao reservationDao, WaitingReservationDao waitingReservationDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+        this.reservationDao = reservationDao;
         this.waitingReservationDao = waitingReservationDao;
-        this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
     }
@@ -36,6 +37,11 @@ public class WaitingReservationService {
         Schedule schedule = scheduleDao.findById(waitingReservationRequest.getScheduleId());
         if (schedule == null) {
             throw new NullPointerException();
+        }
+
+        if (reservationDao.findByScheduleId(waitingReservationRequest.getScheduleId()).isEmpty()) {
+            Reservation reservation = new Reservation(schedule, member);
+            return reservationDao.save(reservation);
         }
 
         List<WaitingReservation> waitingReservations = waitingReservationDao.findAllByScheduleId(schedule.getId());

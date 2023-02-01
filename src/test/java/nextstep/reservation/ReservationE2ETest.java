@@ -137,6 +137,23 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("예약이 없을 때 예약 대기 신청시 예약이 된다")
+    @Test
+    void reservationWaitWhenNoReservation() {
+        createReservationWaiting();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservations = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservations.size()).isEqualTo(1);
+    }
+
     @DisplayName("예약이 없을 때 예약 목록을 조회한다")
     @Test
     void showEmptyReservations() {
