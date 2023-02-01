@@ -44,12 +44,12 @@ public class WaitingReservationService {
             return reservationDao.save(reservation);
         }
 
-        List<WaitingReservation> waitingReservations = waitingReservationDao.findAllByScheduleId(schedule.getId());
+        Long curWaitNum = waitingReservationDao.countByScheduleId(schedule.getId());
 
         WaitingReservation newWaitingReservation = new WaitingReservation(
                 schedule,
                 member,
-                (long) waitingReservations.size()
+                curWaitNum
         );
 
         return waitingReservationDao.save(newWaitingReservation);

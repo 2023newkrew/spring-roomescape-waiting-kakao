@@ -113,6 +113,11 @@ public class WaitingReservationDao {
         }
     }
 
+    public Long countByScheduleId(Long scheduleId) {
+        String sql = "SELECT count(id) from waiting_reservation where schedule_id = ?;";
+        return jdbcTemplate.queryForObject(sql, Long.class, scheduleId);
+    }
+
     public void deleteById(Long id) {
         String sql = "DELETE FROM waiting_reservation where id = ?;";
         jdbcTemplate.update(sql, id);
