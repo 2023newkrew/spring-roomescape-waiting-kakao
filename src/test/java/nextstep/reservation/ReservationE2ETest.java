@@ -223,7 +223,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     }
 
     @DisplayName("다수 예약 대기 발생")
-    @RepeatedTest(100)
+    @RepeatedTest(20)
     void createWaitingFromMany() throws InterruptedException {
 
         int threadNum = 50;

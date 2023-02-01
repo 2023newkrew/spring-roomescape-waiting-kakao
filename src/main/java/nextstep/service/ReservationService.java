@@ -4,10 +4,7 @@ import auth.exception.AuthenticationException;
 import auth.exception.AuthorizationException;
 import nextstep.domain.member.Member;
 import nextstep.domain.member.MemberDao;
-import nextstep.domain.reservation.Reservation;
-import nextstep.domain.reservation.ReservationDao;
-import nextstep.domain.reservation.ReservationWaiting;
-import nextstep.domain.reservation.ReservationWaitingDao;
+import nextstep.domain.reservation.*;
 import nextstep.domain.schedule.Schedule;
 import nextstep.domain.schedule.ScheduleDao;
 import nextstep.domain.theme.Theme;
@@ -58,7 +55,8 @@ public class ReservationService {
 
         Reservation newReservation = new Reservation(
                 schedule,
-                memberDao.findById(memberId)
+                memberDao.findById(memberId),
+                ReservationState.UNACCEPTED
         );
 
         return reservationDao.save(newReservation);
