@@ -71,12 +71,12 @@ public class ReservationWaitingService {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id)
                 .orElseThrow(() -> new NotExistEntityException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if (!reservationWaiting.getReservation().checkMemberIsOwner(member)) {
+        if (!reservationWaiting.checkMemberIsOwner(member)) {
             throw new UnauthorizedException(ErrorCode.FORBIDDEN);
         }
 
         reservationWaitingDao.deleteById(id);
-        updateSeq(reservationWaiting.getReservation().getSchedule().getId(), reservationWaiting.getWaitingSeq());
+        updateSeq(reservationWaiting.getScheduleId(), reservationWaiting.getWaitingSeq());
     }
 
     private void updateSeq(Long scheduleId, Long seq) {

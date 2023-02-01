@@ -36,6 +36,10 @@ public class Reservation {
         return member;
     }
 
+    public Long getScheduleId() {
+        return schedule.getId();
+    }
+
     public boolean checkMemberIsOwner(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }
