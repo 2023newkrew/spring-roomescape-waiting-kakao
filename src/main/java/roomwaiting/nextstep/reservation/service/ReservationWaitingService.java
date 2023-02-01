@@ -36,7 +36,7 @@ public class ReservationWaitingService {
                 new NullPointerException(SCHEDULE_NOT_FOUND.getMessage() + ID + reservationRequest.getScheduleId()));
         Optional<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (reservation.isEmpty()) {
-            return "/reservation/" + reservationService.create(member, reservationRequest);
+            return "/reservations/" + reservationService.create(member, reservationRequest);
         }
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
         long waitNum = reservationWaitingList
