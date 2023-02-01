@@ -2,10 +2,13 @@ package nextstep.schedule;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.theme.ThemeRequest;
+import nextstep.DatabaseCleaner;
+import nextstep.domain.dto.request.ScheduleRequest;
+import nextstep.domain.dto.request.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -13,7 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScheduleE2ETest extends AbstractE2ETest {
     private Long themeId;
-
     @BeforeEach
     public void setUp() {
         super.setUp();
@@ -34,7 +36,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
 
     @DisplayName("스케줄을 생성한다")
     @Test
-    public void createSchedule() {
+    public void Should_ResponseCreated_When_ValidRequest() {
         ScheduleRequest body = new ScheduleRequest(themeId, "2022-08-11", "13:00");
         RestAssured
                 .given().log().all()
@@ -48,7 +50,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
 
     @DisplayName("스케줄을 조회한다")
     @Test
-    public void showSchedules() {
+    public void Should_GetSchedules_When_Request() {
         requestCreateSchedule();
 
         var response = RestAssured
@@ -63,9 +65,9 @@ public class ScheduleE2ETest extends AbstractE2ETest {
         assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
     }
 
-    @DisplayName("예약을 삭제한다")
+    @DisplayName("스케줄을 삭제한다")
     @Test
-    void delete() {
+    void Should_DeleteSchedule_When_Request() {
         String location = requestCreateSchedule();
 
         var response = RestAssured

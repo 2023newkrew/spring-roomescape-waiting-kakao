@@ -1,5 +1,6 @@
 package nextstep.auth;
 
+import auth.support.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +15,24 @@ class JwtTokenProviderTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @Test
-    void createToken() {
+    @DisplayName("토큰 검증 테스트")
+    void Should_ReturnTrue_When_ValidateToken() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
 
         assertThat(jwtTokenProvider.validateToken(token)).isTrue();
     }
 
     @Test
-    void getPrincipal() {
+    @DisplayName("토큰 Principal 가져오기 테스트")
+    void Should_ReturnId_When_GetPrincipal() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
 
         assertThat(jwtTokenProvider.getPrincipal(token)).isEqualTo("1");
     }
 
     @Test
-    void getRole() {
+    @DisplayName("토큰 내에 담긴 유저 권한 가져오기 테스트")
+    void Should_ReturnAdmin_When_GetRoleOfAdminToken() {
         String token = jwtTokenProvider.createToken("1", "ADMIN");
 
         assertThat(jwtTokenProvider.getRole(token)).isEqualTo("ADMIN");
