@@ -31,7 +31,7 @@ public class ReservationWaitingService {
         this.memberDao = memberDao;
     }
 
-    public String create(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
+    public Long create(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
         Member member = memberDao.findById(memberId);
         checkEmptyMember(member);
 
@@ -39,10 +39,10 @@ public class ReservationWaitingService {
         checkEmptySchedule(schedule);
 
         List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
-        // if there is no reservation, add reservation. (not reservation waiting)
+        // if there is no reservation, add reservation. (not reservation waiting) And return negative id.
         if (reservations.isEmpty()) {
             Reservation reservation = new Reservation(schedule, member);
-            return "/reservations/" + reservationDao.save(reservation);
+            return -reservationDao.save(reservation);
         }
 
         ReservationWaiting newReservationWaiting = new ReservationWaiting(
@@ -50,7 +50,7 @@ public class ReservationWaitingService {
                 member
         );
 
-        return "/reservation-waitings/" + reservationWaitingDao.save(newReservationWaiting);
+        return reservationWaitingDao.save(newReservationWaiting);
     }
 
     private void checkEmptyMember(Member member) {
