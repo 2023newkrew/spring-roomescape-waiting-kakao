@@ -30,7 +30,7 @@ public class AuthorizationService {
             throw new AuthenticationException(AuthenticationErrorMessageType.INVALID_USERNAME_OR_PASSWORD);
         }
         RoleType role = userDetailsEntity.getRole();
-        TokenData tokenData = new TokenData(userDetailsEntity.getId(), role.toString());
+        TokenData tokenData = new TokenData(userDetailsEntity.getId(), role.name());
 
         return new TokenResponse(provider.createToken(tokenData));
     }
