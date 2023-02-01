@@ -181,13 +181,37 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("관리자가 예약을 승인한다.")
     @Test
-    void approveReservation() {
+    void approve() {
         var reservation = createReservation();
 
         RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .when().patch(reservation.header("Location") + "/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("사용자가 미승인 상태의 예약을 취소한다.")
+    @Test
+    void cancelUnapprovedReservation() {
+        var reservation = createReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch(reservation.header("Location") + "/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("사용자가 승인 상태의 예약을 취소한다.")
+    @Test
+    void cancelApprovedReservation() {
+        long id = approveReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/" + id + "/cancel")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
     }
@@ -201,5 +225,17 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
+    }
+
+    private Long approveReservation() {
+        var reservationResponse = createReservation();
+        var reservationLocation = reservationResponse.header("Location").split("/");
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch(reservationResponse.header("Location") + "/approve")
+                .then().log().all()
+                .extract();
+        return Long.parseLong(reservationLocation[reservationLocation.length - 1]);
     }
 }
