@@ -71,8 +71,16 @@ public class ReservationWaitingService {
 
         return reservationWaitingDao.findAllByMemberId(memberId)
                 .stream()
-                .map(v -> ReservationWaitingResponse.of(v, reservationWaitingDao.getWaitNum(v.getSchedule().getId(), v.getId())))
+                .map(v -> ReservationWaitingResponse.of(v, getWaitNumString(v)))
                 .collect(Collectors.toList());
+    }
+
+    public String getWaitNumString(ReservationWaiting v) {
+        int waitNum = reservationWaitingDao.getWaitNum(v.getSchedule().getId(), v.getId());
+        if (waitNum >= 100){
+            return "100+";
+        }
+        return String.valueOf(waitNum);
     }
 
     public void deleteById(Member member, Long id) {
