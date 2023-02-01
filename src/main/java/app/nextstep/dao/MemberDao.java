@@ -1,15 +1,16 @@
 package app.nextstep.dao;
 
+import app.auth.domain.UserDetail;
 import app.nextstep.domain.Member;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 
-@Component
+@Repository
 public class MemberDao {
     public final JdbcTemplate jdbcTemplate;
 
@@ -23,6 +24,13 @@ public class MemberDao {
             resultSet.getString("password"),
             resultSet.getString("name"),
             resultSet.getString("phone"),
+            resultSet.getString("role")
+    );
+
+    private final RowMapper<UserDetail> userDeTailrowMapper = (resultSet, rowNum) -> new UserDetail(
+            resultSet.getLong("id"),
+            resultSet.getString("username"),
+            resultSet.getString("password"),
             resultSet.getString("role")
     );
 

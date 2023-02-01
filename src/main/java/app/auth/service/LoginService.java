@@ -1,7 +1,7 @@
 package app.auth.service;
 
 import app.auth.dao.LoginDao;
-import app.auth.dto.TokenRequest;
+import app.auth.domain.UserDetail;
 import app.auth.dto.TokenResponse;
 import app.auth.support.AuthenticationException;
 import app.auth.util.JwtTokenProvider;
@@ -17,11 +17,9 @@ public class LoginService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetail userDetail = loginDao.findByUsername(tokenRequest.getUsername())
-                .orElseThrow(() -> new AuthenticationException());
-
-        if (userDetail.checkWrongPassword(tokenRequest.getPassword())) {
+    public TokenResponse createToken(String username, String password) {
+        UserDetail userDetail = loginDao.findByUsername(username);
+        if (userDetail == null || userDetail.checkWrongPassword(password)) {
             throw new AuthenticationException();
         }
 
@@ -30,13 +28,8 @@ public class LoginService {
         return new TokenResponse(accessToken);
     }
 
-    public Long extractPrincipal(String credential) {
-        return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-    }
-
     public UserDetail extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return loginDao.findById(id)
-                .orElseThrow(() -> new AuthenticationException());
+        return loginDao.findById(id);
     }
 }

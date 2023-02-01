@@ -1,10 +1,13 @@
-package app.auth.service;
+package app.auth.domain;
 
 public class UserDetail {
     private Long id;
     private String username;
     private String password;
     private String role;
+
+    public UserDetail() {
+    }
 
     public UserDetail(Long id, String username, String password, String role) {
         this.id = id;

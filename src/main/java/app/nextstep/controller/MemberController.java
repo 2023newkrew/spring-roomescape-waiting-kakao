@@ -1,7 +1,7 @@
 package app.nextstep.controller;
 
-import app.auth.support.AuthenticationPrincipal;
-import app.auth.service.UserDetail;
+import app.auth.support.LoginUser;
+import app.auth.domain.UserDetail;
 import app.nextstep.dto.MemberRequest;
 import app.nextstep.service.MemberService;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity me(@AuthenticationPrincipal UserDetail userDetail) {
+    public ResponseEntity me(@LoginUser UserDetail userDetail) {
         return ResponseEntity.ok(memberService.findById(userDetail.getId()));
     }
 }

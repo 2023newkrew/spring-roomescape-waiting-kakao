@@ -1,8 +1,6 @@
 package app.auth.util;
 
 import io.jsonwebtoken.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
@@ -45,9 +43,5 @@ public class JwtTokenProvider {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
-    }
-
-    public long getValidityInMilliseconds() {
-        return validityInMilliseconds;
     }
 }

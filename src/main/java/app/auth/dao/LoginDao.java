@@ -1,11 +1,9 @@
 package app.auth.dao;
 
-import app.auth.service.UserDetail;
+import app.auth.domain.UserDetail;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 public class LoginDao {
@@ -22,17 +20,13 @@ public class LoginDao {
             resultSet.getString("role")
     );
 
-    public Optional<UserDetail> findById(Long id) {
+    public UserDetail findById(Long id) {
         String sql = "SELECT id, username, password, role from member where id = ?;";
-        return jdbcTemplate.query(sql, rowMapper, id)
-                .stream()
-                .findFirst();
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    public Optional<UserDetail> findByUsername(String username) {
+    public UserDetail findByUsername(String username) {
         String sql = "SELECT id, username, password, role from member where username = ?;";
-        return jdbcTemplate.query(sql, rowMapper, username)
-                .stream()
-                .findFirst();
+        return jdbcTemplate.queryForObject(sql, rowMapper, username);
     }
 }
