@@ -44,11 +44,7 @@ public class WaitingReservation {
         return waitNum;
     }
 
-    public boolean sameMember(Member member) {
-        return member != null && Objects.equals(this.member.getId(), member.getId());
-    }
-
     public boolean sameMember(UserDetails userDetails) {
-        return userDetails != null && Objects.equals(this.member.getId(), userDetails.getId());
+        return Objects.equals(this.member.getId(), userDetails.getId());
     }
 }
