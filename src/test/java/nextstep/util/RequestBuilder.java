@@ -3,6 +3,7 @@ package nextstep.util;
 import auth.domain.dto.TokenRequest;
 import lombok.experimental.UtilityClass;
 import nextstep.domain.dto.request.MemberRequest;
+import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.request.ScheduleRequest;
 import nextstep.domain.dto.request.ThemeRequest;
 import org.springframework.context.annotation.Profile;
@@ -60,4 +61,9 @@ public class RequestBuilder {
                 .build();
     }
 
+    public static ReservationRequest reservationRequest(Long scheduleId) {
+        return ReservationRequest.builder()
+                .scheduleId(scheduleId)
+                .build();
+    }
 }

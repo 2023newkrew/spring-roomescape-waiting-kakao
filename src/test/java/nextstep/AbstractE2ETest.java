@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import static io.restassured.RestAssured.given;
 import static nextstep.util.RequestBuilder.*;
 import static nextstep.util.RequestBuilder.memberRequestForAdmin;
 import static nextstep.util.RequestBuilder.tokenRequestForAdmin;
@@ -83,6 +84,19 @@ public class AbstractE2ETest {
                 .when().post("/members")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
+    }
+
+    public Long createReservation(Long scheduleId) {
+        var reservationResponse = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(RequestBuilder.reservationRequest(scheduleId))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservations")
+                .then().log().all()
+                .extract();
+        String[] reservationLocation = reservationResponse.header("Location").split("/");
+        return Long.parseLong(reservationLocation[reservationLocation.length - 1]);
     }
 
     public String tokenForUser() {
