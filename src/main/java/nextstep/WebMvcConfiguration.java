@@ -3,7 +3,6 @@ package nextstep;
 import auth.AdminInterceptor;
 import auth.JwtTokenProvider;
 import auth.LoginService;
-import auth.LoginUserDetailsArgumentResolver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import nextstep.config.annotation.LoginMemberArgumentResolver;
@@ -28,7 +27,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List argumentResolvers) {
-        argumentResolvers.add(new LoginUserDetailsArgumentResolver(loginService));
         argumentResolvers.add(new LoginMemberArgumentResolver(loginService));
     }
 }
