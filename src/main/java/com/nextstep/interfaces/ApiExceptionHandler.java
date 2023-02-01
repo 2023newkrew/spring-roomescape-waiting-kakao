@@ -1,7 +1,7 @@
 package com.nextstep.interfaces;
 
 import com.authorizationserver.domains.authorization.exceptions.AuthenticationException;
-import com.nextstep.domains.exceptions.BaseException;
+import com.nextstep.interfaces.exceptions.BaseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;

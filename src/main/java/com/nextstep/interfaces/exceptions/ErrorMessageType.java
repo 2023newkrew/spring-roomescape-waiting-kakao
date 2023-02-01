@@ -1,4 +1,4 @@
-package com.nextstep.domains.exceptions;
+package com.nextstep.interfaces.exceptions;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

@@ -1,9 +1,9 @@
 package com.nextstep.interfaces.waiting;
 
 import com.nextstep.infrastructures.web.UseContext;
-import com.nextstep.domains.exceptions.ErrorMessageType;
-import com.nextstep.domains.exceptions.ReservationException;
-import com.nextstep.domains.exceptions.ScheduleException;
+import com.nextstep.interfaces.exceptions.ErrorMessageType;
+import com.nextstep.interfaces.exceptions.ReservationException;
+import com.nextstep.interfaces.exceptions.ScheduleException;
 import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
 import com.nextstep.interfaces.reservation.dtos.ReservationResponse;
 import com.nextstep.domains.reservation.ReservationService;

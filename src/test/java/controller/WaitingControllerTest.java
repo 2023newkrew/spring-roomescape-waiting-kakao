@@ -2,7 +2,7 @@ package controller;
 
 import com.authorizationserver.infrastructures.jwt.TokenData;
 import io.restassured.specification.RequestSpecification;
-import com.nextstep.domains.exceptions.ErrorMessageType;
+import com.nextstep.interfaces.exceptions.ErrorMessageType;
 import com.nextstep.interfaces.member.dtos.MemberRequest;
 import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
 import com.nextstep.interfaces.schedule.dtos.ScheduleRequest;
