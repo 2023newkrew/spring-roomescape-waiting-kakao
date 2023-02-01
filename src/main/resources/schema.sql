@@ -1,36 +1,52 @@
-CREATE TABLE reservation
+CREATE TABLE member
 (
-    id          bigint not null auto_increment,
-    schedule_id bigint not null,
-    member_id   bigint not null,
-    primary key (id)
+    id       BIGINT      NOT NULL AUTO_INCREMENT,
+    username VARCHAR(20) NOT NULL UNIQUE,
+    password VARCHAR(20) NOT NULL,
+    name     VARCHAR(20) NOT NULL,
+    phone    VARCHAR(20) NOT NULL,
+    role     VARCHAR(20) NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE theme
 (
-    id    bigint       not null auto_increment,
-    name  varchar(20)  not null,
-    desc  varchar(255) not null,
-    price int          not null,
-    primary key (id)
+    id    BIGINT      NOT NULL AUTO_INCREMENT,
+    name  VARCHAR(20) NOT NULL UNIQUE,
+    desc  VARCHAR(255),
+    price INT         NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE schedule
 (
-    id       bigint not null auto_increment,
-    theme_id bigint not null,
-    date     date   not null,
-    time     time   not null,
-    primary key (id)
+    id       BIGINT NOT NULL AUTO_INCREMENT,
+    date     DATE   NOT NULL,
+    time     TIME   NOT NULL,
+    theme_id BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    UNIQUE (date, time, theme_id)
 );
 
-CREATE TABLE member
+CREATE TABLE reservation
 (
-    id       bigint      not null auto_increment,
-    username varchar(20) not null,
-    password varchar(20) not null,
-    name     varchar(20) not null,
-    phone    varchar(20) not null,
-    role     varchar(20) not null,
-    primary key (id)
+    id          BIGINT NOT NULL AUTO_INCREMENT,
+    member_id   BIGINT NOT NULL,
+    schedule_id BIGINT NOT NULL UNIQUE,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (schedule_id) REFERENCES schedule (id)
+);
+
+
+CREATE TABLE waiting
+(
+    id          BIGINT NOT NULL AUTO_INCREMENT,
+    member_id   BIGINT NOT NULL,
+    schedule_id BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (schedule_id) REFERENCES schedule (id),
+    UNIQUE (member_id, schedule_id)
 );
