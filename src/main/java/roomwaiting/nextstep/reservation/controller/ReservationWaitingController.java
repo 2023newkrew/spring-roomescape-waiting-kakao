@@ -7,6 +7,7 @@ import java.util.List;
 import roomwaiting.nextstep.member.Member;
 import roomwaiting.nextstep.reservation.domain.ReservationWaiting;
 import roomwaiting.nextstep.reservation.dto.ReservationRequest;
+import roomwaiting.nextstep.reservation.service.ReservationService;
 import roomwaiting.nextstep.reservation.service.ReservationWaitingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,14 +23,22 @@ import roomwaiting.auth.principal.LoginMember;
 @RequestMapping("/reservation-waitings")
 public class ReservationWaitingController {
     private final ReservationWaitingService reservationWaitingService;
+    private final ReservationService reservationService;
 
-    public ReservationWaitingController(ReservationWaitingService reservationWaitingService) {
+    public ReservationWaitingController(ReservationWaitingService reservationWaitingService, ReservationService reservationService) {
         this.reservationWaitingService = reservationWaitingService;
+        this.reservationService = reservationService;
     }
 
     @PostMapping
     public ResponseEntity<String> create(@LoginMember UserDetails member, @RequestBody ReservationRequest reservationRequest) {
-        String waitingReservation = reservationWaitingService.create(new Member(member), reservationRequest);
+        Long id = reservationWaitingService.create(new Member(member), reservationRequest);
+        if (id == null){
+            Long reserveId = reservationService.create(new Member(member), reservationRequest);
+            String reservation = "/reservations/" + reserveId;
+            return ResponseEntity.created(URI.create(reservation)).body("Location: " + reservation);
+        }
+        String waitingReservation = "/reservation-waitings/" + id;
         return ResponseEntity.created(URI.create(waitingReservation)).body("Location: " + waitingReservation);
     }
 

@@ -21,22 +21,20 @@ public class ReservationWaitingService {
     private final ReservationWaitingDao reservationWaitingDao;
     private final ReservationDao reservationDao;
     private final ScheduleDao scheduleDao;
-    private final ReservationService reservationService;
 
     public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ReservationDao reservationDao,
-                                     ScheduleDao scheduleDao, ReservationService reservationService) {
+                                     ScheduleDao scheduleDao) {
         this.reservationWaitingDao = reservationWaitingDao;
         this.reservationDao = reservationDao;
         this.scheduleDao = scheduleDao;
-        this.reservationService = reservationService;
     }
 
-    public String create(Member member, ReservationRequest reservationRequest) {
+    public Long create(Member member, ReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId()).orElseThrow(() ->
                 new NullPointerException(SCHEDULE_NOT_FOUND.getMessage() + ID + reservationRequest.getScheduleId()));
         Optional<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (reservation.isEmpty()) {
-            return "/reservations/" + reservationService.create(member, reservationRequest);
+            return null;
         }
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
         long waitNum = reservationWaitingList
@@ -44,7 +42,7 @@ public class ReservationWaitingService {
                 .mapToLong(ReservationWaiting::getWaitingNum)
                 .max()
                 .orElse(1) + 1;
-        return "/reservation-waitings/" + reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
+        return reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
     }
 
     public List<ReservationWaiting> lookUp(Member member) {
