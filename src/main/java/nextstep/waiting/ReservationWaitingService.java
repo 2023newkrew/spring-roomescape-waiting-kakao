@@ -13,7 +13,6 @@ import nextstep.schedule.ScheduleDao;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,10 +75,10 @@ public class ReservationWaitingService {
         }
 
         reservationWaitingDao.deleteById(id);
-        updateSeq(reservationWaiting.getScheduleId(), reservationWaiting.getWaitingSeq());
+        updateWaitingSeq(reservationWaiting.getScheduleId(), reservationWaiting.getWaitingSeq());
     }
 
-    private void updateSeq(Long scheduleId, Long seq) {
+    private void updateWaitingSeq(Long scheduleId, Long seq) {
         List<ReservationWaiting> reservationWaitings = reservationWaitingDao.findByScheduleId(scheduleId);
 
         reservationWaitings = reservationWaitings.stream()

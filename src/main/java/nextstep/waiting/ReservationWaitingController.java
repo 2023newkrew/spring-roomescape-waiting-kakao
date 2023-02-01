@@ -15,8 +15,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/reservation-waitings")
 public class ReservationWaitingController {
-    public static final String RESERVATION_WAITINGS_URI = "reservation-waitings";
-    public static final String RESERVATIONS_URI = "reservations";
+    private static final String RESERVATION_WAITINGS_URI = "reservation-waitings";
+    private static final String RESERVATIONS_URI = "reservations";
 
     private final ReservationWaitingService reservationWaitingService;
     private final ReservationService reservationService;
