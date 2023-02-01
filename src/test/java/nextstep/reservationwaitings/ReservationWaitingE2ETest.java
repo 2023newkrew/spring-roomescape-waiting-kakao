@@ -7,17 +7,57 @@ import nextstep.reservation.ReservationRequest;
 import nextstep.reservation.Reservation;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 public class ReservationWaitingE2ETest extends AbstractE2ETest {
+
+    @Disabled
+    @DisplayName("대기 번호 동시성 문제 테스트")
+    @Test
+    public void multiThreadTest() throws InterruptedException {
+        int numberOfThreads = 100;
+        ExecutorService service = Executors.newFixedThreadPool(10);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+
+        long themeId = createTheme("테마이름", "테마설명", 22000);
+        long scheduleId = createSchedule(themeId, "2018-10-22", "13:00");
+        createReservation(scheduleId, token);
+
+        var request = new ReservationWaitingRequest(scheduleId);
+        AtomicReference<Long> id = new AtomicReference<>(0L);
+        for (int i = 0; i < numberOfThreads; i++) {
+            service.submit(() -> {
+                var response = RestAssured
+                        .given().log().all()
+                        .auth().oauth2(token.getAccessToken())
+                        .body(request)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().post("/reservation-waitings")
+                        .then().log().all()
+                        .extract();
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                var location = response.header("Location").split("/");
+                id.set(Math.max(Long.parseLong(location[location.length - 1]), id.get()));
+                latch.countDown();
+            });
+        }
+        latch.await();
+        assertThat(id.get()).isEqualTo(numberOfThreads);
+    }
+
 
     @DisplayName("예약 대기 신청을 한다.")
     @Test
