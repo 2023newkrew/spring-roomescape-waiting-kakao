@@ -1,8 +1,17 @@
 package roomescape.nextstep.member;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MemberRequest {
     @NotBlank
     private String username;
@@ -14,34 +23,6 @@ public class MemberRequest {
     private String phone;
     @NotBlank
     private String role;
-
-    public MemberRequest(String username, String password, String name, String phone, String role) {
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.phone = phone;
-        this.role = role;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getRole() {
-        return role;
-    }
 
     public Member toEntity() {
         return new Member(username, password, name, phone, role);

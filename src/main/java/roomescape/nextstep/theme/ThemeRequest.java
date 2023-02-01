@@ -1,8 +1,17 @@
 package roomescape.nextstep.theme;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ThemeRequest {
     @NotBlank
     private String name;
@@ -10,24 +19,6 @@ public class ThemeRequest {
     private String desc;
     @PositiveOrZero
     private int price;
-
-    public ThemeRequest(String name, String desc, int price) {
-        this.name = name;
-        this.desc = desc;
-        this.price = price;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public int getPrice() {
-        return price;
-    }
 
     public Theme toEntity() {
         return new Theme(
