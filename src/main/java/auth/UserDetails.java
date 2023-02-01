@@ -1,22 +1,12 @@
 package auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public interface UserDetails {
 
-import java.util.Objects;
+    Long getId();
 
-@Getter
-@AllArgsConstructor
-public class UserDetails {
+    String getPassword();
 
-    private Long id;
-    private String username;
-    private String password;
-    private String name;
-    private String phone;
-    private String role;
+    String getRole();
 
-    public boolean checkWrongPassword(String password) {
-        return !Objects.equals(this.password, password);
-    }
+    boolean checkWrongPassword(String password);
 }

@@ -5,15 +5,16 @@ import auth.LoginController;
 import auth.LoginService;
 import auth.UserDetailsService;
 import lombok.RequiredArgsConstructor;
+import nextstep.member.MemberDao;
+import nextstep.member.MemberService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @RequiredArgsConstructor
 public class AuthConfiguration {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final MemberDao memberDao;
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
@@ -32,7 +33,6 @@ public class AuthConfiguration {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserDetailsService(jdbcTemplate);
+        return new MemberService(memberDao);
     }
-
 }

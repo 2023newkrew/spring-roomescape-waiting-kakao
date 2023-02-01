@@ -1,32 +1,8 @@
 package auth;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+public interface UserDetailsService {
 
-public class UserDetailsService {
+    UserDetails findById(Long id);
 
-    private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<UserDetails> rowMapper = (resultSet, rowNum) -> new UserDetails(
-            resultSet.getLong("id"),
-            resultSet.getString("username"),
-            resultSet.getString("password"),
-            resultSet.getString("name"),
-            resultSet.getString("phone"),
-            resultSet.getString("role")
-    );
-
-    public UserDetailsService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public UserDetails findById(Long id) {
-        String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
-    }
-
-    public UserDetails findByUsername(String username) {
-        String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username);
-    }
-
+    UserDetails findByUsername(String username);
 }

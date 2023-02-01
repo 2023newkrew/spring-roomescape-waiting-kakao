@@ -1,8 +1,8 @@
 package nextstep.config.annotation;
 
-import auth.LoginService;
+import auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.Member;
+import nextstep.member.MemberService;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -13,7 +13,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final LoginService loginService;
+    private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -24,7 +25,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         try {
             String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
-            return Member.from(loginService.extractUserDetails(credential));
+            return memberService.findById(Long.valueOf(jwtTokenProvider.getPrincipal(credential)));
         } catch (Exception e) {
             return null;
         }

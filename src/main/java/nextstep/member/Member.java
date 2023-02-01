@@ -6,10 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class Member {
+public class Member implements UserDetails {
 
     private Long id;
     private String username;
@@ -26,18 +28,8 @@ public class Member {
         this.role = role;
     }
 
-    public static Member from(UserDetails userDetails) {
-        return new Member(
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getPassword(),
-                userDetails.getName(),
-                userDetails.getPhone(),
-                userDetails.getRole()
-        );
-    }
-
+    @Override
     public boolean checkWrongPassword(String password) {
-        return !this.password.equals(password);
+        return !Objects.equals(this.password, password);
     }
 }

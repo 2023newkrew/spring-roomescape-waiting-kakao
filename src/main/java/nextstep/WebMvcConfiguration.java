@@ -2,10 +2,10 @@ package nextstep;
 
 import auth.AdminInterceptor;
 import auth.JwtTokenProvider;
-import auth.LoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import nextstep.config.annotation.LoginMemberArgumentResolver;
+import nextstep.member.MemberService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -16,7 +16,7 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final LoginService loginService;
+    private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
 
@@ -27,6 +27,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List argumentResolvers) {
-        argumentResolvers.add(new LoginMemberArgumentResolver(loginService));
+        argumentResolvers.add(new LoginMemberArgumentResolver(memberService, jwtTokenProvider));
     }
 }
