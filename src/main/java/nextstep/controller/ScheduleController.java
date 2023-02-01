@@ -1,6 +1,6 @@
 package nextstep.controller;
 
-import nextstep.controller.dto.ScheduleRequest;
+import nextstep.controller.dto.request.ScheduleRequest;
 import nextstep.domain.Schedule;
 import nextstep.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
