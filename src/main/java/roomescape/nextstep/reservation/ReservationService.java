@@ -8,6 +8,8 @@ import roomescape.nextstep.member.Member;
 import roomescape.nextstep.member.MemberDao;
 import roomescape.nextstep.schedule.Schedule;
 import roomescape.nextstep.schedule.ScheduleDao;
+import roomescape.nextstep.support.exception.BusinessException;
+import roomescape.nextstep.support.exception.CommonErrorCode;
 import roomescape.nextstep.theme.Theme;
 import roomescape.nextstep.theme.ThemeDao;
 
@@ -28,11 +30,11 @@ public class ReservationService {
         Member member = memberDao.findByUsername(username);
         ReservationStatus status = ReservationStatus.CONFIRMED;
         if (member == null) {
-            throw new AuthenticationException();
+            throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
         }
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
@@ -52,7 +54,7 @@ public class ReservationService {
     private List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
-            throw new NullPointerException();
+            throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
         }
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
@@ -70,7 +72,7 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(id);
         Member member = memberDao.findByUsername(username);
         if (reservation == null) {
-            throw new NullPointerException();
+            throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
         }
 
         if (!reservation.sameMember(member)) {
