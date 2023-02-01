@@ -3,6 +3,7 @@ package roomescape.nextstep.support.exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,12 +15,17 @@ import roomescape.auth.AuthenticationException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final String LOG_FORMAT = "Exception: {}, Message: {}";
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         ErrorCode errorCode = e.getErrorCode();
+        log.warn(LOG_FORMAT, errorCode.getClass()
+                .getName(), errorCode.getMessage());
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
                 .body(new ErrorResponse(errorCode));
@@ -27,6 +33,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e) {
+        log.warn(LOG_FORMAT, e.getClass()
+                .getName(), e.getMessage());
         HttpStatus status = HttpStatus.UNAUTHORIZED;
         return ResponseEntity
                 .status(status)
@@ -37,6 +45,8 @@ public class GlobalExceptionHandler {
     @SneakyThrows(JsonProcessingException.class)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
+        log.warn(LOG_FORMAT, e.getClass()
+                .getName(), e.getMessage());
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> errorInfos = new HashMap<>();
@@ -56,6 +66,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
+        log.warn(LOG_FORMAT, e.getClass()
+                .getName(), e.getMessage());
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         return ResponseEntity
                 .status(status)
