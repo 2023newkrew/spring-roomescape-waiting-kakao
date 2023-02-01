@@ -21,14 +21,9 @@ public class ReservationService {
     public final MemberDao memberDao;
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
                 .orElseThrow(NonExistScheduleException::new);
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+
         Optional<Reservation> byScheduleId = reservationDao.findByScheduleId(schedule.getId());
         byScheduleId
                 .ifPresent(reservation -> {
