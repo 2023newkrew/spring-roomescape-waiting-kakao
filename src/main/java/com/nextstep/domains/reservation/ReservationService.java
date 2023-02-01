@@ -56,12 +56,19 @@ public class ReservationService {
 
     @Transactional
     public boolean deleteById(Long memberId, Long id, Waiting waiting) {
+        System.out.println("5");
         Reservation reservation = repository.getById(id);
+        System.out.println("6");
         validateReservation(reservation, memberId);
-        if (Objects.isNull(waiting)) {
-            return repository.deleteById(id);
+        System.out.println("7");
+        Reservation nextReservation = mapper.fromRequest(waiting.getMemberId(), new ReservationRequest(reservation.getScheduleId()));
+        System.out.println("1");
+        if (!Objects.isNull(waiting)) {
+            System.out.println("2");
+            repository.insert(nextReservation);
         }
-        return repository.updateById(id, waiting.getMemberId());
+        System.out.println("3");
+        return repository.deleteById(id);
     }
 
     private void validateReservation(Reservation reservation, Long memberId) {

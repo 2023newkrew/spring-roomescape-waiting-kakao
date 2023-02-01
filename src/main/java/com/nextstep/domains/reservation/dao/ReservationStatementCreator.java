@@ -10,7 +10,7 @@ import java.sql.SQLException;
 @Component
 public class ReservationStatementCreator {
 
-    private static final String SELECT_BY_SCHEDULE_ID_SQL = "SELECT * FROM reservation WHERE schedule_id = ?";
+    private static final String SELECT_BY_SCHEDULE_ID_SQL = "SELECT * FROM reservation WHERE schedule_id = ? AND deleted = false";
 
     private static final String
             SELECT_BY_MEMBER_ID_AND_SCHEDULE_ID_SQL =
@@ -20,7 +20,7 @@ public class ReservationStatementCreator {
 
     private static final String
             SELECT_BY_ID_SQL =
-            "SELECT reservation.id, " +
+            "SELECT reservation.id, reservation.status, " +
                     "member.id, member.username, member.password, member.name, member.phone, member.role, " +
                     "schedule.id, schedule.date, schedule.time, " +
                     "   theme.id, theme.name, theme.desc, theme.price " +
@@ -28,11 +28,11 @@ public class ReservationStatementCreator {
                     "inner join member on reservation.member_id = member.id " +
                     "inner join schedule on reservation.schedule_id = schedule.id " +
                     "inner join theme on schedule.theme_id = theme.id " +
-                    "where reservation.id = ?;";
+                    "where reservation.id = ? AND reservation.deleted = false;";
 
     private static final String
             SELECT_BY_MEMBER_ID_SQL =
-            "SELECT reservation.id, " +
+            "SELECT reservation.id, reservation.status,  " +
                     "member.id, member.username, member.password, member.name, member.phone, member.role, " +
                     "schedule.id, schedule.date, schedule.time, " +
                     "   theme.id, theme.name, theme.desc, theme.price " +

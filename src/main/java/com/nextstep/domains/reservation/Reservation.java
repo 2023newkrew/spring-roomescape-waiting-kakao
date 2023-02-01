@@ -21,6 +21,9 @@ public class Reservation {
     @Getter
     private final Schedule schedule;
 
+    @Getter
+    private final String status;
+
     public Long getMemberId() {
         if (Objects.isNull(member)) {
             return null;

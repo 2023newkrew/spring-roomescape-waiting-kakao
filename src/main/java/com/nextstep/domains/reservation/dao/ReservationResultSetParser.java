@@ -34,7 +34,9 @@ public class ReservationResultSetParser {
 
         return new Reservation(
                 resultSet.getLong("reservation.id"),
-                parseMember(resultSet), parseSchedule(resultSet)
+                parseMember(resultSet),
+                parseSchedule(resultSet),
+                resultSet.getString("reservation.status")
         );
     }
 

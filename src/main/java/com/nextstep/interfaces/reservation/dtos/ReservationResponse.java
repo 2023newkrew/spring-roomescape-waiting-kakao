@@ -17,4 +17,6 @@ public class ReservationResponse {
     private final MemberResponse member;
 
     private final ScheduleResponse schedule;
+
+    private final String status;
 }
