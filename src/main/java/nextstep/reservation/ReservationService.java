@@ -28,7 +28,7 @@ public class ReservationService {
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
 
-    public Long create(Member member, Long scheduleId) {
+    public Reservation create(Member member, Long scheduleId) {
         if (member == null) {
             throw new AuthException(AuthErrorCode.INVALID_USER);
         }
@@ -45,7 +45,7 @@ public class ReservationService {
                 member
         );
 
-        return reservationDao.save(newReservation);
+        return new Reservation(reservationDao.save(newReservation), schedule, member, 0L);
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {

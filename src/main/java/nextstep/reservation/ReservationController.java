@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,8 +21,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(member, reservationRequest.getScheduleId());
-        return ResponseEntity.created(URI.create("/reservations/" + id)).build();
+        Reservation newReservation = reservationService.create(member, reservationRequest.getScheduleId());
+        Long themeId = newReservation.getSchedule().getTheme().getId();
+        LocalDate date = newReservation.getSchedule().getDate();
+        return ResponseEntity.created(URI.create("/reservations?themeId=" + themeId + "&date=" + date)).build();
     }
 
     @GetMapping
