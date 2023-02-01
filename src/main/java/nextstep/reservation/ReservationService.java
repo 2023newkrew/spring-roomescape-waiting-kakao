@@ -24,9 +24,6 @@ public class ReservationService {
     private final ScheduleDao scheduleDao;
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
             throw new NonExistEntityException();

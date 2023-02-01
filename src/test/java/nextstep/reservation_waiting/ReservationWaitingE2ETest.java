@@ -16,7 +16,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
     @Autowired
