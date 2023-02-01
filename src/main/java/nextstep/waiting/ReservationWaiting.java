@@ -1,5 +1,6 @@
 package nextstep.waiting;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 
@@ -33,6 +34,12 @@ public class ReservationWaiting {
         this.waitingSeq = waitingSeq;
     }
 
+    @JsonIgnore
+    public Long getReservationId() {
+        return reservation.getId();
+    }
+
+    @JsonIgnore
     public Long getScheduleId() {
         return reservation.getScheduleId();
     }

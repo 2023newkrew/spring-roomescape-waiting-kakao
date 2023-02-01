@@ -1,5 +1,6 @@
 package nextstep.reservation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
@@ -36,6 +37,7 @@ public class Reservation {
         return member;
     }
 
+    @JsonIgnore
     public Long getScheduleId() {
         return schedule.getId();
     }
