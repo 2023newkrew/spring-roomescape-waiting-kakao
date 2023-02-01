@@ -2,6 +2,7 @@ package nextstep.reservation;
 
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
+import nextstep.waitingreservation.WaitingReservation;
 
 public class ReservationWaitingResponse {
     private Long id;
@@ -12,6 +13,14 @@ public class ReservationWaitingResponse {
     public ReservationWaitingResponse() {
     }
 
+    public ReservationWaitingResponse(WaitingReservation waitingReservation) {
+        this.id = waitingReservation.getId();
+        this.schedule = waitingReservation.getSchedule();
+        this.member = waitingReservation.getMember();
+        this.waitNum = waitingReservation.getWaitNum();
+    }
+
+    // TODO: remove later
     public ReservationWaitingResponse(Reservation reservation) {
         this.id = reservation.getId();
         this.schedule = reservation.getSchedule();
