@@ -1,6 +1,6 @@
 package nextstep.waiting;
 
-import auth.LoginMember;
+import auth.argumentresolver.LoginMember;
 import nextstep.member.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

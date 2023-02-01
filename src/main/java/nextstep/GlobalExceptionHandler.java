@@ -1,7 +1,7 @@
 package nextstep;
 
-import auth.AuthenticationException;
-import auth.ForbiddenException;
+import auth.exception.AuthenticationException;
+import auth.exception.ForbiddenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

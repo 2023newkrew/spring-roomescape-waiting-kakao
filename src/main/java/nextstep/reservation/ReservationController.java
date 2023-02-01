@@ -1,6 +1,6 @@
 package nextstep.reservation;
 
-import auth.LoginMember;
+import auth.argumentresolver.LoginMember;
 import nextstep.member.Member;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

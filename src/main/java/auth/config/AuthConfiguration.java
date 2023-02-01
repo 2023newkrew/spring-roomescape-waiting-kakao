@@ -1,5 +1,11 @@
-package auth;
+package auth.config;
 
+import auth.*;
+import auth.argumentresolver.LoginMemberArgumentResolver;
+import auth.controller.LoginController;
+import auth.interceptor.AdminInterceptor;
+import auth.jwt.JwtTokenProvider;
+import auth.service.LoginService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

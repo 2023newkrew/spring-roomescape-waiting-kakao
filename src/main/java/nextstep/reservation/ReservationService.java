@@ -1,7 +1,6 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
-import auth.ForbiddenException;
+import auth.exception.ForbiddenException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;

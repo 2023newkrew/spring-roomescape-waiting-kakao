@@ -1,6 +1,6 @@
 package nextstep.waiting;
 
-import auth.ForbiddenException;
+import auth.exception.ForbiddenException;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;

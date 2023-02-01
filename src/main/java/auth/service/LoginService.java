@@ -1,4 +1,11 @@
-package auth;
+package auth.service;
+
+import auth.jwt.JwtTokenProvider;
+import auth.UserDetails;
+import auth.UserDetailsService;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
+import auth.exception.AuthenticationException;
 
 public class LoginService {
     private UserDetailsService userDetailsService;
