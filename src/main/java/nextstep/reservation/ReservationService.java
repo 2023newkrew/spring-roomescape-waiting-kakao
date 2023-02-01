@@ -77,12 +77,12 @@ public class ReservationService {
                 .filter(reservation -> {
                     Long scheduleId = reservation.getSchedule().getId();
                     Long waitTicketNumber = reservation.getWaitTicketNumber();
-                    return !isWaitingReservation(reservationDao.getPriority(scheduleId, waitTicketNumber));
+                    return isReservationNotWaiting(reservationDao.getPriority(scheduleId, waitTicketNumber));
                 })
                 .collect(Collectors.toList());
     }
 
-    private static boolean isWaitingReservation(Long waitNum) {
-        return waitNum != 0;
+    private static boolean isReservationNotWaiting(Long waitNum) {
+        return waitNum == 0;
     }
 }
