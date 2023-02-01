@@ -1,8 +1,7 @@
 package nextstep.config;
 
 import auth.controller.LoginController;
-import auth.repository.UserDetailsRepository;
-import auth.repository.UserDetailsRepositoryImpl;
+import auth.repository.UserDetailsDao;
 import auth.service.LoginService;
 import auth.support.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +30,8 @@ public class AuthConfig {
     }
 
     @Bean
-    public UserDetailsRepository userDetailsRepository() {
-        return new UserDetailsRepositoryImpl(jdbcTemplate);
+    public UserDetailsDao userDetailsRepository() {
+        return new UserDetailsDao(jdbcTemplate);
     }
 
     @Bean

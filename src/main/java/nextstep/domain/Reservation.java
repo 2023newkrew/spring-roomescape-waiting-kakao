@@ -1,24 +1,36 @@
-package nextstep.domain.persist;
-
-import lombok.Getter;
+package nextstep.domain;
 
 import java.util.Objects;
 
-@Getter
-public class Waiting {
+public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
 
-    public Waiting(Schedule schedule, Member member) {
+    public Reservation() {
+    }
+
+    public Reservation(Schedule schedule, Member member) {
         this.schedule = schedule;
         this.member = member;
     }
 
-    public Waiting(Long id, Schedule schedule, Member member) {
+    public Reservation(Long id, Schedule schedule, Member member) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public boolean sameMember(Member member) {

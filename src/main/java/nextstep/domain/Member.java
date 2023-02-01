@@ -1,6 +1,6 @@
-package nextstep.domain.persist;
+package nextstep.domain;
 
-import auth.domain.persist.UserDetails;
+import auth.domain.UserDetails;
 
 public class Member {
     private Long id;

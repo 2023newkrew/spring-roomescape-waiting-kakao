@@ -1,8 +1,8 @@
 package nextstep.controller;
 
-import auth.domain.persist.UserDetails;
-import auth.domain.template.LoginMember;
-import nextstep.domain.dto.MemberRequest;
+import auth.domain.UserDetails;
+import auth.support.template.LoginMember;
+import nextstep.controller.dto.MemberRequest;
 import nextstep.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

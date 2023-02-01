@@ -1,4 +1,4 @@
-package nextstep.domain.dto;
+package nextstep.controller.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

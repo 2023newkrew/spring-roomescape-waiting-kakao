@@ -1,11 +1,11 @@
 package nextstep.controller;
 
-import auth.domain.persist.UserDetails;
-import auth.domain.template.LoginMember;
+import auth.domain.UserDetails;
+import auth.support.template.LoginMember;
 import auth.support.AuthenticationException;
-import nextstep.domain.dto.ReservationRequest;
-import nextstep.domain.dto.ReservationResponse;
-import nextstep.domain.persist.Reservation;
+import nextstep.controller.dto.ReservationRequest;
+import nextstep.controller.dto.ReservationResponse;
+import nextstep.domain.Reservation;
 import nextstep.service.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

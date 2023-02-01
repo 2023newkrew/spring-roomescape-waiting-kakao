@@ -1,7 +1,7 @@
 package nextstep.repository;
 
-import nextstep.domain.persist.Schedule;
-import nextstep.domain.persist.Theme;
+import nextstep.domain.Schedule;
+import nextstep.domain.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

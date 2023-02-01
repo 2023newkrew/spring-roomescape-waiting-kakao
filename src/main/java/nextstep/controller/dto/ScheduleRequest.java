@@ -1,7 +1,7 @@
-package nextstep.domain.dto;
+package nextstep.controller.dto;
 
-import nextstep.domain.persist.Schedule;
-import nextstep.domain.persist.Theme;
+import nextstep.domain.Schedule;
+import nextstep.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

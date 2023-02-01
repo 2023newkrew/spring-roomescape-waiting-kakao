@@ -1,4 +1,4 @@
-package nextstep.domain.dto;
+package nextstep.controller.dto;
 
 public class ReservationRequest {
     private long scheduleId;

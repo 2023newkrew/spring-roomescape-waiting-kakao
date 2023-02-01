@@ -1,10 +1,10 @@
-package nextstep.domain.dto;
+package nextstep.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.domain.persist.Reservation;
-import nextstep.domain.persist.Schedule;
+import nextstep.domain.Reservation;
+import nextstep.domain.Schedule;
 
 @Getter
 @AllArgsConstructor

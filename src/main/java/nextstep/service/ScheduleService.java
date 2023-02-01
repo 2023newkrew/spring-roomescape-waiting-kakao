@@ -1,8 +1,8 @@
 package nextstep.service;
 
-import nextstep.domain.dto.ScheduleRequest;
-import nextstep.domain.persist.Schedule;
-import nextstep.domain.persist.Theme;
+import nextstep.controller.dto.ScheduleRequest;
+import nextstep.domain.Schedule;
+import nextstep.domain.Theme;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.ThemeDao;
 import org.springframework.stereotype.Service;

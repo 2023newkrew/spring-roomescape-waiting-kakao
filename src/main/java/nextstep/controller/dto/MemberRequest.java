@@ -1,6 +1,6 @@
-package nextstep.domain.dto;
+package nextstep.controller.dto;
 
-import nextstep.domain.persist.Member;
+import nextstep.domain.Member;
 
 public class MemberRequest {
     private String username;

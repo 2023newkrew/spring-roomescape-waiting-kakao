@@ -1,4 +1,4 @@
-package nextstep.domain.persist;
+package nextstep.domain;
 
 public class Theme {
     private Long id;

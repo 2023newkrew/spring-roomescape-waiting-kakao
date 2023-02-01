@@ -1,4 +1,4 @@
-package auth.domain.dto;
+package auth.controller.dto;
 
 public class TokenResponse {
     private String accessToken;

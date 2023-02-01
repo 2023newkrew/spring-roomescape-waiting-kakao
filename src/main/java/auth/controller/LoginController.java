@@ -1,7 +1,7 @@
 package auth.controller;
 
-import auth.domain.dto.TokenRequest;
-import auth.domain.dto.TokenResponse;
+import auth.controller.dto.TokenRequest;
+import auth.controller.dto.TokenResponse;
 import auth.service.LoginService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

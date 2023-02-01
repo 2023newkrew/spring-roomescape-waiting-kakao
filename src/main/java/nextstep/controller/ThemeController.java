@@ -1,7 +1,7 @@
 package nextstep.controller;
 
-import nextstep.domain.dto.ThemeRequest;
-import nextstep.domain.persist.Theme;
+import nextstep.controller.dto.ThemeRequest;
+import nextstep.domain.Theme;
 import nextstep.service.ThemeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

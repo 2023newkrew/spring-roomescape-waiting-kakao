@@ -1,6 +1,6 @@
 package nextstep.repository;
 
-import nextstep.domain.persist.Member;
+import nextstep.domain.Member;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

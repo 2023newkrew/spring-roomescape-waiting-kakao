@@ -1,10 +1,10 @@
 package nextstep.controller;
 
-import auth.domain.persist.UserDetails;
-import auth.domain.template.LoginMember;
+import auth.domain.UserDetails;
+import auth.support.template.LoginMember;
 import lombok.RequiredArgsConstructor;
-import nextstep.domain.dto.WaitingRequest;
-import nextstep.domain.dto.WaitingResponse;
+import nextstep.controller.dto.WaitingRequest;
+import nextstep.controller.dto.WaitingResponse;
 import nextstep.service.WaitingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

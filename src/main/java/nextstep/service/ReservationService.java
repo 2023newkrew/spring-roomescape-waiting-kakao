@@ -1,13 +1,13 @@
 package nextstep.service;
 
-import auth.domain.persist.UserDetails;
+import auth.domain.UserDetails;
 import auth.support.AuthenticationException;
-import nextstep.domain.dto.ReservationRequest;
-import nextstep.domain.dto.ReservationResponse;
-import nextstep.domain.persist.Member;
-import nextstep.domain.persist.Reservation;
-import nextstep.domain.persist.Schedule;
-import nextstep.domain.persist.Theme;
+import nextstep.controller.dto.ReservationRequest;
+import nextstep.controller.dto.ReservationResponse;
+import nextstep.domain.Member;
+import nextstep.domain.Reservation;
+import nextstep.domain.Schedule;
+import nextstep.domain.Theme;
 import nextstep.repository.MemberDao;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;

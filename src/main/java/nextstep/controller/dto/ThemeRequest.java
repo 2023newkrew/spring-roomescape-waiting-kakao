@@ -1,6 +1,6 @@
-package nextstep.domain.dto;
+package nextstep.controller.dto;
 
-import nextstep.domain.persist.Theme;
+import nextstep.domain.Theme;
 
 public class ThemeRequest {
     private String name;

@@ -1,13 +1,13 @@
 package nextstep.service;
 
-import auth.domain.persist.UserDetails;
+import auth.domain.UserDetails;
 import auth.support.AuthenticationException;
 import lombok.RequiredArgsConstructor;
-import nextstep.domain.dto.WaitingRequest;
-import nextstep.domain.dto.WaitingResponse;
-import nextstep.domain.persist.Member;
-import nextstep.domain.persist.Reservation;
-import nextstep.domain.persist.Waiting;
+import nextstep.controller.dto.WaitingRequest;
+import nextstep.controller.dto.WaitingResponse;
+import nextstep.domain.Member;
+import nextstep.domain.Reservation;
+import nextstep.domain.Waiting;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.WaitingDao;
