@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/main/java/nextstep/domain/dto/request/ThemeRequest.java
 package nextstep.domain.dto.request;
-========
-package nextstep.domain.dto;
->>>>>>>> 59193cb (refactor: 패키지 구조 변경):src/main/java/nextstep/domain/dto/ThemeRequest.java
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
