@@ -47,11 +47,13 @@ public class ReservationController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity onAuthenticationException(AuthenticationException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

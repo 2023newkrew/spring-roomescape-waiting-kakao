@@ -36,10 +36,6 @@ public class ReservationService {
     }
 
     public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
-        if (userDetails == null) {
-            throw new AuthenticationException();
-        }
-
         Member member = memberDao.findById(userDetails.getId());
 
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
