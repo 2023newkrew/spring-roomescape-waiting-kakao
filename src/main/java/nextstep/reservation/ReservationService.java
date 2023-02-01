@@ -122,6 +122,9 @@ public class ReservationService {
         }
 
         reservationDao.updateStatusTo(id, ReservationStatus.REJECTED);
+        if (reservation.getStatus() == ReservationStatus.APPROVED) {
+            revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice() * (-1), LocalDate.now()));
+        }
     }
     
 }
