@@ -15,7 +15,7 @@ public class UserCheckerImpl implements UserChecker {
     }
 
     @Override
-    public UserDetails userCheck(TokenRequest tokenRequest) {
+    public UserDetails check(TokenRequest tokenRequest) {
         Member member = memberDao.findByUsername(tokenRequest.getUsername());
         if (member == null || member.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();

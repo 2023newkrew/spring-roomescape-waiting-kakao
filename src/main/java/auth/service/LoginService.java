@@ -16,7 +16,7 @@ public class LoginService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetails userDetails = userChecker.userCheck(tokenRequest);
+        UserDetails userDetails = userChecker.check(tokenRequest);
 
         String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
 
