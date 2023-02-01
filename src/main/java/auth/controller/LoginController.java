@@ -3,6 +3,7 @@ package auth.controller;
 import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
 import auth.service.LoginService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 <<<<<<< HEAD
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
     private final LoginService loginService;
 
+    @Operation(summary = "로그인 API")
     @PostMapping("/token")
     public ResponseEntity<TokenResponse> loginToken(@RequestBody TokenRequest tokenRequest) {
         TokenResponse token = loginService.createToken(tokenRequest);

@@ -26,7 +26,11 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // swagger with springdoc
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 }
+
 test {
     useJUnitPlatform()
 }

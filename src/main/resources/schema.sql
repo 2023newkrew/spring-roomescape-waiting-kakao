@@ -51,3 +51,4 @@ CREATE TABLE profit
     amount          int      not null,
     primary key (id)
 );
+
