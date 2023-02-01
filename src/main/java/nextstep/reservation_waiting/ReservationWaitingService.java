@@ -68,7 +68,7 @@ public class ReservationWaitingService {
         return reservationWaitingDao.findAllByScheduleId(reservationWaiting.getSchedule()
                         .getId())
                 .stream()
-                .takeWhile(rw -> rw.getId() <= reservationWaiting.getId())
+                .takeWhile(rw -> rw.idEqualOrSmall(reservationWaiting.getId()))
                 .count();
     }
 

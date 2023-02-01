@@ -26,4 +26,8 @@ public class ReservationWaiting {
     public boolean sameMember(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }
+
+    public boolean idEqualOrSmall(Long id){
+        return this.id <= id;
+    }
 }
