@@ -1,5 +1,6 @@
 package com.authorizationserver.infrastructures.web;
 
+import com.authorizationserver.domains.authorization.enums.RoleType;
 import com.authorizationserver.infrastructures.jwt.TokenData;
 import com.authorizationserver.domains.authorization.exceptions.AuthenticationException;
 import com.authorizationserver.domains.authorization.exceptions.AuthenticationErrorMessageType;
@@ -40,7 +41,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     private void validateAdmin(String accessToken) {
         TokenData tokenData = provider.getTokenData(accessToken);
-        if (!Objects.equals(tokenData.getRole(), "ADMIN")) {
+        if (!Objects.equals(tokenData.getRole(), RoleType.ADMIN.name())) {
             throw new AuthenticationException(AuthenticationErrorMessageType.NOT_ADMIN);
         }
     }
