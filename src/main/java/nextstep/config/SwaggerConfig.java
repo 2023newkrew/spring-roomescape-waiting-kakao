@@ -16,6 +16,7 @@ public class SwaggerConfig {
     private final String AUTH_TYPE = "JWT 인증";
     private final String TOKEN_TYPE = "bearer";
     private final String JWT = "JWT";
+
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()

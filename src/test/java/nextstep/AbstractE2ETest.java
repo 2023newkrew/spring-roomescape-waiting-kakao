@@ -1,11 +1,7 @@
 package nextstep;
 
-import auth.domain.dto.TokenRequest;
 import auth.domain.dto.TokenResponse;
 import io.restassured.RestAssured;
-import nextstep.domain.dto.request.MemberRequest;
-import nextstep.domain.dto.request.ScheduleRequest;
-import nextstep.domain.dto.request.ThemeRequest;
 import nextstep.util.RequestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +11,6 @@ import org.springframework.http.MediaType;
 
 import static io.restassured.RestAssured.given;
 import static nextstep.util.RequestBuilder.*;
-import static nextstep.util.RequestBuilder.memberRequestForAdmin;
-import static nextstep.util.RequestBuilder.tokenRequestForAdmin;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AbstractE2ETest {
@@ -99,7 +93,7 @@ public class AbstractE2ETest {
         return Long.parseLong(reservationLocation[reservationLocation.length - 1]);
     }
 
-    public String tokenForUser() {
+    public String createTokenForUser() {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -110,5 +104,25 @@ public class AbstractE2ETest {
                 .extract()
                 .as(TokenResponse.class)
                 .getAccessToken();
+    }
+
+    public void approveReservation(Long id) {
+        given().
+                auth().oauth2(token.getAccessToken()).
+                when().
+                patch("/reservations/" + id + "/approve").
+                then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
+    }
+
+    public void cancelReservation(Long id) {
+        given().
+                auth().oauth2(token.getAccessToken()).
+                when().
+                patch("/reservations/" + id + "/cancel").
+                then().
+                assertThat().
+                statusCode(HttpStatus.OK.value());
     }
 }
