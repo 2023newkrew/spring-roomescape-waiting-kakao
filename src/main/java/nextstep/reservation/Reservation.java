@@ -17,6 +17,7 @@ public class Reservation {
     private Schedule schedule;
     private Member member;
     private LocalDateTime createdDateTime;
+    private ReservationState state;
 
     public Reservation() {
     }

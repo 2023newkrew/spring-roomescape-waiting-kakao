@@ -5,6 +5,7 @@ CREATE TABLE reservation
     schedule_id bigint not null,
     member_id   bigint not null,
     created_datetime datetime not null default now(),
+    state       varchar(10) not null default 'un_approve',
     primary key (id)
 );
 DROP TABLE IF EXISTS theme;
