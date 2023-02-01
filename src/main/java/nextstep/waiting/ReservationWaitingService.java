@@ -5,12 +5,10 @@ import nextstep.exception.DuplicateEntityException;
 import nextstep.exception.NotExistEntityException;
 import nextstep.exception.UnauthorizedException;
 import nextstep.member.Member;
-import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,16 +18,12 @@ import java.util.stream.Collectors;
 public class ReservationWaitingService {
     private final ReservationWaitingDao reservationWaitingDao;
     public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
 
-    public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ReservationDao reservationDao, ScheduleDao scheduleDao) {
         this.reservationWaitingDao = reservationWaitingDao;
         this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
     }
 
     public Long create(Member member, ReservationWaitingRequest reservationWaitingRequest) {
