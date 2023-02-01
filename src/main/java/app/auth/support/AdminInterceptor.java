@@ -1,5 +1,6 @@
-package app.auth;
+package app.auth.support;
 
+import app.auth.util.JwtTokenProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
 

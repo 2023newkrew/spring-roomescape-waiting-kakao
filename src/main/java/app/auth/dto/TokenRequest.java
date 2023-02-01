@@ -1,4 +1,4 @@
-package app.auth;
+package app.auth.dto;
 
 public class TokenRequest {
     private String username;

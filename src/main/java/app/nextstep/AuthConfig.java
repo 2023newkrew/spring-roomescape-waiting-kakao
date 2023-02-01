@@ -1,17 +1,14 @@
 package app.nextstep;
 
-import app.auth.JwtTokenProvider;
-import app.auth.LoginController;
-import app.auth.LoginDao;
-import app.auth.LoginService;
+import app.auth.util.JwtTokenProvider;
+import app.auth.controller.LoginController;
+import app.auth.dao.LoginDao;
+import app.auth.service.LoginService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 @Configuration
 @PropertySource("classpath:application.properties")

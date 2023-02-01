@@ -1,6 +1,9 @@
 package app.nextstep;
 
-import app.auth.*;
+import app.auth.service.LoginService;
+import app.auth.support.AdminInterceptor;
+import app.auth.support.AuthenticationPrincipalArgumentResolver;
+import app.auth.util.JwtTokenProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

@@ -1,4 +1,4 @@
-package app.auth;
+package app.auth.service;
 
 public class UserDetail {
     private Long id;

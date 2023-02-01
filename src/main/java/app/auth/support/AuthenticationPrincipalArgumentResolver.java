@@ -1,5 +1,8 @@
-package app.auth;
+package app.auth.support;
 
+import app.auth.service.LoginService;
+import app.auth.support.AuthenticationException;
+import app.auth.support.AuthenticationPrincipal;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;

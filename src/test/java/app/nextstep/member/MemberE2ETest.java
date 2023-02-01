@@ -1,8 +1,8 @@
 package app.nextstep.member;
 
 import io.restassured.RestAssured;
-import app.auth.TokenRequest;
-import app.auth.TokenResponse;
+import app.auth.dto.TokenRequest;
+import app.auth.dto.TokenResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

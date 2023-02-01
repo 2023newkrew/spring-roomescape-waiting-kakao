@@ -1,5 +1,6 @@
 package app.auth;
 
+import app.auth.util.JwtTokenProvider;
 import app.nextstep.RoomEscapeApplication;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

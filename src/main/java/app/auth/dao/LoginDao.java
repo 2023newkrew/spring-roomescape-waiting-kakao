@@ -1,5 +1,6 @@
-package app.auth;
+package app.auth.dao;
 
+import app.auth.service.UserDetail;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

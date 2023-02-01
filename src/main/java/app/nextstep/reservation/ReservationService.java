@@ -1,6 +1,6 @@
 package app.nextstep.reservation;
 
-import app.auth.AuthenticationException;
+import app.auth.support.AuthenticationException;
 import app.nextstep.member.Member;
 import app.nextstep.member.MemberDao;
 import app.nextstep.schedule.Schedule;

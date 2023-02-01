@@ -1,8 +1,8 @@
 package app.nextstep.reservation;
 
-import app.auth.AuthenticationException;
-import app.auth.AuthenticationPrincipal;
-import app.auth.UserDetail;
+import app.auth.support.AuthenticationException;
+import app.auth.support.AuthenticationPrincipal;
+import app.auth.service.UserDetail;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

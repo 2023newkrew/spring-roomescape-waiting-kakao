@@ -1,8 +1,8 @@
 package app.nextstep;
 
 import io.restassured.RestAssured;
-import app.auth.TokenRequest;
-import app.auth.TokenResponse;
+import app.auth.dto.TokenRequest;
+import app.auth.dto.TokenResponse;
 import app.nextstep.member.MemberRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
