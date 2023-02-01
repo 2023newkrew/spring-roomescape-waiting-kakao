@@ -19,6 +19,7 @@ public class LoginService {
     @Transactional(readOnly = true)
     public TokenResponse createToken(TokenRequest tokenRequest) {
         UserDetails userDetails = userDetailsRepository.findByUsername(tokenRequest.getUsername());
+        
         if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthorizationException();
         }

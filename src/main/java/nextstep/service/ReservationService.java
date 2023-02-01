@@ -39,7 +39,7 @@ public class ReservationService {
 
     @Transactional
     public String create(UserDetails userDetails, ReservationRequest reservationRequest) {
-        Schedule schedule = findScheduleById(reservationRequest);
+        Schedule schedule = getSchedule(reservationRequest);
 
         if (isReservationAlreadyExist(schedule)) {
             return RESERVATION_WAITING + "/" + waitingDao.save(new Waiting(schedule, new Member(userDetails)));
@@ -49,7 +49,6 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
-        findThemeById(themeId);
         return reservationDao.findAllByThemeIdAndDate(themeId, date).stream().map(ReservationResponse::new).collect(Collectors.toList());
     }
 
@@ -140,20 +139,12 @@ public class ReservationService {
         return reservation;
     }
 
-    private Schedule findScheduleById(ReservationRequest reservationRequest) {
+    private Schedule getSchedule(ReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
             throw new NoSuchScheduleException();
         }
         return schedule;
-    }
-
-
-    private void findThemeById(Long themeId) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NoSuchThemeException();
-        }
     }
 
     private boolean statusEquals(Reservation reservation, ReservationStatus status) {
