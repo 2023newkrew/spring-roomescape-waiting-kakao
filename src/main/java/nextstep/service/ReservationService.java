@@ -74,6 +74,7 @@ public class ReservationService {
         }
 
         reservationDao.updateStatusById(id, APPROVED.getStatus());
+
         eventPublisher.publishEvent(new ReservationApproveEvent(true));
     }
 
@@ -125,7 +126,8 @@ public class ReservationService {
         return userDetails.getRole().equals(ADMIN);
     }
 
-    private Reservation findReservationById(Long id) {
+    @Transactional
+    public Reservation findReservationById(Long id) {
         Reservation reservation = reservationDao.findById(id);
 
         if (reservation == null) {
@@ -141,6 +143,7 @@ public class ReservationService {
         }
         return schedule;
     }
+
 
     private void findThemeById(Long themeId) {
         Theme theme = themeDao.findById(themeId);

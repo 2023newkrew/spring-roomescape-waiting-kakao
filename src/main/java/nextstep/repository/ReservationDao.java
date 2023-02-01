@@ -1,6 +1,7 @@
 package nextstep.repository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nextstep.domain.annotation.JdbcRepository;
 import nextstep.domain.persist.Member;
 import nextstep.domain.persist.Reservation;
@@ -18,8 +19,8 @@ import java.util.List;
 
 @JdbcRepository
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationDao {
-
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
