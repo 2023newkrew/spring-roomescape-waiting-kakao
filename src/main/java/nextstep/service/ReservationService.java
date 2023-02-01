@@ -2,6 +2,7 @@ package nextstep.service;
 
 import auth.domain.persist.UserDetails;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
 import nextstep.domain.enumeration.ReservationStatus;
@@ -12,7 +13,9 @@ import nextstep.domain.persist.Theme;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.ThemeDao;
-import nextstep.support.exception.api.*;
+import nextstep.support.exception.api.reservation.*;
+import nextstep.support.exception.api.schedule.NoSuchScheduleException;
+import nextstep.support.exception.api.theme.NoSuchThemeException;
 import nextstep.worker.ReservationApproveEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,7 @@ import static nextstep.domain.enumeration.ReservationStatus.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
     private static final String ADMIN = "ADMIN";
     private final ReservationDao reservationDao;
@@ -66,7 +70,7 @@ public class ReservationService {
         Reservation reservation = findReservationById(id);
 
         if (!statusEquals(reservation, NOT_APPROVED)) {
-            throw new IllegalApproveException();
+            throw new IllegalReservationApproveException();
         }
 
         reservationDao.updateStatusById(id, APPROVED.getStatus());
@@ -89,7 +93,7 @@ public class ReservationService {
                 reservationDao.updateStatusById(id, WAIT_CANCEL.getStatus());
                 break;
             default:
-                throw new IllegalCancelException();
+                throw new IllegalReservationCancelException();
         }
     }
 
@@ -109,10 +113,11 @@ public class ReservationService {
         Reservation reservation = findReservationById(id);
 
         if (!statusEquals(reservation, WAIT_CANCEL)) {
-            throw new IllegalCancelException();
+            throw new IllegalReservationCancelException();
         }
 
         reservationDao.updateStatusById(id, CANCELED.getStatus());
+
         eventPublisher.publishEvent(new ReservationApproveEvent(false));
     }
 

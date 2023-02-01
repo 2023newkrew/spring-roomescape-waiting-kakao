@@ -1,7 +1,7 @@
 package nextstep.auth;
 
 import auth.support.JwtTokenProvider;
-import nextstep.DatabaseCleaner;
+import nextstep.util.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

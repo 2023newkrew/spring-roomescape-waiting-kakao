@@ -1,6 +1,7 @@
-package nextstep.support.exception.api;
+package nextstep.support.exception.api.reservation;
 
 import nextstep.support.exception.ErrorCode;
+import nextstep.support.exception.api.ApiException;
 
 public class NotReservationOwnerException extends ApiException {
     @Override

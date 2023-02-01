@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.ThemeRequest;
 import nextstep.domain.persist.Theme;
 import nextstep.repository.ThemeDao;
-import nextstep.support.exception.api.NoSuchThemeException;
+import nextstep.support.exception.api.theme.NoSuchThemeException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

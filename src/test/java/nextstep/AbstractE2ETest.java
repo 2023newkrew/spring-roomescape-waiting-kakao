@@ -2,6 +2,7 @@ package nextstep;
 
 import auth.domain.dto.TokenResponse;
 import io.restassured.RestAssured;
+import nextstep.util.DatabaseCleaner;
 import nextstep.util.RequestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;

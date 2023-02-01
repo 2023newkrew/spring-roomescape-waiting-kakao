@@ -10,10 +10,11 @@ import nextstep.domain.persist.Waiting;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.WaitingDao;
-import nextstep.support.exception.api.NoSuchWaitingException;
-import nextstep.support.exception.api.NotWaitingOwnerException;
+import nextstep.support.exception.api.waiting.NoSuchWaitingException;
+import nextstep.support.exception.api.waiting.NotWaitingOwnerException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
