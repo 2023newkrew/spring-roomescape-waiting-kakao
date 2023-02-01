@@ -3,12 +3,14 @@ package nextstep.reservationwaiting;
 import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.DELETE_BY_ID_STATEMENT;
 import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.EXIST_BY_ID_STATEMENT;
 import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.INSERT_INTO_STATEMENT;
+import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.SELECT_BY_ID_STATEMENT;
 import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.SELECT_BY_MEMBER_ID_STATEMENT;
 import static nextstep.reservationwaiting.ReservationWaitingJdbcSql.SELECT_MAX_WAIT_NUM_BY_SCHEDULE_ID_STATEMENT;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -72,7 +74,8 @@ public class ReservationWaitingDaoImpl implements ReservationWaitingDao {
     @Override
     public boolean existById(Long id, Long memberId) {
         try {
-            return Objects.requireNonNull(jdbcTemplate.queryForObject(EXIST_BY_ID_STATEMENT, Integer.class, memberId, id)) == 1;
+            return Objects.requireNonNull(
+                    jdbcTemplate.queryForObject(EXIST_BY_ID_STATEMENT, Integer.class, memberId, id)) == 1;
         } catch (Exception e) {
             return false;
         }
@@ -81,7 +84,8 @@ public class ReservationWaitingDaoImpl implements ReservationWaitingDao {
     @Override
     public Long findMaxWaitNumByScheduleId(Long scheduleId) {
         try {
-            return Objects.requireNonNull(jdbcTemplate.queryForObject(SELECT_MAX_WAIT_NUM_BY_SCHEDULE_ID_STATEMENT, Long.class, scheduleId));
+            return Objects.requireNonNull(
+                    jdbcTemplate.queryForObject(SELECT_MAX_WAIT_NUM_BY_SCHEDULE_ID_STATEMENT, Long.class, scheduleId));
         } catch (Exception e) {
             return 0L;
         }
@@ -90,6 +94,11 @@ public class ReservationWaitingDaoImpl implements ReservationWaitingDao {
     @Override
     public void deleteById(Long id) {
         jdbcTemplate.update(DELETE_BY_ID_STATEMENT, id);
+    }
+
+    @Override
+    public Optional<ReservationWaiting> findById(Long id) {
+        return jdbcTemplate.query(SELECT_BY_ID_STATEMENT, rowMapper, id).stream().findAny();
     }
 }
 

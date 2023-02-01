@@ -3,6 +3,7 @@ package nextstep.reservationwaiting;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
@@ -104,15 +105,36 @@ class ReservationWaitingDaoTest {
 
     }
 
+    @Test
+    @DisplayName("id 로 단건 조회")
+    void findById() {
+        // given
+        ReservationWaiting reservationWaiting = createReservationWaitingByWaitNum(1L);
+        Long id = reservationWaitingDao.save(reservationWaiting);
+
+        // when
+        Optional<ReservationWaiting> foundReservationWaiting = reservationWaitingDao.findById(id);
+
+        // then
+        Assertions.assertThat(foundReservationWaiting).isNotEmpty();
+        ReservationWaiting result = foundReservationWaiting.get();
+
+        Assertions.assertThat(result.getWaitNum()).isEqualTo(reservationWaiting.getWaitNum());
+        Assertions.assertThat(result.getMemberId()).isEqualTo(reservationWaiting.getMemberId());
+        Assertions.assertThat(result.getSchedule().getId()).isEqualTo(reservationWaiting.getSchedule().getId());
+
+    }
+
+
     private ReservationWaiting createReservationWaitingByWaitNum(Long waitNum) {
         return ReservationWaiting.builder()
                 .schedule(
                         Schedule.giveId(Schedule.builder()
                                 .theme(Theme.giveId(Theme.builder()
-                                                .name("name")
-                                                .desc("desc")
-                                                .price(210000)
-                                        .build(),themeId))
+                                        .name("name")
+                                        .desc("desc")
+                                        .price(210000)
+                                        .build(), themeId))
                                 .time(LocalTime.parse("13:00:00"))
                                 .date(LocalDate.parse("2023-01-26"))
                                 .build(), scheduleId))

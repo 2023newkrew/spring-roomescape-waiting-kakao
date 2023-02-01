@@ -23,4 +23,13 @@ public final class ReservationWaitingJdbcSql {
             "from reservation_waiting " +
             "where reservation_waiting.schedule_id = ?;";
     public static final String DELETE_BY_ID_STATEMENT = "DELETE FROM reservation_waiting where id = ?;";
+
+    public static final String SELECT_BY_ID_STATEMENT = "SELECT " +
+            "reservation_waiting.id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
+            "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+            "theme.id, theme.name, theme.desc, theme.price, " +
+            "from reservation_waiting " +
+            "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
+            "inner join theme on schedule.theme_id = theme.id " +
+            "where reservation_waiting.id = ?;";
 }

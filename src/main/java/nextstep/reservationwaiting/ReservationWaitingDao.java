@@ -1,6 +1,7 @@
 package nextstep.reservationwaiting;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationWaitingDao {
     Long save(ReservationWaiting reservationWaiting);
@@ -12,4 +13,6 @@ public interface ReservationWaitingDao {
     Long findMaxWaitNumByScheduleId(Long scheduleId);
 
     void deleteById(Long id);
+
+    Optional<ReservationWaiting> findById(Long id);
 }

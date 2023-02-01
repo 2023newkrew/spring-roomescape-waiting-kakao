@@ -72,4 +72,5 @@ public class ReservationWaiting {
             return new ReservationWaiting(schedule, memberId, waitNum);
         }
     }
+
 }
