@@ -20,8 +20,10 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
-        themeDao.findById(id)
-                .orElseThrow(NonExistThemeException::new);
+        if (themeDao.findById(id)
+                .isEmpty()) {
+            throw new NonExistThemeException();
+        }
         themeDao.delete(id);
     }
 }

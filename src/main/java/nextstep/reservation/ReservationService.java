@@ -43,9 +43,10 @@ public class ReservationService {
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        themeDao.findById(themeId)
-                .orElseThrow(NonExistThemeException::new);
-
+        if (themeDao.findById(themeId)
+                .isEmpty()) {
+            throw new NonExistThemeException();
+        }
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
