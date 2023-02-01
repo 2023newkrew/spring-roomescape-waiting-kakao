@@ -50,10 +50,6 @@ public class ScheduleDao {
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
-//        String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
-//                "from schedule " +
-//                "inner join theme on schedule.theme_id = theme.id " +
-//                "where schedule.theme_id = ? and schedule.date = ?;";
         String sql = """
                 SELECT *
                 FROM schedule
