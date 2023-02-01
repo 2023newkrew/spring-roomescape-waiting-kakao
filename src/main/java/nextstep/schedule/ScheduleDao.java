@@ -39,19 +39,27 @@ public class ScheduleDao {
     }
 
     public Optional<Schedule> findById(Long id) {
-        String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
-                "from schedule " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "where schedule.id = ?;";
+        String sql = """
+                SELECT *
+                FROM schedule
+                JOIN theme ON schedule.theme_id = theme.id
+                WHERE schedule.id = (?)
+                """;
 
         return jdbcTemplate.query(sql, scheduleRowMapper, id).stream().findAny();
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
-        String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
-                "from schedule " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "where schedule.theme_id = ? and schedule.date = ?;";
+//        String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
+//                "from schedule " +
+//                "inner join theme on schedule.theme_id = theme.id " +
+//                "where schedule.theme_id = ? and schedule.date = ?;";
+        String sql = """
+                SELECT *
+                FROM schedule
+                JOIN theme ON schedule.theme_id = theme.id
+                WHERE schedule.theme_id = (?) AND schedule.date = (?)
+                """;
 
         return jdbcTemplate.query(sql, scheduleRowMapper, themeId, Date.valueOf(LocalDate.parse(date)));
     }
