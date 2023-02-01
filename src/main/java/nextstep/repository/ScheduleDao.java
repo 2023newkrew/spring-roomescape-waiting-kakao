@@ -1,13 +1,13 @@
 package nextstep.repository;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.domain.annotation.JdbcRepository;
 import nextstep.domain.persist.Schedule;
 import nextstep.domain.persist.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -15,7 +15,7 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
 
-@Component
+@JdbcRepository
 @RequiredArgsConstructor
 public class ScheduleDao {
     private final JdbcTemplate jdbcTemplate;

@@ -1,16 +1,16 @@
 package nextstep.repository;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.domain.annotation.JdbcRepository;
 import nextstep.domain.persist.Member;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 
-@Component
+@JdbcRepository
 @RequiredArgsConstructor
 public class MemberDao {
     private final JdbcTemplate jdbcTemplate;

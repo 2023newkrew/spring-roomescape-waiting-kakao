@@ -1,19 +1,19 @@
 package nextstep.repository;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.domain.annotation.JdbcRepository;
 import nextstep.domain.persist.Profit;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Component
+@JdbcRepository
 @RequiredArgsConstructor
 public class ProfitDao {
     private final JdbcTemplate jdbcTemplate;

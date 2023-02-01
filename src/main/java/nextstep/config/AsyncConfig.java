@@ -8,7 +8,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
-@EnableAsync
+@EnableAsync(proxyTargetClass = true)
 @Configuration
 @RequiredArgsConstructor
 public class AsyncConfig extends AsyncConfigurerSupport {

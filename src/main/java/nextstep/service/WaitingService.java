@@ -14,7 +14,6 @@ import nextstep.support.exception.api.waiting.NoSuchWaitingException;
 import nextstep.support.exception.api.waiting.NotWaitingOwnerException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.stream.Collectors;

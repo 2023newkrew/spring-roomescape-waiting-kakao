@@ -1,6 +1,7 @@
 package nextstep.repository;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.domain.annotation.JdbcRepository;
 import nextstep.domain.persist.Member;
 import nextstep.domain.persist.Reservation;
 import nextstep.domain.persist.Schedule;
@@ -9,14 +10,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 
-@Component
+@JdbcRepository
 @RequiredArgsConstructor
 public class ReservationDao {
 

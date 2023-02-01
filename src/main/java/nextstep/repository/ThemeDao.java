@@ -1,17 +1,17 @@
 package nextstep.repository;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.domain.annotation.JdbcRepository;
 import nextstep.domain.persist.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 
-@Component
+@JdbcRepository
 @RequiredArgsConstructor
 public class ThemeDao {
     private final JdbcTemplate jdbcTemplate;
