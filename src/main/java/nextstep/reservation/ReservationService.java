@@ -126,5 +126,16 @@ public class ReservationService {
             revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice() * (-1), LocalDate.now()));
         }
     }
-    
+
+    public void cancelApprove(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new NullPointerException();
+        }
+        if (reservation.getStatus() != ReservationStatus.CANCEL_WAITING) {
+            throw new IllegalArgumentException("취소 대기 상태가 아닌 예약입니다.");
+        }
+        reservationDao.updateStatusTo(id, ReservationStatus.CANCELED);
+        revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice() * (-1), LocalDate.now()));
+    }
 }

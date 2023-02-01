@@ -55,6 +55,11 @@ public class ReservationController {
         reservationService.reject(id);
         return ResponseEntity.ok().build();
     }
+    @PatchMapping("/reservations/{id}/cancel-approve")
+    public ResponseEntity cancelApproveReservation(@PathVariable Long id) {
+        reservationService.cancelApprove(id);
+        return ResponseEntity.ok().build();
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
