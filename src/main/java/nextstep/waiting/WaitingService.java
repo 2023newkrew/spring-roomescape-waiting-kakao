@@ -11,6 +11,7 @@ import nextstep.support.NotExistException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class WaitingService {
@@ -26,6 +27,7 @@ public class WaitingService {
         this.memberDao = memberDao;
     }
 
+    @Transactional
     public Long create(Member member, WaitingRequest waitingRequest) {
         if (member == null) {
             throw new AuthenticationException();

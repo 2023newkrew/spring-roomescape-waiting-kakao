@@ -10,6 +10,7 @@ import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
+    @Transactional
     public Long create(Member member, ReservationRequest reservationRequest) {
         if (member == null) {
             throw new AuthenticationException();
