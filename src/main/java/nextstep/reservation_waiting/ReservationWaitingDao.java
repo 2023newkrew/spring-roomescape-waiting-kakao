@@ -2,7 +2,6 @@ package nextstep.reservation_waiting;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
-import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.dao.DataAccessException;
@@ -46,15 +45,16 @@ public class ReservationWaitingDao {
             )
     );
 
-    public Long save(Reservation reservation, Member member) {
+    public Long save(ReservationWaiting reservationWaiting) {
         String sql = "INSERT INTO reservation_waiting (schedule_id, member_id) VALUES (?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, reservation.getSchedule()
+            ps.setLong(1, reservationWaiting.getSchedule()
                     .getId());
-            ps.setLong(2, member.getId());
+            ps.setLong(2, reservationWaiting.getMember()
+                    .getId());
             return ps;
 
         }, keyHolder);

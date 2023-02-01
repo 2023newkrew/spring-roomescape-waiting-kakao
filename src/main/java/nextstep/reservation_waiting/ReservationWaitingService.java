@@ -26,7 +26,9 @@ public class ReservationWaitingService {
                 .ifPresent(reservationWaiting -> {
                     throw new DuplicateReservationWaitingException();
                 });
-        return reservationWaitingDao.save(reservation, member);
+
+        ReservationWaiting reservationWaiting = new ReservationWaiting(reservation.getSchedule(), member);
+        return reservationWaitingDao.save(reservationWaiting);
     }
 
     public ReservationWaiting findById(Long id) {
