@@ -22,6 +22,12 @@ public enum ErrorCode {
     // 예약 에러
     DUPLICATE_RESERVATION(HttpStatus.BAD_REQUEST, "해당 시간에 예약이 존재합니다."),
     RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 ID의 예약이 존재하지 않습니다."),
+    RESERVATION_ALREADY_APPROVED(HttpStatus.BAD_REQUEST, "이미 승인된 예약입니다."),
+    RESERVATION_CANT_BE_CANCELLED(HttpStatus.BAD_REQUEST, "취소 요청된 예약이 아닙니다."),
+    RESERVATION_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "이미 취소된 예약입니다."),
+    RESERVATION_WAIT_CANCEL(HttpStatus.BAD_REQUEST, "취소 대기중인 예약입니다."),
+    RESERVATION_ALREADY_REFUSED(HttpStatus.BAD_REQUEST, "이미 거절된 예약입니다."),
+
 
     // 예약 대기 에러
     DUPLICATE_RESERVATION_WAITING(HttpStatus.BAD_REQUEST, "해당 시간에 대한 예약 대기 요청이 존재합니다."),
