@@ -8,8 +8,8 @@ values (1, '기본테마', '테마설명', 1234000),
        (2, '삭제확인테마', '테마설명', 40000),
        (3, '더미테마', '테마설명', 41000);
 
-insert into reservation(id, date, time, name, theme_id, member_id)
-values (1, '1970-01-01', '12:00', '예약예약0', 1, 2);
+insert into reservation(id, date, time, name, theme_id, member_id, STATUS)
+values (1, '1970-01-01', '12:00', '예약예약0', 1, 2, 0);
 
 
 insert into waiting(id, date, time, name, theme_id, member_id)

@@ -22,18 +22,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReservationRepository {
     private static final String SELECT_BY_ID = """
-            select r.id, r.date, r.time, r.name, r.member_id, r.theme_id, t.name, t.desc, t.price
+            select r.id, r.date, r.time, r.name, r.member_id, r.status, r.theme_id, t.name, t.desc, t.price
             from reservation r
             inner join theme t on t.id = r.theme_id
             where r.id = :id
             """;
     private static final String SELECT_BY_MEMBER_ID = """
-            select r.id, r.date, r.time, r.name, r.member_id, r.theme_id, t.name, t.desc, t.price
+            select r.id, r.date, r.time, r.name, r.member_id, r.status, r.theme_id, t.name, t.desc, t.price
             from reservation r
             inner join theme t on t.id = r.theme_id
             where r.member_id = :member_id
             """;
-    private static final String INSERT = "insert into reservation (date, time, name, theme_id, member_id) values (:date, :time, :name, :theme_id, :member_id)";
+    private static final String UPDATE_STATUS = """
+            update reservation r
+            set
+                r.status = :status
+            where
+                r.id = :id
+            """;
+    private static final String INSERT = "insert into reservation (date, time, name, theme_id, member_id, status) values (:date, :time, :name, :theme_id, :member_id, :status)";
     private static final String DELETE = "delete from reservation where id = :id";
     private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> new Reservation(
             rs.getLong(1),
@@ -41,11 +48,12 @@ public class ReservationRepository {
             rs.getTime(3).toLocalTime(),
             rs.getString(4),
             rs.getLong(5),
+            Reservation.Status.from(rs.getInt(6)),
             new Theme(
-                    rs.getLong(6),
-                    rs.getString(7),
+                    rs.getLong(7),
                     rs.getString(8),
-                    rs.getInt(9)
+                    rs.getString(9),
+                    rs.getInt(10)
             )
 
     );
@@ -62,12 +70,21 @@ public class ReservationRepository {
                     Map.entry("date", date),
                     Map.entry("time", time),
                     Map.entry("theme_id", themeId),
-                    Map.entry("member_id", memberId)
+                    Map.entry("member_id", memberId),
+                    Map.entry("status", Reservation.Status.Unapproved.into())
             )), keyHolder);
         } catch (DataAccessException dataAccessException) {
             return Optional.empty();
         }
         return Optional.ofNullable(keyHolder.getKeyAs(Long.class));
+    }
+
+    public void updateStatus(Long id, Reservation.Status status) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbc.update(UPDATE_STATUS, new MapSqlParameterSource(Map.ofEntries(
+                Map.entry("id", id),
+                Map.entry("status", status.into())
+        )), keyHolder);
     }
 
     public Optional<Reservation> selectById(long id) {
