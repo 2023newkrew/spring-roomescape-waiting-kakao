@@ -3,7 +3,7 @@ package nextstep.reservation;
 public class ReservationRequest {
     private Long scheduleId;
 
-    public ReservationRequest() {
+    private ReservationRequest() {
     }
 
     public ReservationRequest(Long scheduleId) {

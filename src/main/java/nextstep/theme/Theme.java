@@ -6,7 +6,7 @@ public class Theme {
     private String desc;
     private int price;
 
-    public Theme() {
+    private Theme() {
     }
 
     public Theme(Long id, String name, String desc, int price) {

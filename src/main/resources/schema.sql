@@ -1,8 +1,11 @@
-CREATE TABLE reservation
+CREATE TABLE member
 (
-    id          bigint not null auto_increment,
-    schedule_id bigint not null,
-    member_id   bigint not null,
+    id       bigint      not null auto_increment,
+    username varchar(20) not null,
+    password varchar(20) not null,
+    name     varchar(20) not null,
+    phone    varchar(20) not null,
+    role     varchar(20) not null,
     primary key (id)
 );
 
@@ -24,13 +27,22 @@ CREATE TABLE schedule
     primary key (id)
 );
 
-CREATE TABLE member
+CREATE TABLE reservation
 (
-    id       bigint      not null auto_increment,
-    username varchar(20) not null,
-    password varchar(20) not null,
-    name     varchar(20) not null,
-    phone    varchar(20) not null,
-    role     varchar(20) not null,
-    primary key (id)
+    id          bigint not null auto_increment,
+    schedule_id bigint not null,
+    member_id   bigint not null,
+    primary key (id),
+    foreign key (member_id) references member(id) on delete cascade
 );
+
+CREATE TABLE reservation_waiting
+(
+    id          bigint not null auto_increment,
+    schedule_id bigint not null,
+    member_id   bigint not null,
+    wait_num    bigint not null,
+    primary key (id),
+    foreign key (member_id) references member(id) on delete cascade
+);
+

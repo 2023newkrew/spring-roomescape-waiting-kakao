@@ -10,7 +10,7 @@ public class Reservation {
     private Schedule schedule;
     private Member member;
 
-    public Reservation() {
+    private Reservation() {
     }
 
     public Reservation(Schedule schedule, Member member) {
