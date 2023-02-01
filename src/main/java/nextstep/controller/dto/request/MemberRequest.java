@@ -2,7 +2,6 @@ package nextstep.controller.dto.request;
 
 import auth.domain.Role;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import nextstep.domain.Member;

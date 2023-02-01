@@ -32,6 +32,6 @@ public class MemberController {
                         userDetails.getName(),
                         userDetails.getPhone(),
                         userDetails.getRole()
-        ));
+                ));
     }
 }

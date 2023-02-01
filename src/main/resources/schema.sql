@@ -63,12 +63,12 @@ CREATE TABLE waiting
 /* 매출은 이력 관리를 위해 레퍼런스를 제거 */
 CREATE TABLE sale
 (
-    id              bigint      not null auto_increment,
-    theme_name      varchar(20) not null,
-    theme_price     int         not null,
-    schedule_date   date        not null,
-    schedule_time   time        not null,
-    member_name     varchar(20) not null,
-    member_phone    varchar(20) not null,
+    id            bigint      not null auto_increment,
+    theme_name    varchar(20) not null,
+    theme_price   int         not null,
+    schedule_date date        not null,
+    schedule_time time        not null,
+    member_name   varchar(20) not null,
+    member_phone  varchar(20) not null,
     primary key (id)
 );

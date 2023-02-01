@@ -13,5 +13,5 @@ public class AdminController {
         this.reservationService = reservationService;
     }
 
-    
+
 }

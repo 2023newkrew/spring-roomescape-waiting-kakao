@@ -1,6 +1,8 @@
 package nextstep.controller.dto.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import nextstep.domain.Reservation;
 import nextstep.domain.Schedule;
 
