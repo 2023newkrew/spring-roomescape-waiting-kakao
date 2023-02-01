@@ -216,6 +216,30 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value());
     }
 
+    @DisplayName("관리자가 미승인 상태의 예약을 거절한다.")
+    @Test
+    void rejectUnapprovedReservation() {
+        var reservation = createReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch(reservation.header("Location") + "/reject")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("관리자가 승인 상태의 예약을 거절한다.")
+    @Test
+    void rejectApprovedReservation() {
+        long id = approveReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/" + id + "/reject")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()
