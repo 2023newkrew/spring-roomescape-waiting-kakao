@@ -80,7 +80,8 @@ public class ReservationWaitingService {
                 .map(reservationWaiting -> {
                     delete(reservationWaiting.getId());
                     return memberDao.findById(reservationWaiting.getMember()
-                            .getId());
+                                    .getId())
+                            .orElseThrow(NonExistReservationWaitingException::new);
                 })
                 .ifPresent(createReservationWithWaitingMember(reservation));
     }

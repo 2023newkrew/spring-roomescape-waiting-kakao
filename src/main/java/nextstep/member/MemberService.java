@@ -1,6 +1,7 @@
 package nextstep.member;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.support.exception.NonExistMemberException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,7 @@ public class MemberService {
     }
 
     public Member findById(Long id) {
-        return memberDao.findById(id);
+        return memberDao.findById(id)
+                .orElseThrow(NonExistMemberException::new);
     }
 }

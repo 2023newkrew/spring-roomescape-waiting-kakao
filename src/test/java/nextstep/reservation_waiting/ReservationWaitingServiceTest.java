@@ -102,8 +102,6 @@ class ReservationWaitingServiceTest {
     @Test
     @DisplayName("자신의 예약대기를 취소한다.")
     void deleteTest() {
-        ReservationWaiting reservationWaiting = ReservationWaiting.builder()
-                .build();
         assertThatCode(() -> reservationWaitingService.delete(1L)).doesNotThrowAnyException();
     }
 
@@ -144,7 +142,7 @@ class ReservationWaitingServiceTest {
         when(reservationWaitingDao.findAllByScheduleId(anyLong())).thenReturn((List.of(reservationWaiting1, reservationWaiting2)));
         doNothing().when(reservationWaitingDao)
                 .deleteById(reservationWaiting1.getId());
-        when(memberDao.findById(anyLong())).thenReturn(member);
+        when(memberDao.findById(anyLong())).thenReturn(Optional.ofNullable(member));
         when(reservationDao.save(any(Reservation.class))).thenReturn(1L);
 
         reservationWaitingService.confirm(reservation);

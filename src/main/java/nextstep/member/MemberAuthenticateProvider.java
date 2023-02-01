@@ -14,8 +14,9 @@ public class MemberAuthenticateProvider implements AuthenticateProvider {
 
     @Override
     public UserDetails createUserDetails(String username, String password) {
-        Member member = memberDao.findByUsername(username);
-        if (member == null || member.checkWrongPassword(password)) {
+        Member member = memberDao.findByUsername(username)
+                .orElseThrow(AuthenticationException::new);
+        if (member.checkWrongPassword(password)) {
             throw new AuthenticationException();
         }
         return Member.convertToUserDetails(member);
