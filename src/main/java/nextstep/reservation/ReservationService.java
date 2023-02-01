@@ -4,6 +4,8 @@ import auth.AuthenticationException;
 import auth.UserDetails;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.revenue.Revenue;
+import nextstep.revenue.RevenueDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -11,6 +13,7 @@ import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -19,12 +22,18 @@ public class ReservationService {
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
+    public final RevenueDao revenueDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao,
+                              ThemeDao themeDao,
+                              ScheduleDao scheduleDao,
+                              MemberDao memberDao,
+                              RevenueDao revenueDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.revenueDao = revenueDao;
     }
 
     public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
@@ -77,7 +86,11 @@ public class ReservationService {
         if (reservation == null) {
             throw new NullPointerException();
         }
+        if (reservation.getStatus() != ReservationStatus.UNAPPROVED) {
+            throw new IllegalArgumentException("승인할 수 있는 상태가 아닙니다.");
+        }
         reservationDao.updateStatusTo(id, ReservationStatus.APPROVED);
+        revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice(), LocalDate.now()));
     }
 
     public void cancel(UserDetails member, Long id) {
