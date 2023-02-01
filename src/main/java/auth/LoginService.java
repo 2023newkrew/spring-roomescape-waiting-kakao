@@ -21,7 +21,7 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public Long extractMember(String credential) {
+    public Long extractMemberId(String credential) {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 }
