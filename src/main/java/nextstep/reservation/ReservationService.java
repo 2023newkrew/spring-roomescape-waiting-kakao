@@ -77,6 +77,28 @@ public class ReservationService {
         if (reservation == null) {
             throw new NullPointerException();
         }
-        reservationDao.toApproved(id);
+        reservationDao.updateStatusTo(id, ReservationStatus.APPROVED);
+    }
+
+    public void cancel(UserDetails member, Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new NullPointerException();
+        }
+
+        if (!reservation.sameMember(member)) {
+            throw new AuthenticationException();
+        }
+
+        switch (reservation.getStatus()) {
+            case UNAPPROVED:
+                reservationDao.updateStatusTo(id, ReservationStatus.CANCELED);
+                break;
+            case APPROVED:
+                reservationDao.updateStatusTo(id, ReservationStatus.CANCEL_WAITING);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 }

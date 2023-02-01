@@ -44,6 +44,12 @@ public class ReservationController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/reservations/{id}/cancel")
+    public ResponseEntity cancelReservation(@LoginMember UserDetails member, @PathVariable Long id) {
+        reservationService.cancel(member, id);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         return ResponseEntity.internalServerError().build();

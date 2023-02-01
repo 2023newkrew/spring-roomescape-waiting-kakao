@@ -122,8 +122,9 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public void toApproved(Long id) {
+    public void updateStatusTo(Long id, ReservationStatus status) {
         String sql = "UPDATE reservation SET status = ? WHERE id = ?";
-        jdbcTemplate.update(sql, ReservationStatus.APPROVED.ordinal(), id);
+        jdbcTemplate.update(sql, status.ordinal(), id);
     }
+
 }
