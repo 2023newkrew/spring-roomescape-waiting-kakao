@@ -44,3 +44,12 @@ CREATE TABLE reservation_waitings
     wait_num    bigint,
     primary key (id)
 );
+
+CREATE TABLE revenue
+(
+    id              bigint not null auto_increment,
+    reservation_id  bigint not null,
+    amount          int    not null default 0,
+    date            date   not null,
+    primary key (id)
+);
