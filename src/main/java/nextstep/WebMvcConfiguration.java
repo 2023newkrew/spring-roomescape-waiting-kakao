@@ -17,6 +17,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         this.memberDao = memberDao;
     }
 
+
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
         return new JwtTokenProvider();
