@@ -19,14 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AuthE2ETest {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
-
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
     @BeforeEach
     void setUp() {
-        databaseCleaner.execute();
-
         MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()

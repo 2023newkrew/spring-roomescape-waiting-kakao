@@ -6,6 +6,7 @@ package nextstep.domain.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.domain.persist.Schedule;
@@ -17,6 +18,7 @@ import java.time.LocalTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ScheduleRequest {
     @Schema(description = "테마 아이디")
     private Long themeId;
