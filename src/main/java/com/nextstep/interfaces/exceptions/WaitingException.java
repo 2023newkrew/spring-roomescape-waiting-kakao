@@ -1,4 +1,4 @@
-package com.nextstep.domains.exceptions;
+package com.nextstep.interfaces.exceptions;
 
 public class WaitingException extends BaseException {
 

@@ -1,7 +1,7 @@
 package com.nextstep.domains.theme;
 
-import com.nextstep.domains.exceptions.ErrorMessageType;
-import com.nextstep.domains.exceptions.ThemeException;
+import com.nextstep.interfaces.exceptions.ErrorMessageType;
+import com.nextstep.interfaces.exceptions.ThemeException;
 import com.nextstep.interfaces.theme.dtos.ThemeRequest;
 import com.nextstep.interfaces.theme.dtos.ThemeResponse;
 import com.nextstep.interfaces.theme.dtos.ThemeMapper;
