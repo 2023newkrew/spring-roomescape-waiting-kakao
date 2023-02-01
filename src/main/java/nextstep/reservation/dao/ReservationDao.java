@@ -4,6 +4,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import nextstep.error.ErrorCode;
+import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
 import nextstep.member.Role;
 import nextstep.reservation.domain.Reservation;
@@ -59,6 +62,13 @@ public class ReservationDao {
     );
 
     public Long save(Reservation reservation) {
+        if (Objects.isNull(reservation.getId())) {
+            return create(reservation);
+        }
+        return update(reservation);
+    }
+
+    public Long create(Reservation reservation) {
         String sql = "INSERT INTO reservation (schedule_id, member_id, status) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -72,6 +82,16 @@ public class ReservationDao {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    public Long update(Reservation reservation) {
+        String sql = "UPDATE SET status = ? WHERE id = ?;";
+
+        int updatedCount = jdbcTemplate.update(sql, reservation.getStatus(), reservation.getId());
+        if (updatedCount != 1) {
+            throw new RoomReservationException(ErrorCode.RECORD_NOT_UPDATED);
+        }
+        return reservation.getId();
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {

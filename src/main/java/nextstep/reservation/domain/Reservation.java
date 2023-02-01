@@ -42,7 +42,7 @@ public class Reservation {
         return status;
     }
 
-    public boolean sameMember(Member member) {
+    public boolean isMine(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }
 
@@ -75,6 +75,7 @@ public class Reservation {
             return;
         }
         status = ReservationStatus.REFUSED;
+        // TODO 매출 기록 변경
     }
 
     public void approveCancel() {
@@ -85,7 +86,7 @@ public class Reservation {
             throw new RoomReservationException(ErrorCode.RESERVATION_CANT_BE_CANCELLED);
         }
         status = ReservationStatus.CANCELLED;
-        // TODO 매출 기록 변경
+        // TODO 예약금 환불 이력 추가
     }
 
     private void checkApproved() {

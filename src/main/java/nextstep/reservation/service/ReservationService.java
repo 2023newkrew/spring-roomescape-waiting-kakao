@@ -2,6 +2,7 @@ package nextstep.reservation.service;
 
 import java.util.List;
 import java.util.Objects;
+import nextstep.common.annotation.AdminRequired;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
@@ -67,7 +68,7 @@ public class ReservationService {
         if (reservation == null) {
             throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
         }
-        if (!reservation.sameMember(member)) {
+        if (!reservation.isMine(member)) {
             throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
         }
         reservationDao.deleteById(id);
@@ -84,5 +85,43 @@ public class ReservationService {
 
     public List<Reservation> lookUp(Member member) {
         return reservationDao.findByMemberId(member.getId());
+    }
+
+    @AdminRequired
+    public void approveReservation(Member member, Long id) {
+        Reservation reservation = getReservation(id);
+        reservation.approve();
+        reservationDao.save(reservation);
+    }
+
+    public void cancelReservation(Member member, Long id) {
+        Reservation reservation = getReservation(id);
+        if (!reservation.isMine(member)) {
+            throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
+        reservation.cancel();
+        reservationDao.save(reservation);
+    }
+
+    @AdminRequired
+    public void refuseReservation(Member member, Long id) {
+        Reservation reservation = getReservation(id);
+        reservation.refuse();
+        reservationDao.save(reservation);
+    }
+
+    @AdminRequired
+    public void approveCancelOfReservation(Member member, Long id) {
+        Reservation reservation = getReservation(id);
+        reservation.approveCancel();
+        reservationDao.save(reservation);
+    }
+
+    private Reservation getReservation(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if(Objects.isNull(reservation)) {
+            throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
+        return reservation;
     }
 }

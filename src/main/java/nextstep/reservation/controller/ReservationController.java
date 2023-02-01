@@ -60,4 +60,11 @@ public class ReservationController {
         List<Reservation> reservationList = reservationService.lookUp(new Member(member));
         return ResponseEntity.ok().body(reservationList);
     }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelReservation(@LoginMember UserDetails member,
+                                                  @PathVariable @NotNull @Min(1L) Long id) {
+        reservationService.cancelReservation(new Member(member), id);
+        return ResponseEntity.ok().build();
+    }
 }

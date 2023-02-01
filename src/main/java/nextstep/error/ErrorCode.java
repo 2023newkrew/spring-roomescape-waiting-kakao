@@ -9,6 +9,9 @@ public enum ErrorCode {
     INVALID_BODY_FIELD(HttpStatus.BAD_REQUEST, "바디의 필드가 잘못된 형식이거나 누락되었습니다."),
     INVALID_PATH_VAR_OR_QUERY_PARAMETER(HttpStatus.BAD_REQUEST, "경로 변수나 쿼리 파라미터가 잘못된 형식이거나 누락되었습니다."),
 
+    // DB 에러
+    RECORD_NOT_UPDATED(HttpStatus.INTERNAL_SERVER_ERROR, "수정이 저장되지 않았습니다. 관리자에게 문의해 주세요."),
+
     // 인증 에러
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "유저네임 또는 패스워드가 틀렸습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
