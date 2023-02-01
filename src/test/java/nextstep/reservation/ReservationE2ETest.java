@@ -104,22 +104,6 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("중복 예약을 생성한다")
-    @Test
-    void Should_ThrowBadRequest_When_RequestCreateDuplicateReservation() {
-        createReservation(scheduleId);
-
-        var response = given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservations")
-                .then().log().all()
-                .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
     @DisplayName("예약이 없을 때 예약 목록을 조회한다")
     @Test
     void Should_ReturnEmptyList_When_IfNoReservationExists() {

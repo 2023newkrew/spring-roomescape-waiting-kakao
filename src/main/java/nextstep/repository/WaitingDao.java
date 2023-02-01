@@ -92,7 +92,16 @@ public class WaitingDao {
     }
 
     public Waiting findById(Long id) {
-        String sql = "SELECT * FROM waiting WHERE id = ?";
+        String sql = "SELECT " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "FROM waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on waiting.member_id = member.id " +
+                "where waiting.id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 }
