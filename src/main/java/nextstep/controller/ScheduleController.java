@@ -11,15 +11,15 @@ import java.util.List;
 
 @RestController
 public class ScheduleController {
-    private ScheduleService scheduleService;
+    private final ScheduleService scheduleService;
 
     public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
 
     @PostMapping("/admin/schedules")
-    public ResponseEntity createSchedule(@RequestBody ScheduleRequest scheduleRequest) {
-        Long id = scheduleService.create(scheduleRequest);
+    public ResponseEntity<?> createSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+        long id = scheduleService.create(scheduleRequest);
         return ResponseEntity.created(URI.create("/schedules/" + id)).build();
     }
 

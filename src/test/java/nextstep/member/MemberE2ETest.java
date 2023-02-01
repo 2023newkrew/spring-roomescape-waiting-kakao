@@ -2,7 +2,9 @@ package nextstep.member;
 
 import auth.controller.dto.TokenRequest;
 import auth.controller.dto.TokenResponse;
+import auth.domain.Role;
 import io.restassured.RestAssured;
+import nextstep.AbstractE2ETest;
 import nextstep.controller.dto.MemberRequest;
 import nextstep.domain.Member;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,40 +19,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class MemberE2ETest {
-
+public class MemberE2ETest extends AbstractE2ETest {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
-    private TokenResponse token;
-
-    @BeforeEach
-    void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
-        RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(memberBody)
-                .when().post("/members")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-
-        TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
-        var response = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(tokenBody)
-                .when().post("/login/token")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        token = response.as(TokenResponse.class);
-    }
 
     @DisplayName("멤버를 생성한다")
     @Test
     public void create() {
-        MemberRequest body = new MemberRequest("u", "p", "n", "010-1111-2222", "USER");
+        MemberRequest body = new MemberRequest(USERNAME, PASSWORD, "n", "010-1111-2222");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

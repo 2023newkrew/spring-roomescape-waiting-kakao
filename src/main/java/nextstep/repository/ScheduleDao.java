@@ -50,7 +50,7 @@ public class ScheduleDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Schedule findById(Long id) {
+    public Schedule findById(long id) {
         String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
                 "from schedule " +
                 "inner join theme on schedule.theme_id = theme.id " +
@@ -59,7 +59,7 @@ public class ScheduleDao {
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
+    public List<Schedule> findByThemeIdAndDate(long themeId, String date) {
         String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
                 "from schedule " +
                 "inner join theme on schedule.theme_id = theme.id " +
@@ -68,7 +68,7 @@ public class ScheduleDao {
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(LocalDate.parse(date)));
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         jdbcTemplate.update("DELETE FROM schedule where id = ?;", id);
     }
 

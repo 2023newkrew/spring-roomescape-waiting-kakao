@@ -1,5 +1,6 @@
 package nextstep.repository;
 
+import auth.domain.Role;
 import lombok.RequiredArgsConstructor;
 import nextstep.domain.Member;
 import nextstep.domain.Schedule;
@@ -39,7 +40,7 @@ public class WaitingDao {
                     resultSet.getString("member.password"),
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
-                    resultSet.getString("member.role")
+                    Role.valueOf(resultSet.getString("member.role"))
             )
     );
 
@@ -57,7 +58,7 @@ public class WaitingDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Long getPriority(Long scheduleId, Long waitingId) {
+    public Long getPriority(long scheduleId, long waitingId) {
         String sql = "SELECT COUNT(waiting.id)" +
                 "FROM waiting " +
                 "WHERE waiting.schedule_id = ? AND waiting.id <= ?";
@@ -68,7 +69,7 @@ public class WaitingDao {
         }
     }
 
-    public List<Waiting> findAll(Long id) {
+    public List<Waiting> findAll(long id) {
         String sql = "SELECT " +
                 "waiting.id, waiting.schedule_id, waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -86,12 +87,12 @@ public class WaitingDao {
         }
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "DELETE FROM waiting WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public Waiting findById(Long id) {
+    public Waiting findById(long id) {
         String sql = "SELECT * FROM waiting WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }

@@ -1,8 +1,8 @@
 package nextstep.controller;
 
 import auth.domain.UserDetails;
-import auth.support.template.LoginMember;
 import auth.support.AuthenticationException;
+import auth.support.template.LoginMember;
 import nextstep.controller.dto.ReservationRequest;
 import nextstep.controller.dto.ReservationResponse;
 import nextstep.domain.Reservation;
@@ -25,36 +25,37 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(userDetails, reservationRequest);
+    public ResponseEntity<?> createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
+        long id = reservationService.create(userDetails, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping
-    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<?> readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
 
     @GetMapping("/mine")
-    public ResponseEntity getReservations(@LoginMember UserDetails userDetails) {
+    public ResponseEntity<?> getReservations(@LoginMember UserDetails userDetails) {
         List<ReservationResponse> results = reservationService.findAllByUserId(userDetails.getId());
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<?> deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
         reservationService.deleteById(userDetails, id);
         return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
+    public ResponseEntity<?> onException(Exception e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
+    public ResponseEntity<?> onAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

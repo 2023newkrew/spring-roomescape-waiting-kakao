@@ -41,7 +41,7 @@ public class ThemeDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Theme findById(Long id) {
+    public Theme findById(long id) {
         String sql = "SELECT id, name, desc, price from theme where id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
@@ -51,7 +51,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public void delete(Long id) {
+    public void delete(long id) {
         String sql = "DELETE FROM reservation where id = ?;";
         jdbcTemplate.update(sql, id);
     }

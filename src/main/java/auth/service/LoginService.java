@@ -20,9 +20,7 @@ public class LoginService {
         if (userDetails == null || !userDetails.isValidPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
-
-        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
-
+        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole().name());
         return new TokenResponse(accessToken);
     }
 

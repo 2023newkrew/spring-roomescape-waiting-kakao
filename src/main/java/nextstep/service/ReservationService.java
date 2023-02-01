@@ -4,10 +4,7 @@ import auth.domain.UserDetails;
 import auth.support.AuthenticationException;
 import nextstep.controller.dto.ReservationRequest;
 import nextstep.controller.dto.ReservationResponse;
-import nextstep.domain.Member;
-import nextstep.domain.Reservation;
-import nextstep.domain.Schedule;
-import nextstep.domain.Theme;
+import nextstep.domain.*;
 import nextstep.repository.MemberDao;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
@@ -48,7 +45,8 @@ public class ReservationService {
 
         Reservation newReservation = new Reservation(
                 schedule,
-                new Member(userDetails)
+                new Member(userDetails),
+                ReservationStatus.CREATED
         );
 
         return reservationDao.save(newReservation);

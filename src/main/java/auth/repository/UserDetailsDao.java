@@ -1,5 +1,6 @@
 package auth.repository;
 
+import auth.domain.Role;
 import auth.domain.UserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,7 +18,7 @@ public class UserDetailsDao {
             resultSet.getString("password"),
             resultSet.getString("name"),
             resultSet.getString("phone"),
-            resultSet.getString("role")
+            Role.valueOf(resultSet.getString("role"))
     );
 
     public UserDetails findById(long id) {

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-@Component
 public class JwtTokenProvider {
     private final String secretKey;
     private final long validityInMilliseconds;
