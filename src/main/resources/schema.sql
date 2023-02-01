@@ -33,7 +33,9 @@ CREATE TABLE reservation
 (
     id          BIGINT NOT NULL AUTO_INCREMENT,
     member_id   BIGINT NOT NULL,
-    schedule_id BIGINT NOT NULL UNIQUE,
+    schedule_id BIGINT NOT NULL,
+    status      varchar(20) not null,
+    deleted     bit    not null default false,
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (schedule_id) REFERENCES schedule (id)
