@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -75,7 +76,7 @@ public class ReservationWaitingDao {
         try{
             return jdbcTemplate.query(sql, rowMapper, memberId);
         } catch (Exception e) {
-            return new ArrayList<ReservationWaiting>();
+            return Collections.emptyList();
         }
     }
 
