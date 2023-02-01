@@ -107,12 +107,12 @@ public class ReservationService {
             throw new NullPointerException();
         }
 
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
+        List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
 
         Reservation newReservation = new Reservation(
                 schedule,
                 member,
-                (long) reservation.size()
+                (long) reservations.size()
         );
 
         return reservationDao.save(newReservation);
