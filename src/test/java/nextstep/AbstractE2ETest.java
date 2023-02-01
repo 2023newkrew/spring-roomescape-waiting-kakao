@@ -19,9 +19,6 @@ import static nextstep.util.RequestBuilder.tokenRequestForAdmin;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AbstractE2ETest {
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-
     @Autowired
     private DatabaseCleaner databaseCleaner;
     protected TokenResponse token;
@@ -76,5 +73,28 @@ public class AbstractE2ETest {
                 .extract();
         String[] scheduleLocation = scheduleResponse.header("Location").split("/");
         return Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
+    }
+
+    public void createUser() {
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(memberRequestForUser())
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+    }
+
+    public String tokenForUser() {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(tokenRequestForUser())
+                .when().post("/login/token")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(TokenResponse.class)
+                .getAccessToken();
     }
 }
