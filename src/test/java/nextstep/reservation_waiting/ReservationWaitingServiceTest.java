@@ -41,7 +41,7 @@ class ReservationWaitingServiceTest {
         Reservation reservation = Reservation.builder()
                 .build();
 
-        when(reservationWaitingDao.save(any(Reservation.class), any(Member.class))).thenReturn(1L);
+        when(reservationWaitingDao.save(any(ReservationWaiting.class))).thenReturn(1L);
         assertThat(reservationWaitingService.create(reservation, member)).isEqualTo(1L);
     }
 
