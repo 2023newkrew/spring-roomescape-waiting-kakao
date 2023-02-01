@@ -1,8 +1,8 @@
 package auth;
 
-public interface UserDetailsService<T extends UserDetails<U>, U> {
+public interface UserDetailsService {
 
-    T findByUsername(String username);
+    UserDetails findByUsername(String username);
 
-    T findById(U id);
+    UserDetails findById(Long id);
 }

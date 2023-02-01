@@ -2,7 +2,7 @@ package nextstep.member;
 
 import auth.UserDetails;
 
-public class Member extends UserDetails<Long> {
+public class Member extends UserDetails {
     public Member() {
     }
 

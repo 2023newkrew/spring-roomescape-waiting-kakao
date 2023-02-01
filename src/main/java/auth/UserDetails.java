@@ -1,7 +1,7 @@
 package auth;
 
-public class UserDetails<T> {
-    protected T id;
+public class UserDetails {
+    protected Long id;
     protected String username;
     protected String password;
     protected String name;
@@ -11,7 +11,7 @@ public class UserDetails<T> {
     public UserDetails() {
     }
 
-    public UserDetails(T id, String username, String password, String name, String phone, String role) {
+    public UserDetails(Long id, String username, String password, String name, String phone, String role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -28,7 +28,7 @@ public class UserDetails<T> {
         this.role = role;
     }
 
-    public T getId() {
+    public Long getId() {
         return id;
     }
 
