@@ -1,6 +1,6 @@
 package nextstep.web.member.controller;
 
-import auth.login.LoginMember;
+import auth.resolver.LoginMember;
 import nextstep.web.member.domain.Member;
 import nextstep.web.member.dto.MemberRequest;
 import nextstep.web.member.service.MemberService;

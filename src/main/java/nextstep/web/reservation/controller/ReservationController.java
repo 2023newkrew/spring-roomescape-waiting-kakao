@@ -1,6 +1,6 @@
 package nextstep.web.reservation.controller;
 
-import auth.login.LoginMember;
+import auth.resolver.LoginMember;
 import nextstep.web.member.domain.Member;
 import nextstep.web.reservation.domain.Reservation;
 import nextstep.web.reservation.dto.ReservationRequest;

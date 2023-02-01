@@ -1,6 +1,6 @@
 package nextstep.web.reservation_waiting.controller;
 
-import auth.login.LoginMember;
+import auth.resolver.LoginMember;
 import lombok.RequiredArgsConstructor;
 import nextstep.web.member.domain.Member;
 import nextstep.web.reservation_waiting.dto.ReservationWaitingRequest;

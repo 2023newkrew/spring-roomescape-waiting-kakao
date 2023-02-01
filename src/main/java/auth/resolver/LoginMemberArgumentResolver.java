@@ -1,7 +1,7 @@
 package auth.resolver;
 
 import auth.exception.AuthenticationException;
-import auth.login.LoginMember;
+import auth.login.AbstractMember;
 import auth.login.LoginService;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -12,10 +12,10 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import java.util.Objects;
 
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final LoginService loginService;
+public class LoginMemberArgumentResolver<T extends AbstractMember> implements HandlerMethodArgumentResolver {
+    private final LoginService<T> loginService;
 
-    public LoginMemberArgumentResolver(LoginService loginService) {
+    public LoginMemberArgumentResolver(LoginService<T> loginService) {
         this.loginService = loginService;
     }
 
