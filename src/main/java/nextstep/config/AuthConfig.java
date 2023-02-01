@@ -9,10 +9,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @RequiredArgsConstructor
+@PropertySource("/application.yml")
 @ConfigurationProperties(prefix = "security.jwt.token")
 public class AuthConfig {
     private String secretKey;
