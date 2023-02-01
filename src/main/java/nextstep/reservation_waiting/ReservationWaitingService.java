@@ -68,10 +68,9 @@ public class ReservationWaitingService {
         return reservationWaitingDao.findAllByScheduleId(reservationWaiting.getSchedule()
                         .getId())
                 .stream()
-                .filter(rw -> rw.getId() <= reservationWaiting.getId())
+                .takeWhile(rw -> rw.getId() <= reservationWaiting.getId())
                 .count();
     }
-
 
     public void confirm(Reservation reservation) {
         findByScheduleId(reservation.getSchedule()
@@ -81,10 +80,10 @@ public class ReservationWaitingService {
                     return memberDao.findById(reservationWaiting.getMember()
                             .getId());
                 })
-                .ifPresent(getMemberConsumer(reservation));
+                .ifPresent(createReservationWithWaitingMember(reservation));
     }
 
-    private Consumer<Member> getMemberConsumer(Reservation reservation) {
+    private Consumer<Member> createReservationWithWaitingMember(Reservation reservation) {
         return reservationWaitingMember -> reservationDao.save(Reservation.builder()
                 .schedule(reservation.getSchedule())
                 .member(reservationWaitingMember)
