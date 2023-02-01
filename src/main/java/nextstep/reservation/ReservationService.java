@@ -9,6 +9,7 @@ import nextstep.revenue.RevenueDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
+import nextstep.support.UnsupportedReservationStatusException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,7 @@ public class ReservationService {
             throw new NullPointerException();
         }
         if (reservation.getStatus() != ReservationStatus.UNAPPROVED) {
-            throw new IllegalArgumentException("승인할 수 있는 상태가 아닙니다.");
+            throw new UnsupportedReservationStatusException("승인할 수 있는 상태의 예약이 아닙니다.");
         }
         reservationDao.updateStatusTo(id, ReservationStatus.APPROVED);
         revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice(), LocalDate.now()));
@@ -111,7 +112,7 @@ public class ReservationService {
                 reservationDao.updateStatusTo(id, ReservationStatus.CANCEL_WAITING);
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new UnsupportedReservationStatusException("취소 가능한 상태의 예약이 아닙니다.");
         }
     }
 
@@ -120,10 +121,16 @@ public class ReservationService {
         if (reservation == null) {
             throw new NullPointerException();
         }
-
-        reservationDao.updateStatusTo(id, ReservationStatus.REJECTED);
-        if (reservation.getStatus() == ReservationStatus.APPROVED) {
-            revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice() * (-1), LocalDate.now()));
+        switch (reservation.getStatus()) {
+            case UNAPPROVED:
+                reservationDao.updateStatusTo(id, ReservationStatus.REJECTED);
+                break;
+            case APPROVED:
+                reservationDao.updateStatusTo(id, ReservationStatus.REJECTED);
+                revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice() * (-1), LocalDate.now()));
+                break;
+            default:
+                throw new UnsupportedReservationStatusException("거절 가능한 상태의 예약이 아닙니다.");
         }
     }
 
@@ -133,7 +140,7 @@ public class ReservationService {
             throw new NullPointerException();
         }
         if (reservation.getStatus() != ReservationStatus.CANCEL_WAITING) {
-            throw new IllegalArgumentException("취소 대기 상태가 아닌 예약입니다.");
+            throw new UnsupportedReservationStatusException("취소 대기 상태가 아닌 예약입니다.");
         }
         reservationDao.updateStatusTo(id, ReservationStatus.CANCELED);
         revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice() * (-1), LocalDate.now()));

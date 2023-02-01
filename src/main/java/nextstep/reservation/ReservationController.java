@@ -4,6 +4,7 @@ import auth.AuthenticationException;
 import auth.LoginMember;
 import auth.UserDetails;
 import nextstep.member.Member;
+import nextstep.support.UnsupportedReservationStatusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,11 +64,16 @@ public class ReservationController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity onAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(UnsupportedReservationStatusException.class)
+    public ResponseEntity onUnsupportedReservationStatusException(UnsupportedReservationStatusException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
