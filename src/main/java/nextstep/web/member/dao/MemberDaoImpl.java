@@ -41,7 +41,7 @@ public class MemberDaoImpl implements MemberDao<Member> {
             ps.setString(2, member.getPassword());
             ps.setString(3, member.getName());
             ps.setString(4, member.getPhone());
-            ps.setString(5, member.getRole());
+            ps.setString(5, member.getRole().toString());
             return ps;
 
         }, keyHolder);

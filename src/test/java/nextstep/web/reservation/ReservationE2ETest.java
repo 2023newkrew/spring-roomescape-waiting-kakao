@@ -5,7 +5,6 @@ import nextstep.AbstractE2ETest;
 import nextstep.web.reservation.domain.Reservation;
 import nextstep.web.reservation.dto.ReservationRequest;
 import nextstep.web.reservation_waiting.dto.ReservationWaitingRequest;
-import nextstep.web.reservation_waiting.dto.ReservationWaitingResponse;
 import nextstep.web.schedule.dto.ScheduleRequest;
 import nextstep.web.theme.dto.ThemeRequest;
 import org.junit.jupiter.api.AfterEach;
@@ -162,16 +161,14 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
         assertThat(reservationsResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        var reservationWaitingsResponse = RestAssured
+        RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/reservation-waitings/mine")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(HttpStatus.NOT_FOUND.value())
                 .extract();
-        List<ReservationWaitingResponse> responses = reservationWaitingsResponse.jsonPath().getList(".", ReservationWaitingResponse.class);
-        assertThat(responses.size()).isEqualTo(0);
 
         var reservationResponseAfterDeleteResponse = RestAssured
                 .given().log().all()

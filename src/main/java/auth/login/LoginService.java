@@ -20,7 +20,7 @@ public class LoginService<T extends AbstractMember> {
             throw new AuthenticationException();
         }
 
-        String accessToken = jwtTokenProvider.createToken(member.getId() + "", member.getRole());
+        String accessToken = jwtTokenProvider.createToken(member.getId() + "", member.getRole().toString());
 
         return new TokenResponse(accessToken);
     }
