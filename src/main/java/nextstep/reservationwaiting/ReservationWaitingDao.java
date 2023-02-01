@@ -14,5 +14,5 @@ public interface ReservationWaitingDao {
 
     void deleteById(Long id);
 
-    Optional<ReservationWaiting> findById(Long id);
+    Optional<ReservationWaiting> findById(Long id, Long memberId);
 }

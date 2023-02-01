@@ -97,8 +97,8 @@ public class ReservationWaitingDaoImpl implements ReservationWaitingDao {
     }
 
     @Override
-    public Optional<ReservationWaiting> findById(Long id) {
-        return jdbcTemplate.query(SELECT_BY_ID_STATEMENT, rowMapper, id).stream().findAny();
+    public Optional<ReservationWaiting> findById(Long id, Long memberId) {
+        return jdbcTemplate.query(SELECT_BY_ID_STATEMENT, rowMapper, id, memberId).stream().findAny();
     }
 }
 

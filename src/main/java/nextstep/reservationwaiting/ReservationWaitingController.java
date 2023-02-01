@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import nextstep.exception.CanMakeReservationException;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationService;
+import nextstep.reservation.dto.ReservationResponse;
 import nextstep.reservationwaiting.dto.ReservationWaitingRequest;
 import nextstep.reservationwaiting.dto.ReservationWaitingResponse;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,12 @@ public class ReservationWaitingController {
         return ResponseEntity.ok(
                 reservationWaitingService.findAllByMemberId(member.getId()).stream().map(ReservationWaitingResponse::of)
                         .collect(Collectors.toList()));
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ReservationResponse> findById(@LoginMember Member member, @PathVariable Long id) {
+        reservationWaitingService.deleteById(member, id);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("{id}")

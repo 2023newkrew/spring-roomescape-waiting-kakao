@@ -46,6 +46,12 @@ public class ReservationWaitingService {
         }
         reservationWaitingDao.deleteById(id);
     }
+    public ReservationWaiting findById(Member member, Long id){
+        return reservationWaitingDao.findById(id,member.getId())
+                .orElseThrow(() -> new NotFoundException("해당 id의 reservation waitings가 존재해야 합니다.", "null", "find by Id",
+                        getClass().getSimpleName()));
+    }
+
     private void checkValid(Member member) {
         if (Objects.isNull(member)) {
             throw new ReservationAuthorizationWebException("해당 권한이 존재해야 하니다.", "member is null", "check valid",

@@ -113,7 +113,7 @@ class ReservationWaitingDaoTest {
         Long id = reservationWaitingDao.save(reservationWaiting);
 
         // when
-        Optional<ReservationWaiting> foundReservationWaiting = reservationWaitingDao.findById(id);
+        Optional<ReservationWaiting> foundReservationWaiting = reservationWaitingDao.findById(id, reservationWaiting.getMemberId());
 
         // then
         Assertions.assertThat(foundReservationWaiting).isNotEmpty();
@@ -123,6 +123,20 @@ class ReservationWaitingDaoTest {
         Assertions.assertThat(result.getMemberId()).isEqualTo(reservationWaiting.getMemberId());
         Assertions.assertThat(result.getSchedule().getId()).isEqualTo(reservationWaiting.getSchedule().getId());
 
+    }
+
+    @Test
+    @DisplayName("id 로 단건 조회 실패")
+    void failFindById() {
+        // given
+        ReservationWaiting reservationWaiting = createReservationWaitingByWaitNum(1L);
+        Long id = reservationWaitingDao.save(reservationWaiting);
+
+        // when
+        Optional<ReservationWaiting> foundReservationWaiting = reservationWaitingDao.findById(id+123L, reservationWaiting.getMemberId());
+
+        // then
+        Assertions.assertThat(foundReservationWaiting).isEmpty();
     }
 
 

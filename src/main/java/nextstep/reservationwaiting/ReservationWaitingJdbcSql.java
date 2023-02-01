@@ -31,5 +31,6 @@ public final class ReservationWaitingJdbcSql {
             "from reservation_waiting " +
             "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
             "inner join theme on schedule.theme_id = theme.id " +
-            "where reservation_waiting.id = ?;";
+            "where reservation_waiting.id = ? " +
+            "AND RESERVATION_WAITING.MEMBER_ID = ?";
 }
