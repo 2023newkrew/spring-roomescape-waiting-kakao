@@ -1,6 +1,7 @@
 package nextstep.theme;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.support.exception.NonExistThemeException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,11 +20,8 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
-        Theme theme = themeDao.findById(id);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
-
+        themeDao.findById(id)
+                .orElseThrow(NonExistThemeException::new);
         themeDao.delete(id);
     }
 }

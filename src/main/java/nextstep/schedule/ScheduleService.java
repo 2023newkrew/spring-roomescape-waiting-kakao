@@ -1,6 +1,7 @@
 package nextstep.schedule;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.support.exception.NonExistThemeException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,8 @@ public class ScheduleService {
     private final ThemeDao themeDao;
 
     public Long create(ScheduleRequest scheduleRequest) {
-        Theme theme = themeDao.findById(scheduleRequest.getThemeId());
+        Theme theme = themeDao.findById(scheduleRequest.getThemeId())
+                .orElseThrow(NonExistThemeException::new);
         return scheduleDao.save(scheduleRequest.toEntity(theme));
     }
 

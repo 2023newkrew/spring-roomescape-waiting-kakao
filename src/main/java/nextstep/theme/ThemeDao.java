@@ -1,6 +1,7 @@
 package nextstep.theme;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -38,9 +40,13 @@ public class ThemeDao {
                 .longValue();
     }
 
-    public Theme findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, desc, price from theme where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<Theme> findAll() {

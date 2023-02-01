@@ -51,6 +51,11 @@ public class GlobalExceptionHandler {
         return ErrorResponse.toResponseEntity(ErrorCode.NON_EXIST_SCHEDULE);
     }
 
+    @ExceptionHandler(NonExistThemeException.class)
+    ResponseEntity<ErrorResponse> handleNonExistThemeException() {
+        return ErrorResponse.toResponseEntity(ErrorCode.NON_EXIST_THEME);
+    }
+
     @ExceptionHandler(NotOwnReservationWaitingException.class)
     ResponseEntity<ErrorResponse> handleNotOwnReservationWaitingException() {
         return ErrorResponse.toResponseEntity(ErrorCode.NOT_OWN_RESERVATION_WAITING);
