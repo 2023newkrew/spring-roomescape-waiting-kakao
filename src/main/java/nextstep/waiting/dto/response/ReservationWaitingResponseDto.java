@@ -1,4 +1,4 @@
-package nextstep.reservation.dto.response;
+package nextstep.waiting.dto.response;
 
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;

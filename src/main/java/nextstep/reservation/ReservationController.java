@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nextstep.config.annotation.LoginMember;
 import nextstep.member.Member;
 import nextstep.reservation.dto.response.ReservationResponseDto;
-import nextstep.reservation.dto.response.ReservationWaitingResponseDto;
+import nextstep.waiting.dto.response.ReservationWaitingResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,19 +37,6 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/reservation-waitings")
-    public ResponseEntity createReservationWaiting(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.createWaiting(member, reservationRequest.getScheduleId());
-        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
-    }
-
-    @DeleteMapping("/reservation-waitings/{id}")
-    public ResponseEntity deleteReservationWaiting(@LoginMember Member member, @PathVariable Long id) {
-        reservationService.deleteWaitingById(member, id);
-
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/reservations/mine")
     public ResponseEntity<List<ReservationResponseDto>> getReservations(@LoginMember Member member) {
         List<ReservationResponseDto> reservations = reservationService.getReservationsByMember(member)
@@ -57,11 +44,5 @@ public class ReservationController {
                 .map(ReservationResponseDto::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(reservations);
-    }
-
-    @GetMapping("/reservation-waitings/mine")
-    public ResponseEntity<List<ReservationWaitingResponseDto>> createReservationWaiting(@LoginMember Member member) {
-        List<ReservationWaitingResponseDto> dtos = reservationService.getReservationWaitingsByMember(member);
-        return ResponseEntity.ok(dtos);
     }
 }
