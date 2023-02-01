@@ -34,7 +34,7 @@ public class ReservationWaitingService {
         if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
-        List<Reservation> reservationList = reservationDao.findByScheduleId(schedule.getId());
+        List<Reservation> reservationList = reservationDao.findValidByScheduleId(schedule.getId());
         if (reservationList.size() == 0) {
             reservationService.create(member, reservationRequest);
         }

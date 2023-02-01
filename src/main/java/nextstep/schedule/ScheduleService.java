@@ -41,7 +41,7 @@ public class ScheduleService {
         if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
-        List<Reservation> reservationList = reservationDao.findByScheduleId(id);
+        List<Reservation> reservationList = reservationDao.findAllByScheduleId(id);
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(id);
         if (reservationList.size() > 0 || reservationWaitingList.size() > 0) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_CANT_BE_DELETED);

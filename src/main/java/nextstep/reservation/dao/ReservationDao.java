@@ -111,12 +111,21 @@ public class ReservationDao {
         }
     }
 
-    public List<Reservation> findByScheduleId(Long id) {
+    public List<Reservation> findAllByScheduleId(Long id) {
         String sql = SELECT_SQL +
                 "where schedule.id = ?;";
-
         try {
             return jdbcTemplate.query(sql, rowMapper, id);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Reservation> findValidByScheduleId(Long id) {
+        String sql = SELECT_SQL +
+                "where schedule.id = ? and reservation.status != ? and reservation.status != ?;";
+        try {
+            return jdbcTemplate.query(sql, rowMapper, id, ReservationStatus.REFUSED.toString(), ReservationStatus.CANCELLED.toString());
         } catch (Exception e) {
             return Collections.emptyList();
         }

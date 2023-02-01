@@ -38,7 +38,7 @@ public class ReservationAdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/approve-cancel")
+    @PostMapping("/{id}/cancel-approve")
     public ResponseEntity<Void> approveCancelOfReservation(@LoginMember UserDetails member,
                                                   @PathVariable @NotNull @Min(1L) Long id) {
         reservationService.approveCancelOfReservation(new Member(member), id);

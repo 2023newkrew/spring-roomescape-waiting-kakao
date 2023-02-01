@@ -41,7 +41,8 @@ public class ReservationService {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
 
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
+        List<Reservation> reservation = reservationDao.findValidByScheduleId(schedule.getId());
+        reservation.forEach(reservation1 -> System.out.println(reservation1.getStatus()));
         if (!reservation.isEmpty()) {
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION);
         }
@@ -64,10 +65,7 @@ public class ReservationService {
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
-        }
+        Reservation reservation = getReservation(id);
         if (!reservation.isMine(member)) {
             throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
         }
