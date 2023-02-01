@@ -1,23 +1,18 @@
-package nextstep.controller.dto;
+package nextstep.controller.dto.response;
 
 import auth.domain.Role;
+import auth.domain.UserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import nextstep.domain.Member;
 
-@Builder
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class MemberRequest {
+public class MemberResponse {
     private String username;
-    private String password;
     private String name;
     private String phone;
-
-    public Member toEntity() {
-        return new Member(username, password, name, phone, Role.USER);
-    }
+    private Role role;
 }

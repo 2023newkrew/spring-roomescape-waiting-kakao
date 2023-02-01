@@ -1,14 +1,12 @@
-package nextstep.controller.dto;
+package nextstep.controller.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nextstep.domain.Schedule;
 import nextstep.domain.Waiting;
 
 @Getter
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
 public class WaitingResponse {
     private long id;
     private Schedule schedule;

@@ -1,36 +1,22 @@
-package nextstep.controller.dto;
+package nextstep.controller.dto.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import nextstep.domain.Schedule;
 import nextstep.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Getter
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class ScheduleRequest {
     private long themeId;
     private String date;
     private String time;
-
-    public ScheduleRequest() {
-    }
-
-    public ScheduleRequest(long themeId, String date, String time) {
-        this.themeId = themeId;
-        this.date = date;
-        this.time = time;
-    }
-
-    public long getThemeId() {
-        return themeId;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getTime() {
-        return time;
-    }
 
     public Schedule toEntity(Theme theme) {
         return new Schedule(

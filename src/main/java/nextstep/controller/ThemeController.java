@@ -1,6 +1,6 @@
 package nextstep.controller;
 
-import nextstep.controller.dto.ThemeRequest;
+import nextstep.controller.dto.request.ThemeRequest;
 import nextstep.domain.Theme;
 import nextstep.service.ThemeService;
 import org.springframework.http.ResponseEntity;
