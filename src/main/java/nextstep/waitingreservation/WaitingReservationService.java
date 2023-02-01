@@ -9,12 +9,14 @@ import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class WaitingReservationService {
     private final ReservationDao reservationDao;
     private final WaitingReservationDao waitingReservationDao;
@@ -28,6 +30,7 @@ public class WaitingReservationService {
         this.memberDao = memberDao;
     }
 
+    @Transactional
     public Long create(UserDetails userDetails, WaitingReservationRequest waitingReservationRequest) {
         Member member = memberDao.findById(userDetails.getId());
 
@@ -59,6 +62,7 @@ public class WaitingReservationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteById(UserDetails userDetails, Long id) {
         WaitingReservation waitingReservation = waitingReservationDao.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No such waiting reservation exist."));

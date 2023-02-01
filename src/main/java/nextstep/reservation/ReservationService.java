@@ -12,6 +12,7 @@ import nextstep.theme.ThemeDao;
 import nextstep.waitingreservation.WaitingReservation;
 import nextstep.waitingreservation.WaitingReservationDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final WaitingReservationDao waitingReservationDao;
@@ -35,6 +37,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
+    @Transactional
     public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
         Member member = memberDao.findById(userDetails.getId());
 
@@ -76,6 +79,7 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteById(UserDetails userDetails, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
@@ -93,6 +97,7 @@ public class ReservationService {
         firstWaitingReservation.ifPresent(this::moveWaitingReservationToReservation);
     }
 
+    @Transactional
     private void moveWaitingReservationToReservation(WaitingReservation waitingReservation) {
         waitingReservationDao.deleteById(waitingReservation.getId());
         waitingReservationDao.adjustWaitNumByScheduleIdAndBaseNum(waitingReservation.getSchedule().getId(), LOWEST_WAIT_NUM);
