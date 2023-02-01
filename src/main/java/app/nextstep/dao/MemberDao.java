@@ -48,9 +48,4 @@ public class MemberDao {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
-
-    public Member findByUsername(String username) {
-        String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username);
-    }
 }
