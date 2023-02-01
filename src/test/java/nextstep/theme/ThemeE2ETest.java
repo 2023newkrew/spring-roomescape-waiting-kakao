@@ -12,7 +12,6 @@ import static nextstep.util.RequestBuilder.themeRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ThemeE2ETest extends AbstractE2ETest {
-
     @Override
     @BeforeEach
     public void setUp() {
@@ -77,5 +76,4 @@ public class ThemeE2ETest extends AbstractE2ETest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
-
 }
