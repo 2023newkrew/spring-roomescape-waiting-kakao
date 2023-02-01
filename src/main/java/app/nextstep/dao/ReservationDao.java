@@ -63,7 +63,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        String sql = "SELECT * from reservation " +
+        String sql = "SELECT * FROM reservation " +
                 "JOIN schedule ON reservation.schedule_id = schedule.id " +
                 "JOIN theme ON schedule.theme_id = theme.id " +
                 "JOIN member ON reservation.member_id = member.id " +
@@ -73,7 +73,7 @@ public class ReservationDao {
     }
 
     public Reservation findById(Long id) {
-        String sql = "SELECT * from reservation " +
+        String sql = "SELECT * FROM reservation " +
                 "JOIN schedule ON reservation.schedule_id = schedule.id " +
                 "JOIN theme ON schedule.theme_id = theme.id " +
                 "JOIN member ON reservation.member_id = member.id " +
@@ -86,7 +86,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findByScheduleId(Long id) {
-        String sql = "SELECT * from reservation " +
+        String sql = "SELECT * FROM reservation " +
                 "JOIN schedule ON reservation.schedule_id = schedule.id " +
                 "JOIN theme ON schedule.theme_id = theme.id " +
                 "JOIN member ON reservation.member_id = member.id " +

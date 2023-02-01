@@ -1,15 +1,15 @@
 package app.auth.domain;
 
-public class UserDetail {
+public class User {
     private Long id;
     private String username;
     private String password;
     private String role;
 
-    public UserDetail() {
+    public User() {
     }
 
-    public UserDetail(Long id, String username, String password, String role) {
+    public User(Long id, String username, String password, String role) {
         this.id = id;
         this.username = username;
         this.password = password;

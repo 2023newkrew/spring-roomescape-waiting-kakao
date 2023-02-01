@@ -1,6 +1,6 @@
 package app.nextstep.dao;
 
-import app.auth.domain.UserDetail;
+import app.auth.repository.LoginRepository;
 import app.nextstep.domain.Member;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 
 @Repository
-public class MemberDao {
+public class MemberDao implements LoginRepository {
     public final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
@@ -24,13 +24,6 @@ public class MemberDao {
             resultSet.getString("password"),
             resultSet.getString("name"),
             resultSet.getString("phone"),
-            resultSet.getString("role")
-    );
-
-    private final RowMapper<UserDetail> userDeTailrowMapper = (resultSet, rowNum) -> new UserDetail(
-            resultSet.getLong("id"),
-            resultSet.getString("username"),
-            resultSet.getString("password"),
             resultSet.getString("role")
     );
 
@@ -53,7 +46,12 @@ public class MemberDao {
     }
 
     public Member findById(Long id) {
-        String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
+        String sql = "SELECT * FROM member WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
+
+    public Member findByUsername(String username) {
+        String sql = "SELECT *FROM member WHERE username = ?;";
+        return jdbcTemplate.queryForObject(sql, rowMapper, username);
     }
 }

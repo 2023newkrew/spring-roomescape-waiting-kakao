@@ -1,8 +1,8 @@
 package app.nextstep.domain;
 
-import app.auth.domain.UserDetail;
+import app.auth.domain.User;
 
-public class Member extends UserDetail {
+public class Member extends User {
     private String name;
     private String phone;
 

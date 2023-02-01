@@ -2,7 +2,7 @@ package app.nextstep.controller;
 
 import app.auth.support.AuthenticationException;
 import app.auth.support.LoginUser;
-import app.auth.domain.UserDetail;
+import app.auth.domain.User;
 import app.nextstep.domain.Reservation;
 import app.nextstep.dto.ReservationRequest;
 import app.nextstep.service.ReservationService;
@@ -23,8 +23,8 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginUser UserDetail userDetail, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(userDetail.getId(), reservationRequest);
+    public ResponseEntity createReservation(@LoginUser User user, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.create(user.getId(), reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -35,8 +35,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginUser UserDetail userDetail, @PathVariable Long id) {
-        reservationService.deleteById(userDetail.getId(), id);
+    public ResponseEntity deleteReservation(@LoginUser User user, @PathVariable Long id) {
+        reservationService.deleteById(user.getId(), id);
 
         return ResponseEntity.noContent().build();
     }

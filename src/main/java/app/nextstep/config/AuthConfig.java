@@ -1,14 +1,13 @@
 package app.nextstep.config;
 
+import app.auth.repository.LoginRepository;
 import app.auth.util.JwtTokenProvider;
 import app.auth.controller.LoginController;
-import app.auth.dao.LoginDao;
 import app.auth.service.LoginService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @PropertySource("classpath:application.properties")
@@ -24,13 +23,8 @@ public class AuthConfig {
     }
 
     @Bean
-    public LoginDao loginDao(JdbcTemplate jdbcTemplate){
-        return new LoginDao(jdbcTemplate);
-    }
-
-    @Bean
-    public LoginService loginService(LoginDao loginDao, JwtTokenProvider jwtTokenProvider){
-        return new LoginService(loginDao, jwtTokenProvider);
+    public LoginService loginService(LoginRepository loginRepository, JwtTokenProvider jwtTokenProvider){
+        return new LoginService(loginRepository, jwtTokenProvider);
     }
 
     @Bean
