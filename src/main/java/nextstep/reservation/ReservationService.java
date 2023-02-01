@@ -71,4 +71,12 @@ public class ReservationService {
 
         reservationDao.deleteById(id);
     }
+
+    public void approve(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new NullPointerException();
+        }
+        reservationDao.toApproved(id);
+    }
 }

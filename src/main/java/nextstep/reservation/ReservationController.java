@@ -38,9 +38,15 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/reservations/{id}/approve")
+    public ResponseEntity approveReservation(@PathVariable Long id) {
+        reservationService.approve(id);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.internalServerError().build();
     }
 
     @ExceptionHandler(AuthenticationException.class)
