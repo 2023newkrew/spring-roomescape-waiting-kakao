@@ -111,12 +111,14 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         createReservation();
 
         // when
-        createReservationWaiting(token.getAccessToken());
+        Member otherUser = saveMember(jdbcTemplate, "member2", "pass1", "ADMIN");
+        String otherToken = jwtTokenProvider.createToken(String.valueOf(otherUser.getId()), otherUser.getRole());
+        createReservationWaiting(otherToken);
 
         // then
         var responseReserve = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(otherToken)
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
@@ -127,7 +129,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
 
         var responseWaiting = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(otherToken)
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservation-waitings/mine")
@@ -263,7 +265,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .extract();
     }
 
-    @DisplayName("waitNum은 초기에는 1을 제공하고, 이후에는 최대값+1 값을 제공한다")
+    @DisplayName("waitNum은 1부터 제공하며 이후에는 최대값+1 값을 제공한다")
     @Test
     void waitingNumberTest(){
         Member member1 = saveMember(jdbcTemplate, "USER1", "PASS1", "ADMIN");
