@@ -1,10 +1,10 @@
-package roomescape.controller.interceptor;
+package auth.controller.interceptor;
 
+import auth.service.JWTProvider;
+import auth.service.model.JWTTokenModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.service.JWTProvider;
-import roomescape.service.model.JWTTokenModel;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

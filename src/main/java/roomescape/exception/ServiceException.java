@@ -1,8 +1,8 @@
-package roomescape.service.exception;
+package roomescape.exception;
 
+import errors.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import roomescape.controller.errors.ErrorCode;
 
 @Getter
 @RequiredArgsConstructor

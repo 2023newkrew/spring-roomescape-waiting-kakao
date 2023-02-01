@@ -1,5 +1,7 @@
-package roomescape.service;
+package auth.service;
 
+import auth.exception.AuthException;
+import errors.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -7,8 +9,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import roomescape.controller.errors.ErrorCode;
-import roomescape.service.exception.ServiceException;
 
 import java.util.Date;
 
@@ -29,7 +29,7 @@ public class JWTProvider {
                        .setSigningKey(secretKey)
                        .parseClaimsJws(jwtToken);
         } catch (Exception e) {
-            throw new ServiceException(ErrorCode.INVALID_TOKEN);
+            throw new AuthException(ErrorCode.INVALID_TOKEN);
         }
     }
 

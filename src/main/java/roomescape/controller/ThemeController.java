@@ -1,10 +1,10 @@
 package roomescape.controller;
 
+import auth.annotation.Admin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.annotation.Admin;
 import roomescape.controller.dto.ThemeControllerGetResponse;
 import roomescape.controller.dto.ThemeControllerPostBody;
 import roomescape.controller.dto.ThemeControllerPostResponse;

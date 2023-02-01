@@ -1,5 +1,8 @@
 package roomescape.controller;
 
+import auth.controller.dto.LoginControllerTokenPostBody;
+import auth.controller.dto.LoginControllerTokenPostResponse;
+import auth.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,9 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.LoginControllerTokenPostBody;
-import roomescape.controller.dto.LoginControllerTokenPostResponse;
-import roomescape.service.LoginService;
 
 import javax.validation.Valid;
 import java.net.URI;

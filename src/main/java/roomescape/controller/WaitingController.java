@@ -1,10 +1,10 @@
 package roomescape.controller;
 
+import auth.annotation.JWTMemberId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.annotation.JWTMemberId;
 import roomescape.controller.dto.ReservationsControllerPostBody;
 import roomescape.controller.dto.WaitingControllerGetResponse;
 import roomescape.service.WaitingService;

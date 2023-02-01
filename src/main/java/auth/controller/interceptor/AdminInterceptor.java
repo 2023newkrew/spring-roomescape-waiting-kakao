@@ -1,13 +1,13 @@
-package roomescape.controller.interceptor;
+package auth.controller.interceptor;
 
+import auth.annotation.Admin;
+import auth.exception.AuthException;
+import auth.service.model.JWTTokenModel;
+import errors.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.annotation.Admin;
-import roomescape.controller.errors.ErrorCode;
-import roomescape.service.exception.ServiceException;
-import roomescape.service.model.JWTTokenModel;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +31,7 @@ public class AdminInterceptor implements HandlerInterceptor {
                                           .map(JWTTokenModel.Token::isAdmin)
                                           .orElse(false);
         if (!isAdminRequest) {
-            throw new ServiceException(ErrorCode.REQUIRED_ADMIN);
+            throw new AuthException(ErrorCode.REQUIRED_ADMIN);
         }
         return true;
     }

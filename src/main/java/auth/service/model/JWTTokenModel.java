@@ -1,13 +1,13 @@
-package roomescape.service.model;
+package auth.service.model;
 
+import auth.exception.AuthException;
+import errors.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
-import roomescape.controller.errors.ErrorCode;
-import roomescape.service.exception.ServiceException;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -21,7 +21,7 @@ public class JWTTokenModel {
     public void initialize(Jws<Claims> jws) {
         if (!Objects.isNull(secretToken)) {
             // 이미 예약됨 에러
-            throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new AuthException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
         secretToken = new JWTTokenModel.Token(
                 Long.parseLong(jws.getBody().getSubject()),

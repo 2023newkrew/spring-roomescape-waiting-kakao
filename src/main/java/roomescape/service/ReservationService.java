@@ -1,14 +1,14 @@
 package roomescape.service;
 
+import errors.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ReservationsControllerPostBody;
-import roomescape.controller.errors.ErrorCode;
 import roomescape.entity.Reservation;
+import roomescape.exception.ServiceException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.WaitingRepository;
-import roomescape.service.exception.ServiceException;
 
 import java.util.List;
 

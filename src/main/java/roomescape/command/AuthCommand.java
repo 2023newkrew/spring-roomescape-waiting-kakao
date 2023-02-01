@@ -28,12 +28,16 @@ public class AuthCommand {
             return;
         }
         var member = repository.selectByUsername(username);
-        if (!member.getPassword().equals(password)) {
+        if (member.isEmpty()) {
+            System.out.println("아이디, 혹은 비밀번호가 일치하지 않습니다.");
+            return;
+        }
+        if (!member.get().getPassword().equals(password)) {
             System.out.println("아이디, 혹은 비밀번호가 일치하지 않습니다.");
             return;
         }
         System.out.println("로그인에 성공했습니다.");
-        this.id = member.getId();
+        this.id = member.get().getId();
     }
 
     @CommandLine.Command(name = "logout", description = "로그아웃 합니다. ex) auth logout")

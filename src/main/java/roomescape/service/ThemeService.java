@@ -1,14 +1,14 @@
 package roomescape.service;
 
+import errors.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ThemeControllerPostBody;
-import roomescape.controller.errors.ErrorCode;
 import roomescape.entity.Theme;
+import roomescape.exception.ServiceException;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.exception.ServiceException;
 
 import java.util.stream.Stream;
 
@@ -37,7 +37,7 @@ public class ThemeService {
         return repository.selectPage(30, Math.max(page, 0))
                          .stream();
     }
-    
+
     public void deleteTheme(long id) {
         try {
             var affectedRows = repository.delete(id);

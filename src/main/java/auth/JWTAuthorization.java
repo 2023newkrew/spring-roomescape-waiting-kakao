@@ -1,19 +1,21 @@
-package roomescape.config;
+package auth;
 
+import auth.controller.interceptor.AdminInterceptor;
+import auth.controller.interceptor.JWTBearerInterceptor;
+import auth.controller.resolver.JWTMemberIdResolver;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.controller.interceptor.AdminInterceptor;
-import roomescape.controller.interceptor.JWTBearerInterceptor;
-import roomescape.controller.resolver.JWTMemberIdResolver;
 
 import java.util.List;
 
 @Configuration
+@ComponentScan(basePackages = "auth")
 @RequiredArgsConstructor
-public class JWTConfig implements WebMvcConfigurer {
+public class JWTAuthorization implements WebMvcConfigurer {
     private final JWTBearerInterceptor jwtBearerInterceptor;
     private final AdminInterceptor adminInterceptor;
     private final JWTMemberIdResolver jwtMemberIdResolver;

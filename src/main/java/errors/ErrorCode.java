@@ -1,4 +1,4 @@
-package roomescape.controller.errors;
+package errors;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

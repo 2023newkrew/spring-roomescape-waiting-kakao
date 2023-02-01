@@ -1,5 +1,8 @@
 package roomescape.controller;
 
+import auth.controller.dto.LoginControllerTokenPostBody;
+import auth.controller.dto.LoginControllerTokenPostResponse;
+import auth.service.JWTProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,12 +15,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.SpringWebApplication;
-import roomescape.controller.dto.LoginControllerTokenPostBody;
-import roomescape.controller.dto.LoginControllerTokenPostResponse;
 import roomescape.controller.dto.MemberControllerPostBody;
 import roomescape.controller.dto.MemberControllerPostResponse;
 import roomescape.repository.MemberRepository;
-import roomescape.service.JWTProvider;
 
 import java.util.UUID;
 

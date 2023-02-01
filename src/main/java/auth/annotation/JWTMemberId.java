@@ -1,4 +1,4 @@
-package roomescape.annotation;
+package auth.annotation;
 
 
 import java.lang.annotation.ElementType;

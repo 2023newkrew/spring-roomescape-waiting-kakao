@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.entity.Member;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class MemberRepository {
         return jdbc.queryForObject("select id, username, password, name, phone, is_admin from member where id = :id", Map.of("id", id), ROW_MAPPER);
     }
 
-    public Member selectByUsername(String username) {
-        return jdbc.queryForObject("select id, username, password, name, phone, is_admin from member where username = :username", Map.of("username", username), ROW_MAPPER);
+    public Optional<Member> selectByUsername(String username) {
+        return Optional.ofNullable(jdbc.queryForObject("select id, username, password, name, phone, is_admin from member where username = :username", Map.of("username", username), ROW_MAPPER));
     }
 }

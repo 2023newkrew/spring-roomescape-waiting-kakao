@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import auth.controller.dto.LoginControllerTokenPostBody;
+import auth.controller.dto.LoginControllerTokenPostResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,8 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.SpringWebApplication;
-import roomescape.controller.dto.LoginControllerTokenPostBody;
-import roomescape.controller.dto.LoginControllerTokenPostResponse;
 import roomescape.controller.dto.ReservationsControllerPostBody;
 
 import java.time.LocalDate;

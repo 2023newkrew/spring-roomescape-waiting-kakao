@@ -1,4 +1,4 @@
-package roomescape.controller.dto;
+package auth.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

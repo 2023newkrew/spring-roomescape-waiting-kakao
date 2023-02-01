@@ -1,6 +1,10 @@
-package roomescape.controller.resolver;
+package auth.controller.resolver;
 
 
+import auth.annotation.JWTMemberId;
+import auth.exception.AuthException;
+import auth.service.model.JWTTokenModel;
+import errors.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -8,10 +12,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.annotation.JWTMemberId;
-import roomescape.controller.errors.ErrorCode;
-import roomescape.service.exception.ServiceException;
-import roomescape.service.model.JWTTokenModel;
 
 @Component
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class JWTMemberIdResolver implements HandlerMethodArgumentResolver {
             return token.map(JWTTokenModel.Token::getMemberId);
         }
         if (token.isEmpty()) {
-            throw new ServiceException(ErrorCode.REQUIRE_TOKEN);
+            throw new AuthException(ErrorCode.REQUIRE_TOKEN);
         }
         return token.get().getMemberId();
     }
