@@ -28,11 +28,13 @@ public class ReservationWaitingController {
     public ResponseEntity<URI> createReservationWaiting(@LoginMember UserDetails userDetails, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
         Member member = memberService.findById(userDetails.getId());
         Optional<Reservation> findOptionalReservation = reservationService.findByScheduleId(reservationWaitingRequest.getScheduleId());
+
         if (findOptionalReservation.isEmpty()) {
             Long reservationId = reservationService.create(member, new ReservationRequest(reservationWaitingRequest.getScheduleId()));
             return ResponseEntity.created(URI.create("/reservation/" + reservationId))
                     .build();
         }
+
         Reservation reservation = findOptionalReservation.get();
         reservationService.validateByMember(reservation, member);
         Long reservationWaitingId = reservationWaitingService.create(reservation, member);
