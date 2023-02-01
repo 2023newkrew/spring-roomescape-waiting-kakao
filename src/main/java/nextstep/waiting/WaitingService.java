@@ -60,6 +60,6 @@ public class WaitingService {
     }
 
     private static boolean isWaitingReservation(Long waitNum) {
-        return waitNum != 0;
+        return waitNum > 0;
     }
 }
