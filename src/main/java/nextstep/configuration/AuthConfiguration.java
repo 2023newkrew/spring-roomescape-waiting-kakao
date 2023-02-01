@@ -1,5 +1,6 @@
 package nextstep.configuration;
 
+import auth.AuthenticationProvider;
 import auth.JwtTokenProvider;
 import auth.LoginController;
 import auth.LoginService;
@@ -21,7 +22,7 @@ public class AuthConfiguration {
     }
 
     @Bean
-    public LoginService loginService(MemberDao memberDao) {
-        return new LoginService(memberDao, jwtTokenProvider());
+    public LoginService loginService(AuthenticationProvider authenticationProvider) {
+        return new LoginService(authenticationProvider, jwtTokenProvider());
     }
 }
