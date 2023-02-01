@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
+import nextstep.waitingreservation.WaitingReservationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -209,7 +210,8 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        List<ReservationWaitingResponse> reservations = response.jsonPath().getList(".", ReservationWaitingResponse.class);
+        List<WaitingReservationResponse> reservations = response.jsonPath().getList(".", WaitingReservationResponse.class);
+        reservations.forEach(System.out::println);
         assertThat(reservations.size()).isEqualTo(2);
     }
 
@@ -291,7 +293,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        List<ReservationWaitingResponse> waitings = waitingsResponse.jsonPath().getList(".", ReservationWaitingResponse.class);
+        List<WaitingReservationResponse> waitings = waitingsResponse.jsonPath().getList(".", WaitingReservationResponse.class);
         assertThat(waitings.size()).isEqualTo(0);
 
     }

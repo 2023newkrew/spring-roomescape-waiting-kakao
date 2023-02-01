@@ -75,7 +75,7 @@ public class WaitingReservationDao {
 
     public WaitingReservation findById(Long id) {
         String sql = DEFAULT_SELECT_FROM_SQL +
-                "where waiting_reservation.id = ? and waiting_reservation.wait_num = 0;";
+                "where waiting_reservation.id = ?;";
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
         } catch (Exception e) {
@@ -85,7 +85,7 @@ public class WaitingReservationDao {
 
     public List<WaitingReservation> findAllByMemberId(Long memberId) {
         String sql = DEFAULT_SELECT_FROM_SQL +
-                "where member.id = ? and waiting_reservation.wait_num > 0;";
+                "where member.id = ?;";
         try {
             return jdbcTemplate.query(sql, rowMapper, memberId);
         } catch (Exception e) {

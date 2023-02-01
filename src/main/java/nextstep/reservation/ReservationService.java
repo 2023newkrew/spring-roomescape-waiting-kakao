@@ -28,7 +28,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(UserDetails userDetails, ReservationRequest reservationRequest, boolean isWaitingRequest) {
+    public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
         if (userDetails == null) {
             throw new AuthenticationException();
         }
@@ -42,14 +42,13 @@ public class ReservationService {
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
 
-        if (!isWaitingRequest && !reservation.isEmpty()) {
+        if (!reservation.isEmpty()) {
             throw new DuplicateEntityException();
         }
 
         Reservation newReservation = new Reservation(
                 schedule,
-                member,
-                (long) reservation.size()
+                member
         );
 
         return reservationDao.save(newReservation);
@@ -74,40 +73,14 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReservationWaitingResponse> findMyReservationWaitings(UserDetails userDetails) {
-        return reservationDao.findAllWaitingByMemberId(userDetails.getId())
-                .stream()
-                .map(ReservationWaitingResponse::new)
-                .collect(Collectors.toList());
-    }
-
     public void deleteById(UserDetails userDetails, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
             throw new NullPointerException();
         }
-
         if (!reservation.sameMember(userDetails)) {
             throw new AuthenticationException();
         }
-
         reservationDao.deleteById(id);
-
-        reservationDao.adjustWaitNumByScheduleIdAndBaseNum(reservation.getSchedule().getId(), 0L);
-    }
-
-    public void deleteWaitingById(UserDetails userDetails, Long id) {
-        Reservation reservation = reservationDao.findWaitingById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
-
-        if (!reservation.sameMember(userDetails)) {
-            throw new AuthenticationException();
-        }
-
-        reservationDao.deleteWaitingById(id);
-
-        reservationDao.adjustWaitNumByScheduleIdAndBaseNum(reservation.getSchedule().getId(), reservation.getWaitNum());
     }
 }

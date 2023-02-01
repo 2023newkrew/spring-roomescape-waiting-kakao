@@ -4,7 +4,6 @@ import auth.AuthenticationException;
 import auth.UserDetails;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
-import nextstep.reservation.ReservationWaitingResponse;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.ThemeDao;
@@ -50,10 +49,10 @@ public class WaitingReservationService {
         return waitingReservationDao.save(newWaitingReservation);
     }
 
-    public List<ReservationWaitingResponse> findMyWaitingReservations(UserDetails userDetails) {
+    public List<WaitingReservationResponse> findMyWaitingReservations(UserDetails userDetails) {
         return waitingReservationDao.findAllByMemberId(userDetails.getId())
                 .stream()
-                .map(ReservationWaitingResponse::new)
+                .map(WaitingReservationResponse::new)
                 .collect(Collectors.toList());
     }
 

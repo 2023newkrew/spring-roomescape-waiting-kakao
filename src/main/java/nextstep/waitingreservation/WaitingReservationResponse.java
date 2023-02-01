@@ -1,31 +1,23 @@
-package nextstep.reservation;
+package nextstep.waitingreservation;
 
 import nextstep.member.Member;
+import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
-import nextstep.waitingreservation.WaitingReservation;
 
-public class ReservationWaitingResponse {
+public class WaitingReservationResponse {
     private Long id;
     private Schedule schedule;
     private Member member;
     private Long waitNum;
 
-    public ReservationWaitingResponse() {
+    public WaitingReservationResponse() {
     }
 
-    public ReservationWaitingResponse(WaitingReservation waitingReservation) {
+    public WaitingReservationResponse(WaitingReservation waitingReservation) {
         this.id = waitingReservation.getId();
         this.schedule = waitingReservation.getSchedule();
         this.member = waitingReservation.getMember();
         this.waitNum = waitingReservation.getWaitNum();
-    }
-
-    // TODO: remove later
-    public ReservationWaitingResponse(Reservation reservation) {
-        this.id = reservation.getId();
-        this.schedule = reservation.getSchedule();
-        this.member = reservation.getMember();
-        this.waitNum = reservation.getWaitNum();
     }
 
     public Long getId() {
