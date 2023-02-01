@@ -2,6 +2,8 @@ package nextstep.reservation;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
@@ -10,8 +12,10 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Setter
+@Getter
 public class Reservation {
     private Long id;
     private Schedule schedule;
@@ -19,24 +23,9 @@ public class Reservation {
     private LocalDateTime createdDateTime;
     private ReservationState state;
 
-    public Reservation() {
-    }
-
     public Reservation(Schedule schedule, Member member) {
         this.schedule = schedule;
         this.member = member;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Schedule getSchedule() {
-        return schedule;
-    }
-
-    public Member getMember() {
-        return member;
     }
 
     public boolean sameMember(Member member) {
