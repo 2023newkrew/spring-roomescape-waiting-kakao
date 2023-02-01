@@ -59,11 +59,7 @@ public class WaitingService {
     @Transactional
     public void deleteById(UserDetails userDetails, Long id) {
         Waiting waiting = waitingDao.findById(id);
-
-        if (waiting == null) {
-            throw new NoSuchWaitingException();
-        }
-
+        
         if (!waiting.sameMember(new Member(userDetails))) {
             throw new NotWaitingOwnerException();
         }
