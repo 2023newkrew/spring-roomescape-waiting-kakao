@@ -59,9 +59,6 @@ public class ReservationWaitingService {
         }
 
         List<ReservationWaiting> reservationWaitings = reservationWaitingDao.findAllByMemberId(memberId);
-        if (reservationWaitings.isEmpty()) {
-            return new ArrayList<ReservationWaitingResponse>();
-        }
 
         return reservationWaitings.stream()
                 .map(v -> ReservationWaitingResponse.of(v, reservationWaitingDao.getWaitNum(v.getSchedule().getId(), v.getId())))
