@@ -1,4 +1,4 @@
-package app.nextstep.member;
+package app.nextstep.domain;
 
 public class Member {
     private Long id;

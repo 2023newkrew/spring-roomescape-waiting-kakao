@@ -1,4 +1,4 @@
-package app.nextstep.theme;
+package app.nextstep.domain;
 
 public class Theme {
     private Long id;

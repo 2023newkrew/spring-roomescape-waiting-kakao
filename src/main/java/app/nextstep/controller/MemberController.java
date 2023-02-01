@@ -1,7 +1,9 @@
-package app.nextstep.member;
+package app.nextstep.controller;
 
 import app.auth.support.AuthenticationPrincipal;
 import app.auth.service.UserDetail;
+import app.nextstep.dto.MemberRequest;
+import app.nextstep.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,5 +1,8 @@
-package app.nextstep.theme;
+package app.nextstep.controller;
 
+import app.nextstep.domain.Theme;
+import app.nextstep.dto.ThemeRequest;
+import app.nextstep.service.ThemeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -23,7 +23,7 @@ public class LoginDao {
     );
 
     public Optional<UserDetail> findById(Long id) {
-        String sql = "SELECT id, username, password, role, role from member where id = ?;";
+        String sql = "SELECT id, username, password, role from member where id = ?;";
         return jdbcTemplate.query(sql, rowMapper, id)
                 .stream()
                 .findFirst();

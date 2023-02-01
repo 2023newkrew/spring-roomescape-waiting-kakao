@@ -1,4 +1,6 @@
-package app.nextstep.member;
+package app.nextstep.dto;
+
+import app.nextstep.domain.Member;
 
 public class MemberRequest {
     private String username;

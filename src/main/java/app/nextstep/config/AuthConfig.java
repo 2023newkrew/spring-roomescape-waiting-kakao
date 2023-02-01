@@ -1,4 +1,4 @@
-package app.nextstep;
+package app.nextstep.config;
 
 import app.auth.util.JwtTokenProvider;
 import app.auth.controller.LoginController;

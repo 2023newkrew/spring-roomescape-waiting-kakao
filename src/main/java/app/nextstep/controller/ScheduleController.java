@@ -1,5 +1,8 @@
-package app.nextstep.schedule;
+package app.nextstep.controller;
 
+import app.nextstep.domain.Schedule;
+import app.nextstep.dto.ScheduleRequest;
+import app.nextstep.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

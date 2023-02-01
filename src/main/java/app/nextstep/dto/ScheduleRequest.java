@@ -1,6 +1,7 @@
-package app.nextstep.schedule;
+package app.nextstep.dto;
 
-import app.nextstep.theme.Theme;
+import app.nextstep.domain.Schedule;
+import app.nextstep.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

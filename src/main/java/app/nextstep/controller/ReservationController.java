@@ -1,8 +1,11 @@
-package app.nextstep.reservation;
+package app.nextstep.controller;
 
 import app.auth.support.AuthenticationException;
 import app.auth.support.AuthenticationPrincipal;
 import app.auth.service.UserDetail;
+import app.nextstep.domain.Reservation;
+import app.nextstep.dto.ReservationRequest;
+import app.nextstep.service.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

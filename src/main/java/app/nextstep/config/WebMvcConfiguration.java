@@ -1,4 +1,4 @@
-package app.nextstep;
+package app.nextstep.config;
 
 import app.auth.service.LoginService;
 import app.auth.support.AdminInterceptor;

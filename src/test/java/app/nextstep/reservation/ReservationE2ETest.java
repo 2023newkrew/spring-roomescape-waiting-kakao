@@ -1,11 +1,13 @@
 package app.nextstep.reservation;
 
+import app.nextstep.domain.Reservation;
+import app.nextstep.dto.ReservationRequest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import app.nextstep.AbstractE2ETest;
-import app.nextstep.schedule.ScheduleRequest;
-import app.nextstep.theme.ThemeRequest;
+import app.nextstep.dto.ScheduleRequest;
+import app.nextstep.dto.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

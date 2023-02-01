@@ -1,7 +1,10 @@
-package app.nextstep.schedule;
+package app.nextstep.service;
 
-import app.nextstep.theme.Theme;
-import app.nextstep.theme.ThemeDao;
+import app.nextstep.dao.ScheduleDao;
+import app.nextstep.domain.Schedule;
+import app.nextstep.dto.ScheduleRequest;
+import app.nextstep.domain.Theme;
+import app.nextstep.dao.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

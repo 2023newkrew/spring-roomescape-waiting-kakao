@@ -1,5 +1,6 @@
-package app.nextstep.theme;
+package app.nextstep.dao;
 
+import app.nextstep.domain.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

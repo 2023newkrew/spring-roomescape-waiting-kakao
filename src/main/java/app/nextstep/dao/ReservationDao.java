@@ -1,8 +1,9 @@
-package app.nextstep.reservation;
+package app.nextstep.dao;
 
-import app.nextstep.member.Member;
-import app.nextstep.schedule.Schedule;
-import app.nextstep.theme.Theme;
+import app.nextstep.domain.Member;
+import app.nextstep.domain.Reservation;
+import app.nextstep.domain.Schedule;
+import app.nextstep.domain.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

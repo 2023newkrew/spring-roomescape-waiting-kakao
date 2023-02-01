@@ -1,5 +1,8 @@
-package app.nextstep.theme;
+package app.nextstep.service;
 
+import app.nextstep.dao.ThemeDao;
+import app.nextstep.domain.Theme;
+import app.nextstep.dto.ThemeRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

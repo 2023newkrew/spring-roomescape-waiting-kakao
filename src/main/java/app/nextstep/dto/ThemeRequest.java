@@ -1,4 +1,6 @@
-package app.nextstep.theme;
+package app.nextstep.dto;
+
+import app.nextstep.domain.Theme;
 
 public class ThemeRequest {
     private String name;

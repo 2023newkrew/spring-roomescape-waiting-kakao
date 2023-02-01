@@ -1,6 +1,7 @@
-package app.nextstep.schedule;
+package app.nextstep.dao;
 
-import app.nextstep.theme.Theme;
+import app.nextstep.domain.Schedule;
+import app.nextstep.domain.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

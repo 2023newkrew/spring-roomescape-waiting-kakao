@@ -1,5 +1,7 @@
 package app.nextstep.member;
 
+import app.nextstep.domain.Member;
+import app.nextstep.dto.MemberRequest;
 import io.restassured.RestAssured;
 import app.auth.dto.TokenRequest;
 import app.auth.dto.TokenResponse;
