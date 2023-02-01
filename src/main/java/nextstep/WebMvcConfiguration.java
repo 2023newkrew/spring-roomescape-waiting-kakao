@@ -20,7 +20,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider))
+                .addPathPatterns("/admin/**", "/reservations/**/approve", "/reservations/**/cancel-approve");
     }
 
     @Override
