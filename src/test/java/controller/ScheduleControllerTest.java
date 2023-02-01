@@ -1,9 +1,9 @@
 package controller;
 
-import auth.provider.JwtTokenProvider;
-import nextstep.etc.exception.ErrorMessage;
-import nextstep.schedule.dto.ScheduleRequest;
-import nextstep.theme.dto.ThemeRequest;
+import com.authorizationserver.infrastructures.jwt.JwtTokenProvider;
+import com.nextstep.domains.exceptions.ErrorMessageType;
+import com.nextstep.interfaces.schedule.dtos.ScheduleRequest;
+import com.nextstep.interfaces.theme.dtos.ThemeRequest;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -49,7 +49,7 @@ public class ScheduleControllerTest extends AbstractControllerTest {
         @DisplayName("동일한 스케줄이 존재할 경우 예외 발생")
         @Test
         void should_throwException_when_scheduleDuplicate() {
-            var expectedException = ErrorMessage.SCHEDULE_CONFLICT;
+            var expectedException = ErrorMessageType.SCHEDULE_CONFLICT;
             var request = createRequest();
 
             post(given(), DEFAULT_PATH, request);
@@ -61,7 +61,7 @@ public class ScheduleControllerTest extends AbstractControllerTest {
         @DisplayName("테마가 없는 경우 예외 발생")
         @Test
         void should_throwException_when_themeNotExists() {
-            var expectedException = ErrorMessage.THEME_NOT_EXISTS;
+            var expectedException = ErrorMessageType.THEME_NOT_EXISTS;
             var request = createRequest();
             request = new ScheduleRequest(request.getDate(), request.getTime(), 2L);
 

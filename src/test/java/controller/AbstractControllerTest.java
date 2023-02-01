@@ -1,13 +1,13 @@
 package controller;
 
-import auth.domain.TokenData;
-import auth.provider.JwtTokenProvider;
+import com.authorizationserver.infrastructures.jwt.TokenData;
+import com.authorizationserver.infrastructures.jwt.JwtTokenProvider;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
-import nextstep.RoomEscapeApplication;
-import nextstep.etc.exception.ErrorMessage;
+import com.nextstep.RoomEscapeApplication;
+import com.nextstep.domains.exceptions.ErrorMessageType;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -69,7 +69,7 @@ public abstract class AbstractControllerTest {
         return response.then().log().all();
     }
 
-    void thenThrow(Response response, ErrorMessage expectedException) {
+    void thenThrow(Response response, ErrorMessageType expectedException) {
         then(response)
                 .statusCode(expectedException.getHttpStatus().value())
                 .body("message", equalTo(expectedException.getErrorMessage()));

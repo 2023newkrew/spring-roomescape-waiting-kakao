@@ -1,12 +1,12 @@
 package controller;
 
-import auth.domain.TokenData;
+import com.authorizationserver.infrastructures.jwt.TokenData;
 import io.restassured.specification.RequestSpecification;
-import nextstep.member.dto.MemberRequest;
-import nextstep.reservation.dto.ReservationRequest;
-import nextstep.schedule.dto.ScheduleRequest;
-import nextstep.theme.dto.ThemeRequest;
-import nextstep.waiting.dto.WaitingRequest;
+import com.nextstep.interfaces.member.dtos.MemberRequest;
+import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
+import com.nextstep.interfaces.schedule.dtos.ScheduleRequest;
+import com.nextstep.interfaces.theme.dtos.ThemeRequest;
+import com.nextstep.interfaces.waiting.dtos.WaitingRequest;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 

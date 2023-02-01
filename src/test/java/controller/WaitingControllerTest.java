@@ -1,13 +1,13 @@
 package controller;
 
-import auth.domain.TokenData;
+import com.authorizationserver.infrastructures.jwt.TokenData;
 import io.restassured.specification.RequestSpecification;
-import nextstep.etc.exception.ErrorMessage;
-import nextstep.member.dto.MemberRequest;
-import nextstep.reservation.dto.ReservationRequest;
-import nextstep.schedule.dto.ScheduleRequest;
-import nextstep.theme.dto.ThemeRequest;
-import nextstep.waiting.dto.WaitingRequest;
+import com.nextstep.domains.exceptions.ErrorMessageType;
+import com.nextstep.interfaces.member.dtos.MemberRequest;
+import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
+import com.nextstep.interfaces.schedule.dtos.ScheduleRequest;
+import com.nextstep.interfaces.theme.dtos.ThemeRequest;
+import com.nextstep.interfaces.waiting.dtos.WaitingRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
@@ -75,7 +75,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("같은 멤버, 스케줄의 예약 대기 생성 실패")
         @Test
         void should_throwException_when_duplicated() {
-            var expectedException = ErrorMessage.WAITING_CONFLICT;
+            var expectedException = ErrorMessageType.WAITING_CONFLICT;
             var request = createRequest(1L);
 
             post(authGiven(), DEFAULT_PATH, request);
@@ -87,7 +87,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("예약과 동일한 예약 대기 생성 실패")
         @Test
         void should_throwException_when_reservationExists() {
-            var expectedException = ErrorMessage.RESERVATION_CONFLICT;
+            var expectedException = ErrorMessageType.RESERVATION_CONFLICT;
             var request = createRequest(2L);
             var reservationRequest = new ReservationRequest(request.getScheduleId());
 
@@ -112,7 +112,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("스케줄이 없을 경우 예외 발생")
         @Test
         void should_thorwException_when_scheduleNotExists() {
-            var expectedException = ErrorMessage.SCHEDULE_NOT_EXISTS;
+            var expectedException = ErrorMessageType.SCHEDULE_NOT_EXISTS;
             var request = createRequest(99L);
 
             var response = post(authGiven(), DEFAULT_PATH, request);
@@ -148,7 +148,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("자신의 예약 대기가 아닌경우 예외 발생")
         @Test
         void should_throwException_when_not_mine() {
-            var expectedException = ErrorMessage.NOT_WAITING_OWNER;
+            var expectedException = ErrorMessageType.NOT_WAITING_OWNER;
             var request = createRequest(1L);
 
             post(authGiven(), DEFAULT_PATH, request);
@@ -160,7 +160,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("예약 대기가 없는 경우 예외 발생")
         @Test
         void should_throwException_when_waitingNotExists() {
-            var expectedException = ErrorMessage.WAITING_NOT_EXISTS;
+            var expectedException = ErrorMessageType.WAITING_NOT_EXISTS;
 
             var response = delete(authGiven(), deletePath(1L));
 
@@ -170,7 +170,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class getByMemberId {
+    class getByUseContext {
 
         static final String GET_BY_MEMBER_ID_PATH = DEFAULT_PATH + "/mine";
 
