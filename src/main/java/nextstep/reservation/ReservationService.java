@@ -40,10 +40,7 @@ public class ReservationService {
             throw new BusinessException(BusinessErrorCode.RESERVATION_ALREADY_EXIST_AT_THAT_TIME);
         }
 
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
+        Reservation newReservation = new Reservation(schedule, member);
 
         return new Reservation(reservationDao.save(newReservation), schedule, member, 0L);
     }

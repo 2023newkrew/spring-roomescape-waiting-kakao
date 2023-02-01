@@ -32,10 +32,7 @@ public class WaitingService {
         Schedule schedule = scheduleDao.findById(scheduleId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.SCHEDULE_NOT_FOUND));
 
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
+        Reservation newReservation = new Reservation(schedule, member);
 
         return reservationDao.save(newReservation);
     }
