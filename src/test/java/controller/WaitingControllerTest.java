@@ -1,59 +1,51 @@
 package controller;
 
-import auth.domain.TokenData;
-import io.restassured.specification.RequestSpecification;
-import nextstep.etc.exception.ErrorMessage;
+import auth.dto.TokenRequest;
 import nextstep.member.dto.MemberRequest;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.schedule.dto.ScheduleRequest;
-import nextstep.theme.dto.ThemeRequest;
-import nextstep.waiting.dto.WaitingRequest;
+import nextstep.schedule.exception.ScheduleErrorMessage;
+import nextstep.waiting.exception.WaitingErrorMessage;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.http.HttpStatus;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class WaitingControllerTest extends AbstractControllerTest {
 
     static final String DEFAULT_PATH = "/reservation-waitings";
 
-    @BeforeEach
-    void setUp() {
+    String anotherToken;
+
+    @Override
+    void setUpTemplate() {
+        super.setUpTemplate();
+
         createMember();
-        createTheme();
         createSchedule();
         createReservation();
     }
 
-    private void createTheme() {
-        var request = new ThemeRequest("theme", "theme", 10000);
-        post(authGiven(), "/admin/themes", request);
-    }
-
     private void createMember() {
-        var request1 = new MemberRequest("member", "password", "member", "-");
-        post(given(), "/members", request1);
-        var request2 = new MemberRequest("member2", "password", "member", "-");
-        post(given(), "/members", request2);
+        var request = new MemberRequest("member", "password", "member", "-");
+        post(given(), "/members", request);
+        var tokenRequest = new TokenRequest(request.getUsername(), request.getPassword());
+        anotherToken = createProvider(tokenRequest).createToken(tokenRequest).getAccessToken();
     }
 
     private void createSchedule() {
-        var request1 = new ScheduleRequest("2021-01-01", "00:00", 1L);
-        post(given(), "/schedules", request1);
-        var request2 = new ScheduleRequest("2021-01-01", "10:00", 1L);
-        post(given(), "/schedules", request2);
+        var request = new ScheduleRequest(LocalDate.of(2021, 1, 1), LocalTime.of(10, 0), 1L);
+        post(authGiven(), "/admin/schedules", request);
     }
 
     private void createReservation() {
         var request = new ReservationRequest(1L);
-        post(authGivenAnother(), "/reservations", request);
-    }
-
-    private RequestSpecification authGivenAnother() {
-        String anotherToken = provider.createToken(new TokenData(2L, "ADMIN"));
-
-        return given()
-                .auth()
-                .oauth2(anotherToken);
+        post(authGiven(anotherToken), "/reservations", request);
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -75,7 +67,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("같은 멤버, 스케줄의 예약 대기 생성 실패")
         @Test
         void should_throwException_when_duplicated() {
-            var expectedException = ErrorMessage.WAITING_CONFLICT;
+            var expectedException = WaitingErrorMessage.CONFLICT;
             var request = createRequest(1L);
 
             post(authGiven(), DEFAULT_PATH, request);
@@ -87,7 +79,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("예약과 동일한 예약 대기 생성 실패")
         @Test
         void should_throwException_when_reservationExists() {
-            var expectedException = ErrorMessage.RESERVATION_CONFLICT;
+            var expectedException = WaitingErrorMessage.ALREADY_RESERVED;
             var request = createRequest(2L);
             var reservationRequest = new ReservationRequest(request.getScheduleId());
 
@@ -112,7 +104,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("스케줄이 없을 경우 예외 발생")
         @Test
         void should_thorwException_when_scheduleNotExists() {
-            var expectedException = ErrorMessage.SCHEDULE_NOT_EXISTS;
+            var expectedException = ScheduleErrorMessage.NOT_EXISTS;
             var request = createRequest(99L);
 
             var response = post(authGiven(), DEFAULT_PATH, request);
@@ -121,8 +113,8 @@ public class WaitingControllerTest extends AbstractControllerTest {
         }
     }
 
-    WaitingRequest createRequest(long scheduleId) {
-        return new WaitingRequest(scheduleId);
+    ReservationRequest createRequest(long scheduleId) {
+        return new ReservationRequest(scheduleId);
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -148,11 +140,11 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("자신의 예약 대기가 아닌경우 예외 발생")
         @Test
         void should_throwException_when_not_mine() {
-            var expectedException = ErrorMessage.NOT_WAITING_OWNER;
+            var expectedException = WaitingErrorMessage.NOT_OWNER;
             var request = createRequest(1L);
 
             post(authGiven(), DEFAULT_PATH, request);
-            var response = delete(authGivenAnother(), deletePath(1L));
+            var response = delete(authGiven(anotherToken), deletePath(1L));
 
             thenThrow(response, expectedException);
         }
@@ -160,7 +152,7 @@ public class WaitingControllerTest extends AbstractControllerTest {
         @DisplayName("예약 대기가 없는 경우 예외 발생")
         @Test
         void should_throwException_when_waitingNotExists() {
-            var expectedException = ErrorMessage.WAITING_NOT_EXISTS;
+            var expectedException = WaitingErrorMessage.NOT_EXISTS;
 
             var response = delete(authGiven(), deletePath(1L));
 

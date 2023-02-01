@@ -1,18 +1,20 @@
 package nextstep.waiting.repository;
 
-import nextstep.waiting.domain.Waiting;
+import nextstep.member.domain.MemberEntity;
+import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.waiting.domain.WaitingEntity;
 
 import java.util.List;
 
 public interface WaitingRepository {
 
-    Waiting insert(Waiting waiting);
+    WaitingEntity insert(WaitingEntity waiting);
 
-    Waiting getById(Long id);
+    WaitingEntity getById(Long id);
 
-    Waiting getFirstByScheduleId(Long scheduleId);
+    WaitingEntity getFirstBySchedule(ScheduleEntity schedule);
 
-    List<Waiting> getByMemberId(Long memberId);
+    List<WaitingEntity> getByMember(MemberEntity member);
 
     boolean deleteById(Long id);
 }

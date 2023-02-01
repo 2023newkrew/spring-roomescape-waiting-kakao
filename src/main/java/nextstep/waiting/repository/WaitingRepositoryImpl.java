@@ -1,7 +1,9 @@
 package nextstep.waiting.repository;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.waiting.domain.Waiting;
+import nextstep.member.domain.MemberEntity;
+import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.waiting.domain.WaitingEntity;
 import nextstep.waiting.repository.jdbc.WaitingResultSetParser;
 import nextstep.waiting.repository.jdbc.WaitingStatementCreator;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,7 +24,7 @@ public class WaitingRepositoryImpl implements WaitingRepository {
     private final WaitingResultSetParser resultSetParser;
 
     @Override
-    public Waiting insert(Waiting waiting) {
+    public WaitingEntity insert(WaitingEntity waiting) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> statementCreator.createInsert(connection, waiting),
@@ -34,7 +36,7 @@ public class WaitingRepositoryImpl implements WaitingRepository {
     }
 
     @Override
-    public Waiting getById(Long id) {
+    public WaitingEntity getById(Long id) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectById(connection, id),
                 resultSetParser::parseWaiting
@@ -42,17 +44,17 @@ public class WaitingRepositoryImpl implements WaitingRepository {
     }
 
     @Override
-    public Waiting getFirstByScheduleId(Long scheduleId) {
+    public WaitingEntity getFirstBySchedule(ScheduleEntity schedule) {
         return jdbcTemplate.query(
-                connection -> statementCreator.createSelectByScheduleId(connection, scheduleId),
+                connection -> statementCreator.createSelectByScheduleId(connection, schedule.getId()),
                 resultSetParser::parseWaiting
         );
     }
 
     @Override
-    public List<Waiting> getByMemberId(Long memberId) {
+    public List<WaitingEntity> getByMember(MemberEntity member) {
         return jdbcTemplate.query(
-                connection -> statementCreator.createSelectByMemberId(connection, memberId),
+                connection -> statementCreator.createSelectByMemberId(connection, member.getId()),
                 resultSetParser::parseWaitings
         );
     }

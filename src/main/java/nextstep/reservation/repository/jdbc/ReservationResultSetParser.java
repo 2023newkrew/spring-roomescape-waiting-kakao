@@ -16,9 +16,9 @@ import java.util.Objects;
 @Component
 public class ReservationResultSetParser {
 
-    public List<Reservation> parseReservations(ResultSet resultSet) throws SQLException {
-        List<Reservation> reservations = new ArrayList<>();
-        Reservation reservation = parseReservation(resultSet);
+    public List<ReservationEntity> parseReservations(ResultSet resultSet) throws SQLException {
+        List<ReservationEntity> reservations = new ArrayList<>();
+        ReservationEntity reservation = parseReservation(resultSet);
         while (Objects.nonNull(reservation)) {
             reservations.add(reservation);
             reservation = parseReservation(resultSet);
@@ -27,7 +27,7 @@ public class ReservationResultSetParser {
         return reservations;
     }
 
-    public Reservation parseReservation(ResultSet resultSet) throws SQLException {
+    public ReservationEntity parseReservation(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {
             return null;
         }

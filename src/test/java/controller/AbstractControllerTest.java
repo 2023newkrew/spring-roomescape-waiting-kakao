@@ -33,41 +33,45 @@ public abstract class AbstractControllerTest {
 
     static int VALIDITY_IN_MILLISECONDS = 3_600_000;
 
-    static AuthenticationPrincipal PRINCIPAL = username -> new UserDetails() {
+    AuthenticationPrincipal createPrincipal(TokenRequest request) {
+        return username -> new UserDetails() {
 
-        @Override
-        public String getUsername() {
-            return "admin";
-        }
+            @Override
+            public String getUsername() {
+                return request.getUsername();
+            }
 
-        @Override
-        public String getPassword() {
-            return "admin";
-        }
+            @Override
+            public String getPassword() {
+                return request.getPassword();
+            }
 
-        @Override
-        public UserRole getRole() {
-            return UserRole.ADMIN;
-        }
+            @Override
+            public UserRole getRole() {
+                return UserRole.ADMIN;
+            }
 
-        @Override
-        public boolean isWrongPassword(String password) {
-            return false;
-        }
+            @Override
+            public boolean isWrongPassword(String password) {
+                return false;
+            }
 
-        @Override
-        public boolean isNotAdmin() {
-            return false;
-        }
-    };
+            @Override
+            public boolean isNotAdmin() {
+                return false;
+            }
+        };
+    }
 
-    static JwtTokenProvider provider = new JwtTokenProvider(SECRET_KEY, VALIDITY_IN_MILLISECONDS, PRINCIPAL);
+    JwtTokenProvider createProvider(TokenRequest request) {
+        return new JwtTokenProvider(SECRET_KEY, VALIDITY_IN_MILLISECONDS, createPrincipal(request));
+    }
 
     String token;
 
     void setUpTemplate() {
         TokenRequest tokenRequest = new TokenRequest("admin", "admin");
-        token = provider.createToken(tokenRequest).getAccessToken();
+        token = createProvider(tokenRequest).createToken(tokenRequest).getAccessToken();
     }
 
     @BeforeEach
@@ -100,6 +104,11 @@ public abstract class AbstractControllerTest {
     }
 
     RequestSpecification authGiven() {
+        return given()
+                .auth().oauth2(token);
+    }
+
+    RequestSpecification authGiven(String token) {
         return given()
                 .auth().oauth2(token);
     }

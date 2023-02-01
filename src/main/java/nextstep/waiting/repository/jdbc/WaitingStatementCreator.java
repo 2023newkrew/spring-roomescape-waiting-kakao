@@ -1,6 +1,6 @@
 package nextstep.waiting.repository.jdbc;
 
-import nextstep.waiting.domain.Waiting;
+import nextstep.waiting.domain.WaitingEntity;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -52,14 +52,14 @@ public class WaitingStatementCreator {
 
     private static final String DELETE_BY_ID_SQL = "DELETE FROM waiting WHERE id = ?";
 
-    public PreparedStatement createInsert(Connection connection, Waiting waiting) throws SQLException {
+    public PreparedStatement createInsert(Connection connection, WaitingEntity waiting) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
         setWaiting(ps, waiting);
 
         return ps;
     }
 
-    private void setWaiting(PreparedStatement ps, Waiting waiting) throws SQLException {
+    private void setWaiting(PreparedStatement ps, WaitingEntity waiting) throws SQLException {
         ps.setLong(1, waiting.getMemberId());
         ps.setLong(2, waiting.getScheduleId());
     }

@@ -1,16 +1,17 @@
 package nextstep.waiting.service;
 
-import nextstep.waiting.dto.WaitingRequest;
-import nextstep.waiting.dto.WaitingResponse;
+import nextstep.member.domain.MemberEntity;
+import nextstep.reservation.domain.Reservation;
+import nextstep.waiting.domain.WaitingEntity;
 
 import java.util.List;
 
 public interface WaitingService {
-    WaitingResponse create(Long memberId, WaitingRequest request);
+    WaitingEntity create(Reservation reservation);
 
-    WaitingResponse getById(Long id);
+    WaitingEntity getById(Long id);
 
-    List<WaitingResponse> getByMemberId(Long memberId);
+    List<WaitingEntity> getByMember(MemberEntity member);
 
-    boolean deleteById(Long MemberId, Long id);
+    boolean deleteById(MemberEntity member, Long id);
 }

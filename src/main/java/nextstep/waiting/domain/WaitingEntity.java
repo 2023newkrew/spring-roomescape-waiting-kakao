@@ -3,23 +3,23 @@ package nextstep.waiting.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import nextstep.member.domain.Member;
-import nextstep.schedule.domain.Schedule;
+import nextstep.member.domain.MemberEntity;
+import nextstep.schedule.domain.ScheduleEntity;
 
 import java.util.Objects;
 
 @AllArgsConstructor
-public class Waiting {
+public class WaitingEntity {
 
     @Getter
     @Setter
     private Long id;
 
     @Getter
-    private final Member member;
+    private final MemberEntity member;
 
     @Getter
-    private final Schedule schedule;
+    private final ScheduleEntity schedule;
 
     @Getter
     private final Integer waitNum;

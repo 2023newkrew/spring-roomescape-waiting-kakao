@@ -1,19 +1,24 @@
 package nextstep.waiting.controller;
 
-import auth.resolver.MemberId;
+import auth.domain.LoginUser;
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.exception.ReservationException;
+import nextstep.member.domain.MemberEntity;
+import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.dto.ReservationRequest;
-import nextstep.reservation.dto.ReservationResponse;
+import nextstep.reservation.exception.ReservationException;
+import nextstep.reservation.mapper.ReservationMapper;
 import nextstep.reservation.service.ReservationService;
-import nextstep.waiting.dto.WaitingRequest;
+import nextstep.waiting.domain.WaitingEntity;
 import nextstep.waiting.dto.WaitingResponse;
+import nextstep.waiting.mapper.WaitingMapper;
 import nextstep.waiting.service.WaitingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/reservation-waitings")
@@ -24,39 +29,59 @@ public class WaitingController {
 
     private final WaitingService service;
 
+    private final WaitingMapper mapper;
+
+    private static final String RESERVATION_PATH = "/reservations/";
+
     private final ReservationService reservationService;
+
+    private final ReservationMapper reservationMapper;
 
     @PostMapping
     public ResponseEntity<Void> create(
-            @MemberId Long memberId,
-            @RequestBody WaitingRequest request) {
-        URI location;
+            @LoginUser MemberEntity member,
+            @RequestBody ReservationRequest request) {
+        Reservation reservation = reservationMapper.fromRequest(member, request);
+
+        return ResponseEntity.created(createReservationOrWaiting(reservation)).build();
+    }
+
+    private URI createReservationOrWaiting(Reservation reservation) {
         try {
-            ReservationRequest reservationRequest = new ReservationRequest(request.getScheduleId());
-            ReservationResponse reservation = reservationService.create(memberId, reservationRequest);
-            location = URI.create("/reservations/" + reservation.getId());
+            ReservationEntity reservationEntity = reservationService.create(reservation);
+
+            return URI.create(RESERVATION_PATH + reservationEntity.getId());
         }
         catch (ReservationException e) {
-            WaitingResponse waiting = service.create(memberId, request);
-            location = URI.create(WAITING_PATH + waiting.getId());
+            WaitingEntity waitingEntity = service.create(reservation);
+
+            return URI.create(WAITING_PATH + waitingEntity.getId());
         }
-        return ResponseEntity.created(location).build();
     }
 
     @GetMapping("/{waiting_id}")
     public ResponseEntity<WaitingResponse> getById(@PathVariable("waiting_id") Long waitingId) {
-        return ResponseEntity.ok(service.getById(waitingId));
+        WaitingEntity waiting = service.getById(waitingId);
+
+        return ResponseEntity.ok(mapper.toResponse(waiting));
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<WaitingResponse>> getByMemberId(@MemberId Long memberId) {
-        return ResponseEntity.ok(service.getByMemberId(memberId));
+    public ResponseEntity<List<WaitingResponse>> getByMember(@LoginUser MemberEntity member) {
+        return ResponseEntity.ok(getWaitings(member));
+    }
+
+    private List<WaitingResponse> getWaitings(MemberEntity member) {
+        return service.getByMember(member)
+                .stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @DeleteMapping("/{waiting_id}")
     public ResponseEntity<Boolean> deleteById(
-            @MemberId Long memberId,
+            @LoginUser MemberEntity member,
             @PathVariable("waiting_id") Long waitingId) {
-        return ResponseEntity.ok(service.deleteById(memberId, waitingId));
+        return ResponseEntity.ok(service.deleteById(member, waitingId));
     }
 }

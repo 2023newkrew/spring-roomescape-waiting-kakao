@@ -1,61 +1,32 @@
 package controller;
 
-import auth.domain.TokenData;
-import io.restassured.specification.RequestSpecification;
+import auth.dto.TokenRequest;
 import nextstep.member.dto.MemberRequest;
 import nextstep.reservation.dto.ReservationRequest;
-import nextstep.schedule.dto.ScheduleRequest;
-import nextstep.theme.dto.ThemeRequest;
-import nextstep.waiting.dto.WaitingRequest;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 public class ReservationControllerTest extends AbstractControllerTest {
 
     static final String DEFAULT_PATH = "/reservations";
 
-    @BeforeEach
-    void setUp() {
-        createMember();
-        createTheme();
-        createSchedule();
-        createReservation();
-        createWaiting();
-    }
+    String anotherToken;
 
-    private void createTheme() {
-        var request = new ThemeRequest("theme", "theme", 10000);
-        post(authGiven(), "/admin/themes", request);
+    @Override
+    void setUpTemplate() {
+        super.setUpTemplate();
+
+        createMember();
     }
 
     private void createMember() {
-        var request1 = new MemberRequest("member", "password", "member", "-");
-        post(given(), "/members", request1);
-        var request2 = new MemberRequest("member2", "password", "member", "-");
-        post(given(), "/members", request2);
-    }
-
-    private void createSchedule() {
-        var request = new ScheduleRequest("2021-01-01", "00:00", 1L);
-        post(given(), "/schedules", request);
-    }
-
-    private void createReservation() {
-        var request = new ReservationRequest(1L);
-        post(authGiven(), "/reservations", request);
-    }
-
-    private void createWaiting() {
-        var request = new WaitingRequest(1L);
-        post(authGivenAnother(), "/reservation-waitings", request);
-    }
-
-    private RequestSpecification authGivenAnother() {
-        String anotherToken = provider.createToken(new TokenData(2L, "ADMIN"));
-
-        return given()
-                .auth()
-                .oauth2(anotherToken);
+        var request = new MemberRequest("member", "password", "member", "-");
+        var tokenRequest = new TokenRequest(request.getUsername(), request.getPassword());
+        post(given(), "/members", request);
+        anotherToken = createProvider(tokenRequest).createToken(tokenRequest).getAccessToken();
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -64,12 +35,24 @@ public class ReservationControllerTest extends AbstractControllerTest {
         @DisplayName("예약 취소 시 예약 대기가 예약으로 바뀌는지 확인")
         @Test
         void should_deleteWaiting_when_mine() {
+            createReservation();
+            createWaiting();
             delete(authGiven(), DEFAULT_PATH + "/1");
 
-            var response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+            var response = get(authGiven(anotherToken), DEFAULT_PATH + "/mine");
 
             then(response)
                     .body("member.id", Matchers.contains(2));
+        }
+
+        private void createReservation() {
+            var request = new ReservationRequest(1L);
+            post(authGiven(), "/reservations", request);
+        }
+
+        private void createWaiting() {
+            var request = new ReservationRequest(1L);
+            post(authGiven(anotherToken), "/reservation-waitings", request);
         }
     }
 }

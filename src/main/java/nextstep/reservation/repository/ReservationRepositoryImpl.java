@@ -1,9 +1,11 @@
 package nextstep.reservation.repository;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.member.domain.MemberEntity;
 import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.repository.jdbc.ReservationResultSetParser;
 import nextstep.reservation.repository.jdbc.ReservationStatementCreator;
+import nextstep.schedule.domain.ScheduleEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,25 +25,29 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     private final ReservationResultSetParser resultSetParser;
 
     @Override
-    public boolean existsByScheduleId(Long scheduleId) {
+    public boolean existsBySchedule(ScheduleEntity schedule) {
         return Boolean.TRUE.equals(
                 jdbcTemplate.query(
-                        connection -> statementCreator.createSelectByScheduleId(connection, scheduleId),
+                        connection -> statementCreator.createSelectByScheduleId(connection, schedule.getId()),
                         ResultSet::next
                 ));
     }
 
     @Override
-    public boolean existsByMemberIdAndScheduleId(Long memberId, Long scheduleId) {
+    public boolean existsByMemberAndSchedule(ReservationEntity reservation) {
         return Boolean.TRUE.equals(
                 jdbcTemplate.query(
-                        connection -> statementCreator.selectByMemberIdAndScheduleId(connection, memberId, scheduleId),
+                        connection -> statementCreator.selectByMemberIdAndScheduleId(
+                                connection,
+                                reservation.getMemberId(),
+                                reservation.getScheduleId()
+                        ),
                         ResultSet::next
                 ));
     }
 
     @Override
-    public Reservation insert(Reservation reservation) {
+    public ReservationEntity insert(ReservationEntity reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> statementCreator.createInsert(connection, reservation),
@@ -61,9 +67,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> getByMemberId(Long memberId) {
+    public List<ReservationEntity> getByMember(MemberEntity member) {
         return jdbcTemplate.query(
-                connection -> statementCreator.createSelectByMemberId(connection, memberId),
+                connection -> statementCreator.createSelectByMemberId(connection, member.getId()),
                 resultSetParser::parseReservations
         );
     }

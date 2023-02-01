@@ -11,7 +11,7 @@ public interface ReservationService {
 
     ReservationEntity getById(Long id);
 
-    List<ReservationResponse> getByMemberId(Long memberId);
+    List<ReservationEntity> getByMember(MemberEntity member);
 
-    boolean deleteById(Long memberId, Long id);
+    boolean deleteById(MemberEntity member, Long id);
 }

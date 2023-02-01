@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/reservations")
@@ -38,18 +39,26 @@ public class ReservationController {
     @GetMapping("/{reservation_id}")
     public ResponseEntity<ReservationResponse> getReservation(@PathVariable("reservation_id") Long reservationId) {
         ReservationEntity reservation = service.getById(reservationId);
+
         return ResponseEntity.ok(mapper.toResponse(reservation));
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<ReservationResponse>> getByMemberId(@MemberId Long memberId) {
-        return ResponseEntity.ok(service.getByMemberId(memberId));
+    public ResponseEntity<List<ReservationResponse>> getByMemberId(@LoginUser MemberEntity member) {
+        return ResponseEntity.ok(getReservations(member));
+    }
+
+    private List<ReservationResponse> getReservations(MemberEntity member) {
+        return service.getByMember(member)
+                .stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @DeleteMapping("/{reservation_id}")
     public ResponseEntity<Boolean> deleteReservation(
             @LoginUser MemberEntity member,
             @PathVariable("reservation_id") Long reservationId) {
-        return ResponseEntity.ok(service.deleteById(member.getId(), reservationId));
+        return ResponseEntity.ok(service.deleteById(member, reservationId));
     }
 }

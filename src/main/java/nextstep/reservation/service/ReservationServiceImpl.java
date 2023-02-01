@@ -10,14 +10,13 @@ import nextstep.schedule.domain.ScheduleEntity;
 import nextstep.schedule.exception.ScheduleErrorMessage;
 import nextstep.schedule.exception.ScheduleException;
 import nextstep.schedule.service.ScheduleService;
-import nextstep.waiting.domain.Waiting;
+import nextstep.waiting.domain.WaitingEntity;
 import nextstep.waiting.repository.WaitingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -43,7 +42,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (Objects.isNull(scheduleEntity)) {
             throw new ScheduleException(ScheduleErrorMessage.NOT_EXISTS);
         }
-        if (repository.existsByScheduleId(scheduleId)) {
+        if (repository.existsBySchedule(scheduleEntity)) {
             throw new ReservationException(ReservationErrorMessage.CONFLICT);
         }
     }
@@ -54,19 +53,16 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationResponse> getByMemberId(Long memberId) {
-        return repository.getByMemberId(memberId)
-                .stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
+    public List<ReservationEntity> getByMember(MemberEntity member) {
+        return repository.getByMember(member);
     }
 
     @Transactional
     @Override
-    public boolean deleteById(Long memberId, Long id) {
-        ReservationEntity reservation = repository.getById(id);
-        validateReservation(reservation, memberId);
-        Waiting waiting = waitingRepository.getFirstByScheduleId(reservation.getScheduleId());
+    public boolean deleteById(MemberEntity member, Long id) {
+        ReservationEntity reservation = getValidReservation(member, id);
+
+        WaitingEntity waiting = waitingRepository.getFirstBySchedule(reservation.getSchedule());
         if (Objects.isNull(waiting)) {
             return repository.deleteById(id);
         }
@@ -75,11 +71,18 @@ public class ReservationServiceImpl implements ReservationService {
         return repository.updateById(id, waiting.getMemberId());
     }
 
-    private void validateReservation(ReservationEntity reservation, Long memberId) {
+    private ReservationEntity getValidReservation(MemberEntity member, Long id) {
+        ReservationEntity reservation = repository.getById(id);
+        validateReservation(member, reservation);
+
+        return reservation;
+    }
+
+    private void validateReservation(MemberEntity memberEntity, ReservationEntity reservation) {
         if (Objects.isNull(reservation)) {
             throw new ReservationException(ReservationErrorMessage.NOT_EXISTS);
         }
-        if (!memberId.equals(reservation.getMemberId())) {
+        if (!Objects.equals(memberEntity.getId(), reservation.getMemberId())) {
             throw new ReservationException(ReservationErrorMessage.NOT_OWNER);
         }
     }

@@ -1,14 +1,13 @@
 package nextstep.waiting.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.exception.ErrorMessage;
-import nextstep.etc.exception.ReservationException;
-import nextstep.etc.exception.WaitingException;
+import nextstep.member.domain.MemberEntity;
+import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.repository.ReservationRepository;
-import nextstep.waiting.domain.Waiting;
-import nextstep.waiting.dto.WaitingRequest;
-import nextstep.waiting.dto.WaitingResponse;
-import nextstep.waiting.mapper.WaitingMapper;
+import nextstep.waiting.domain.WaitingEntity;
+import nextstep.waiting.exception.WaitingErrorMessage;
+import nextstep.waiting.exception.WaitingException;
 import nextstep.waiting.repository.WaitingRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,57 +25,55 @@ public class WaitingServiceImpl implements WaitingService {
 
     private final ReservationRepository reservationRepository;
 
-    private final WaitingMapper mapper;
-
-
     @Transactional
     @Override
-    public WaitingResponse create(Long memberId, WaitingRequest request) {
-        Waiting waiting = mapper.fromRequest(memberId, request);
-
-        return mapper.toResponse(tryInsert(waiting));
+    public WaitingEntity create(Reservation reservation) {
+        ReservationEntity reservationEntity = reservation.toEntity();
+        if (reservationRepository.existsByMemberAndSchedule(reservationEntity)) {
+            throw new WaitingException(WaitingErrorMessage.ALREADY_RESERVED);
+        }
+        return tryInsert(toWaiting(reservationEntity));
     }
 
-    private Waiting tryInsert(Waiting waiting) {
-        if (reservationRepository.existsByMemberIdAndScheduleId(waiting.getMemberId(), waiting.getScheduleId())) {
-            throw new ReservationException(ErrorMessage.RESERVATION_CONFLICT);
-        }
+    private WaitingEntity tryInsert(WaitingEntity waiting) {
         try {
             return repository.insert(waiting);
         }
         catch (DataIntegrityViolationException ignore) {
-            throw new WaitingException(ErrorMessage.WAITING_CONFLICT);
+            throw new WaitingException(WaitingErrorMessage.CONFLICT);
         }
     }
 
+    private static WaitingEntity toWaiting(ReservationEntity reservation) {
+        return new WaitingEntity(null, reservation.getMember(), reservation.getSchedule(), null);
+    }
+
+
     @Override
-    public WaitingResponse getById(Long id) {
-        return mapper.toResponse(repository.getById(id));
+    public WaitingEntity getById(Long id) {
+        return repository.getById(id);
     }
 
     @Override
-    public List<WaitingResponse> getByMemberId(Long memberId) {
-        return repository.getByMemberId(memberId)
-                .stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
+    public List<WaitingEntity> getByMember(MemberEntity member) {
+        return repository.getByMember(member);
     }
 
     @Transactional
     @Override
-    public boolean deleteById(Long memberId, Long id) {
-        Waiting waiting = repository.getById(id);
-        validateWaiting(waiting, memberId);
+    public boolean deleteById(MemberEntity member, Long id) {
+        WaitingEntity waiting = repository.getById(id);
+        validateWaiting(waiting, member);
 
         return repository.deleteById(id);
     }
 
-    private void validateWaiting(Waiting waiting, Long memberId) {
+    private void validateWaiting(WaitingEntity waiting, MemberEntity member) {
         if (Objects.isNull(waiting)) {
-            throw new WaitingException(ErrorMessage.WAITING_NOT_EXISTS);
+            throw new WaitingException(WaitingErrorMessage.NOT_EXISTS);
         }
-        if (!memberId.equals(waiting.getMemberId())) {
-            throw new WaitingException(ErrorMessage.NOT_WAITING_OWNER);
+        if (!Objects.equals(waiting.getMemberId(), member.getId())) {
+            throw new WaitingException(WaitingErrorMessage.NOT_OWNER);
         }
     }
 }
