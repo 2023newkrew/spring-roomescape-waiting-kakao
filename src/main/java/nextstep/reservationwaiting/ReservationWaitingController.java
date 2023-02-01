@@ -38,6 +38,7 @@ public class ReservationWaitingController {
             Long id = reservationWaitingService.create(member, reservationWaitingRequest);
             return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
         }
+
         Long id = reservationService.create(member, new ReservationRequest(reservationWaitingRequest.getScheduleId()));
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
@@ -45,7 +46,7 @@ public class ReservationWaitingController {
     @GetMapping("mine")
     public ResponseEntity<List<ReservationWaitingResponse>> findByMemberId(@LoginMember Member member) {
         return ResponseEntity.ok(
-                reservationWaitingService.findAllByMemberId(member).stream().map(ReservationWaitingResponse::of)
+                reservationWaitingService.findAllByMemberId(member.getId()).stream().map(ReservationWaitingResponse::of)
                         .collect(Collectors.toList()));
     }
 

@@ -35,8 +35,8 @@ public class ReservationWaitingService {
         return reservationWaitingDao.save(newReservationWaiting);
     }
 
-    public List<ReservationWaiting> findAllByMemberId(Member member) {
-        return reservationWaitingDao.findByMemberId(member.getId());
+    public List<ReservationWaiting> findAllByMemberId(Long memberId) {
+        return reservationWaitingDao.findByMemberId(memberId);
     }
 
     public void deleteById(Member member, Long id) {
