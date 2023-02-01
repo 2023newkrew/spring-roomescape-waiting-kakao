@@ -50,6 +50,12 @@ public class ReservationController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/reservations/{id}/reject")
+    public ResponseEntity rejectReservation(@PathVariable Long id) {
+        reservationService.reject(id);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         return ResponseEntity.internalServerError().build();

@@ -101,4 +101,14 @@ public class ReservationService {
                 throw new IllegalArgumentException();
         }
     }
+
+    public void reject(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new NullPointerException();
+        }
+
+        reservationDao.updateStatusTo(id, ReservationStatus.REJECTED);
+    }
+    
 }
