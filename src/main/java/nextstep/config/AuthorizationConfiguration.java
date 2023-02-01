@@ -29,8 +29,8 @@ public class AuthorizationConfiguration {
     }
 
     @Bean
-    public LoginMemberArgumentResolver loginMemberArgumentResolver(){
-        return new LoginMemberArgumentResolver(loginService());
+    public LoginMemberArgumentResolver<Member> loginMemberArgumentResolver(){
+        return new LoginMemberArgumentResolver<>(loginService());
     }
 
     @Bean
