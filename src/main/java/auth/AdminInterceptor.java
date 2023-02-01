@@ -19,7 +19,6 @@ public class AdminInterceptor implements HandlerInterceptor {
                 .split(" ")[1];
         String role = jwtTokenProvider.getRole(credential);
         if (!Objects.equals(role, "ADMIN")) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "관리자 권한이 없습니다.");
             throw new NotAdminRoleException();
         }
         return true;

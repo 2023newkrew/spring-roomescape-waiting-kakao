@@ -2,12 +2,14 @@ package nextstep.support.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@Getter
 @Builder
 @AllArgsConstructor
-public class ErrorResponse{
+public class ErrorResponse {
     private HttpStatus status;
     private String message;
 

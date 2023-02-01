@@ -5,12 +5,11 @@ import nextstep.support.error.ErrorCode;
 import nextstep.support.error.ErrorResponse;
 import nextstep.support.exception.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+@RestControllerAdvice
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(AlreadyReservedScheduleException.class)
     ResponseEntity<ErrorResponse> handleAlreadyReservedScheduleException() {
