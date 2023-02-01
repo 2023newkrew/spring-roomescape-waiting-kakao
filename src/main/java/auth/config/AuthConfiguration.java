@@ -1,4 +1,4 @@
-package nextstep.config;
+package auth.config;
 
 import auth.AuthenticateProvider;
 import auth.JwtTokenProvider;
