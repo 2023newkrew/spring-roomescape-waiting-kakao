@@ -113,9 +113,9 @@ public class ReservationWaitingDao {
             return jdbcTemplate.query(sql, rowMapper, id);
     }
 
-    public void updateWaitingSeq(ReservationWaiting reservationWaiting) {
+    public void updateWaitingSeq(Long reservationId, Long waitingSeq) {
         String sql = "UPDATE reservation SET waiting_seq = ? where id = ?";
-        jdbcTemplate.update(sql, reservationWaiting.getWaitingSeq(), reservationWaiting.getReservation().getId());
+        jdbcTemplate.update(sql, waitingSeq, reservationId);
     }
 
     public void deleteById(Long id) {

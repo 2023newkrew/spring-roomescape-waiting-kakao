@@ -94,6 +94,8 @@ public class ReservationWaitingService {
                 .collect(Collectors.toList());
 
         reservationWaitings.forEach(ReservationWaiting::decreaseWaitingSeq);
-        reservationWaitings.forEach(reservationWaitingDao::updateWaitingSeq);
+        reservationWaitings.forEach(reservationWaiting ->
+                reservationWaitingDao.updateWaitingSeq(
+                        reservationWaiting.getReservationId(), reservationWaiting.getWaitingSeq()));
     }
 }
