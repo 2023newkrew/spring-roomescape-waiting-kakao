@@ -144,66 +144,6 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
-//
-//    @DisplayName("중복 예약을 생성한다")
-//    @Test
-//    void createDuplicateReservation() {
-//        createReservation();
-//
-//        var response = RestAssured
-//                .given().log().all()
-//                .auth().oauth2(token.getAccessToken())
-//                .body(request)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when().post("/reservations")
-//                .then().log().all()
-//                .extract();
-//
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//    }
-//
-//    @DisplayName("예약이 없을 때 예약 목록을 조회한다")
-//    @Test
-//    void showEmptyReservations() {
-//        var response = RestAssured
-//                .given().log().all()
-//                .param("themeId", themeId)
-//                .param("date", DATE)
-//                .when().get("/reservations")
-//                .then().log().all()
-//                .extract();
-//
-//        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
-//        assertThat(reservations.size()).isEqualTo(0);
-//    }
-//
-//    @DisplayName("없는 예약을 삭제한다")
-//    @Test
-//    void createNotExistReservation() {
-//        var response = RestAssured
-//                .given().log().all()
-//                .auth().oauth2(token.getAccessToken())
-//                .when().delete("/reservations/1")
-//                .then().log().all()
-//                .extract();
-//
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//    }
-//
-//    @DisplayName("다른 사람이 예약을삭제한다")
-//    @Test
-//    void deleteReservationOfOthers() {
-//        createReservation();
-//
-//        var response = RestAssured
-//                .given().log().all()
-//                .auth().oauth2("other-token")
-//                .when().delete("/reservations/1")
-//                .then().log().all()
-//                .extract();
-//
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-//    }
 
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
