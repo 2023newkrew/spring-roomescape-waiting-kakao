@@ -1,7 +1,7 @@
 package auth.config;
 
 import auth.*;
-import auth.argumentresolver.LoginMemberArgumentResolver;
+import auth.argumentresolver.LoginUserArgumentResolver;
 import auth.controller.LoginController;
 import auth.interceptor.AdminInterceptor;
 import auth.jwt.JwtTokenProvider;
@@ -44,6 +44,6 @@ public class AuthConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List argumentResolvers) {
-        argumentResolvers.add(new LoginMemberArgumentResolver(loginService()));
+        argumentResolvers.add(new LoginUserArgumentResolver(loginService()));
     }
 }
