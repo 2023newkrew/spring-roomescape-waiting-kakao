@@ -40,8 +40,8 @@ public class WaitingService {
         return reservationDao.save(newReservation);
     }
 
-    public void deleteWaitingById(Member member, Long id) {
-        reservationService.deleteById(member, id);
+    public void cancelWaitingById(Member member, Long id) {
+        reservationService.cancelById(member, id);
     }
 
     public List<ReservationWaitingResponseDto> getReservationWaitingsByMember(Member member) {

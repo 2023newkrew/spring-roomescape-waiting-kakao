@@ -57,7 +57,7 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Member member, Long id) {
+    public void cancelById(Member member, Long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.RESERVATION_NOT_FOUND));
 
