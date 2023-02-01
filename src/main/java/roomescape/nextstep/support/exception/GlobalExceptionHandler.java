@@ -33,6 +33,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(status.value(), "잘못된 인증 정보 입니다."));
     }
 
+
     @SneakyThrows(JsonProcessingException.class)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
@@ -51,5 +52,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(status)
                 .body(new ErrorResponse(status.value(), objectMapper.writeValueAsString(errorInfos)));
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        return ResponseEntity
+                .status(status)
+                .body(new ErrorResponse(status.value(), "요청 처리 과정에서 오류가 발생했습니다."));
     }
 }
