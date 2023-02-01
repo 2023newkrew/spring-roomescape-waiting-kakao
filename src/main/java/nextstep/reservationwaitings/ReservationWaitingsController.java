@@ -2,7 +2,6 @@ package nextstep.reservationwaitings;
 
 import auth.LoginMember;
 import nextstep.member.Member;
-import nextstep.support.NotCreatorMemberException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,10 +37,5 @@ public class ReservationWaitingsController {
     public ResponseEntity<Void> delete(@LoginMember Member member, @PathVariable Long id) {
         reservationWaitingsService.delete(member, id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(NotCreatorMemberException.class)
-    public ResponseEntity onException(NotCreatorMemberException e) {
-        return ResponseEntity.badRequest().build();
     }
 }

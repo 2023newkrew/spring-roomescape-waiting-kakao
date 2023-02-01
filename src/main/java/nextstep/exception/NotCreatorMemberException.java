@@ -1,4 +1,4 @@
-package nextstep.support;
+package nextstep.exception;
 
 public class NotCreatorMemberException extends RuntimeException {
     public NotCreatorMemberException() {

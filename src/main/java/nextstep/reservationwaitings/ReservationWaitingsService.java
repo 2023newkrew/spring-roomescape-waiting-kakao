@@ -5,7 +5,7 @@ import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.NotCreatorMemberException;
+import nextstep.exception.NotCreatorMemberException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

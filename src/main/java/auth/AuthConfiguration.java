@@ -12,7 +12,7 @@ public class AuthConfiguration {
     }
 
     @Bean
-    public LoginController loginController(UserDetailsService userDetailsService) {
+    public LoginController loginController(UserDetailsService<?> userDetailsService) {
         return new LoginController(userDetailsService);
     }
 }
