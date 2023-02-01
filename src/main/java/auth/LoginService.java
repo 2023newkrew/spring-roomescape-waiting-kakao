@@ -16,7 +16,7 @@ public class LoginService {
             throw new AuthException(AuthErrorCode.LOGIN_FAILED_WRONG_USERNAME_PASSWORD);
         }
 
-        String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
+        String accessToken = jwtTokenProvider.createToken(String.valueOf(userDetails.getId()), userDetails.getRole());
 
         return new TokenResponse(accessToken);
     }
