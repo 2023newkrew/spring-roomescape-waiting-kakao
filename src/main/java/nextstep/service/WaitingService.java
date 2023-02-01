@@ -10,7 +10,6 @@ import nextstep.domain.persist.Waiting;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.WaitingDao;
-import nextstep.support.exception.api.waiting.NoSuchWaitingException;
 import nextstep.support.exception.api.waiting.NotWaitingOwnerException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +56,7 @@ public class WaitingService {
     }
 
     @Transactional
-    public void deleteById(UserDetails userDetails, Long id) {
+    public void remove(UserDetails userDetails, Long id) {
         Waiting waiting = waitingDao.findById(id);
         
         if (!waiting.sameMember(new Member(userDetails))) {

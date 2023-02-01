@@ -26,8 +26,7 @@ public class ReservationController {
     @Operation(summary = "예약 생성 API")
     @PostMapping
     public ResponseEntity createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(userDetails, reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + id)).build();
+        return ResponseEntity.created(URI.create("/" + reservationService.create(userDetails, reservationRequest))).build();
     }
 
     @Operation(summary = "테마 ID와 날짜로 예약 조회")

@@ -6,13 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
 import nextstep.domain.enumeration.ReservationStatus;
-import nextstep.domain.persist.Member;
-import nextstep.domain.persist.Reservation;
-import nextstep.domain.persist.Schedule;
-import nextstep.domain.persist.Theme;
+import nextstep.domain.persist.*;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.ThemeDao;
+import nextstep.repository.WaitingDao;
 import nextstep.support.exception.api.reservation.*;
 import nextstep.support.exception.api.schedule.NoSuchScheduleException;
 import nextstep.support.exception.api.theme.NoSuchThemeException;
@@ -31,16 +29,22 @@ import static nextstep.domain.enumeration.ReservationStatus.*;
 @Slf4j
 public class ReservationService {
     private static final String ADMIN = "ADMIN";
+    private static final String RESERVATION_WAITING = "reservation-waitings";
+    private static final String RESERVATION = "resrvations";
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
+    private final WaitingDao waitingDao;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
+    public String create(UserDetails userDetails, ReservationRequest reservationRequest) {
         Schedule schedule = findScheduleById(reservationRequest);
-        validateDuplicationReservation(schedule);
-        return reservationDao.save(new Reservation(schedule, new Member(userDetails)));
+
+        if (isReservationAlreadyExist(schedule)) {
+            return RESERVATION_WAITING + "/" + waitingDao.save(new Waiting(schedule, new Member(userDetails)));
+        }
+        return RESERVATION + "/" + reservationDao.save(new Reservation(schedule, new Member(userDetails)));
     }
 
     @Transactional(readOnly = true)
@@ -156,11 +160,10 @@ public class ReservationService {
         return reservation.getStatus().equals(status);
     }
 
-    private void validateDuplicationReservation(Schedule schedule) {
+    private Boolean isReservationAlreadyExist(Schedule schedule) {
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
-            throw new DuplicateReservationException();
-        }
+
+        return !reservation.isEmpty();
     }
 
     private boolean reservationOwner(UserDetails userDetails, Reservation reservation) {
