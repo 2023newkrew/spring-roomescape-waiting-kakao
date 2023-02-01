@@ -23,7 +23,11 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.rest-assured:rest-assured:3.3.0'
 
+    compileOnly 'org.projectlombok:lombok'
+
     runtimeOnly 'com.h2database:h2'
+
+    annotationProcessor 'org.projectlombok:lombok'
 }
 test {
     useJUnitPlatform()
