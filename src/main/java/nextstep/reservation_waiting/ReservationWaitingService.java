@@ -22,10 +22,10 @@ public class ReservationWaitingService {
     private final MemberDao memberDao;
 
     public Long create(Reservation reservation, Member member) {
-        if (reservationWaitingDao.findByMemberId(member.getId())
-                .isPresent()) {
-            throw new DuplicateReservationWaitingException();
-        }
+        reservationWaitingDao.findByMemberId(member.getId())
+                .ifPresent(reservationWaiting -> {
+                    throw new DuplicateReservationWaitingException();
+                });
         return reservationWaitingDao.save(reservation, member);
     }
 
@@ -34,7 +34,7 @@ public class ReservationWaitingService {
                 .orElseThrow(NonExistReservationWaitingException::new);
     }
 
-    public Optional<ReservationWaiting> findByScheduleId(Long scheduleId) {
+    public Optional<ReservationWaiting> findFirstByScheduleId(Long scheduleId) {
         return reservationWaitingDao.findAllByScheduleId(scheduleId)
                 .stream()
                 .findFirst();
@@ -73,7 +73,7 @@ public class ReservationWaitingService {
     }
 
     public void confirm(Reservation reservation) {
-        findByScheduleId(reservation.getSchedule()
+        findFirstByScheduleId(reservation.getSchedule()
                 .getId())
                 .map(reservationWaiting -> {
                     delete(reservationWaiting.getId());
