@@ -2,12 +2,17 @@ package roomescape.nextstep.schedule;
 
 import roomescape.nextstep.theme.Theme;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class ScheduleRequest {
+    @PositiveOrZero
     private Long themeId;
+    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}")
     private String date;
+    @Pattern(regexp = "\\d{2}:\\d{2}")
     private String time;
 
     public ScheduleRequest() {

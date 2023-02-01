@@ -1,12 +1,13 @@
 package roomescape.nextstep.reservation;
 
-import roomescape.auth.AuthenticationException;
-import roomescape.auth.LoginMember;
-import roomescape.auth.UserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.auth.AuthenticationException;
+import roomescape.auth.LoginMember;
+import roomescape.auth.UserDetails;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -20,21 +21,24 @@ public class ReservationController {
     }
 
     @PostMapping({"/reservations", "/reservations-waitings"})
-    public ResponseEntity createReservation(@LoginMember UserDetails member, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity createReservation(@LoginMember UserDetails member, @Valid @RequestBody ReservationRequest reservationRequest) {
         if (member == null) {
             throw new AuthenticationException();
         }
         Reservation reservation = reservationService.create(member.getUsername(), reservationRequest);
         if (reservation.getStatus() == ReservationStatus.CONFIRMED) {
-            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).build();
+            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
+                    .build();
         }
-        return ResponseEntity.created(URI.create("/reservations-waitings/" + reservation.getId())).build();
+        return ResponseEntity.created(URI.create("/reservations-waitings/" + reservation.getId()))
+                .build();
     }
 
     @GetMapping("/reservations")
     public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findFilteredReservationsByThemeIdAndDate(themeId, date, ReservationStatus.CONFIRMED);
-        return ResponseEntity.ok().body(results);
+        return ResponseEntity.ok()
+                .body(results);
     }
 
     @DeleteMapping("/reservations/{id}")
@@ -43,7 +47,8 @@ public class ReservationController {
             throw new AuthenticationException();
         }
         reservationService.deleteById(member.getUsername(), id, ReservationStatus.CONFIRMED);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 
     @GetMapping("/reservations/mine")
@@ -72,17 +77,20 @@ public class ReservationController {
             throw new AuthenticationException();
         }
         reservationService.deleteById(member.getUsername(), id, ReservationStatus.WAITING);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         e.printStackTrace();
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+                .build();
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .build();
     }
 }

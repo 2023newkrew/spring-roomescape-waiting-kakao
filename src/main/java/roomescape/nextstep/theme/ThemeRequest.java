@@ -1,8 +1,14 @@
 package roomescape.nextstep.theme;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
+
 public class ThemeRequest {
+    @NotBlank
     private String name;
+    @NotBlank
     private String desc;
+    @PositiveOrZero
     private int price;
 
     public ThemeRequest(String name, String desc, int price) {

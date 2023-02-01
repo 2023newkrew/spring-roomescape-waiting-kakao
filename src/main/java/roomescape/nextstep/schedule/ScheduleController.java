@@ -3,6 +3,7 @@ package roomescape.nextstep.schedule;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -15,20 +16,23 @@ public class ScheduleController {
     }
 
     @PostMapping("/admin/schedules")
-    public ResponseEntity createSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+    public ResponseEntity createSchedule(@Valid @RequestBody ScheduleRequest scheduleRequest) {
         Long id = scheduleService.create(scheduleRequest);
-        return ResponseEntity.created(URI.create("/schedules/" + id)).build();
+        return ResponseEntity.created(URI.create("/schedules/" + id))
+                .build();
     }
 
     @GetMapping("/schedules")
     public ResponseEntity<List<Schedule>> showReservations(@RequestParam Long themeId, @RequestParam String date) {
-        return ResponseEntity.ok().body(scheduleService.findByThemeIdAndDate(themeId, date));
+        return ResponseEntity.ok()
+                .body(scheduleService.findByThemeIdAndDate(themeId, date));
     }
 
     @DeleteMapping("/admin/schedules/{id}")
     public ResponseEntity deleteReservation(@PathVariable Long id) {
         scheduleService.deleteById(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 }

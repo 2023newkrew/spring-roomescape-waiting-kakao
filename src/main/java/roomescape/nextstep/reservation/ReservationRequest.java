@@ -1,6 +1,9 @@
 package roomescape.nextstep.reservation;
 
+import javax.validation.constraints.PositiveOrZero;
+
 public class ReservationRequest {
+    @PositiveOrZero
     private Long scheduleId;
 
     public ReservationRequest() {

@@ -1,10 +1,11 @@
 package roomescape.nextstep.member;
 
-import roomescape.auth.LoginMember;
-import roomescape.auth.UserDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.auth.LoginMember;
+import roomescape.auth.UserDetails;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -17,9 +18,10 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
+    public ResponseEntity createMember(@Valid @RequestBody MemberRequest memberRequest) {
         Long id = memberService.create(memberRequest);
-        return ResponseEntity.created(URI.create("/members/" + id)).build();
+        return ResponseEntity.created(URI.create("/members/" + id))
+                .build();
     }
 
     @GetMapping("/me")
