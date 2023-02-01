@@ -1,19 +1,20 @@
 package roomescape.nextstep.reservation;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.AuthenticationException;
 import roomescape.nextstep.member.Member;
 import roomescape.nextstep.member.MemberDao;
 import roomescape.nextstep.schedule.Schedule;
 import roomescape.nextstep.schedule.ScheduleDao;
-import roomescape.nextstep.support.DuplicateEntityException;
 import roomescape.nextstep.theme.Theme;
 import roomescape.nextstep.theme.ThemeDao;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
     public final ReservationDao reservationDao;
     public final ThemeDao themeDao;
@@ -27,6 +28,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
+    @Transactional
     public Reservation create(String username, ReservationRequest reservationRequest) {
         Member member = memberDao.findByUsername(username);
         ReservationStatus status = ReservationStatus.CONFIRMED;
@@ -63,10 +65,12 @@ public class ReservationService {
 
     public List<Reservation> findFilteredReservationsByThemeIdAndDate(Long themeId, String date, ReservationStatus status) {
         return findAllByThemeIdAndDate(themeId, date).stream()
-                .filter(e -> e.getStatus().equals(status))
+                .filter(e -> e.getStatus()
+                        .equals(status))
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteById(String username, Long id, ReservationStatus status) {
         Reservation reservation = reservationDao.findById(id);
         Member member = memberDao.findByUsername(username);
@@ -82,14 +86,16 @@ public class ReservationService {
             throw new IllegalArgumentException();
         }
         reservationDao.deleteById(id);
-        reservationDao.updateLatestReservationToConfirmed(reservation.getSchedule().getId());
+        reservationDao.updateLatestReservationToConfirmed(reservation.getSchedule()
+                .getId());
     }
 
     public List<ReservationWaiting> findWaitingReservationsByUsername(String username) {
         return reservationDao.findAllByUsername(username)
                 .stream()
                 .filter(e -> e.getStatus() == ReservationStatus.WAITING)
-                .map(e -> new ReservationWaiting(e, reservationDao.getWaitingNumber(e.getSchedule().getId(), e.getId())))
+                .map(e -> new ReservationWaiting(e, reservationDao.getWaitingNumber(e.getSchedule()
+                        .getId(), e.getId())))
                 .collect(Collectors.toList());
     }
 
