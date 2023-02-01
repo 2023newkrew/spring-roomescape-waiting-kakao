@@ -14,6 +14,7 @@ import nextstep.waitingreservation.WaitingReservationDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public class ReservationService {
 
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new NoSuchElementException("No such schedule exist.");
         }
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
@@ -63,7 +64,7 @@ public class ReservationService {
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
-            throw new NullPointerException();
+            throw new NoSuchElementException("No such theme exist.");
         }
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date)
@@ -82,7 +83,7 @@ public class ReservationService {
     public void deleteById(UserDetails userDetails, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
-            throw new NullPointerException();
+            throw new NoSuchElementException("No such reservation exist.");
         }
         if (!reservation.sameMember(userDetails)) {
             throw new AuthenticationException();

@@ -11,6 +11,7 @@ import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +37,7 @@ public class WaitingReservationService {
 
         Schedule schedule = scheduleDao.findById(waitingReservationRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new NoSuchElementException("No such schedule exist.");
         }
 
         if (reservationDao.findByScheduleId(waitingReservationRequest.getScheduleId()).isEmpty()) {
@@ -63,7 +64,8 @@ public class WaitingReservationService {
     }
 
     public void deleteById(UserDetails userDetails, Long id) {
-        WaitingReservation waitingReservation = waitingReservationDao.findById(id).orElseThrow(NullPointerException::new);
+        WaitingReservation waitingReservation = waitingReservationDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No such waiting reservation exist."));
         if (!waitingReservation.sameMember(userDetails)) {
             throw new AuthenticationException();
         }
