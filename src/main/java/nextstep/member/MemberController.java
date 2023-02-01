@@ -22,7 +22,7 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity me(@LoginUser Member member) {
+    public ResponseEntity me(@LoginUser LoginMember member) {
         return ResponseEntity.ok(member);
     }
 }

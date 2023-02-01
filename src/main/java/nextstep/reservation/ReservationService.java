@@ -1,7 +1,7 @@
 package nextstep.reservation;
 
 import auth.exception.ForbiddenException;
-import nextstep.member.Member;
+import nextstep.member.LoginMember;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
@@ -27,7 +27,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Reservation create(Member member, ReservationRequest reservationRequest) {
+    public Reservation create(LoginMember member, ReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
             throw new NullPointerException();
@@ -40,7 +40,7 @@ public class ReservationService {
 
         Reservation newReservation = new Reservation(
                 schedule,
-                member
+                member.toEntity()
         );
 
         return reservationDao.save(newReservation);
@@ -63,13 +63,13 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Member member, Long id) {
+    public void deleteById(LoginMember member, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
             throw new NullPointerException();
         }
 
-        if (!reservation.sameMember(member)) {
+        if (!reservation.sameMember(member.toEntity())) {
             throw new ForbiddenException();
         }
 

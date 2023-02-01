@@ -1,7 +1,7 @@
 package nextstep.waiting;
 
 import auth.exception.ForbiddenException;
-import nextstep.member.Member;
+import nextstep.member.LoginMember;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
@@ -24,7 +24,7 @@ public class WaitingService {
         this.scheduleDao = scheduleDao;
     }
 
-    public CreateWaitingResponse create(Member member, CreateWaitingRequest createWaitingRequest) {
+    public CreateWaitingResponse create(LoginMember member, CreateWaitingRequest createWaitingRequest) {
         Schedule schedule = scheduleDao.findById(createWaitingRequest.getScheduleId());
         if (schedule == null) {
             throw new NullPointerException();
@@ -32,11 +32,11 @@ public class WaitingService {
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (reservation.isEmpty()) {
-            Reservation savedReservation = reservationDao.save(new Reservation(schedule, member));
+            Reservation savedReservation = reservationDao.save(new Reservation(schedule, member.toEntity()));
             return CreateWaitingResponse.fromReservation(savedReservation);
         }
 
-        Waiting savedWaiting = waitingDao.save(new Waiting(schedule, member));
+        Waiting savedWaiting = waitingDao.save(new Waiting(schedule, member.toEntity()));
         return CreateWaitingResponse.fromWaiting(savedWaiting);
     }
 
@@ -48,9 +48,9 @@ public class WaitingService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteById(Member member, Long id) {
+    public void deleteById(LoginMember member, Long id) {
         Waiting waiting = waitingDao.findById(id);
-        if (!waiting.sameMember(member)) {
+        if (!waiting.sameMember(member.toEntity())) {
             throw new ForbiddenException();
         }
 

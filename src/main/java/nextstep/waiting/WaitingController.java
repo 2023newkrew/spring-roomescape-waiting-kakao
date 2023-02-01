@@ -1,7 +1,7 @@
 package nextstep.waiting;
 
 import auth.argumentresolver.LoginUser;
-import nextstep.member.Member;
+import nextstep.member.LoginMember;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ public class WaitingController {
     }
 
     @PostMapping("/reservation-waitings")
-    public ResponseEntity<Void> createWaiting(@LoginUser Member member, @RequestBody CreateWaitingRequest createWaitingRequest) {
+    public ResponseEntity<Void> createWaiting(@LoginUser LoginMember member, @RequestBody CreateWaitingRequest createWaitingRequest) {
         CreateWaitingResponse response = waitingService.create(member, createWaitingRequest);
         return ResponseEntity.created(URI.create(
                         (response.isReservedDirectly() ? RESERVATION_LOCATION_PREFIX : WAITING_LOCATION_PREFIX) + response.getId()))
@@ -28,13 +28,13 @@ public class WaitingController {
     }
 
     @GetMapping("/reservation-waitings/mine")
-    public ResponseEntity<List<MyWaitingResponse>> myWaitings(@LoginUser Member member) {
+    public ResponseEntity<List<MyWaitingResponse>> myWaitings(@LoginUser LoginMember member) {
         List<MyWaitingResponse> response = waitingService.findAllWaitingsByMemberId(member.getId());
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/reservation-waitings/{id}")
-    public ResponseEntity<Void> deleteWaiting(@LoginUser Member member, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteWaiting(@LoginUser LoginMember member, @PathVariable Long id) {
         waitingService.deleteById(member, id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

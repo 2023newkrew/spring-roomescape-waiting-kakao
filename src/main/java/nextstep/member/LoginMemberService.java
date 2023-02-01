@@ -14,11 +14,13 @@ public class LoginMemberService implements UserDetailsService {
 
     @Override
     public UserDetails findByUsername(String username) {
-        return memberDao.findByUsername(username);
+        Member member = memberDao.findByUsername(username);
+        return LoginMember.fromMember(member);
     }
 
     @Override
     public UserDetails findById(Long id) {
-        return memberDao.findById(id);
+        Member member = memberDao.findById(id);
+        return LoginMember.fromMember(member);
     }
 }
