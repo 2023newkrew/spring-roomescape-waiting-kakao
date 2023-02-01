@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static roomwaiting.nextstep.reservation.ReservationStatus.NOT_APPROVED;
 import static roomwaiting.support.Messages.*;
 
 @Service
@@ -42,7 +43,8 @@ public class ReservationService {
         });
         Reservation newReservation = new Reservation(
                 schedule,
-                member
+                member,
+                NOT_APPROVED
         );
         return reservationDao.save(newReservation);
     }

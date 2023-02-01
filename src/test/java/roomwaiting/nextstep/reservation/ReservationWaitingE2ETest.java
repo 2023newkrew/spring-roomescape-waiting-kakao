@@ -276,7 +276,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         String token3 = jwtTokenProvider.createToken(String.valueOf(member3.getId()), member3.getRole());
 
         ExtractableResponse<Response> reservation = createReservationWaiting(token1);
-        Assertions.assertThat(reservation.header("Location").split("/")[1]).isEqualTo("reservations"); // not reserved
+        Assertions.assertThat(reservation.header("Location").split("/")[1]).isEqualTo("reservation"); // not reserved
 
         // waiting 1,2 reserved
         ExtractableResponse<Response> reservationWaiting1 = createReservationWaiting(token2);

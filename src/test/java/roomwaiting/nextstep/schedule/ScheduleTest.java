@@ -7,6 +7,7 @@ import roomwaiting.nextstep.RoomEscapeApplication;
 import roomwaiting.AcceptanceTestExecutionListener;
 import roomwaiting.nextstep.member.Member;
 import roomwaiting.nextstep.member.MemberService;
+import roomwaiting.nextstep.reservation.ReservationStatus;
 import roomwaiting.nextstep.reservation.dao.ReservationDao;
 import roomwaiting.nextstep.reservation.domain.Reservation;
 import roomwaiting.nextstep.theme.Theme;
@@ -150,7 +151,8 @@ public class ScheduleTest extends AbstractE2ETest {
                         LocalDate.parse("2022-08-11"),
                         LocalTime.parse("13:00")
                 ),
-                member
+                member,
+                ReservationStatus.APPROVED
         );
         reservationDao.save(reservation);
         String adminLocation = "/admin" + location;

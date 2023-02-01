@@ -1,5 +1,6 @@
 package roomwaiting.nextstep.dbmapper;
 import roomwaiting.nextstep.member.Member;
+import roomwaiting.nextstep.reservation.ReservationStatus;
 import roomwaiting.nextstep.reservation.domain.Reservation;
 import roomwaiting.nextstep.reservation.domain.ReservationWaiting;
 import roomwaiting.nextstep.schedule.Schedule;
@@ -40,7 +41,8 @@ public class H2Mapper implements DatabaseMapper {
                         resultSet.getString("name"),
                         resultSet.getString("phone"),
                         resultSet.getString("role")
-                )
+                ),
+                ReservationStatus.valueOf(resultSet.getString("status"))
         );
     }
 
