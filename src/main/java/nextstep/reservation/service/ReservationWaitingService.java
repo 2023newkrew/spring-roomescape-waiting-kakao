@@ -43,8 +43,7 @@ public class ReservationWaitingService {
         if (isDuplicated) {
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION_WAITING);
         }
-        long waitNum = reservationWaitingList.isEmpty() ? 1
-                : reservationWaitingList.get(reservationWaitingList.size() - 1).getWaitingNum() + 1;
+        long waitNum = reservationWaitingList.stream().mapToLong(ReservationWaiting::getWaitingNum).max().orElse(0) + 1;
         return reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
     }
 

@@ -11,6 +11,7 @@ import nextstep.reservation.dao.ReservationWaitingDao;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.reservation.dto.ReservationRequest;
+import nextstep.revenue.RevenueDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.Theme;
@@ -23,13 +24,15 @@ public class ReservationService {
     private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
     private final ReservationWaitingDao reservationWaitingDao;
+    private final RevenueDao revenueDao;
 
     public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao,
-                              ReservationWaitingDao reservationWaitingDao) {
+                              ReservationWaitingDao reservationWaitingDao, RevenueDao revenueDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.reservationWaitingDao = reservationWaitingDao;
+        this.revenueDao = revenueDao;
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
@@ -40,9 +43,8 @@ public class ReservationService {
         if (schedule == null) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
-
-        List<Reservation> reservation = reservationDao.findValidByScheduleId(schedule.getId());
-        reservation.forEach(reservation1 -> System.out.println(reservation1.getStatus()));
+        List<Reservation> reservation = reservationDao.findAllByScheduleId(schedule.getId());
+        reservation.forEach(reservation1 -> System.out.println("DFASDFASDFA : " + reservation1.getStatus()));
         if (!reservation.isEmpty()) {
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION);
         }
@@ -89,6 +91,7 @@ public class ReservationService {
     public void approveReservation(Member member, Long id) {
         Reservation reservation = getReservation(id);
         reservation.approve();
+        revenueDao.save(reservation.getRevenue());
         reservationDao.save(reservation);
     }
 
@@ -105,6 +108,7 @@ public class ReservationService {
     public void refuseReservation(Member member, Long id) {
         Reservation reservation = getReservation(id);
         reservation.refuse();
+        revenueDao.save(reservation.getRevenue());
         reservationDao.save(reservation);
     }
 
@@ -112,6 +116,7 @@ public class ReservationService {
     public void approveCancelOfReservation(Member member, Long id) {
         Reservation reservation = getReservation(id);
         reservation.approveCancel();
+        revenueDao.save(reservation.getRevenue());
         reservationDao.save(reservation);
     }
 

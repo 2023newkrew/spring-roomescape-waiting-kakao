@@ -4,25 +4,28 @@ import java.util.Objects;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
+import nextstep.revenue.Revenue;
 import nextstep.schedule.Schedule;
 
 public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
+    private Revenue revenue;
     private ReservationStatus status;
 
     public Reservation() {
     }
 
     public Reservation(Schedule schedule, Member member) {
-        this(null, schedule, member, ReservationStatus.UNAPPROVED);
+        this(null, schedule, member, null, ReservationStatus.UNAPPROVED);
     }
 
-    public Reservation(Long id, Schedule schedule, Member member, ReservationStatus status) {
+    public Reservation(Long id, Schedule schedule, Member member, Revenue revenue, ReservationStatus status) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+        this.revenue = revenue;
         this.status = status;
     }
 
@@ -36,6 +39,10 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    public Revenue getRevenue() {
+        return revenue;
     }
 
     public ReservationStatus getStatus() {
@@ -52,7 +59,10 @@ public class Reservation {
         checkWaitingCancel();
         checkRefused();
         status = ReservationStatus.APPROVED;
-        // TODO 매출 기록
+        if (Objects.nonNull(revenue)) {
+            throw new RoomReservationException(ErrorCode.DUPLICATED_REVENUE);
+        }
+        revenue = new Revenue(schedule.getTheme().getPrice());
     }
 
     public void cancel() {
@@ -75,7 +85,10 @@ public class Reservation {
             return;
         }
         status = ReservationStatus.REFUSED;
-        // TODO 매출 기록 변경
+        if (Objects.isNull(revenue)) {
+            throw new RoomReservationException(ErrorCode.REVENUE_NOT_FOUND);
+        }
+        revenue.refund();
     }
 
     public void approveCancel() {
@@ -86,7 +99,10 @@ public class Reservation {
             throw new RoomReservationException(ErrorCode.RESERVATION_CANT_BE_CANCELLED);
         }
         status = ReservationStatus.CANCELLED;
-        // TODO 예약금 환불 이력 추가
+        if (Objects.isNull(revenue)) {
+            throw new RoomReservationException(ErrorCode.REVENUE_NOT_FOUND);
+        }
+        revenue.refund();
     }
 
     private void checkApproved() {

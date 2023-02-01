@@ -4,6 +4,15 @@ CREATE TABLE reservation
     schedule_id bigint not null,
     member_id   bigint not null,
     status      varchar(20) not null,
+    revenue_id  bigint default null,
+    primary key (id)
+);
+
+create table revenue
+(
+    id      bigint  not null    auto_increment,
+    amount  integer not null,
+    status  varchar(20) not null,
     primary key (id)
 );
 

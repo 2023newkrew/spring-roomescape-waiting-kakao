@@ -11,6 +11,8 @@ import nextstep.member.Member;
 import nextstep.member.Role;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationStatus;
+import nextstep.revenue.Revenue;
+import nextstep.revenue.RevenueStatus;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,11 +28,13 @@ public class ReservationDao {
             "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, " +
             "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
             "theme.id, theme.name, theme.desc, theme.price, " +
-            "member.id, member.username, member.password, member.name, member.phone, member.role " +
+            "member.id, member.username, member.password, member.name, member.phone, member.role, " +
+            "revenue.id, revenue.amount, revenue.status " +
             "from reservation " +
             "inner join schedule on reservation.schedule_id = schedule.id " +
             "inner join theme on schedule.theme_id = theme.id " +
-            "inner join member on reservation.member_id = member.id ";
+            "inner join member on reservation.member_id = member.id " +
+            "left outer join revenue on reservation.revenue_id = revenue.id ";
     private final JdbcTemplate jdbcTemplate;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
@@ -58,6 +62,12 @@ public class ReservationDao {
                     resultSet.getString("member.phone"),
                     Role.valueOf(resultSet.getString("member.role"))
             ),
+            resultSet.getLong("revenue.id") == 0 ? null :
+            new Revenue(
+                    resultSet.getLong("revenue.id"),
+                    resultSet.getInt("revenue.amount"),
+                    RevenueStatus.valueOf(resultSet.getString("revenue.status"))
+            ),
             ReservationStatus.valueOf(resultSet.getString("reservation.status"))
     );
 
@@ -69,25 +79,30 @@ public class ReservationDao {
     }
 
     public Long create(Reservation reservation) {
-        String sql = "INSERT INTO reservation (schedule_id, member_id, status) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO reservation (schedule_id, member_id, revenue_id, status) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, reservation.getSchedule().getId());
             ps.setLong(2, reservation.getMember().getId());
-            ps.setString(3, reservation.getStatus().toString());
+            ps.setObject(3, Objects.isNull(reservation.getRevenue()) ? null : reservation.getRevenue().getId());
+            ps.setString(4, reservation.getStatus().toString());
             return ps;
-
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
     }
 
     public Long update(Reservation reservation) {
-        String sql = "UPDATE SET status = ? WHERE id = ?;";
+        String sql = "UPDATE SET status = ?, revenue_id = ? WHERE id = ?;";
 
-        int updatedCount = jdbcTemplate.update(sql, reservation.getStatus(), reservation.getId());
+        int updatedCount = jdbcTemplate.update(
+                sql,
+                reservation.getStatus().toString(),
+                Objects.isNull(reservation.getRevenue()) ? null : reservation.getRevenue().getId(),
+                reservation.getId()
+        );
         if (updatedCount != 1) {
             throw new RoomReservationException(ErrorCode.RECORD_NOT_UPDATED);
         }

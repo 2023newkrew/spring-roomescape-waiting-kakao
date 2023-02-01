@@ -42,7 +42,12 @@ public enum ErrorCode {
 
     // 테마 에러
     THEME_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 ID의 테마가 존재하지 않습니다."),
-    THEME_CANT_BE_DELETED(HttpStatus.BAD_REQUEST, "테마 삭제 전 스케줄이 먼저 삭제되어야 합니다.");
+    THEME_CANT_BE_DELETED(HttpStatus.BAD_REQUEST, "테마 삭제 전 스케줄이 먼저 삭제되어야 합니다."),
+
+    // 매출 에러
+    REVENUE_ALREADY_REFUND(HttpStatus.INTERNAL_SERVER_ERROR, "이미 환불된 매출 이력입니다. 관리자에게 문의해 주세요."),
+    DUPLICATED_REVENUE(HttpStatus.INTERNAL_SERVER_ERROR, "중복된 매출 이력입니다. 관리자에게 문의해 주세요."),
+    REVENUE_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "매출 이력이 존재하지 않습니다. 관리자에게 문의해 주세요.");
 
     private final HttpStatus status;
     private final String message;
