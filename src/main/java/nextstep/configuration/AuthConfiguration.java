@@ -4,7 +4,6 @@ import auth.AuthenticationProvider;
 import auth.JwtTokenProvider;
 import auth.LoginController;
 import auth.LoginService;
-import nextstep.member.MemberDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
