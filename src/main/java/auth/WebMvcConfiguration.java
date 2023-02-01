@@ -1,15 +1,16 @@
 package auth;
 
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsService<?> userDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public WebMvcConfiguration(UserDetailsService userDetailsService, JwtTokenProvider jwtTokenProvider) {
+    public WebMvcConfiguration(UserDetailsService<?> userDetailsService, JwtTokenProvider jwtTokenProvider) {
         this.userDetailsService = userDetailsService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -20,7 +21,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     @Override
-    public void addArgumentResolvers(List argumentResolvers) {
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new LoginMemberArgumentResolver(userDetailsService));
     }
 }

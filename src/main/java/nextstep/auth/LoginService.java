@@ -6,7 +6,7 @@ import nextstep.member.MemberDao;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LoginService implements UserDetailsService {
+public class LoginService implements UserDetailsService<Member> {
 
     private final MemberDao memberDao;
     private final JwtTokenProvider jwtTokenProvider;
@@ -26,11 +26,6 @@ public class LoginService implements UserDetailsService {
         String accessToken = jwtTokenProvider.createToken(member.getId() + "", member.getRole());
 
         return new TokenResponse(accessToken);
-    }
-
-    @Override
-    public Long extractPrincipal(String credential) {
-        return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
     @Override

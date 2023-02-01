@@ -8,9 +8,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsService<?> userDetailsService;
 
-    public LoginMemberArgumentResolver(UserDetailsService userDetailsService) {
+    public LoginMemberArgumentResolver(UserDetailsService<?> userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
