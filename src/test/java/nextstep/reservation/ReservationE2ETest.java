@@ -164,7 +164,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("다른 사람이 예약을삭제한다")
+    @DisplayName("다른 사람이 예약을 삭제한다")
     @Test
     void deleteReservationOfOthers() {
         createReservation();
@@ -177,6 +177,19 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @DisplayName("관리자가 예약을 승인한다.")
+    @Test
+    void approveReservation() {
+        var reservation = createReservation();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch(reservation.header("Location") + "/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
     }
 
     private ExtractableResponse<Response> createReservation() {
