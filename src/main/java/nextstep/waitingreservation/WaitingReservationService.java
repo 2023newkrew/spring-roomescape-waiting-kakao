@@ -63,15 +63,10 @@ public class WaitingReservationService {
     }
 
     public void deleteById(UserDetails userDetails, Long id) {
-        WaitingReservation waitingReservation = waitingReservationDao.findById(id);
-        if (waitingReservation == null) {
-            throw new NullPointerException();
-        }
-
+        WaitingReservation waitingReservation = waitingReservationDao.findById(id).orElseThrow(NullPointerException::new);
         if (!waitingReservation.sameMember(userDetails)) {
             throw new AuthenticationException();
         }
-
         waitingReservationDao.deleteById(id);
         waitingReservationDao.adjustWaitNumByScheduleIdAndBaseNum(
                 waitingReservation.getSchedule().getId(),

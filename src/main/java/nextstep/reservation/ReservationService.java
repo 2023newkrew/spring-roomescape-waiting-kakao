@@ -14,6 +14,7 @@ import nextstep.waitingreservation.WaitingReservationDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,18 +88,18 @@ public class ReservationService {
             throw new AuthenticationException();
         }
         reservationDao.deleteById(id);
-        moveOneFromWaitByScheduleId(reservation.getSchedule().getId());
+
+        Optional<WaitingReservation> firstWaitingReservation = waitingReservationDao.findByScheduleIdAndWaitNum(
+                reservation.getSchedule().getId(),
+                LOWEST_WAIT_NUM
+        );
+        firstWaitingReservation.ifPresent(this::moveWaitingReservationToReservation);
     }
 
-    private void moveOneFromWaitByScheduleId(Long scheduleId) {
-        WaitingReservation firstWaitingReservation = waitingReservationDao
-                .findByScheduleIdAndWaitNum(scheduleId, LOWEST_WAIT_NUM);
-
-        if (firstWaitingReservation == null) return;
-
-        waitingReservationDao.deleteById(firstWaitingReservation.getId());
-        waitingReservationDao.adjustWaitNumByScheduleIdAndBaseNum(scheduleId, LOWEST_WAIT_NUM);
-        Reservation reservation = new Reservation(firstWaitingReservation.getSchedule(), firstWaitingReservation.getMember());
+    private void moveWaitingReservationToReservation(WaitingReservation waitingReservation) {
+        waitingReservationDao.deleteById(waitingReservation.getId());
+        waitingReservationDao.adjustWaitNumByScheduleIdAndBaseNum(waitingReservation.getSchedule().getId(), LOWEST_WAIT_NUM);
+        Reservation reservation = new Reservation(waitingReservation.getSchedule(), waitingReservation.getMember());
         reservationDao.save(reservation);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class WaitingReservationDao {
@@ -72,23 +73,23 @@ public class WaitingReservationDao {
         return keyHolder.getKey().longValue();
     }
 
-    public WaitingReservation findById(Long id) {
+    public Optional<WaitingReservation> findById(Long id) {
         String sql = DEFAULT_SELECT_FROM_SQL +
                 "where waiting_reservation.id = ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (Exception e) {
-            return null;
+            return Optional.empty();
         }
     }
 
-    public WaitingReservation findByScheduleIdAndWaitNum(Long scheduleId, Long waitNum) {
+    public Optional<WaitingReservation> findByScheduleIdAndWaitNum(Long scheduleId, Long waitNum) {
         String sql = DEFAULT_SELECT_FROM_SQL +
                 "where schedule.id = ? and waiting_reservation.wait_num = ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, scheduleId, waitNum);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, scheduleId, waitNum));
         } catch (Exception e) {
-            return null;
+            return Optional.empty();
         }
     }
 
