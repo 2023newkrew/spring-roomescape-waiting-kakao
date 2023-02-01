@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import roomescape.entity.Reservation;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -33,6 +34,9 @@ public class ReservationControllerGetResponse {
 
     @NotBlank
     private String name;
+
+    @NotNull
+    private Reservation.Status status;
 
     @JsonProperty("theme_id")
     @NotBlank

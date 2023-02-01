@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import auth.annotation.Admin;
 import auth.annotation.JWTMemberId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,41 @@ public class ReservationController {
                              .build();
     }
 
+    @Admin
+    @PatchMapping(value = "/{id}/approve", produces = "application/json;charset=utf-8")
+    public ResponseEntity<Void> approve(@PathVariable Long id) {
+        service.approve(id);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
+
+    @PatchMapping(value = "/{id}/cancel", produces = "application/json;charset=utf-8")
+    public ResponseEntity<Void> cancel(@JWTMemberId Long memberId, @PathVariable Long id) {
+        service.cancel(memberId, id);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
+
+    @Admin
+    @PatchMapping(value = "/{id}/disapprove", produces = "application/json;charset=utf-8")
+    public ResponseEntity<Void> disapprove(@PathVariable Long id) {
+        service.disapprove(id);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
+
+    @Admin
+    @PatchMapping(value = "/{id}/cancel-accept", produces = "application/json;charset=utf-8")
+    public ResponseEntity<Void> cancelAccept(@PathVariable Long id) {
+        service.cancelAccept(id);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
+
     @GetMapping(value = "/{id}", produces = "application/json;charset=utf-8")
     public ResponseEntity<ReservationControllerGetResponse> findReservation(@PathVariable Long id) {
         var reservation = service.findReservation(id);
@@ -37,6 +73,7 @@ public class ReservationController {
                                      reservation.getDate(),
                                      reservation.getTime(),
                                      reservation.getName(),
+                                     reservation.getStatus(),
                                      reservation.getTheme().getId(),
                                      reservation.getTheme().getName(),
                                      reservation.getTheme().getDesc(),

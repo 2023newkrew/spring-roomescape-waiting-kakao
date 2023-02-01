@@ -8,9 +8,12 @@ import roomescape.controller.dto.ReservationsControllerPostBody;
 import roomescape.entity.Reservation;
 import roomescape.exception.ServiceException;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.SalesRepository;
 import roomescape.repository.WaitingRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +22,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final WaitingRepository waitingRepository;
+    private final SalesRepository salesRepository;
 
     public long createReservation(long callerId, ReservationsControllerPostBody body) {
         var id = reservationRepository.insert(body.getName(), body.getDate(), body.getTime(), body.getThemeId(), callerId);
@@ -35,6 +39,80 @@ public class ReservationService {
             throw new ServiceException(ErrorCode.UNKNOWN_RESERVATION_ID);
         }
         return reservation.get();
+    }
+
+    public void approve(Long id) {
+        var reservation = reservationRepository.selectById(id);
+        if (reservation.isEmpty()) {
+            throw new ServiceException(ErrorCode.UNKNOWN_RESERVATION_ID);
+        }
+        switch (reservation.get().getStatus()) {
+            case Approved -> {
+            }
+            case Unapproved -> {
+                reservationRepository.updateStatus(id, Reservation.Status.Approved);
+                salesRepository.insert(
+                        String.format("%d 예약이 승인됨", id),
+                        BigDecimal.valueOf(reservation.get().getTheme().getPrice()),
+                        Optional.of(id)
+                );
+            }
+            default -> throw new ServiceException(ErrorCode.IMPOSSIBLE_CANCEL);
+        }
+    }
+
+    public void cancel(Long memberId, Long id) {
+        var reservation = reservationRepository.selectById(id);
+        if (reservation.isEmpty()) {
+            throw new ServiceException(ErrorCode.UNKNOWN_RESERVATION_ID);
+        }
+        if (!reservation.get().getMemberId().equals(memberId)) {
+            throw new ServiceException(ErrorCode.UNAUTHORIZED_RESERVATION);
+        }
+        switch (reservation.get().getStatus()) {
+            case Approved -> reservationRepository.updateStatus(id, Reservation.Status.CancelRequested);
+            case Unapproved -> reservationRepository.updateStatus(id, Reservation.Status.Canceled);
+            case CancelRequested, Canceled -> {
+            }
+            default -> throw new ServiceException(ErrorCode.IMPOSSIBLE_CANCEL);
+        }
+    }
+
+    public void disapprove(Long id) {
+        var reservation = reservationRepository.selectById(id);
+        if (reservation.isEmpty()) {
+            throw new ServiceException(ErrorCode.UNKNOWN_RESERVATION_ID);
+        }
+        switch (reservation.get().getStatus()) {
+            case Approved -> {
+                reservationRepository.updateStatus(id, Reservation.Status.Disapprove);
+                salesRepository.insert(
+                        String.format("%d 예약이 승인된 후 거부됨", id),
+                        BigDecimal.valueOf(reservation.get().getTheme().getPrice()).negate(),
+                        Optional.of(id)
+                );
+            }
+            case Unapproved -> reservationRepository.updateStatus(id, Reservation.Status.Disapprove);
+            default -> throw new ServiceException(ErrorCode.IMPOSSIBLE_DISAPPROVE);
+        }
+    }
+
+    public void cancelAccept(Long id) {
+        var reservation = reservationRepository.selectById(id);
+        if (reservation.isEmpty()) {
+            throw new ServiceException(ErrorCode.UNKNOWN_RESERVATION_ID);
+        }
+        switch (reservation.get().getStatus()) {
+            case CancelRequested -> {
+                reservationRepository.updateStatus(id, Reservation.Status.Canceled);
+                salesRepository.insert(
+                        String.format("%d 예약이 승인된 후 취소요구됨, 관리자 권한으로 취소를 허가함.", id),
+                        BigDecimal.valueOf(reservation.get().getTheme().getPrice()).negate(),
+                        Optional.of(id)
+                );
+            }
+            default -> throw new ServiceException(ErrorCode.IMPOSSIBLE_CANCEL_ACCEPT);
+        }
     }
 
     @Transactional(readOnly = true)
