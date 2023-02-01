@@ -25,7 +25,8 @@ public class ReservationService {
         if (member == null) {
             throw new AuthenticationException();
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(NonExistScheduleException::new);
         if (schedule == null) {
             throw new NullPointerException();
         }

@@ -15,6 +15,7 @@ public enum ErrorCode {
     NON_EXIST_MEMBER(HttpStatus.UNAUTHORIZED, "존재하지 않는 회원 정보입니다."),
     NON_EXIST_RESERVATION(HttpStatus.BAD_REQUEST, "존재하지 않는 예약입니다."),
     NON_EXIST_RESERVATION_WAITING(HttpStatus.BAD_REQUEST, "존재하지 않는 예약 대기입니다."),
+    NON_EXIST_SCHEDULE(HttpStatus.BAD_REQUEST, "존재하지 않는 스케줄입니다."),
     NOT_OWN_RESERVATION_WAITING(HttpStatus.FORBIDDEN, "자신의 예약 대기가 아닙니다.");
     private final HttpStatus status;
     private final String message;
