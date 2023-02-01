@@ -55,7 +55,10 @@ public class ScheduleDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "where schedule.id = ?;";
 
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return jdbcTemplate.query(sql, rowMapper, id)
+                .stream()
+                .findAny()
+                .orElse(null);
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
@@ -70,5 +73,4 @@ public class ScheduleDao {
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM schedule where id = ?;", id);
     }
-
 }

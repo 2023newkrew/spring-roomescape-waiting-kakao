@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import auth.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
 import nextstep.theme.ThemeRequest;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import static nextstep.member.MemberE2ETest.createAdminMemberAndIssueToken;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScheduleE2ETest extends AbstractE2ETest {
@@ -90,5 +92,20 @@ public class ScheduleE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
                 .header("Location");
+    }
+
+    public static Long createSchedule(ScheduleRequest scheduleRequest) {
+        TokenResponse tokenResponse = createAdminMemberAndIssueToken();
+        var scheduleResponse = RestAssured
+                .given().log().all()
+                .auth().oauth2(tokenResponse.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(scheduleRequest)
+                .when().post("/admin/schedules")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+        String[] scheduleLocation = scheduleResponse.header("Location").split("/");
+        return Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
     }
 }
