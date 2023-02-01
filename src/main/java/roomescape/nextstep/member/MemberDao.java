@@ -1,21 +1,19 @@
 package roomescape.nextstep.member;
 
-import roomescape.auth.UserDetailsDao;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import roomescape.auth.UserDetailsDao;
 
 import java.sql.PreparedStatement;
 
 @Component
+@RequiredArgsConstructor
 public class MemberDao implements UserDetailsDao {
     public final JdbcTemplate jdbcTemplate;
-
-    public MemberDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     private final RowMapper<Member> rowMapper = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
@@ -41,7 +39,8 @@ public class MemberDao implements UserDetailsDao {
 
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return keyHolder.getKey()
+                .longValue();
     }
 
     public Member findById(Long id) {

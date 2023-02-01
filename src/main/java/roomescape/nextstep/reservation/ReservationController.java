@@ -1,5 +1,6 @@
 package roomescape.nextstep.reservation;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +13,10 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ReservationController {
 
     public final ReservationService reservationService;
-
-    public ReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
 
     @PostMapping({"/reservations", "/reservations-waitings"})
     public ResponseEntity createReservation(@LoginMember UserDetails member, @Valid @RequestBody ReservationRequest reservationRequest) {

@@ -1,5 +1,6 @@
 package roomescape.nextstep.theme;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -7,12 +8,9 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ThemeService {
-    private ThemeDao themeDao;
-
-    public ThemeService(ThemeDao themeDao) {
-        this.themeDao = themeDao;
-    }
+    private final ThemeDao themeDao;
 
     @Transactional
     public Long create(ThemeRequest themeRequest) {

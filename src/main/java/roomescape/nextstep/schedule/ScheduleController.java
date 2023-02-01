@@ -1,5 +1,6 @@
 package roomescape.nextstep.schedule;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,12 +9,9 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ScheduleController {
-    private ScheduleService scheduleService;
-
-    public ScheduleController(ScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
-    }
+    private final ScheduleService scheduleService;
 
     @PostMapping("/admin/schedules")
     public ResponseEntity createSchedule(@Valid @RequestBody ScheduleRequest scheduleRequest) {

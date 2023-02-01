@@ -1,28 +1,25 @@
 package roomescape.nextstep.reservation;
 
-import roomescape.nextstep.member.Member;
-import roomescape.nextstep.schedule.Schedule;
-import roomescape.nextstep.theme.Theme;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import roomescape.nextstep.member.Member;
+import roomescape.nextstep.schedule.Schedule;
+import roomescape.nextstep.theme.Theme;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ReservationDao {
 
     public final JdbcTemplate jdbcTemplate;
-
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation.id"),
@@ -34,8 +31,10 @@ public class ReservationDao {
                             resultSet.getString("theme.desc"),
                             resultSet.getInt("theme.price")
                     ),
-                    resultSet.getDate("schedule.date").toLocalDate(),
-                    resultSet.getTime("schedule.time").toLocalTime()
+                    resultSet.getDate("schedule.date")
+                            .toLocalDate(),
+                    resultSet.getTime("schedule.time")
+                            .toLocalTime()
             ),
             new Member(
                     resultSet.getLong("member.id"),
@@ -54,14 +53,18 @@ public class ReservationDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, reservation.getSchedule().getId());
-            ps.setLong(2, reservation.getMember().getId());
-            ps.setString(3, reservation.getStatus().name());
+            ps.setLong(1, reservation.getSchedule()
+                    .getId());
+            ps.setLong(2, reservation.getMember()
+                    .getId());
+            ps.setString(3, reservation.getStatus()
+                    .name());
             return ps;
 
         }, keyHolder);
 
-        return Reservation.of(keyHolder.getKey().longValue(), reservation);
+        return Reservation.of(keyHolder.getKey()
+                .longValue(), reservation);
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
@@ -125,7 +128,7 @@ public class ReservationDao {
         String sql = "UPDATE reservation SET status = 'CONFIRMED' WHERE id = (SELECT min(id) FROM reservation WHERE schedule_id = ?);";
         try {
             jdbcTemplate.update(sql, scheduleId);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

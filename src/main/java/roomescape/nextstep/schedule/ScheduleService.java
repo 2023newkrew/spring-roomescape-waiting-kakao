@@ -1,5 +1,6 @@
 package roomescape.nextstep.schedule;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.nextstep.theme.Theme;
@@ -9,14 +10,10 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ScheduleService {
-    private ScheduleDao scheduleDao;
-    private ThemeDao themeDao;
-
-    public ScheduleService(ScheduleDao scheduleDao, ThemeDao themeDao) {
-        this.scheduleDao = scheduleDao;
-        this.themeDao = themeDao;
-    }
+    private final ScheduleDao scheduleDao;
+    private final ThemeDao themeDao;
 
     @Transactional
     public Long create(ScheduleRequest scheduleRequest) {
