@@ -21,38 +21,38 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<Void> createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
         Long id = reservationService.create(userDetails, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<List<ReservationResponse>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<ReservationResponse> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
 
     @GetMapping("/reservations/mine")
-    public ResponseEntity getMyReservations(@LoginMember UserDetails userDetails) {
+    public ResponseEntity<List<ReservationResponse>> getMyReservations(@LoginMember UserDetails userDetails) {
         List<ReservationResponse> myReservations = reservationService.findMyReservations(userDetails);
         return ResponseEntity.ok(myReservations);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
         reservationService.deleteById(userDetails, id);
 
         return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
+    public ResponseEntity<Void> onException(Exception e) {
         e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
+    public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

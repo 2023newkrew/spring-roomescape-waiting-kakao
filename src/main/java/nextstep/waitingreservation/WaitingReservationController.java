@@ -20,31 +20,31 @@ public class WaitingReservationController {
     }
 
     @PostMapping()
-    public ResponseEntity createWaiting(@LoginMember UserDetails userDetails, @RequestBody WaitingReservationRequest waitingReservationRequest) {
+    public ResponseEntity<Void> createWaiting(@LoginMember UserDetails userDetails, @RequestBody WaitingReservationRequest waitingReservationRequest) {
         Long id = waitingReservationService.create(userDetails, waitingReservationRequest);
         return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
     @GetMapping("/mine")
-    public ResponseEntity getMyReservationWaitings(@LoginMember UserDetails userDetails) {
+    public ResponseEntity<List<WaitingReservationResponse>> getMyReservationWaitings(@LoginMember UserDetails userDetails) {
         List<WaitingReservationResponse> myWaitingReservations = waitingReservationService.findMyWaitingReservations(userDetails);
         return ResponseEntity.ok(myWaitingReservations);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
         waitingReservationService.deleteById(userDetails, id);
         return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
+    public ResponseEntity<Void> onException(Exception e) {
         e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
+    public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
