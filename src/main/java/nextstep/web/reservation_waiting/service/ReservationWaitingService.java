@@ -52,9 +52,13 @@ public class ReservationWaitingService {
     }
 
     public List<ReservationWaitingResponse> readMine(Member member) {
-        return reservationWaitingDao.findAllByMember(member).stream()
+        List<ReservationWaitingResponse> reservationWaitings = reservationWaitingDao.findAllByMember(member).stream()
                 .map(ReservationWaitingResponse::fromDomain)
                 .collect(Collectors.toList());
+        if (reservationWaitings.isEmpty()) {
+            throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
+        }
+        return reservationWaitings;
     }
 
     public void deleteById(Member member, Long id) {

@@ -74,6 +74,10 @@ public class ReservationService {
     }
 
     public List<Reservation> findAllByMember(Member member) {
-        return reservationDao.findAllByMember(member);
+        List<Reservation> reservations = reservationDao.findAllByMember(member);
+        if (reservations.isEmpty()) {
+            throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
+        }
+        return reservations;
     }
 }
