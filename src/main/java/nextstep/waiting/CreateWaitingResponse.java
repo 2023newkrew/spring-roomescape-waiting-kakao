@@ -3,42 +3,27 @@ package nextstep.waiting;
 import nextstep.reservation.Reservation;
 
 public class CreateWaitingResponse {
-    private final Waiting waiting;
-    private final Reservation reservation;
+    private final boolean isReservedDirectly;
+    private final Long id;
 
-    private CreateWaitingResponse(Waiting waiting, Reservation reservation) {
-        this.waiting = waiting;
-        this.reservation = reservation;
-    }
-
-    public static CreateWaitingResponse fromWaiting(Waiting waiting) {
-        return new CreateWaitingResponse(waiting, null);
+    private CreateWaitingResponse(boolean isReservedDirectly, Long id) {
+        this.isReservedDirectly = isReservedDirectly;
+        this.id = id;
     }
 
     public static CreateWaitingResponse fromReservation(Reservation reservation) {
-        return new CreateWaitingResponse(null, reservation);
+        return new CreateWaitingResponse(true, reservation.getId());
+    }
+
+    public static CreateWaitingResponse fromWaiting(Waiting waiting) {
+        return new CreateWaitingResponse(false, waiting.getId());
     }
 
     public boolean isReservedDirectly() {
-        return this.reservation != null;
+        return isReservedDirectly;
     }
 
     public Long getId() {
-        if (this.reservation != null) {
-            return reservation.getId();
-        }
-        if (this.waiting != null) {
-            return waiting.getId();
-        }
-        return null;
-    }
-
-
-    public Waiting getWaiting() {
-        return this.waiting;
-    }
-
-    public Reservation getReservation() {
-        return this.reservation;
+        return id;
     }
 }
