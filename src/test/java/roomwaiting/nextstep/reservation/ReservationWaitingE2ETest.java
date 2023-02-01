@@ -7,11 +7,16 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import roomwaiting.auth.token.JwtTokenProvider;
 import roomwaiting.nextstep.RoomEscapeApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestExecutionListeners;
 import roomwaiting.AcceptanceTestExecutionListener;
 import roomwaiting.nextstep.AbstractE2ETest;
+import roomwaiting.nextstep.member.Member;
 import roomwaiting.nextstep.reservation.domain.Reservation;
 import roomwaiting.nextstep.reservation.domain.ReservationWaiting;
 import roomwaiting.nextstep.reservation.dto.ReservationRequest;
@@ -33,6 +38,12 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     private ReservationRequest request;
     private Long themeId;
     private Long scheduleId;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     public void setUp() {
@@ -100,14 +111,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         createReservation();
 
         // when
-        RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservation-waitings")
-                .then().log().all()
-                .extract();
+        createReservationWaiting(token.getAccessToken());
 
         // then
         var responseReserve = RestAssured
@@ -140,35 +144,9 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         createReservation();
 
         // when
-        RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservation-waitings")
-                .then().log().all()
-                .extract();
-        RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().delete("/reservation-waitings/1")
-                .then().log().all()
-                .extract();
+        createReservationWaiting(token.getAccessToken());
 
-        // then
-        var responseReserve = RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .auth().oauth2(token.getAccessToken())
-                .param("themeId", themeId)
-                .param("date", DATE)
-                .when().get("/reservations")
-                .then().log().all()
-                .extract();
-        List<Reservation> reservations = responseReserve.jsonPath().getList(".", Reservation.class);
-        assertThat(reservations.size()).isEqualTo(1);
-
-        var responseWaiting = RestAssured
+        var responseWaitingPre = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .auth().oauth2(token.getAccessToken())
@@ -177,8 +155,27 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .when().get("/reservation-waitings/mine")
                 .then().log().all()
                 .extract();
-        List<ReservationWaiting> waitingList = responseWaiting.jsonPath().getList(".", ReservationWaiting.class);
-        assertThat(waitingList.size()).isEqualTo(0);
+        List<ReservationWaiting> waitingListPre = responseWaitingPre.jsonPath().getList(".", ReservationWaiting.class);
+        assertThat(waitingListPre.size()).isEqualTo(1);
+        // then
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete("/reservation-waitings/" + waitingListPre.get(0).getId())
+                .then().log().all()
+                .extract();
+
+        var responseWaitingPost = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(token.getAccessToken())
+                .param("themeId", themeId)
+                .param("date", DATE)
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+        List<ReservationWaiting> waitingListPost = responseWaitingPost.jsonPath().getList(".", ReservationWaiting.class);
+        assertThat(waitingListPost.size()).isEqualTo(0);
     }
 
     @Test
@@ -244,7 +241,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     }
 
     @Test
-    @DisplayName("로그인을 하지 예약 상태로 예약 삭제를 할 수 없다")
+    @DisplayName("로그인을 하지 않은 상태로 예약 삭제를 할 수 없다")
     void deleteWaitingWIthNoneAuthority(){
         // given
         createReservation();
@@ -252,6 +249,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
         RestAssured
                 .given().log().all()
                 .body(request)
+                .auth().oauth2(token.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
                 .then().log().all()
@@ -265,14 +263,60 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .extract();
     }
 
+    @DisplayName("waitNum은 초기에는 1을 제공하고, 이후에는 최대값+1 값을 제공한다")
+    @Test
+    void waitingNumberTest(){
+        Member member1 = saveMember(jdbcTemplate, "USER1", "PASS1", "ADMIN");
+        String token1 = jwtTokenProvider.createToken(String.valueOf(member1.getId()), member1.getRole());
+        Member member2 = saveMember(jdbcTemplate, "USER2", "PASS1", "ADMIN");
+        String token2 = jwtTokenProvider.createToken(String.valueOf(member2.getId()), member2.getRole());
+        Member member3 = saveMember(jdbcTemplate, "USER3", "PASS1", "ADMIN");
+        String token3 = jwtTokenProvider.createToken(String.valueOf(member3.getId()), member3.getRole());
+
+        ExtractableResponse<Response> reservation = createReservationWaiting(token1);
+        Assertions.assertThat(reservation.header("Location").split("/")[1]).isEqualTo("reservation"); // not reserved
+
+        // waiting 1,2 reserved
+        ExtractableResponse<Response> reservationWaiting1 = createReservationWaiting(token2);
+        Assertions.assertThat(reservationWaiting1.header("Location").split("/")[1]).isEqualTo("reservation-waitings");
+        Assertions.assertThat(reservationWaiting1.header("Location").split("/")[2]).isEqualTo("1"); // init 1
+        createReservationWaiting(token3); // 2
+
+        // when delete 1
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete("/reservation-waitings/" + reservationWaiting1.header("Location").split("/")[2])
+                .then().log().all()
+                .extract();
+
+        Member member4 = saveMember(jdbcTemplate, "USER4", "PASS1", "ADMIN");
+        String token4 = jwtTokenProvider.createToken(String.valueOf(member4.getId()), member4.getRole());
+        ExtractableResponse<Response> reservationWaiting3 = createReservationWaiting(token4);
+        Assertions.assertThat(reservationWaiting3.header("Location").split("/")[2]).isEqualTo("3"); // max + 1
+    }
+
+
+
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()
-                .body(request)
+                .auth().oauth2(token.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
     }
 
+    private ExtractableResponse<Response> createReservationWaiting(String accessToken){
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+    }
 }

@@ -31,16 +31,20 @@ public class ReservationWaitingService {
         this.reservationService = reservationService;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
+    public String create(Member member, ReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId()).orElseThrow(() ->
                 new NullPointerException(SCHEDULE_NOT_FOUND.getMessage() + ID + reservationRequest.getScheduleId()));
         Optional<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (reservation.isEmpty()) {
-            reservationService.create(member, reservationRequest);
+            return "/reservation/" + reservationService.create(member, reservationRequest);
         }
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
-        long waitNum = reservationWaitingList.isEmpty() ? 1 : reservationWaitingList.get(reservationWaitingList.size() - 1).getWaitingNum() + 1;
-        return reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
+        long waitNum = reservationWaitingList
+                .stream()
+                .mapToLong(ReservationWaiting::getWaitingNum)
+                .max()
+                .orElse(1) + 1;
+        return "/reservation-waitings/" + reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
     }
 
     public List<ReservationWaiting> lookUp(Member member) {

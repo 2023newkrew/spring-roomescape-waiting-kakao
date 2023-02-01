@@ -29,8 +29,7 @@ public class ReservationWaitingController {
 
     @PostMapping
     public ResponseEntity<String> create(@LoginMember UserDetails member, @RequestBody ReservationRequest reservationRequest) {
-        String waitingReservation = "/reservation-waitings/" +
-                                    reservationWaitingService.create(new Member(member), reservationRequest);
+        String waitingReservation = reservationWaitingService.create(new Member(member), reservationRequest);
         return ResponseEntity.created(URI.create(waitingReservation)).body("Location: " + waitingReservation);
     }
 

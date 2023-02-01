@@ -18,16 +18,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReservationWaitingDao {
 
-    private static final String SELECT_SQL = "SELECT " +
-            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
-            "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-            "theme.id, theme.name, theme.description, theme.price, " +
-            "member.id, member.username, member.password, member.name, member.phone, member.role " +
-            "from reservation_waiting " +
-            "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
-            "inner join theme on schedule.theme_id = theme.id " +
-            "inner join member on reservation_waiting.member_id = member.id ";
-
     public final JdbcTemplate jdbcTemplate;
     private final DatabaseMapper databaseMapper;
 
@@ -70,14 +60,12 @@ public class ReservationWaitingDao {
     }
 
     public List<ReservationWaiting> findByScheduleId(Long id) {
-        String sql = SELECT_SQL +
-                "where schedule.id = ?;";
+        String sql = SELECT_SQL + "where schedule.id = ?;";
         return jdbcTemplate.query(sql, databaseMapper.reservationWaitingRowMapper(), id);
     }
 
     public List<ReservationWaiting> findByMemberId(Long id) {
-        String sql = SELECT_SQL +
-                "where member.id = ?;";
+        String sql = SELECT_SQL + "where member.id = ?;";
         return jdbcTemplate.query(sql, databaseMapper.reservationWaitingRowMapper(), id);
     }
 
@@ -85,4 +73,14 @@ public class ReservationWaitingDao {
         String sql = "DELETE FROM reservation_waiting where id = ?;";
         jdbcTemplate.update(sql, id);
     }
+
+    private final String SELECT_SQL = "SELECT " +
+            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
+            "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+            "theme.id, theme.name, theme.description, theme.price, " +
+            "member.id, member.username, member.password, member.name, member.phone, member.role " +
+            "from reservation_waiting " +
+            "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
+            "inner join theme on schedule.theme_id = theme.id " +
+            "inner join member on reservation_waiting.member_id = member.id ";
 }
