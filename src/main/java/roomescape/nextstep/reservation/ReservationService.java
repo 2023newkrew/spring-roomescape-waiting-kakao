@@ -28,43 +28,28 @@ public class ReservationService {
     @Transactional
     public Reservation create(String username, ReservationRequest reservationRequest) {
         Member member = memberDao.findByUsername(username);
-        ReservationStatus status = ReservationStatus.CONFIRMED;
         if (member == null) {
             throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
         }
+
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
             throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
         }
 
+        ReservationStatus status = ReservationStatus.CONFIRMED;
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
             status = ReservationStatus.WAITING;
         }
 
-        Reservation newReservation = new Reservation(
-                schedule,
-                member,
-                status
-        );
+        Reservation newReservation = Reservation.builder()
+                .schedule(schedule)
+                .member(member)
+                .status(status)
+                .build();
 
         return reservationDao.save(newReservation);
-    }
-
-    private List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
-        }
-
-        return reservationDao.findAllByThemeIdAndDate(themeId, date);
-    }
-
-    public List<Reservation> findFilteredReservationsByThemeIdAndDate(Long themeId, String date, ReservationStatus status) {
-        return findAllByThemeIdAndDate(themeId, date).stream()
-                .filter(e -> e.getStatus()
-                        .equals(status))
-                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -86,6 +71,23 @@ public class ReservationService {
         reservationDao.updateLatestReservationToConfirmed(reservation.getSchedule()
                 .getId());
     }
+
+    private List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+        Theme theme = themeDao.findById(themeId);
+        if (theme == null) {
+            throw new BusinessException(CommonErrorCode.NOT_EXIST_ENTITY);
+        }
+
+        return reservationDao.findAllByThemeIdAndDate(themeId, date);
+    }
+
+    public List<Reservation> findReservationsByThemeIdAndDateAndStatus(Long themeId, String date, ReservationStatus status) {
+        return findAllByThemeIdAndDate(themeId, date).stream()
+                .filter(e -> e.getStatus()
+                        .equals(status))
+                .collect(Collectors.toList());
+    }
+
 
     public List<ReservationWaiting> findWaitingReservationsByUsername(String username) {
         return reservationDao.findAllByUsername(username)

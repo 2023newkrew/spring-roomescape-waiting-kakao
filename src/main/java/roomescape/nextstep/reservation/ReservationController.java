@@ -3,7 +3,6 @@ package roomescape.nextstep.reservation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.auth.AuthenticationException;
 import roomescape.auth.LoginMember;
 import roomescape.auth.UserDetails;
 
@@ -19,9 +18,6 @@ public class ReservationController {
 
     @PostMapping({"/reservations", "/reservations-waitings"})
     public ResponseEntity<Reservation> createReservation(@LoginMember UserDetails member, @Valid @RequestBody ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         Reservation reservation = reservationService.create(member.getUsername(), reservationRequest);
         if (reservation.getStatus() == ReservationStatus.CONFIRMED) {
             return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
@@ -33,16 +29,13 @@ public class ReservationController {
 
     @GetMapping("/reservations")
     public ResponseEntity<List<Reservation>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
-        List<Reservation> results = reservationService.findFilteredReservationsByThemeIdAndDate(themeId, date, ReservationStatus.CONFIRMED);
+        List<Reservation> results = reservationService.findReservationsByThemeIdAndDateAndStatus(themeId, date, ReservationStatus.CONFIRMED);
         return ResponseEntity.ok()
                 .body(results);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@LoginMember UserDetails member, @PathVariable Long id) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         reservationService.deleteById(member.getUsername(), id, ReservationStatus.CONFIRMED);
         return ResponseEntity.noContent()
                 .build();
@@ -50,9 +43,6 @@ public class ReservationController {
 
     @GetMapping("/reservations/mine")
     public ResponseEntity<List<Reservation>> findMyReservations(@LoginMember UserDetails member) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         return ResponseEntity.ok(
                 reservationService.findReservationsByUsername(member.getUsername())
         );
@@ -60,9 +50,6 @@ public class ReservationController {
 
     @GetMapping("/reservations-waitings/mine")
     public ResponseEntity<List<ReservationWaiting>> findMyReservationsWaitings(@LoginMember UserDetails member) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         return ResponseEntity.ok(
                 reservationService.findWaitingReservationsByUsername(member.getUsername())
         );
@@ -70,9 +57,6 @@ public class ReservationController {
 
     @DeleteMapping("/reservations-waitings/{id}")
     public ResponseEntity<Void> deleteReservationWaitings(@LoginMember UserDetails member, @PathVariable Long id) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         reservationService.deleteById(member.getUsername(), id, ReservationStatus.WAITING);
         return ResponseEntity.noContent()
                 .build();
