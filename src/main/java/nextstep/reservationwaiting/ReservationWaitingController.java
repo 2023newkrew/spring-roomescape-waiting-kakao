@@ -4,13 +4,14 @@ import auth.config.LoginMember;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.exception.CanMakeReservationException;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationService;
-import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservationwaiting.dto.ReservationWaitingRequest;
 import nextstep.reservationwaiting.dto.ReservationWaitingResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,9 +39,8 @@ public class ReservationWaitingController {
             Long id = reservationWaitingService.create(member, reservationWaitingRequest);
             return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
         }
+        throw new CanMakeReservationException(member, reservationWaitingRequest);
 
-        Long id = reservationService.create(member, new ReservationRequest(reservationWaitingRequest.getScheduleId()));
-        return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping("mine")
@@ -55,4 +55,11 @@ public class ReservationWaitingController {
         reservationWaitingService.deleteById(member, id);
         return ResponseEntity.noContent().build();
     }
+
+    @ExceptionHandler(CanMakeReservationException.class)
+    public ResponseEntity<Void> onCanMakeReservationException(CanMakeReservationException e) {
+        Long id = reservationService.create(e.getMember(), e.getRequest());
+        return ResponseEntity.created(URI.create("/reservations/" + id)).build();
+    }
+
 }

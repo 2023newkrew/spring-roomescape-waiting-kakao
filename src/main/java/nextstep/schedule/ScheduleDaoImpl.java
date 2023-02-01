@@ -56,8 +56,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
 
     @Override
     public Schedule findById(Long id) {
-
-        return jdbcTemplate.queryForObject(SELECT_BY_ID_STATEMENT, rowMapper, id);
+        return jdbcTemplate.query(SELECT_BY_ID_STATEMENT, rowMapper, id).stream().findFirst().orElse(null);
     }
 
     @Override
