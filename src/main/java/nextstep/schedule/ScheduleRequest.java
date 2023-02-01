@@ -8,7 +8,6 @@ import nextstep.theme.Theme;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 public class ScheduleRequest {
