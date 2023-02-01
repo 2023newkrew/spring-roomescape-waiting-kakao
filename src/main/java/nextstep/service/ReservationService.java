@@ -44,14 +44,14 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
         findThemeById(themeId);
-        return reservationDao.findAllByThemeIdAndDate(themeId, date);
+        return reservationDao.findAllByThemeIdAndDate(themeId, date).stream().map(ReservationResponse::new).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> findAllByUserId(Long id) {
-        return reservationDao.findAllByUserId(id).stream().map(ReservationResponse::new).collect(Collectors.toList());
+    public List<ReservationResponse> findAllByUserId(Long userId) {
+        return reservationDao.findAllByUserId(userId).stream().map(ReservationResponse::new).collect(Collectors.toList());
     }
 
     @Transactional
