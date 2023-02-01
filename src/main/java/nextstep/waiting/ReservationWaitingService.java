@@ -36,26 +36,16 @@ public class ReservationWaitingService {
         Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId())
                 .orElseThrow(() -> new NotExistEntityException(ErrorCode.SCHEDULE_NOT_FOUND));
 
-        List<Reservation> reservations = reservationWaitingDao.findByScheduleId(schedule.getId())
-                .stream()
-                .map(ReservationWaiting::getReservation)
-                .collect(Collectors.toList());
+        List<Reservation> reservationAndWaitings = getReservationAndWaitings(schedule.getId());
 
-        reservations.addAll(reservationDao.findByScheduleId(schedule.getId()));
+        if (hasDuplicateReservationOrWaitings(reservationAndWaitings, member)) {
+            throw new DuplicateEntityException(ErrorCode.DUPLICATE_RESERVATION);
+        }
 
-        reservations.stream()
-                .filter(v -> v.checkMemberIsOwner(member))
-                .findAny()
-                .ifPresent(v -> {
-                    throw new DuplicateEntityException(ErrorCode.DUPLICATE_RESERVATION);
-                });
-
-        Long waitingSeq = (long) reservations.size();
+        Long waitingSeq = (long) reservationAndWaitings.size();
 
         ReservationWaiting newReservationWaiting = new ReservationWaiting(
-                new Reservation(
-                        schedule,
-                        member),
+                new Reservation(schedule, member),
                 waitingSeq
         );
 
@@ -75,14 +65,32 @@ public class ReservationWaitingService {
         }
 
         reservationWaitingDao.deleteById(id);
+
         updateWaitingSeq(reservationWaiting.getScheduleId(), reservationWaiting.getWaitingSeq());
     }
 
-    private void updateWaitingSeq(Long scheduleId, Long seq) {
+    private List<Reservation> getReservationAndWaitings(Long scheduleId) {
+        List<Reservation> reservationAndWaitings =
+                reservationWaitingDao.findByScheduleId(scheduleId)
+                        .stream()
+                        .map(ReservationWaiting::getReservation)
+                        .collect(Collectors.toList());
+
+        reservationAndWaitings.addAll(reservationDao.findByScheduleId(scheduleId));
+
+        return reservationAndWaitings;
+    }
+
+    private boolean hasDuplicateReservationOrWaitings(List<Reservation> reservationAndWaitings, Member member) {
+        return reservationAndWaitings.stream()
+                .anyMatch(reservation -> reservation.checkMemberIsOwner(member));
+    }
+
+    private void updateWaitingSeq(Long scheduleId, Long waitingSeq) {
         List<ReservationWaiting> reservationWaitings = reservationWaitingDao.findByScheduleId(scheduleId);
 
         reservationWaitings = reservationWaitings.stream()
-                .filter(v -> v.getWaitingSeq() > seq)
+                .filter(v -> v.getWaitingSeq() > waitingSeq)
                 .collect(Collectors.toList());
 
         reservationWaitings.forEach(ReservationWaiting::decreaseWaitingSeq);
