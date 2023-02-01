@@ -35,8 +35,8 @@ public class ReservationService {
         Schedule schedule = scheduleDao.findById(scheduleId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.SCHEDULE_NOT_FOUND));
 
-        List<Reservation> reservation = reservationDao.findAllByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
+        List<Reservation> reservations = reservationDao.findAllByScheduleId(schedule.getId());
+        if (!reservations.isEmpty()) {
             throw new BusinessException(BusinessErrorCode.RESERVATION_ALREADY_EXIST_AT_THAT_TIME);
         }
 
