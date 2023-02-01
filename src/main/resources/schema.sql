@@ -1,3 +1,11 @@
+CREATE TABLE sales
+(
+    id bigint not null auto_increment,
+    reservation_id bigint not null,
+    refunded boolean not null,
+    primary key (id)
+);
+
 CREATE TABLE reservation_waiting
 (
     id bigint not null auto_increment,
