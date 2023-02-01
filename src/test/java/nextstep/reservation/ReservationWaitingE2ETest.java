@@ -258,7 +258,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     }
 
     @Test
-    @DisplayName("로그인을 하지 예약 상태로 예약 삭제를 할 수 없다")
+    @DisplayName("로그인을 하지 않은 상태로 예약 삭제를 할 수 없다")
     void deleteWaitingWIthNoneAuthority() {
         // given
         createReservation();

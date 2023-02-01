@@ -1,12 +1,14 @@
 package nextstep.reservation.service;
 
 import java.util.List;
+import java.util.Objects;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
-import nextstep.member.MemberDao;
 import nextstep.reservation.dao.ReservationDao;
+import nextstep.reservation.dao.ReservationWaitingDao;
 import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
@@ -16,17 +18,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    private final ReservationDao reservationDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final ReservationWaitingDao reservationWaitingDao;
 
     public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao,
-                              MemberDao memberDao) {
+                              ReservationWaitingDao reservationWaitingDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
+        this.reservationWaitingDao = reservationWaitingDao;
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
@@ -68,8 +70,16 @@ public class ReservationService {
         if (!reservation.sameMember(member)) {
             throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
         }
-
         reservationDao.deleteById(id);
+        ReservationWaiting reservationWaiting = reservationWaitingDao
+                .findFirstByScheduleId(
+                        reservation.getSchedule().getId()
+                );
+        if (Objects.isNull(reservationWaiting)) {
+            return;
+        }
+        reservationWaitingDao.deleteById(reservationWaiting.getId());
+        reservationDao.save(reservationWaiting.convertToReservation());
     }
 
     public List<Reservation> lookUp(Member member) {

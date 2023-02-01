@@ -43,4 +43,8 @@ public class ReservationWaiting {
     public boolean isMine(Member member) {
         return Objects.equals(member.getId(), this.member.getId());
     }
+
+    public Reservation convertToReservation() {
+        return new Reservation(schedule, member);
+    }
 }

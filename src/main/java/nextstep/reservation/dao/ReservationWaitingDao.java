@@ -9,6 +9,7 @@ import nextstep.member.Role;
 import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -86,7 +87,7 @@ public class ReservationWaitingDao {
                 "where reservation_waiting.id = ?;";
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
@@ -105,6 +106,16 @@ public class ReservationWaitingDao {
         String sql = SELECT_SQL +
                 "where member.id = ?;";
         return jdbcTemplate.query(sql, rowMapper, id);
+    }
+
+    public ReservationWaiting findFirstByScheduleId(Long id) {
+        String sql = SELECT_SQL +
+                "where schedule.id = ? limit 1;";
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public void deleteById(Long id) {

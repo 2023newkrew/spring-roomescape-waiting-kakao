@@ -13,8 +13,7 @@ public class Reservation {
     }
 
     public Reservation(Schedule schedule, Member member) {
-        this.schedule = schedule;
-        this.member = member;
+        this(null, schedule, member);
     }
 
     public Reservation(Long id, Schedule schedule, Member member) {
