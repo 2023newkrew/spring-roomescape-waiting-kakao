@@ -11,6 +11,7 @@ import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ScheduleService {
@@ -27,15 +28,18 @@ public class ScheduleService {
         this.reservationWaitingDao = reservationWaitingDao;
     }
 
+    @Transactional
     public Long create(ScheduleRequest scheduleRequest) {
         Theme theme = themeDao.findById(scheduleRequest.getThemeId());
         return scheduleDao.save(scheduleRequest.toEntity(theme));
     }
 
+    @Transactional(readOnly = true)
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
         return scheduleDao.findByThemeIdAndDate(themeId, date);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         Schedule schedule = scheduleDao.findById(id);
         if (Objects.isNull(schedule)) {

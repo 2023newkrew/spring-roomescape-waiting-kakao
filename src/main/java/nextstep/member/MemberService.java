@@ -1,6 +1,7 @@
 package nextstep.member;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
@@ -14,6 +15,7 @@ public class MemberService {
         return memberDao.save(memberRequest.toEntity());
     }
 
+    @Transactional(readOnly = true)
     public Member findById(Long id) {
         return memberDao.findById(id);
     }

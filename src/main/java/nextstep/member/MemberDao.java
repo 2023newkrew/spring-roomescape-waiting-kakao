@@ -1,7 +1,7 @@
 package nextstep.member;
 
-import auth.UserDetails;
-import auth.UserDetailsDao;
+import auth.domain.UserDetails;
+import auth.dao.UserDetailsDao;
 import java.sql.PreparedStatement;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

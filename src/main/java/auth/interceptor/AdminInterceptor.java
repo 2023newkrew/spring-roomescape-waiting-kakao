@@ -1,5 +1,7 @@
-package auth;
+package auth.interceptor;
 
+import auth.exception.AuthorizationException;
+import auth.support.JwtTokenProvider;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

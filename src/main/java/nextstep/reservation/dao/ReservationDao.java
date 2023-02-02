@@ -9,6 +9,7 @@ import nextstep.member.Role;
 import nextstep.reservation.domain.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -106,12 +107,7 @@ public class ReservationDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
                 "where schedule.id = ?;";
-
-        try {
-            return jdbcTemplate.query(sql, rowMapper, id);
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
+        return jdbcTemplate.query(sql, rowMapper, id);
     }
 
     public List<Reservation> findByMemberId(Long id) {

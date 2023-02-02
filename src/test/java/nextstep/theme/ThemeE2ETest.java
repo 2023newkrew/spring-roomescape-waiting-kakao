@@ -2,8 +2,8 @@ package nextstep.theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import auth.TokenRequest;
-import auth.TokenResponse;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
 import nextstep.member.MemberRequest;

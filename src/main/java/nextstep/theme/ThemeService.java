@@ -1,11 +1,13 @@
 package nextstep.theme;
 
 import java.util.List;
+import java.util.Objects;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ThemeService {
@@ -21,13 +23,15 @@ public class ThemeService {
         return themeDao.save(themeRequest.toEntity());
     }
 
+    @Transactional(readOnly = true)
     public List<Theme> findAll() {
         return themeDao.findAll();
     }
 
+    @Transactional
     public void delete(Long id) {
         Theme theme = themeDao.findById(id);
-        if (theme == null) {
+        if (Objects.isNull(theme)) {
             throw new RoomReservationException(ErrorCode.THEME_NOT_FOUND);
         }
         List<Schedule> schedules = scheduleDao.findByThemeId(id);

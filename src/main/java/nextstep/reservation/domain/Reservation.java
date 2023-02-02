@@ -35,6 +35,6 @@ public class Reservation {
     }
 
     public boolean sameMember(Member member) {
-        return member != null && Objects.equals(this.member.getId(), member.getId());
+        return Objects.nonNull(member) && Objects.equals(this.member.getId(), member.getId());
     }
 }

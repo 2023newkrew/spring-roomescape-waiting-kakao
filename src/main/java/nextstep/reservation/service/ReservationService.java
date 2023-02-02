@@ -15,6 +15,7 @@ import nextstep.schedule.ScheduleDao;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReservationService {
@@ -31,15 +32,15 @@ public class ReservationService {
         this.reservationWaitingDao = reservationWaitingDao;
     }
 
+    @Transactional
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
+        if (Objects.isNull(member)) {
             throw new RoomReservationException(ErrorCode.AUTHENTICATION_REQUIRED);
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
+        if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
-
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION);
@@ -53,18 +54,20 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
+        if (Objects.isNull(theme)) {
             throw new RoomReservationException(ErrorCode.THEME_NOT_FOUND);
         }
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
+    @Transactional
     public void deleteById(Member member, Long id) {
         Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
+        if (Objects.isNull(reservation)) {
             throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
         }
         if (!reservation.sameMember(member)) {
@@ -82,6 +85,7 @@ public class ReservationService {
         reservationDao.save(reservationWaiting.convertToReservation());
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> lookUp(Member member) {
         return reservationDao.findByMemberId(member.getId());
     }

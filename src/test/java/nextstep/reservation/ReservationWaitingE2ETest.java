@@ -137,6 +137,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
                 .extract();
 
         // then
@@ -283,6 +284,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()
+                .auth().oauth2(token.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")

@@ -1,4 +1,4 @@
-package auth;
+package auth.domain;
 
 import nextstep.member.Role;
 

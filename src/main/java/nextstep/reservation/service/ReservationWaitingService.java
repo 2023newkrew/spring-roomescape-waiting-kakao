@@ -13,30 +13,34 @@ import nextstep.reservation.dto.ReservationRequest;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReservationWaitingService {
     private final ReservationWaitingDao reservationWaitingDao;
     private final ReservationDao reservationDao;
     private final ScheduleDao scheduleDao;
-    private final ReservationService reservationService;
 
     public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ReservationDao reservationDao,
-                                     ScheduleDao scheduleDao, ReservationService reservationService) {
+                                     ScheduleDao scheduleDao) {
         this.reservationWaitingDao = reservationWaitingDao;
         this.reservationDao = reservationDao;
         this.scheduleDao = scheduleDao;
-        this.reservationService = reservationService;
     }
 
+    @Transactional
     public Long create(Member member, ReservationRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
         List<Reservation> reservationList = reservationDao.findByScheduleId(schedule.getId());
-        if (reservationList.size() == 0) {
-            reservationService.create(member, reservationRequest);
+        if (reservationList.isEmpty()) {
+            Reservation newReservation = new Reservation(
+                    schedule,
+                    member
+            );
+            return reservationDao.save(newReservation);
         }
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
         boolean isDuplicated = reservationWaitingList.stream().anyMatch(reservationWaiting -> reservationWaiting.isMine(member));
@@ -49,13 +53,15 @@ public class ReservationWaitingService {
     }
 
 
+    @Transactional(readOnly = true)
     public List<ReservationWaiting> lookUp(Member member) {
         return reservationWaitingDao.findByMemberId(member.getId());
     }
 
+    @Transactional
     public void delete(Member member, Long id) {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
-        if (reservationWaiting == null) {
+        if (Objects.isNull(reservationWaiting)) {
             throw new RoomReservationException(ErrorCode.RESERVATION_WAITING_NOT_FOUND);
         }
         if (!reservationWaiting.getMember().getId().equals(member.getId())) {

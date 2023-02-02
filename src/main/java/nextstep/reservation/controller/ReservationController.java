@@ -1,7 +1,7 @@
 package nextstep.reservation.controller;
 
-import auth.LoginMember;
-import auth.UserDetails;
+import auth.annotation.LoginMember;
+import auth.domain.UserDetails;
 import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
