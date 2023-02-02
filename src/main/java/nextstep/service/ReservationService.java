@@ -9,11 +9,9 @@ import nextstep.domain.enumeration.ReservationStatus;
 import nextstep.domain.persist.*;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
-import nextstep.repository.ThemeDao;
 import nextstep.repository.WaitingDao;
 import nextstep.support.exception.api.reservation.*;
 import nextstep.support.exception.api.schedule.NoSuchScheduleException;
-import nextstep.support.exception.api.theme.NoSuchThemeException;
 import nextstep.worker.ReservationApproveEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -23,6 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.domain.enumeration.ReservationStatus.*;
+import static nextstep.support.constant.ProfitSettings.*;
+import static nextstep.support.converter.UserDetailToMemberConverter.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +31,8 @@ public class ReservationService {
     private static final String ADMIN = "ADMIN";
     private static final String RESERVATION_WAITING = "reservation-waitings";
     private static final String RESERVATION = "resrvations";
+
     private final ReservationDao reservationDao;
-    private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
     private final WaitingDao waitingDao;
     private final ApplicationEventPublisher eventPublisher;
@@ -42,9 +42,9 @@ public class ReservationService {
         Schedule schedule = getSchedule(reservationRequest);
 
         if (isReservationAlreadyExist(schedule)) {
-            return RESERVATION_WAITING + "/" + waitingDao.save(new Waiting(schedule, new Member(userDetails)));
+            return RESERVATION_WAITING + "/" + waitingDao.save(new Waiting(schedule, convertUserDetailToMember(userDetails)));
         }
-        return RESERVATION + "/" + reservationDao.save(new Reservation(schedule, new Member(userDetails)));
+        return RESERVATION + "/" + reservationDao.save(new Reservation(schedule, convertUserDetailToMember(userDetails)));
     }
 
     @Transactional(readOnly = true)
@@ -78,7 +78,7 @@ public class ReservationService {
 
         reservationDao.updateStatusById(id, APPROVED.getStatus());
 
-        eventPublisher.publishEvent(new ReservationApproveEvent(true));
+        eventPublisher.publishEvent(new ReservationApproveEvent(Reserved));
     }
 
     @Transactional
@@ -106,7 +106,7 @@ public class ReservationService {
         Reservation reservation = findReservationById(id);
 
         if (statusEquals(reservation, APPROVED)) {
-            eventPublisher.publishEvent(new ReservationApproveEvent(false));
+            eventPublisher.publishEvent(new ReservationApproveEvent(Rejected));
         }
 
         reservationDao.updateStatusById(id, REJECTED.getStatus());
@@ -122,7 +122,7 @@ public class ReservationService {
 
         reservationDao.updateStatusById(id, CANCELED.getStatus());
 
-        eventPublisher.publishEvent(new ReservationApproveEvent(false));
+        eventPublisher.publishEvent(new ReservationApproveEvent(Canceled));
     }
 
     private boolean isAdmin(UserDetails userDetails) {
@@ -158,6 +158,6 @@ public class ReservationService {
     }
 
     private boolean reservationOwner(UserDetails userDetails, Reservation reservation) {
-        return reservation.sameMember(new Member(userDetails));
+        return reservation.sameMember(convertUserDetailToMember(userDetails));
     }
 }

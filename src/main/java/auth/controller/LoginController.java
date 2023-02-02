@@ -1,7 +1,7 @@
 package auth.controller;
 
-import auth.domain.dto.TokenRequest;
-import auth.domain.dto.TokenResponse;
+import auth.domain.dto.request.TokenRequest;
+import auth.domain.dto.response.TokenResponse;
 import auth.service.LoginService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

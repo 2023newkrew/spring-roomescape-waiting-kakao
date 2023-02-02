@@ -14,8 +14,8 @@ import org.springframework.http.MediaType;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static nextstep.util.RequestBuilder.reservationRequest;
 import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.util.RequestBuilder.*;
 
 class ReservationE2ETest extends AbstractE2ETest {
     public static final String DATE = "2022-08-11";

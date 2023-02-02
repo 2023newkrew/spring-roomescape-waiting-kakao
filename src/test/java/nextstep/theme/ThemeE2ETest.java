@@ -2,13 +2,14 @@ package nextstep.theme;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
+import nextstep.util.RequestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import static nextstep.util.RequestBuilder.themeRequest;
+import static nextstep.util.RequestBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ThemeE2ETest extends AbstractE2ETest {

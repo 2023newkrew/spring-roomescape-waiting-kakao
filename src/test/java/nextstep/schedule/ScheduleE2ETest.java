@@ -3,12 +3,14 @@ package nextstep.schedule;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
 import nextstep.domain.dto.request.ScheduleRequest;
+import nextstep.util.RequestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import static nextstep.util.RequestBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScheduleE2ETest extends AbstractE2ETest {
@@ -23,7 +25,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
     @DisplayName("스케줄을 생성한다")
     @Test
     public void Should_ResponseCreated_When_ValidRequest() {
-        ScheduleRequest body = new ScheduleRequest(themeId, "2022-08-11", "13:00");
+        ScheduleRequest body = scheduleRequest(themeId);
         RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())

@@ -1,9 +1,8 @@
 package nextstep;
 
-import auth.domain.dto.TokenResponse;
+import auth.domain.dto.response.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.util.DatabaseCleaner;
-import nextstep.util.RequestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -85,7 +84,7 @@ public class AbstractE2ETest {
         var reservationResponse = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .body(RequestBuilder.reservationRequest(scheduleId))
+                .body(reservationRequest(scheduleId))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
                 .then().log().all()

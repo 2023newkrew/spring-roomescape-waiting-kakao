@@ -1,6 +1,6 @@
 package nextstep.util;
 
-import auth.domain.dto.TokenRequest;
+import auth.domain.dto.request.TokenRequest;
 import lombok.experimental.UtilityClass;
 import nextstep.domain.dto.request.MemberRequest;
 import nextstep.domain.dto.request.ReservationRequest;

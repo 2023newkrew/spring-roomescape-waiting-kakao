@@ -16,15 +16,6 @@ public class Member {
     private String phone;
     private String role;
 
-    public Member(UserDetails userDetails) {
-        this.id = userDetails.getId();
-        this.username = userDetails.getUsername();
-        this.password = userDetails.getPassword();
-        this.name = userDetails.getName();
-        this.phone = userDetails.getPhone();
-        this.role = userDetails.getRole();
-    }
-
     public Member(String username, String password, String name, String phone, String role) {
         this.username = username;
         this.password = password;

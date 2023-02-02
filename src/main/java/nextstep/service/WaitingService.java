@@ -4,7 +4,6 @@ import auth.domain.persist.UserDetails;
 import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.WaitingRequest;
 import nextstep.domain.dto.response.WaitingResponse;
-import nextstep.domain.persist.Member;
 import nextstep.domain.persist.Reservation;
 import nextstep.domain.persist.Waiting;
 import nextstep.repository.ReservationDao;
@@ -16,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.support.converter.UserDetailToMemberConverter.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,11 +34,11 @@ public class WaitingService {
         List<Reservation> reservations = reservationDao.findByScheduleId(scheduleId);
 
         if (reservations.isEmpty()) {
-            Long reservationId = reservationDao.save(new Reservation(scheduleDao.findById(scheduleId), new Member(userDetails)));
+            Long reservationId = reservationDao.save(new Reservation(scheduleDao.findById(scheduleId), convertUserDetailToMember(userDetails)));
             return "/" + RESERVATION + "/" + reservationId;
         }
 
-        Long waitingId = waitingDao.save(new Waiting(scheduleDao.findById(scheduleId), new Member(userDetails)));
+        Long waitingId = waitingDao.save(new Waiting(scheduleDao.findById(scheduleId), convertUserDetailToMember(userDetails)));
         return "/" + WAITING + "/" + waitingId;
     }
 
@@ -59,7 +60,7 @@ public class WaitingService {
     public void remove(UserDetails userDetails, Long id) {
         Waiting waiting = waitingDao.findById(id);
         
-        if (!waiting.sameMember(new Member(userDetails))) {
+        if (!waiting.sameMember(convertUserDetailToMember(userDetails))) {
             throw new NotWaitingOwnerException();
         }
 
