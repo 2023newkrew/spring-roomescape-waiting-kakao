@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import nextstep.exceptions.exception.AuthorizationException;
 import nextstep.exceptions.exception.DuplicatedReservationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
@@ -28,9 +29,6 @@ public class ReservationService {
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
                 .orElseThrow(NotFoundObjectException::new);
 
@@ -63,12 +61,12 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse cancelReservationFromMember(Member member, Long id) {
-        if (member == null) {  // Todo : member Null check는 Intercepter로 이동
-            throw new AuthenticationException();
-        }
+    public ReservationResponse cancelReservation(Member member, Long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NullPointerException::new);
+        if (!reservation.sameMember(member)) {
+            throw new AuthorizationException();
+        }
         ReservationState state = reservation.getState().changeToCancelFromMember();
         reservationDao.updateState(id, state);
         return new ReservationResponse(reservation, state);
@@ -82,7 +80,7 @@ public class ReservationService {
         return new ReservationResponse(reservation, state);
     }
 
-    public ReservationResponse approveReservation(Long id) {
+    public ReservationResponse approveReservationFromAdmin(Long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NotFoundObjectException::new);
         ReservationState state = reservation.getState().changeToApprove();
@@ -90,7 +88,7 @@ public class ReservationService {
         return new ReservationResponse(reservation, state);
     }
 
-    public ReservationResponse rejectReservation(Long id) {
+    public ReservationResponse rejectReservationFromAdmin(Long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NotFoundObjectException::new);
         ReservationState state = reservation.getState().changeToReject();

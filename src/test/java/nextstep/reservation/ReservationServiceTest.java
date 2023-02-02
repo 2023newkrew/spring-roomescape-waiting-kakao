@@ -61,7 +61,7 @@ public class ReservationServiceTest {
 
     @Test
     void 예약이_존재하지_않으면_예외를_발생시킨다() {
-        assertThatThrownBy(() -> reservationService.cancelReservationFromMember(member, 1L))
+        assertThatThrownBy(() -> reservationService.cancelReservation(member, 1L))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -70,7 +70,7 @@ public class ReservationServiceTest {
     void 미승인_상태의_예약을_취소하면_예약은_취소가_된다() {
         reservation.setState(ReservationState.UN_APPROVE);
         given(reservationDao.findById(1L)).willReturn(Optional.of(reservation));
-        assertThat(reservationService.cancelReservationFromMember(member, 1L).getState())
+        assertThat(reservationService.cancelReservation(member, 1L).getState())
                 .isEqualTo(ReservationState.CANCEL);
     }
 
@@ -78,7 +78,7 @@ public class ReservationServiceTest {
     void 승인_상태의_예약을_취소하면_예약은_취소대기가_된다() {
         reservation.setState(ReservationState.APPROVE);
         given(reservationDao.findById(1L)).willReturn(Optional.of(reservation));
-        assertThat(reservationService.cancelReservationFromMember(member, 1L).getState())
+        assertThat(reservationService.cancelReservation(member, 1L).getState())
                 .isEqualTo(ReservationState.CANCEL_WAIT);
     }
 
@@ -87,7 +87,7 @@ public class ReservationServiceTest {
     void 승인_미승인_상태가_아닌_예약은_예외가_발생한다(ReservationState state) {
         reservation.setState(state);
         given(reservationDao.findById(1L)).willReturn(Optional.of(reservation));
-        assertThatThrownBy(() -> reservationService.cancelReservationFromMember(member, 1L))
+        assertThatThrownBy(() -> reservationService.cancelReservation(member, 1L))
                 .isInstanceOf(ReservationStateException.class);
     }
 
@@ -113,7 +113,7 @@ public class ReservationServiceTest {
     void 예약_미승인_상태의_예약을_승인할_수_있다() {
         reservation.setState(ReservationState.UN_APPROVE);
         given(reservationDao.findById(reservation.getId())).willReturn(Optional.of(reservation));
-        assertThat(reservationService.approveReservation(reservation.getId()).getState())
+        assertThat(reservationService.approveReservationFromAdmin(reservation.getId()).getState())
                 .isEqualTo(ReservationState.APPROVE);
     }
 
@@ -122,7 +122,7 @@ public class ReservationServiceTest {
     void 예약_미승인_이외의_예약은_승인하면_예외가_발생한다(ReservationState state) {
         reservation.setState(state);
         given(reservationDao.findById(reservation.getId())).willReturn(Optional.of(reservation));
-        assertThatThrownBy(() -> reservationService.approveReservation(reservation.getId()))
+        assertThatThrownBy(() -> reservationService.approveReservationFromAdmin(reservation.getId()))
                 .isInstanceOf(ReservationStateException.class);
     }
 
@@ -131,7 +131,7 @@ public class ReservationServiceTest {
     void 예약_거절을_할_수_있다(ReservationState state) {
         reservation.setState(state);
         given(reservationDao.findById(reservation.getId())).willReturn(Optional.of(reservation));
-        assertThat(reservationService.rejectReservation(reservation.getId()).getState())
+        assertThat(reservationService.rejectReservationFromAdmin(reservation.getId()).getState())
                 .isEqualTo(ReservationState.REJECT);
     }
 
@@ -140,7 +140,7 @@ public class ReservationServiceTest {
     void 예약_미승인과_승인외의_예약을_거절하면_예외가_발생한다(ReservationState state) {
         reservation.setState(state);
         given(reservationDao.findById(reservation.getId())).willReturn(Optional.of(reservation));
-        assertThatThrownBy(() -> reservationService.rejectReservation(reservation.getId()))
+        assertThatThrownBy(() -> reservationService.rejectReservationFromAdmin(reservation.getId()))
                 .isInstanceOf(ReservationStateException.class);
     }
 }
