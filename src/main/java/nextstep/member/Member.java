@@ -1,5 +1,9 @@
 package nextstep.member;
 
+import auth.dto.MemberDetails;
+
+import java.util.Objects;
+
 public class Member {
     private Long id;
     private String username;
@@ -52,7 +56,42 @@ public class Member {
         return role;
     }
 
+    public static Member from(MemberDetails memberDetails) {
+        return new Member(
+                memberDetails.getId(),
+                memberDetails.getUsername(),
+                memberDetails.getPassword(),
+                memberDetails.getName(),
+                memberDetails.getPhone(),
+                memberDetails.getRole());
+    }
+
     public boolean checkWrongPassword(String password) {
         return !this.password.equals(password);
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return Objects.equals(id, member.id) && Objects.equals(username, member.username) && Objects.equals(password, member.password) && Objects.equals(name, member.name) && Objects.equals(phone, member.phone) && Objects.equals(role, member.role);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, password, name, phone, role);
     }
 }

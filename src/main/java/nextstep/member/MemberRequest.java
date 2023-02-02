@@ -7,6 +7,9 @@ public class MemberRequest {
     private String phone;
     private String role;
 
+    public MemberRequest() {
+    }
+
     public MemberRequest(String username, String password, String name, String phone, String role) {
         this.username = username;
         this.password = password;
@@ -33,6 +36,26 @@ public class MemberRequest {
 
     public String getRole() {
         return role;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public Member toEntity() {

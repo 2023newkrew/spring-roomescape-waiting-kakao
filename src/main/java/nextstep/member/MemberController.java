@@ -1,7 +1,7 @@
 package nextstep.member;
 
-import nextstep.auth.LoginMember;
-import nextstep.auth.LoginService;
+import auth.annotation.LoginMember;
+import auth.dto.MemberDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +10,7 @@ import java.net.URI;
 @RestController
 @RequestMapping("/members")
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -23,7 +23,7 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity me(@LoginMember Member member) {
-        return ResponseEntity.ok(member);
+    public ResponseEntity me(@LoginMember MemberDetails memberDetails) {
+        return ResponseEntity.ok(Member.from(memberDetails));
     }
 }

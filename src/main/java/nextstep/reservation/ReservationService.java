@@ -1,11 +1,13 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import nextstep.error.ErrorCode;
+import nextstep.exception.DuplicateEntityException;
+import nextstep.exception.NotExistEntityException;
+import nextstep.exception.UnauthorizedException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -27,17 +29,12 @@ public class ReservationService {
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(() -> new NotExistEntityException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
+            throw new DuplicateEntityException(ErrorCode.DUPLICATE_RESERVATION);
         }
 
         Reservation newReservation = new Reservation(
@@ -48,25 +45,28 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
+    public List<Reservation> findByMemberId(Member member) {
+        return reservationDao.findByMemberId(member.getId());
+    }
 
+    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+        themeDao.findById(themeId)
+                .orElseThrow(() -> new NotExistEntityException(ErrorCode.THEME_NOT_FOUND));
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new NotExistEntityException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if (!reservation.sameMember(member)) {
-            throw new AuthenticationException();
+        if (!reservation.checkMemberIsOwner(member)) {
+            throw new UnauthorizedException(ErrorCode.FORBIDDEN);
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public boolean hasReservation(Long scheduleId) {
+        return !reservationDao.findByScheduleId(scheduleId).isEmpty();
     }
 }

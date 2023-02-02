@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 public class ScheduleController {
-    private ScheduleService scheduleService;
+    private final ScheduleService scheduleService;
 
     public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
@@ -28,7 +28,6 @@ public class ScheduleController {
     @DeleteMapping("/admin/schedules/{id}")
     public ResponseEntity deleteReservation(@PathVariable Long id) {
         scheduleService.deleteById(id);
-
         return ResponseEntity.noContent().build();
     }
 }
