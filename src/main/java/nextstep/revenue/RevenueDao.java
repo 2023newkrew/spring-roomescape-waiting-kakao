@@ -36,9 +36,4 @@ public class RevenueDao {
 
         return keyHolder.getKey().longValue();
     }
-
-    public void deleteByReservationId(Long reservationId) {
-        String sql = "DELETE FROM revenue where reservation_id = ?;";
-        jdbcTemplate.update(sql, reservationId);
-    }
 }

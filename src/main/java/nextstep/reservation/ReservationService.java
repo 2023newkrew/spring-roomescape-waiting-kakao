@@ -64,9 +64,12 @@ public class ReservationService {
 
         if (isAdmin(member)) {
             if (reservation.getStatus() == Reservation.Status.WAITING_APPROVAL) {
-                reservationDao.deleteById(reservationId);
+                reservation.changeStatus(Reservation.Status.REJECT);
+                reservationDao.save(reservation);
             } else if (reservation.getStatus() == Reservation.Status.APPROVAL) {
-                cancelReservation(reservationId);
+                reservation.changeStatus(Reservation.Status.REJECT);
+                reservationDao.save(reservation);
+                revenueDao.save(new Revenue(reservationId, -reservation.getSchedule().getTheme().getPrice()));
             }
             return;
         }
@@ -76,10 +79,12 @@ public class ReservationService {
         }
 
         if (reservation.getStatus() == Reservation.Status.WAITING_APPROVAL) {
-            reservationDao.deleteById(reservationId);
+            reservation.changeStatus(Reservation.Status.CANCEL);
+            reservationDao.save(reservation);
         } else if (reservation.getStatus() == Reservation.Status.APPROVAL) {
             reservation.changeStatus(Reservation.Status.CANCEL_WAITING);
             reservationDao.save(reservation);
+            revenueDao.save(new Revenue(reservationId, -reservation.getSchedule().getTheme().getPrice()));
         }
     }
 
@@ -135,11 +140,8 @@ public class ReservationService {
             throw new BusinessException(BusinessErrorCode.RESERVATION_NOT_CANCEL_WAITING);
         }
 
-        cancelReservation(reservationId);
-    }
-
-    private void cancelReservation(long reservationId) {
-        reservationDao.deleteById(reservationId);
-        revenueDao.deleteByReservationId(reservationId);
+        reservation.changeStatus(Reservation.Status.CANCEL);
+        reservationDao.save(reservation);
+        revenueDao.save(new Revenue(reservationId, -reservation.getSchedule().getTheme().getPrice()));
     }
 }

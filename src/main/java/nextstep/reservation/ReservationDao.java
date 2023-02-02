@@ -146,16 +146,12 @@ public class ReservationDao {
                 "from reservation " +
                 "inner join schedule on reservation.schedule_id = schedule.id " +
                 "where schedule.id = ? " +
+                "and (reservation.status != ? and reservation.status != ?)" +
                 "and reservation.wait_ticket_num < ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, Long.class, scheduleId, waitTicketNumber);
+            return jdbcTemplate.queryForObject(sql, Long.class, scheduleId, Reservation.Status.CANCEL.name(), Reservation.Status.REJECT.name(), waitTicketNumber);
         } catch (Exception e) {
             return null;
         }
-    }
-
-    public void deleteById(Long id) {
-        String sql = "DELETE FROM reservation where id = ?;";
-        jdbcTemplate.update(sql, id);
     }
 }

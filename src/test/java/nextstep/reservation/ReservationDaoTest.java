@@ -45,7 +45,8 @@ class ReservationDaoTest {
         Reservation firstReservation = generateReservation(schedule, member);
         Reservation secondReservation = generateReservation(schedule, member);
         Reservation thirdReservation = generateReservation(schedule, member);
-        reservationDao.deleteById(willDeleteReservation.getId());
+        willDeleteReservation.changeStatus(Reservation.Status.CANCEL);
+        reservationDao.save(willDeleteReservation);
         Reservation fourthReservation = generateReservation(schedule, member);
         Reservation fifthReservation = generateReservation(schedule, member);
         Reservation sixthReservation = generateReservation(schedule, member);
