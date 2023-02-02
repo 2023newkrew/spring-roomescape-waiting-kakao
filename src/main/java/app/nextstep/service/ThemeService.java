@@ -1,34 +1,28 @@
 package app.nextstep.service;
 
-import app.nextstep.dao.ThemeDao;
 import app.nextstep.domain.Theme;
-import app.nextstep.support.EntityNotFoundException;
+import app.nextstep.repository.ThemeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ThemeService {
-    private ThemeDao themeDao;
+    private ThemeRepository themeRepository;
 
-    public ThemeService(ThemeDao themeDao) {
-        this.themeDao = themeDao;
+    public ThemeService(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
     }
 
-    public Long create(String name, String desc, int price) {
-        return themeDao.save(name, desc, price);
+    public Long create(Theme theme) {
+        return themeRepository.save(theme);
     }
 
     public List<Theme> findAll() {
-        return themeDao.findAll();
+        return themeRepository.findAll();
     }
 
     public void delete(Long id) {
-        Theme theme = themeDao.findById(id);
-        if (theme == null) {
-            throw new EntityNotFoundException();
-        }
-
-        themeDao.delete(id);
+        themeRepository.delete(id);
     }
 }

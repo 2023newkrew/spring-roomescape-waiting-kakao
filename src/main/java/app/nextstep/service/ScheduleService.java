@@ -1,30 +1,29 @@
 package app.nextstep.service;
 
-import app.nextstep.dao.ScheduleDao;
 import app.nextstep.domain.Schedule;
+import app.nextstep.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
 public class ScheduleService {
-    private ScheduleDao scheduleDao;
+    private ScheduleRepository scheduleRepository;
 
-    public ScheduleService(ScheduleDao scheduleDao) {
-        this.scheduleDao = scheduleDao;
+    public ScheduleService(ScheduleRepository scheduleRepository) {
+        this.scheduleRepository = scheduleRepository;
     }
 
-    public Long create(Long themeId, LocalDate date, LocalTime time) {
-        return scheduleDao.save(themeId, date, time);
+    public Long create(Schedule schedule) {
+        return scheduleRepository.save(schedule);
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, LocalDate date) {
-        return scheduleDao.findByThemeIdAndDate(themeId, date);
+        return scheduleRepository.findByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Long id) {
-        scheduleDao.deleteById(id);
+    public void delete(Long id) {
+        scheduleRepository.delete(id);
     }
 }

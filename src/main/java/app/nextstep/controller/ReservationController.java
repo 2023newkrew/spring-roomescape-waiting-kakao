@@ -2,7 +2,7 @@ package app.nextstep.controller;
 
 import app.auth.support.AuthenticationException;
 import app.auth.support.LoginUser;
-import app.auth.domain.User;
+import app.nextstep.domain.Member;
 import app.nextstep.domain.Reservation;
 import app.nextstep.dto.ReservationRequest;
 import app.nextstep.service.ReservationService;
@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,20 +24,20 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginUser User user, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(reservationRequest.getScheduleId(), user.getId());
+    public ResponseEntity createReservation(@LoginUser Member member, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.create(reservationRequest.toReservation(member.getId()));
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping("/reservations")
     public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
-        List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
+        List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, LocalDate.parse(date));
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginUser User user, @PathVariable Long id) {
-        reservationService.deleteById(id, user.getId());
+    public ResponseEntity deleteReservation(@LoginUser Member member, @PathVariable Long id) {
+        reservationService.deleteById(id, member.getId());
 
         return ResponseEntity.noContent().build();
     }

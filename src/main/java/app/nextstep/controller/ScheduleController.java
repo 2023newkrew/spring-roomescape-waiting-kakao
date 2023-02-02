@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -22,10 +21,7 @@ public class ScheduleController {
 
     @PostMapping("/admin/schedules")
     public ResponseEntity createSchedule(@RequestBody ScheduleRequest scheduleRequest) {
-        Long id = scheduleService.create(
-                scheduleRequest.getThemeId(),
-                LocalDate.parse(scheduleRequest.getDate()),
-                LocalTime.parse(scheduleRequest.getTime()));
+        Long id = scheduleService.create(scheduleRequest.toSchedule());
         return ResponseEntity.created(URI.create("/schedules/" + id)).build();
     }
 
@@ -38,7 +34,7 @@ public class ScheduleController {
 
     @DeleteMapping("/admin/schedules/{id}")
     public ResponseEntity deleteReservation(@PathVariable Long id) {
-        scheduleService.deleteById(id);
+        scheduleService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

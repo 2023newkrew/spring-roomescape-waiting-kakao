@@ -1,9 +1,9 @@
 package app.nextstep.dao;
 
-import app.nextstep.domain.Member;
-import app.nextstep.domain.Reservation;
-import app.nextstep.domain.Schedule;
-import app.nextstep.domain.Theme;
+import app.nextstep.entity.MemberEntity;
+import app.nextstep.entity.ReservationEntity;
+import app.nextstep.entity.ScheduleEntity;
+import app.nextstep.entity.ThemeEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -24,28 +24,61 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
+    private final RowMapper<ReservationEntity> rowMapper = (resultSet, rowNum) -> new ReservationEntity(
             resultSet.getLong("reservation.id"),
-            new Schedule(
+            new ScheduleEntity(
                     resultSet.getLong("schedule.id"),
-                    new Theme(
+                    new ThemeEntity(
                             resultSet.getLong("theme.id"),
                             resultSet.getString("theme.name"),
                             resultSet.getString("theme.desc"),
-                            resultSet.getInt("theme.price")
-                    ),
-                    resultSet.getDate("schedule.date").toLocalDate(),
-                    resultSet.getTime("schedule.time").toLocalTime()
-            ),
-            new Member(
+                            resultSet.getInt("theme.price")),
+                    resultSet.getDate("schedule.date"),
+                    resultSet.getTime("schedule.time")),
+            new MemberEntity(
                     resultSet.getLong("member.id"),
                     resultSet.getString("member.username"),
                     resultSet.getString("member.password"),
                     resultSet.getString("member.role"),
                     resultSet.getString("member.name"),
-                    resultSet.getString("member.phone")
-            )
-    );
+                    resultSet.getString("member.phone")));
+
+    public ReservationEntity findById(Long id) {
+        String sql = "SELECT * FROM reservation " +
+                "JOIN schedule ON reservation.schedule_id = schedule.id " +
+                "JOIN theme ON schedule.theme_id = theme.id " +
+                "JOIN member ON reservation.member_id = member.id " +
+                "WHERE reservation.id = ?;";
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<ReservationEntity> findByThemeIdAndDate(Long themeId, Date date) {
+        String sql = "SELECT * FROM reservation " +
+                "JOIN schedule ON reservation.schedule_id = schedule.id " +
+                "JOIN theme ON schedule.theme_id = theme.id " +
+                "JOIN member ON reservation.member_id = member.id " +
+                "WHERE theme.id = ? AND schedule.date = ?;";
+
+        return jdbcTemplate.query(sql, rowMapper, themeId, date);
+    }
+
+    public List<ReservationEntity> findByScheduleId(Long scheduleId) {
+        String sql = "SELECT * FROM reservation " +
+                "JOIN schedule ON reservation.schedule_id = schedule.id " +
+                "JOIN theme ON schedule.theme_id = theme.id " +
+                "JOIN member ON reservation.member_id = member.id " +
+                "WHERE schedule.id = ?;";
+
+        try {
+            return jdbcTemplate.query(sql, rowMapper, scheduleId);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
 
     public Long save(Long scheduleId, Long memberId) {
         String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
@@ -60,43 +93,6 @@ public class ReservationDao {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
-    }
-
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        String sql = "SELECT * FROM reservation " +
-                "JOIN schedule ON reservation.schedule_id = schedule.id " +
-                "JOIN theme ON schedule.theme_id = theme.id " +
-                "JOIN member ON reservation.member_id = member.id " +
-                "WHERE theme.id = ? AND schedule.date = ?;";
-
-        return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(date));
-    }
-
-    public Reservation findById(Long id) {
-        String sql = "SELECT * FROM reservation " +
-                "JOIN schedule ON reservation.schedule_id = schedule.id " +
-                "JOIN theme ON schedule.theme_id = theme.id " +
-                "JOIN member ON reservation.member_id = member.id " +
-                "WHERE reservation.id = ?;";
-        try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public List<Reservation> findByScheduleId(Long id) {
-        String sql = "SELECT * FROM reservation " +
-                "JOIN schedule ON reservation.schedule_id = schedule.id " +
-                "JOIN theme ON schedule.theme_id = theme.id " +
-                "JOIN member ON reservation.member_id = member.id " +
-                "WHERE schedule.id = ?;";
-
-        try {
-            return jdbcTemplate.query(sql, rowMapper, id);
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
     }
 
     public void deleteById(Long id) {

@@ -1,22 +1,22 @@
 package app.nextstep.service;
 
-import app.nextstep.dao.MemberDao;
 import app.nextstep.domain.Member;
+import app.nextstep.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
-    public Long create(String username, String password, String name, String phone, String role) {
-        return memberDao.save(username, password, name, phone, role);
+    public Long create(Member member) {
+        return memberRepository.save(member);
     }
 
     public Member findById(Long id) {
-        return memberDao.findById(id);
+        return memberRepository.findById(id);
     }
 }

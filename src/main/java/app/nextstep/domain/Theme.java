@@ -4,12 +4,12 @@ public class Theme {
     private Long id;
     private String name;
     private String desc;
-    private int price;
+    private Integer price;
 
     public Theme() {
     }
 
-    public Theme(Long id, String name, String desc, int price) {
+    public Theme(Long id, String name, String desc, Integer price) {
         this.id = id;
         this.name = name;
         this.desc = desc;

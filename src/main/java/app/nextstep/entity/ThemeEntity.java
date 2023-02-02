@@ -6,12 +6,12 @@ public class ThemeEntity {
     private Long id;
     private String name;
     private String desc;
-    private int price;
+    private Integer price;
 
     public ThemeEntity() {
     }
 
-    public ThemeEntity(Long id, String name, String desc, int price) {
+    public ThemeEntity(Long id, String name, String desc, Integer price) {
         this.id = id;
         this.name = name;
         this.desc = desc;

@@ -1,6 +1,6 @@
 package app.nextstep.dao;
 
-import app.nextstep.domain.Theme;
+import app.nextstep.entity.ThemeEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,12 +18,22 @@ public class ThemeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
+    private final RowMapper<ThemeEntity> rowMapper = (resultSet, rowNum) -> new ThemeEntity(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("desc"),
             resultSet.getInt("price")
     );
+
+    public ThemeEntity findById(Long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?;";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
+
+    public List<ThemeEntity> findAll() {
+        String sql = "SELECT * FROM theme;";
+        return jdbcTemplate.query(sql, rowMapper);
+    }
 
     public Long save(String name, String desc, int price) {
         String sql = "INSERT INTO theme (name, desc, price) VALUES (?, ?, ?);";
@@ -41,17 +51,7 @@ public class ThemeDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Theme findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
-    }
-
-    public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme;";
-        return jdbcTemplate.query(sql, rowMapper);
-    }
-
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?;";
         jdbcTemplate.update(sql, id);
     }
