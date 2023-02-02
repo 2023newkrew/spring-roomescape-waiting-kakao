@@ -1,8 +1,8 @@
 package auth;
 
 public class LoginService {
-    private UserDao userDao;
-    private JwtTokenProvider jwtTokenProvider;
+    private final UserDao userDao;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public LoginService(UserDao userDao, JwtTokenProvider jwtTokenProvider) {
         this.userDao = userDao;

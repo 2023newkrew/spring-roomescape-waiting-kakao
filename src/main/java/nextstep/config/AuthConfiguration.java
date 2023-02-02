@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AuthConfiguration {
 
-    private MemberDao memberDao;
+    private final MemberDao memberDao;
 
     public AuthConfiguration(MemberDao memberDao) {
         this.memberDao = memberDao;

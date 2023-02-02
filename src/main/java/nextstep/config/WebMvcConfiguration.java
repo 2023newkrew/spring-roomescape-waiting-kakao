@@ -12,8 +12,8 @@ import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private LoginService loginService;
-    private JwtTokenProvider jwtTokenProvider;
+    private final LoginService loginService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
         this.loginService = loginService;
