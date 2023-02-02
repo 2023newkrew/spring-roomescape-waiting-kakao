@@ -54,4 +54,25 @@ public class ReservationWaiting {
             throw new IllegalStateException();
         }
     }
+
+    @Override
+    public String toString() {
+        return "ReservationWaiting{" +
+                "reservation=" + reservation +
+                ", waitingSeq=" + waitingSeq +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReservationWaiting that = (ReservationWaiting) o;
+        return Objects.equals(reservation, that.reservation) && Objects.equals(waitingSeq, that.waitingSeq);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reservation, waitingSeq);
+    }
 }

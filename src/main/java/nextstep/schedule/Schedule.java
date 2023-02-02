@@ -4,6 +4,7 @@ import nextstep.theme.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class Schedule {
     private Long id;
@@ -41,5 +42,28 @@ public class Schedule {
 
     public LocalTime getTime() {
         return time;
+    }
+
+    @Override
+    public String toString() {
+        return "Schedule{" +
+                "id=" + id +
+                ", theme=" + theme +
+                ", date=" + date +
+                ", time=" + time +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Schedule schedule = (Schedule) o;
+        return Objects.equals(id, schedule.id) && Objects.equals(theme, schedule.theme) && Objects.equals(date, schedule.date) && Objects.equals(time, schedule.time);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, theme, date, time);
     }
 }
