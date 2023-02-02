@@ -12,6 +12,7 @@ import nextstep.member.MemberService;
 import nextstep.reservation.dto.ReservationCreateDto;
 import nextstep.reservation.dto.ReservationDeleteDto;
 import nextstep.reservation.dto.ReservationReadDto;
+import nextstep.reservation.response.ReservationCancelResponse;
 import nextstep.reservation.response.ReservationResponse;
 import nextstep.reservation.response.ReservationWaitingResponse;
 import org.springframework.http.HttpStatus;
@@ -78,15 +79,15 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<ReservationDeleteDto> deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<ReservationCancelResponse> deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
         ReservationDeleteDto reservationDeleteDto = reservationService.cancelReservation(userDetails, id);
-        return ResponseEntity.ok().body(reservationDeleteDto);
+        return ResponseEntity.ok().body(reservationDeleteDto.toReservationCancelResponse());
     }
 
     @DeleteMapping("/reservation-waitings/{id}")
-    public ResponseEntity<ReservationDeleteDto> deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<ReservationCancelResponse> deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
         ReservationDeleteDto reservationDeleteDto = reservationService.cancelReservation(userDetails, id);
-        return ResponseEntity.ok().body(reservationDeleteDto);
+        return ResponseEntity.ok().body(reservationDeleteDto.toReservationCancelResponse());
     }
 
 

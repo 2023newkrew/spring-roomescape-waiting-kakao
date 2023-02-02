@@ -207,7 +207,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().delete(reservation.header("Location"))
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body("deletedRowCount", equalTo(1));
+                .body("deletedReservationCount", equalTo(1));
     }
 
     @DisplayName("없는 예약을 삭제한다")
@@ -219,7 +219,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body("deletedRowCount", equalTo(0));
+                .body("deletedReservationCount", equalTo(0));
     }
 
     @DisplayName("다른 사람이 예약을 삭제한다")
