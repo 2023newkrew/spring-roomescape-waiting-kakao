@@ -32,9 +32,6 @@ public class ReservationWaitingService {
     }
 
     public Long reserve(Member member, ReservationWaitingRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
                 .orElseThrow(NotExistEntityException::new);
 

@@ -31,9 +31,6 @@ public class ReservationService {
     }
 
     public Long reserve(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {  // todo move auth
-            throw new AuthenticationException();
-        }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
                 .orElseThrow(NotExistEntityException::new);
 
