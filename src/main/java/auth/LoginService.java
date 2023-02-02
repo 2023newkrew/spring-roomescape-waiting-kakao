@@ -47,15 +47,15 @@ public class LoginService {
     public UserDetails extractMember(String credential) {
         Long id = extractPrincipal(credential);
         long now = System.currentTimeMillis();
-        /* 캐시가 만료되면 제거 */
+        /* 캐시 만료 */
         if (now > cacheLoadTime.get(id) + cacheMaxAge) {
             cache.remove(id);
         }
-        /* 캐시가 히트됐을 경우 */
+        /* 캐시 히트 */
         if (cache.containsKey(id)) {
             return cache.get(id);
         }
-        /* 캐시가 히트되지 않았을 경우 */
+        /* 캐시 미스 */
         UserDetails userDetails = userDetailsRepository.findById(id);
         cache.put(id, userDetails);
         cacheLoadTime.put(userDetails.getId(), System.currentTimeMillis());

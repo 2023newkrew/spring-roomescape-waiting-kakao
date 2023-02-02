@@ -12,6 +12,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/reservations")
 public class ReservationController {
     public final ReservationService reservationService;
 
@@ -19,30 +20,48 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/reservations")
+    @PostMapping
     public ResponseEntity<Void> createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
         Long id = reservationService.create(new Member(userDetails), reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
-    @GetMapping("/reservations")
+    @GetMapping
     public ResponseEntity<List<Reservation>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok(results);
     }
 
-    @DeleteMapping("/reservations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
         reservationService.deleteById(new Member(userDetails), id);
 
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/reservations/mine")
+    @GetMapping("/mine")
     public ResponseEntity<List<ReservationResponse>> readMyReservations(@LoginMember UserDetails userDetails) {
         List<ReservationResponse> reservationResponses = reservationService.findAllByMemberId(new Member(userDetails));
 
         return ResponseEntity.ok().body(reservationResponses);
+    }
+
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<Void> approveReservation(@PathVariable Long id) {
+        reservationService.approveReservation(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelReservation(@PathVariable Long id) {
+        reservationService.cancelReservation(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/cancel-approve")
+    public ResponseEntity<Void> cancelApproveReservation(@PathVariable Long id) {
+        reservationService.cancelApproveReservation(id);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(Exception.class)

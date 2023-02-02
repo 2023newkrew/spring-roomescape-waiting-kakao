@@ -2,6 +2,7 @@ package nextstep.reservation;
 
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.Objects;
 
@@ -9,21 +10,24 @@ public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
+    private ReservationState state = ReservationState.NOT_APPROVED;
 
     /* RestAssured에서 사용 */
     @SuppressWarnings("unused")
     public Reservation() {
     }
 
-    public Reservation(Schedule schedule, Member member) {
+    public Reservation(Schedule schedule, Member member,ReservationState state) {
         this.schedule = schedule;
         this.member = member;
+        this.state = state;
     }
 
-    public Reservation(Long id, Schedule schedule, Member member) {
+    public Reservation(Long id, Schedule schedule, Member member, ReservationState state) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+        this.state = state;
     }
 
     public Long getId() {
@@ -38,6 +42,10 @@ public class Reservation {
         return member;
     }
 
+    public ReservationState getState() {
+        return state;
+    }
+
     public boolean sameMember(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }
@@ -50,6 +58,7 @@ public class Reservation {
         private Long id;
         private Schedule schedule;
         private Member member;
+        private ReservationState state;
 
         private ReservationBuilder() {
         }
@@ -69,8 +78,13 @@ public class Reservation {
             return this;
         }
 
+        public ReservationBuilder state(ReservationState state) {
+            this.state = state;
+            return this;
+        }
+
         public Reservation build() {
-            return new Reservation(id, schedule, member);
+            return new Reservation(id, schedule, member, state);
         }
     }
 }

@@ -19,7 +19,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
                 .when().post("/admin/themes")
@@ -50,17 +50,17 @@ public class ThemeE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        token = response.as(TokenResponse.class);
+        adminToken = response.as(TokenResponse.class);
 
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @DisplayName("테마 목록을 조회한다")
@@ -85,7 +85,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().delete("/admin/themes/" + id)
                 .then().log().all()
                 .extract();
@@ -97,7 +97,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         String location = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
                 .when().post("/admin/themes")

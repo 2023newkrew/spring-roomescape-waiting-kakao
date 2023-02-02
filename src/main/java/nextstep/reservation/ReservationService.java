@@ -42,7 +42,8 @@ public class ReservationService {
 
         Reservation newReservation = new Reservation(
                 schedule,
-                member
+                member,
+                ReservationState.NOT_APPROVED
         );
 
         return reservationDao.save(newReservation);
@@ -88,5 +89,17 @@ public class ReservationService {
         return reservationDao.findAllByMemberId(member.getId()).stream()
                 .map(ReservationResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    public void approveReservation(final Long id) {
+        reservationDao.updateState(id, ReservationState.APPROVED);
+    }
+
+    public void cancelReservation(final Long id) {
+        reservationDao.updateState(id, ReservationState.CANCEL_WAITING);
+    }
+
+    public void cancelApproveReservation(final Long id) {
+        reservationDao.updateState(id, ReservationState.CANCELED);
     }
 }

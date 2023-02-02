@@ -40,9 +40,10 @@ CREATE TABLE waiting
 
 CREATE TABLE reservation
 (
-    id          bigint not null auto_increment,
-    schedule_id bigint not null,
-    member_id   bigint not null,
+    id          bigint      not null auto_increment,
+    schedule_id bigint      not null,
+    member_id   bigint      not null,
+    state       varchar(20) not null,
     primary key (id),
     foreign key (schedule_id) references schedule(id),
     foreign key (member_id) references member(id)

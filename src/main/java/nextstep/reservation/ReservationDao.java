@@ -33,17 +33,19 @@ public class ReservationDao {
             Member
                     .builder()
                     .id(resultSet.getLong("reservation.member_id"))
-                    .build()
+                    .build(),
+            ReservationState.valueOf(resultSet.getString("reservation.state"))
     );
 
     public Long save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
+        String sql = "INSERT INTO reservation (schedule_id, member_id, state) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, reservation.getSchedule().getId());
             ps.setLong(2, reservation.getMember().getId());
+            ps.setString(3, reservation.getState().get());
             return ps;
 
         }, keyHolder);
@@ -79,5 +81,10 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation where id = ?;";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void updateState(final Long id, ReservationState state) {
+        String sql = "UPDATE reservation SET state = ? WHERE id = ?;";
+        jdbcTemplate.update(sql, state.get(), id);
     }
 }
