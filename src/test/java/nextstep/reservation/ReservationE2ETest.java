@@ -32,7 +32,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
         var themeResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(themeRequest)
                 .when().post("/admin/themes")
@@ -45,7 +45,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(scheduleRequest)
                 .when().post("/admin/schedules")
@@ -134,7 +134,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("내 예약을 조회한다")
     @Test
     void show_my_reservations() {
-        var otherUserToken = generateNewMemberToken("otherUser", "password");
+        var otherUserToken = generateNewMemberToken("otherUser", "password", "USER");
 
         RestAssured
                 .given().log().all()
@@ -168,7 +168,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("내 예약대기를 조회한다")
     @Test
     void show_my_reservation_waitings() {
-        var otherUserToken = generateNewMemberToken("otherUser", "password");
+        var otherUserToken = generateNewMemberToken("otherUser", "password", "USER");
 
         RestAssured
                 .given().log().all()
