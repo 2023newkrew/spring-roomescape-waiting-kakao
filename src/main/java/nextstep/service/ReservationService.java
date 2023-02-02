@@ -81,6 +81,16 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    public void approveReservation(Long reservationId) {
+        Reservation reservation = findById(reservationId);
+
+        if (reservation.isLessThanDepositPolicy(DEPOSIT_POLICY)) {
+            throw new ApplicationException(RESERVATION_DEPOSIT_NOT_ENOUGH, DEPOSIT_POLICY);
+        }
+
+        reservationDao.updateReservationStatus(reservationId, reservation.getTransitionedStatus().name());
+    }
+
     private Reservation findById(Long reservationId) {
         return reservationDao.findById(reservationId)
                 .orElseThrow(() -> new ApplicationException(RESERVATION_NOT_FOUND));

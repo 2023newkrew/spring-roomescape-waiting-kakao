@@ -3,6 +3,7 @@ package nextstep.domain.reservation;
 import nextstep.domain.member.Member;
 import nextstep.domain.schedule.Schedule;
 import nextstep.domain.theme.Theme;
+import nextstep.error.ApplicationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,12 +11,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.*;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import static nextstep.error.ErrorType.INTERNAL_SERVER_ERROR;
 
 @Component
 public class ReservationDao {
@@ -52,7 +52,7 @@ public class ReservationDao {
     );
 
     public Long save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (schedule_id, member_id, status, deposit) VALUES (?, ?, ?, ?);";
+        String sql = "INSERT INTO reservation (schedule_id, member_id, status, deposit, created_at) VALUES (?, ?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -61,6 +61,7 @@ public class ReservationDao {
             ps.setLong(2, reservation.getMember().getId());
             ps.setString(3, reservation.getStatus().name());
             ps.setInt(4, reservation.getDeposit());
+            ps.setTimestamp(5, Timestamp.valueOf(reservation.getCreatedAt()));
             return ps;
 
         }, keyHolder);
@@ -136,6 +137,11 @@ public class ReservationDao {
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
+    }
+
+    public void updateReservationStatus(Long id, String status) {
+        String sql = "UPDATE reservation SET status = ? WHERE id = ?";
+        jdbcTemplate.update(sql, status, id);
     }
 
 }
