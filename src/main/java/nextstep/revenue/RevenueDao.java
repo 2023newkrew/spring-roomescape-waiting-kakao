@@ -1,9 +1,11 @@
 package nextstep.revenue;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Objects;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -55,5 +57,20 @@ public class RevenueDao {
             throw new RoomReservationException(ErrorCode.RECORD_NOT_UPDATED);
         }
         return revenue.getId();
+    }
+
+    public List<Revenue> findAll() {
+        String sql = SELECT_SQL + ";";
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public Revenue findById(Long id) {
+        String sql = SELECT_SQL
+                + "where id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }
