@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nextstep.domain.member.Member;
 import nextstep.domain.reservation.Reservation;
 import nextstep.domain.reservation.ReservationDao;
+import nextstep.domain.reservation.ReservationStatus;
 import nextstep.dto.request.ReservationRequest;
 import nextstep.dto.response.CreateReservationResponse;
 import nextstep.dto.response.ReservationResponse;
@@ -13,11 +14,11 @@ import nextstep.utils.TransactionUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.domain.reservation.ReservationStatus.CANCELED;
-import static nextstep.domain.reservation.ReservationStatus.CANCEL_PENDING;
+import static nextstep.domain.reservation.ReservationStatus.*;
 import static nextstep.error.ErrorType.*;
 
 @RequiredArgsConstructor
@@ -75,6 +76,7 @@ public class ReservationService {
     @Transactional
     public void approveReservation(Long reservationId) {
         Reservation reservation = findById(reservationId);
+        validateTransition(reservation.getStatus(), UNAPPROVED);
 
         if (reservation.isLessThanDepositPolicy(DEPOSIT_POLICY)) {
             throw new ApplicationException(RESERVATION_DEPOSIT_NOT_ENOUGH, DEPOSIT_POLICY);
@@ -87,6 +89,8 @@ public class ReservationService {
     @Transactional
     public void cancelReservation(Long reservationId) {
         Reservation reservation = findById(reservationId);
+        validateTransition(reservation.getStatus(), UNAPPROVED, APPROVED);
+
         if (reservation.isUnapproved()) {
             reservationDao.updateReservationStatus(reservationId, CANCELED.name());
             salesHistoryService.saveRefundHistory(reservation);
@@ -99,9 +103,26 @@ public class ReservationService {
     @Transactional
     public void approveCancelReservation(Long reservationId) {
         Reservation reservation = findById(reservationId);
+        validateTransition(reservation.getStatus(), CANCEL_PENDING);
 
         reservationDao.updateReservationStatus(reservationId, CANCELED.name());
         salesHistoryService.saveRefundHistory(reservation);
+    }
+
+    @Transactional
+    public void rejectReservation(Long reservationId) {
+        Reservation reservation = findById(reservationId);
+        validateTransition(reservation.getStatus(), UNAPPROVED, APPROVED);
+
+        reservationDao.updateReservationStatus(reservationId, REJECTED.name());
+        salesHistoryService.saveRefundHistory(reservation);
+    }
+
+    private void validateTransition(ReservationStatus actualStatus, ReservationStatus... expectedStatuses) {
+        Arrays.stream(expectedStatuses)
+                .filter(status -> status.equals(actualStatus))
+                .findAny()
+                .orElseThrow(() -> new ApplicationException(INTERNAL_SERVER_ERROR));
     }
 
     private Reservation findById(Long reservationId) {
