@@ -1,4 +1,4 @@
-package com.nextstep.domains.exceptions;
+package com.nextstep.interfaces.exceptions;
 
 import com.authorizationserver.domains.authorization.exceptions.AuthenticationException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

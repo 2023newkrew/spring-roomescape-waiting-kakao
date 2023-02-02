@@ -1,8 +1,8 @@
 package com.nextstep.domains.waiting;
 
-import com.nextstep.domains.exceptions.ErrorMessageType;
+import com.nextstep.interfaces.exceptions.ErrorMessageType;
 import lombok.RequiredArgsConstructor;
-import com.nextstep.domains.exceptions.WaitingException;
+import com.nextstep.interfaces.exceptions.WaitingException;
 import com.nextstep.interfaces.waiting.dtos.WaitingRequest;
 import com.nextstep.interfaces.waiting.dtos.WaitingResponse;
 import com.nextstep.interfaces.waiting.dtos.WaitingMapper;

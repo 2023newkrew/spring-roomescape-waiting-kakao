@@ -1,7 +1,7 @@
 package controller;
 
 import com.authorizationserver.infrastructures.jwt.JwtTokenProvider;
-import com.nextstep.domains.exceptions.ErrorMessageType;
+import com.nextstep.interfaces.exceptions.ErrorMessageType;
 import com.nextstep.interfaces.schedule.dtos.ScheduleRequest;
 import com.nextstep.interfaces.theme.dtos.ThemeRequest;
 import org.junit.jupiter.api.*;

@@ -1,6 +1,6 @@
 package controller;
 
-import com.nextstep.domains.exceptions.ErrorMessageType;
+import com.nextstep.interfaces.exceptions.ErrorMessageType;
 import com.nextstep.interfaces.member.dtos.MemberRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

@@ -1,8 +1,8 @@
 package com.nextstep.domains.schedule;
 
-import com.nextstep.domains.exceptions.ErrorMessageType;
-import com.nextstep.domains.exceptions.ScheduleException;
-import com.nextstep.domains.exceptions.ThemeException;
+import com.nextstep.interfaces.exceptions.ErrorMessageType;
+import com.nextstep.interfaces.exceptions.ScheduleException;
+import com.nextstep.interfaces.exceptions.ThemeException;
 import com.nextstep.interfaces.schedule.dtos.ScheduleRequest;
 import com.nextstep.interfaces.schedule.dtos.ScheduleResponse;
 import com.nextstep.interfaces.schedule.dtos.ScheduleMapper;
