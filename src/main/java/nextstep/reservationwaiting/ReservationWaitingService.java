@@ -59,14 +59,7 @@ public class ReservationWaitingService {
     }
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {
-        try {
-            return reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()).stream()
-                    .map(ReservationWaitingResponse::from)
-                    .collect(Collectors.toList());
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
+            return ReservationWaitingResponse.from(reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()));
     }
 
     public void cancelById(Member member, Long id) {

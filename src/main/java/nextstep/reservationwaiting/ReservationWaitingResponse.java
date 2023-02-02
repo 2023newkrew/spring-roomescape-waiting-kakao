@@ -2,6 +2,9 @@ package nextstep.reservationwaiting;
 
 import nextstep.schedule.Schedule;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ReservationWaitingResponse {
     private final Long id;
     private final Schedule schedule;
@@ -23,6 +26,12 @@ public class ReservationWaitingResponse {
 
     public Long getWaitNum() {
         return waitNum;
+    }
+
+    public static List<ReservationWaitingResponse> from(List<ReservationWaiting> reservationWaitings) {
+        return reservationWaitings.stream()
+                .map(ReservationWaitingResponse::from)
+                .collect(Collectors.toList());
     }
 
     public static ReservationWaitingResponse from(ReservationWaiting reservationWaiting) {

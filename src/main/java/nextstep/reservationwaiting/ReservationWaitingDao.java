@@ -113,7 +113,7 @@ public class ReservationWaitingDao {
         jdbcTemplate.update(sql, status.name(), id);
     }
 
-    public Collection<ReservationWaiting> findAllByMemberIdWithOrder(Long memberId) {
+    public List<ReservationWaiting> findAllByMemberIdWithOrder(Long memberId) {
         String sql = "SELECT rw.id, rw.schedule_id, rw.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
