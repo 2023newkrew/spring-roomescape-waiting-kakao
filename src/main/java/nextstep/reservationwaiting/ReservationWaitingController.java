@@ -40,6 +40,9 @@ public class ReservationWaitingController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> onException(Exception e) {
+        System.err.println(e.getMessage());
+        e.printStackTrace();
+        
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
