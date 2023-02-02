@@ -1,10 +1,11 @@
 package nextstep;
 
-import nextstep.auth.AdminInterceptor;
-import nextstep.auth.JwtTokenProvider;
-import nextstep.auth.LoginMemberArgumentResolver;
-import nextstep.auth.LoginService;
+import auth.*;
+import nextstep.member.LoginController;
+import nextstep.member.MemberService;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -12,21 +13,36 @@ import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private LoginService loginService;
-    private JwtTokenProvider jwtTokenProvider;
 
-    public WebMvcConfiguration(LoginService loginService, JwtTokenProvider jwtTokenProvider) {
-        this.loginService = loginService;
-        this.jwtTokenProvider = jwtTokenProvider;
+    private final MemberService memberService;
+
+    public WebMvcConfiguration(MemberService memberService) {
+        this.memberService = memberService;
+    }
+
+
+    @Bean
+    public JwtTokenProvider jwtTokenProvider() {
+        return new JwtTokenProvider();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        return new AuthenticationProvider(jwtTokenProvider());
+    }
+
+    @Bean
+    public LoginController LoginController() {
+        return new LoginController(authenticationProvider(), memberService);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(jwtTokenProvider)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new LoginInterceptor(jwtTokenProvider())).addPathPatterns("/**");
     }
 
     @Override
-    public void addArgumentResolvers(List argumentResolvers) {
-        argumentResolvers.add(new LoginMemberArgumentResolver(loginService));
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new LoginMemberArgumentResolver(authenticationProvider()));
     }
 }

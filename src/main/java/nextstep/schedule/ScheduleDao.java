@@ -1,6 +1,7 @@
 package nextstep.schedule;
 
 import nextstep.theme.Theme;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ScheduleDao {
@@ -30,11 +32,12 @@ public class ScheduleDao {
                     resultSet.getInt("theme.price")
             ),
             resultSet.getDate("schedule.date").toLocalDate(),
-            resultSet.getTime("schedule.time").toLocalTime()
+            resultSet.getTime("schedule.time").toLocalTime(),
+            resultSet.getLong("schedule.next_wait_num")
     );
 
     public Long save(Schedule schedule) {
-        String sql = "INSERT INTO schedule (theme_id, date, time) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO schedule (theme_id, date, time, next_wait_num) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -42,6 +45,7 @@ public class ScheduleDao {
             ps.setLong(1, schedule.getTheme().getId());
             ps.setDate(2, Date.valueOf(schedule.getDate()));
             ps.setTime(3, Time.valueOf(schedule.getTime()));
+            ps.setLong(4, schedule.getNextWaitingNumber());
             return ps;
 
         }, keyHolder);
@@ -49,17 +53,33 @@ public class ScheduleDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Schedule findById(Long id) {
-        String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
+    public Optional<Schedule> findAndIncreaseWaitNum(Long id) {
+        Optional<Schedule> schedule = findById(id);
+
+        String sql = "UPDATE schedule SET next_wait_num = next_wait_num + 1 WHERE id=?;";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setLong(1, id);
+            return ps;
+        });
+
+        return schedule;
+    }
+
+    public Optional<Schedule> findById(Long id) {
+        String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, schedule.next_wait_num, theme.id, theme.name, theme.desc, theme.price " +
                 "from schedule " +
                 "inner join theme on schedule.theme_id = theme.id " +
                 "where schedule.id = ?;";
-
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
-        String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
+        String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, schedule.next_wait_num, theme.id, theme.name, theme.desc, theme.price " +
                 "from schedule " +
                 "inner join theme on schedule.theme_id = theme.id " +
                 "where schedule.theme_id = ? and schedule.date = ?;";

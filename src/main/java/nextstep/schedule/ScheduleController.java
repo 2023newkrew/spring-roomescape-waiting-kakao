@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import auth.NeedAuth;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
+    @NeedAuth(role = NeedAuth.ADMIN)
     @PostMapping("/admin/schedules")
     public ResponseEntity createSchedule(@RequestBody ScheduleRequest scheduleRequest) {
         Long id = scheduleService.create(scheduleRequest);
@@ -25,6 +27,7 @@ public class ScheduleController {
         return ResponseEntity.ok().body(scheduleService.findByThemeIdAndDate(themeId, date));
     }
 
+    @NeedAuth(role = NeedAuth.ADMIN)
     @DeleteMapping("/admin/schedules/{id}")
     public ResponseEntity deleteReservation(@PathVariable Long id) {
         scheduleService.deleteById(id);

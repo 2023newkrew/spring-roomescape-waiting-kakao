@@ -1,11 +1,16 @@
-package nextstep.auth;
+package auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.PARAMETER)
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LoginMember {
+public @interface NeedAuth {
+
+    String MEMBER = "MEMBER";
+    String ADMIN = "ADMIN";
+
+    String role() default MEMBER;
 }
