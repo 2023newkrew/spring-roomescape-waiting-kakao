@@ -1,26 +1,26 @@
-package nextstep.reservation;
+package nextstep.waiting;
+
+import java.util.Objects;
 
 import lombok.Getter;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
-import java.util.Objects;
-
 @Getter
-public class Reservation {
+public class Waiting {
     private Long id;
     private Schedule schedule;
     private Member member;
 
-    public Reservation() {
+    public Waiting() {
     }
 
-    public Reservation(Schedule schedule, Member member) {
+    public Waiting(Schedule schedule, Member member) {
         this.schedule = schedule;
         this.member = member;
     }
 
-    public Reservation(Long id, Schedule schedule, Member member) {
+    public Waiting(Long id, Schedule schedule, Member member) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
