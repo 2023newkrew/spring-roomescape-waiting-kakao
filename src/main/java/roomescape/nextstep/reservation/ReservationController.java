@@ -1,7 +1,7 @@
 package roomescape.nextstep.reservation;
 
 import roomescape.auth.AuthenticationException;
-import roomescape.auth.LoginMember;
+import roomescape.nextstep.login.LoginMember;
 import roomescape.auth.UserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

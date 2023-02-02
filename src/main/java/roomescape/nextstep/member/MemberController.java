@@ -1,6 +1,6 @@
 package roomescape.nextstep.member;
 
-import roomescape.auth.LoginMember;
+import roomescape.nextstep.login.LoginMember;
 import roomescape.auth.UserDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

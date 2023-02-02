@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.nextstep.login;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -6,7 +6,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.nextstep.login.LoginService;
 
 import java.util.Objects;
 
