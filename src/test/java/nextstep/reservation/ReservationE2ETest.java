@@ -321,6 +321,57 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservation.getState()).isEqualTo(ReservationState.ACCEPTED);
     }
 
+    @DisplayName("미승인 예약 취소")
+    @Test
+    void cancelReservation() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        Reservation reservation = response.jsonPath().getObject(".", Reservation.class);
+        assertThat(reservation.getState()).isEqualTo(ReservationState.CANCELED);
+    }
+
+    @DisplayName("승인 예약 취소")
+    @Test
+    void cancelAcceptedReservation() {
+        createReservation();
+        acceptReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        Reservation reservation = response.jsonPath().getObject(".", Reservation.class);
+        assertThat(reservation.getState()).isEqualTo(ReservationState.CANCEL_WAITING);
+    }
+
+    @DisplayName("다른 사람이 예약 취소")
+    @Test
+    void cancelAnotherUser() {
+        createReservation();
+
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(userToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
     private ExtractableResponse<Response> createReservationWaiting() {
         return RestAssured
                 .given().log().all()
@@ -329,6 +380,17 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
                 .then().log().all()
+                .extract();
+    }
+
+    private void acceptReservation() {
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/admin/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
     }
 

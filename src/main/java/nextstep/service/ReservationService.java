@@ -132,4 +132,14 @@ public class ReservationService {
     public ReservationResponse acceptReservation(Long id) {
         return new ReservationResponse(reservationDao.acceptReservation(id));
     }
+
+    @Transactional
+    public ReservationResponse cancelReservation(Long memberId, Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (!reservation.sameMember(memberId)) {
+            throw new AuthorizationException();
+        }
+
+        return new ReservationResponse(reservationDao.cancelReservation(id));
+    }
 }

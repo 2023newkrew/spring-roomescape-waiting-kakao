@@ -21,7 +21,8 @@ import java.util.Objects;
 @Component
 public class ReservationDao {
 
-    public final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
 
     private static final String RESERVATION_BASE_SQL = "SELECT " +
             "reservation.id, reservation.schedule_id, reservation.member_id, reservation.state, " +
@@ -133,9 +134,39 @@ public class ReservationDao {
         return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.ACCEPTED);
     }
 
+    public Reservation cancelReservation(Long id) {
+        Reservation reservation = findByIdForUpdate(id);
+        ReservationState currentState = reservation.getState();
+
+        if (currentState.equals(ReservationState.ACCEPTED)) {
+            return cancelForAccepted(reservation);
+        }
+        if (currentState.equals(ReservationState.UNACCEPTED)) {
+            return cancelForUnaccepted(reservation);
+        }
+
+        throw new IllegalStateException("취소할 수 없는 예약입니다");
+    }
+
+    private Reservation cancelForAccepted(Reservation reservation) {
+        String updateSql = "UPDATE reservation SET state='CANCEL_WAITING' where id = ?;";
+        jdbcTemplate.update(updateSql, reservation.getId());
+        String updateSalesSql = "UPDATE sales SET refunded = true where reservation_id = ?;";
+        jdbcTemplate.update(updateSalesSql, reservation.getId());
+
+        return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.CANCEL_WAITING);
+    }
+
+    private Reservation cancelForUnaccepted(Reservation reservation) {
+        String updateSql = "UPDATE reservation SET state='CANCELED' where id = ?;";
+        jdbcTemplate.update(updateSql, reservation.getId());
+
+        return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.CANCELED);
+    }
+
     private Reservation findByIdForUpdate(Long id) {
         String selectSql = RESERVATION_BASE_SQL + " WHERE reservation.id = ? FOR UPDATE;";
-        
+
         try {
             Reservation reservation = jdbcTemplate.queryForObject(selectSql, rowMapper, id);
 
