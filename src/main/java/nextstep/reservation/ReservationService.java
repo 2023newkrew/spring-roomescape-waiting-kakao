@@ -57,15 +57,20 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void cancelById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id)
+    public void cancel(Member member, Long reservationId) {
+        Reservation reservation = reservationDao.findById(reservationId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.RESERVATION_NOT_FOUND));
 
-        if (!reservation.sameMember(member)) {
+        if (!reservation.isSameMember(member)) {
             throw new BusinessException(BusinessErrorCode.DELETE_FAILED_WHEN_NOT_MY_RESERVATION);
         }
 
-        reservationDao.deleteById(id);
+        if (reservation.getStatus() == Reservation.Status.WAITING_APPROVAL) {
+            reservationDao.deleteById(reservationId);
+        } else if (reservation.getStatus() == Reservation.Status.APPROVAL) {
+            reservation.changeStatus(Reservation.Status.CANCEL_WAITING);
+            reservationDao.save(reservation);
+        }
     }
 
     public List<Reservation> getReservationsByMember(Member member) {

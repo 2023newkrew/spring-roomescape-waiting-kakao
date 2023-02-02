@@ -38,7 +38,7 @@ public class WaitingService {
     }
 
     public void cancelWaitingById(Member member, Long id) {
-        reservationService.cancelById(member, id);
+        reservationService.cancel(member, id);
     }
 
     public List<ReservationWaitingResponseDto> getReservationWaitingsByMember(Member member) {

@@ -207,11 +207,11 @@ class ReservationE2ETest extends AbstractE2ETest {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete("/reservations/" + reservationId)
+                .when().patch("/reservations/" + reservationId + "/cancel")
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
 
@@ -294,12 +294,12 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("다른 사람이 예약을삭제한다")
     @Test
     void deleteReservationOfOthers() {
-        createReservation();
+        Long reservationId = createReservationAndGetId();
 
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2("other-token")
-                .when().delete("/reservations/1")
+                .when().patch("/reservations/" + reservationId + "/cancel")
                 .then().log().all()
                 .extract();
 

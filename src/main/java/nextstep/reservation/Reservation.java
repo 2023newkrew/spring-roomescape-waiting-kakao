@@ -24,7 +24,7 @@ public class Reservation {
         this.status = status;
     }
 
-    public boolean sameMember(Member member) {
+    public boolean isSameMember(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }
 

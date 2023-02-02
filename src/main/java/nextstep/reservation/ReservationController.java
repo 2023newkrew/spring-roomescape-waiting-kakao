@@ -33,13 +33,6 @@ public class ReservationController {
         return ResponseEntity.ok().body(results);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity cancelReservation(@LoginMember Member member, @PathVariable Long id) {
-        reservationService.cancelById(member, id);
-
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/mine")
     public ResponseEntity<List<ReservationResponseDto>> getReservations(@LoginMember Member member) {
         List<ReservationResponseDto> reservations = reservationService.getReservationsByMember(member)
@@ -52,6 +45,12 @@ public class ReservationController {
     @PatchMapping("/{id}/approve")
     public ResponseEntity<Void> approveReservation(@PathVariable String id) {
         reservationService.approve(Long.parseLong(id));
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelReservation(@PathVariable String id, @LoginMember Member member) {
+        reservationService.cancel(member, Long.parseLong(id));
         return ResponseEntity.ok().build();
     }
 }
