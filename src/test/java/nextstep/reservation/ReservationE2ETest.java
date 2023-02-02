@@ -164,7 +164,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("다른 사람이 예약을삭제한다")
+    @DisplayName("다른 사람이 예약을 삭제한다")
     @Test
     void deleteReservationOfOthers() {
         createReservation();
@@ -179,6 +179,67 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    @DisplayName("관리자가 예약을 승인한다.")
+    @Test
+    void approve() {
+        var reservation = createReservation();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch(reservation.header("Location") + "/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("사용자가 미승인 상태의 예약을 취소한다.")
+    @Test
+    void cancelUnapprovedReservation() {
+        var reservation = createReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch(reservation.header("Location") + "/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("사용자가 승인 상태의 예약을 취소한다.")
+    @Test
+    void cancelApprovedReservation() {
+        long id = approveReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/" + id + "/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("관리자가 미승인 상태의 예약을 거절한다.")
+    @Test
+    void rejectUnapprovedReservation() {
+        var reservation = createReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch(reservation.header("Location") + "/reject")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("관리자가 승인 상태의 예약을 거절한다.")
+    @Test
+    void rejectApprovedReservation() {
+        long id = approveReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/" + id + "/reject")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()
@@ -188,5 +249,17 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
+    }
+
+    private Long approveReservation() {
+        var reservationResponse = createReservation();
+        var reservationLocation = reservationResponse.header("Location").split("/");
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch(reservationResponse.header("Location") + "/approve")
+                .then().log().all()
+                .extract();
+        return Long.parseLong(reservationLocation[reservationLocation.length - 1]);
     }
 }

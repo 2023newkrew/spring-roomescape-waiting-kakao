@@ -3,6 +3,7 @@ CREATE TABLE reservation
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
+    status      int    not null default 0,
     primary key (id)
 );
 
@@ -40,6 +41,15 @@ CREATE TABLE reservation_waitings
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
-    wait_num    bigint auto_increment,
+    wait_num    bigint,
+    primary key (id)
+);
+
+CREATE TABLE revenue
+(
+    id              bigint not null auto_increment,
+    reservation_id  bigint not null,
+    amount          int    not null default 0,
+    date            date   not null,
     primary key (id)
 );

@@ -1,15 +1,20 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import auth.UserDetails;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.revenue.Revenue;
+import nextstep.revenue.RevenueDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
+import nextstep.support.UnsupportedReservationStatusException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -18,16 +23,22 @@ public class ReservationService {
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
+    public final RevenueDao revenueDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao,
+                              ThemeDao themeDao,
+                              ScheduleDao scheduleDao,
+                              MemberDao memberDao,
+                              RevenueDao revenueDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.revenueDao = revenueDao;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
+    public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
+        if (userDetails == null) {
             throw new AuthenticationException();
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
@@ -40,6 +51,7 @@ public class ReservationService {
             throw new DuplicateEntityException();
         }
 
+        Member member = memberDao.findById(userDetails.getId());
         Reservation newReservation = new Reservation(
                 schedule,
                 member
@@ -57,7 +69,32 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Member member, Long id) {
+    public void deleteById(UserDetails userDetails, Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new NullPointerException();
+        }
+
+        if (!reservation.sameMember(userDetails)) {
+            throw new AuthenticationException();
+        }
+
+        reservationDao.deleteById(id);
+    }
+
+    public void approve(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new NullPointerException();
+        }
+        if (reservation.getStatus() != ReservationStatus.UNAPPROVED) {
+            throw new UnsupportedReservationStatusException("승인할 수 있는 상태의 예약이 아닙니다.");
+        }
+        reservationDao.updateStatusTo(id, ReservationStatus.APPROVED);
+        revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice(), LocalDate.now()));
+    }
+
+    public void cancel(UserDetails member, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
             throw new NullPointerException();
@@ -67,6 +104,45 @@ public class ReservationService {
             throw new AuthenticationException();
         }
 
-        reservationDao.deleteById(id);
+        switch (reservation.getStatus()) {
+            case UNAPPROVED:
+                reservationDao.updateStatusTo(id, ReservationStatus.CANCELED);
+                break;
+            case APPROVED:
+                reservationDao.updateStatusTo(id, ReservationStatus.CANCEL_WAITING);
+                break;
+            default:
+                throw new UnsupportedReservationStatusException("취소 가능한 상태의 예약이 아닙니다.");
+        }
+    }
+
+    public void reject(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new NullPointerException();
+        }
+        switch (reservation.getStatus()) {
+            case UNAPPROVED:
+                reservationDao.updateStatusTo(id, ReservationStatus.REJECTED);
+                break;
+            case APPROVED:
+                reservationDao.updateStatusTo(id, ReservationStatus.REJECTED);
+                revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice() * (-1), LocalDate.now()));
+                break;
+            default:
+                throw new UnsupportedReservationStatusException("거절 가능한 상태의 예약이 아닙니다.");
+        }
+    }
+
+    public void cancelApprove(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new NullPointerException();
+        }
+        if (reservation.getStatus() != ReservationStatus.CANCEL_WAITING) {
+            throw new UnsupportedReservationStatusException("취소 대기 상태가 아닌 예약입니다.");
+        }
+        reservationDao.updateStatusTo(id, ReservationStatus.CANCELED);
+        revenueDao.save(new Revenue(reservation, reservation.getSchedule().getTheme().getPrice() * (-1), LocalDate.now()));
     }
 }

@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LoginController {
-    private final UserDetailsService userDetailsService;
+    private final LoginService loginService;
 
-    public LoginController(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public LoginController(LoginService loginService) {
+        this.loginService = loginService;
     }
 
     @PostMapping("/login/token")
     public ResponseEntity<TokenResponse> loginToken(@RequestBody TokenRequest tokenRequest) {
-        TokenResponse token = userDetailsService.createToken(tokenRequest);
+        TokenResponse token = loginService.createToken(tokenRequest);
         return ResponseEntity.ok(token);
     }
 }
