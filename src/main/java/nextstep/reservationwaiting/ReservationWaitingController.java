@@ -3,6 +3,7 @@ package nextstep.reservationwaiting;
 import auth.AuthenticationException;
 import auth.LoginMember;
 import nextstep.member.Member;
+import nextstep.support.DataResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +28,9 @@ public class ReservationWaitingController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<ReservationWaitingResponse>> findMyReservationWaitings(@LoginMember Member member) {
+    public ResponseEntity<DataResponse<List<ReservationWaitingResponse>>> findMyReservationWaitings(@LoginMember Member member) {
         List<ReservationWaitingResponse> results = reservationWaitingService.findMyReservationWaitings(member);
-        return ResponseEntity.ok().body(results);
+        return ResponseEntity.ok().body(DataResponse.of(results));
     }
 
     @PutMapping("/{id}")

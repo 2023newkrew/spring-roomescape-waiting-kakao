@@ -129,7 +129,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        List<ReservationWaitingResponse> reservationWaitingResponseList = response.jsonPath().getList(".", ReservationWaitingResponse.class);
+        List<ReservationWaitingResponse> reservationWaitingResponseList = response.jsonPath().getList("data", ReservationWaitingResponse.class);
         assertThat(reservationWaitingResponseList.size()).isEqualTo(2);
         assertThat(reservationWaitingResponseList.get(0).getWaitNum()).isEqualTo(1);
         assertThat(reservationWaitingResponseList.get(1).getWaitNum()).isEqualTo(5);

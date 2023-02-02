@@ -3,6 +3,7 @@ package nextstep.reservation;
 import auth.AuthenticationException;
 import auth.LoginMember;
 import nextstep.member.Member;
+import nextstep.support.DataResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,15 +29,15 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findReservations(@RequestParam Long themeId, @RequestParam Date date) {
+    public ResponseEntity<DataResponse<List<ReservationResponse>>> findReservations(@RequestParam Long themeId, @RequestParam Date date) {
         List<ReservationResponse> results = reservationService.findAllByThemeIdAndDate(themeId, date);
-        return ResponseEntity.ok().body(results);
+        return ResponseEntity.ok().body(DataResponse.of(results));
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<ReservationResponse>> findMyReservation(@LoginMember Member member) {
+    public ResponseEntity<DataResponse<List<ReservationResponse>>> findMyReservation(@LoginMember Member member) {
         List<ReservationResponse> results = reservationService.findMemberReservations(member);
-        return ResponseEntity.ok().body(results);
+        return ResponseEntity.ok().body(DataResponse.of(results));
     }
 
     @DeleteMapping("/{id}")

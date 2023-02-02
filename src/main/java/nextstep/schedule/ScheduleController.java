@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import nextstep.support.DataResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +22,9 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<List<Schedule>> showReservations(@RequestParam Long themeId, @RequestParam String date) {
-        return ResponseEntity.ok().body(scheduleService.findByThemeIdAndDate(themeId, date));
+    public ResponseEntity<DataResponse<List<Schedule>>> showReservations(@RequestParam Long themeId, @RequestParam String date) {
+        List<Schedule> results = scheduleService.findByThemeIdAndDate(themeId, date);
+        return ResponseEntity.ok().body(DataResponse.of(results));
     }
 
     @DeleteMapping("/admin/schedules/{id}")
