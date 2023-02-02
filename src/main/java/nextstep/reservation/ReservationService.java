@@ -68,7 +68,9 @@ public class ReservationService {
             throw new AuthorizationException();
         }
         ReservationStatus status = reservation.getStatus().changeToCancelFromMember();
+        ReservationStatusHistory history = new ReservationStatusHistory(reservation, status);
         reservationDao.updateStatus(id, status);
+        reservationDao.saveStatusHistory(history);
         return new ReservationResponse(reservation, status);
     }
     
@@ -76,7 +78,10 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NullPointerException::new);
         ReservationStatus status = reservation.getStatus().changeToCancelFromAdmin();
+        ReservationStatusHistory history = new ReservationStatusHistory(reservation, status);
+
         reservationDao.updateStatus(id, status);
+        reservationDao.saveStatusHistory(history);
         return new ReservationResponse(reservation, status);
     }
 
@@ -84,7 +89,10 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NotFoundObjectException::new);
         ReservationStatus status = reservation.getStatus().changeToApprove();
+        ReservationStatusHistory history = new ReservationStatusHistory(reservation, status);
+
         reservationDao.updateStatus(id, status);
+        reservationDao.saveStatusHistory(history);
         return new ReservationResponse(reservation, status);
     }
 
@@ -92,7 +100,10 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NotFoundObjectException::new);
         ReservationStatus status = reservation.getStatus().changeToReject();
+        ReservationStatusHistory history = new ReservationStatusHistory(reservation, status);
+
         reservationDao.updateStatus(id, status);
+        reservationDao.saveStatusHistory(history);
         return new ReservationResponse(reservation, status);
     }
 }

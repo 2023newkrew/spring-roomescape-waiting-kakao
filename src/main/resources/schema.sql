@@ -8,12 +8,21 @@ CREATE TABLE reservation
     primary key (id)
 );
 
+CREATE TABLE reservation_status_history
+(
+    id               bigint       not null auto_increment,
+    reservation_id   bigint       not null,
+    before_status    varchar(20),
+    after_status     varchar(20),
+    changed_datetime datetime     not null default now(),
+    primary key (id)
+);
+
 CREATE TABLE theme
 (
     id    bigint       not null auto_increment,
     name  varchar(20)  not null,
     desc  varchar(255) not null,
-    price int          not null,
     primary key (id)
 );
 

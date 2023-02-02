@@ -83,7 +83,7 @@ public class ReservationDaoTest {
 
     @DisplayName("예약 상태를 변경할 수 있다.")
     @Test
-    void updatestatus() {
+    void updateStatus() {
         reservationDao.updateStatus(1L, ReservationStatus.APPROVE);
         assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.APPROVE);
         reservationDao.updateStatus(1L, ReservationStatus.CANCEL);
@@ -94,5 +94,15 @@ public class ReservationDaoTest {
         assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.REJECT);
         reservationDao.updateStatus(1L, ReservationStatus.UN_APPROVE);
         assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.UN_APPROVE);
+    }
+
+    @DisplayName("예약 상태 변경 기록을 할 수 있다.")
+    @Test
+    void saveStatusHistory() {
+        Reservation reservation = reservationDao.findById(1L).get();
+        ReservationStatusHistory history = new ReservationStatusHistory(reservation, ReservationStatus.APPROVE);
+        reservationDao.saveStatusHistory(history);
+        assertThat(reservationDao.findStatusHistoryById(1L).get())
+                .isInstanceOf(ReservationStatusHistory.class);
     }
 }

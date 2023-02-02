@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 import static nextstep.utils.RowMapperUtil.reservationRowMapper;
+import static nextstep.utils.RowMapperUtil.reservationStatusHistoryMapper;
 import static nextstep.utils.RowMapperUtil.reservationWaitingRowMapper;
 
 @Component
@@ -132,5 +133,15 @@ public class ReservationDao {
     public void updateStatus(Long id, ReservationStatus status) {
         String sql = "update reservation set status = (?) where RESERVATION.id = (?)";
         jdbcTemplate.update(sql, status.name(), id);
+    }
+
+    public void saveStatusHistory(ReservationStatusHistory history) {
+        String sql = "INSERT INTO reservation_status_history (reservation_id, before_status, after_status ) VALUES (?, ?, ?);";
+        jdbcTemplate.update(sql, history.getReservationId(), history.getBeforeStatus().name(), history.getAfterStatus().name());
+    }
+
+    public Optional<ReservationStatusHistory> findStatusHistoryById(Long id) {
+        String sql = "select * from reservation_status_history where id = (?)";
+        return jdbcTemplate.query(sql, reservationStatusHistoryMapper, id).stream().findFirst();
     }
 }
