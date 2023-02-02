@@ -11,4 +11,8 @@ public enum ReservationStatus {
     public boolean isApproved() {
         return this.equals(ReservationStatus.APPROVED);
     }
+
+    public boolean isWaitCancel() {
+        return this.equals(ReservationStatus.WAIT_CANCEL);
+    }
 }

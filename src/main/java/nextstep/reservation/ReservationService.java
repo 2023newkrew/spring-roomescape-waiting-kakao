@@ -13,6 +13,7 @@ import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.UnavailableException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -108,6 +109,15 @@ public class ReservationService {
         }
     }
 
+    public void approveReservationCancellation(Long reservationId) {
+        Reservation reservation = reservationDao.findById(reservationId)
+                .orElseThrow(() -> new NotExistEntityException(Reservation.class));
+        if(!reservation.isWaitCencel()) {
+            throw new RuntimeException("예약 취소 대기 상태가 아님");
+        }
+        reservationDao.updateStatusById(reservationId, ReservationStatus.CANCELED);
+    }
+
     private void updateWaitingsByReservationCancellation(Reservation reservation) {
         reservationWaitingDao.updateTop1StatusByStatusAndScheduleId(
                 reservation.getSchedule().getId(),
@@ -122,4 +132,6 @@ public class ReservationService {
                     ReservationWaitingStatus.RESERVED);
         }
     }
+
+
 }

@@ -54,4 +54,8 @@ public class Reservation {
     public boolean isApproved() {
         return status != null && status.isApproved();
     }
+
+    public boolean isWaitCencel() {
+        return status != null && status.isWaitCancel();
+    }
 }
