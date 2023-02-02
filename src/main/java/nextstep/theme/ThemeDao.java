@@ -57,7 +57,7 @@ public class ThemeDao {
     }
 
     public Boolean deleteById(Long id) {
-        String sql = "DELETE FROM reservation where id = ?;";
+        String sql = "DELETE FROM theme where id = ?;";
         return jdbcTemplate.update(sql, id) > 0;
     }
 }
