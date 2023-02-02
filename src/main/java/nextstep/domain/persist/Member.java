@@ -1,6 +1,5 @@
 package nextstep.domain.persist;
 
-import auth.domain.persist.UserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

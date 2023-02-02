@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import nextstep.domain.persist.Schedule;
-import nextstep.domain.persist.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

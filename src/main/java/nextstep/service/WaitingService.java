@@ -12,12 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.support.converter.UserDetailToMemberConverter.*;
+import static nextstep.support.converter.UserDetailToMemberConverter.convertUserDetailToMember;
 
 @Service
 @RequiredArgsConstructor
 public class WaitingService {
     private final WaitingDao waitingDao;
+
     @Transactional(readOnly = true)
     public List<WaitingResponse> findAll(Long id) {
         return waitingDao.findAll(id).stream()

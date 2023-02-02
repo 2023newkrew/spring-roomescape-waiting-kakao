@@ -1,7 +1,6 @@
 package auth.repository;
 
 import auth.domain.persist.UserDetails;
-import auth.repository.UserDetailsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

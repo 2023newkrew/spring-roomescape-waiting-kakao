@@ -7,7 +7,6 @@ import auth.repository.UserDetailsRepository;
 import auth.support.AuthorizationException;
 import auth.support.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import auth.repository.UserDetailsRepositoryImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

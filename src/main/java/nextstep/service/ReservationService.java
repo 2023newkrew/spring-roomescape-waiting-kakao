@@ -6,11 +6,16 @@ import lombok.extern.slf4j.Slf4j;
 import nextstep.domain.dto.request.ReservationRequest;
 import nextstep.domain.dto.response.ReservationResponse;
 import nextstep.domain.enumeration.ReservationStatus;
-import nextstep.domain.persist.*;
+import nextstep.domain.persist.Reservation;
+import nextstep.domain.persist.Schedule;
+import nextstep.domain.persist.Waiting;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.WaitingDao;
-import nextstep.support.exception.api.reservation.*;
+import nextstep.support.exception.api.reservation.IllegalReservationApproveException;
+import nextstep.support.exception.api.reservation.IllegalReservationCancelException;
+import nextstep.support.exception.api.reservation.NoSuchReservationException;
+import nextstep.support.exception.api.reservation.NotReservationOwnerException;
 import nextstep.support.exception.api.schedule.NoSuchScheduleException;
 import nextstep.worker.ReservationApproveEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -22,7 +27,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.domain.enumeration.ReservationStatus.*;
 import static nextstep.support.constant.ProfitSettings.*;
-import static nextstep.support.converter.UserDetailToMemberConverter.*;
+import static nextstep.support.converter.UserDetailToMemberConverter.convertUserDetailToMember;
 
 @Service
 @RequiredArgsConstructor

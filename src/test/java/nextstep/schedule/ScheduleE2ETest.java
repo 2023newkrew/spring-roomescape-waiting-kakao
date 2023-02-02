@@ -3,14 +3,13 @@ package nextstep.schedule;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
 import nextstep.domain.dto.request.ScheduleRequest;
-import nextstep.util.RequestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import static nextstep.util.RequestBuilder.*;
+import static nextstep.util.RequestBuilder.scheduleRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScheduleE2ETest extends AbstractE2ETest {
