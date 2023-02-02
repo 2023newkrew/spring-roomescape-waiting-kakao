@@ -23,7 +23,7 @@ public class ReservationCommon extends AbstractE2ETest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
+        ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000L);
         var themeResponse = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

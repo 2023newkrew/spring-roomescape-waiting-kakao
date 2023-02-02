@@ -46,7 +46,7 @@ public class ScheduleTest extends AbstractE2ETest {
     public void setUp() {
         super.setUp();
 
-        ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
+        ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000L);
         var themeResponse = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -147,7 +147,7 @@ public class ScheduleTest extends AbstractE2ETest {
         reservation = new Reservation(
                 new Schedule(
                         Long.parseLong(location.split("/")[2]),
-                        new Theme(themeId, "테마이름", "테마설명", 22000),
+                        new Theme(themeId, "테마이름", "테마설명", 22000L),
                         LocalDate.parse("2022-08-11"),
                         LocalTime.parse("13:00")
                 ),

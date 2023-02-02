@@ -41,7 +41,7 @@ public class ThemeTest extends AbstractE2ETest{
     @DisplayName("허용되지 않은 사용자가 테마를 이용할 때, 에러가 발생한다")
     @Test
     void notAuthorizedUserTest(){
-        ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
+        ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000L);
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -127,7 +127,7 @@ public class ThemeTest extends AbstractE2ETest{
     }
 
     private ExtractableResponse<Response> requestCreateTheme() {
-        ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
+        ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000L);
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -48,7 +48,7 @@ public class AdminAuthorizationTest {
         Member admin = saveMember(jdbcTemplate, USERNAME + "admin", PASSWORD, "ADMIN");
         ExtractableResponse<Response> tokenAdminResponse = generateToken(admin.getUsername(), admin.getPassword());
         String adminToken = tokenAdminResponse.body().jsonPath().getString("accessToken");
-        ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 10000);
+        ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 10000L);
         var themeResponse = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -228,7 +228,7 @@ public class AdminAuthorizationTest {
     }
 
     private ExtractableResponse<Response> requestCreateTheme() {
-        ThemeRequest body = new ThemeRequest("테마이름111", "테마설명", 22000);
+        ThemeRequest body = new ThemeRequest("테마이름111", "테마설명", 22000L);
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

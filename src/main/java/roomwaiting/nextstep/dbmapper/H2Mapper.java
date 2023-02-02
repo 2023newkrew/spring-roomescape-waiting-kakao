@@ -29,7 +29,7 @@ public class H2Mapper implements DatabaseMapper {
                                 resultSet.getLong("theme.id"),
                                 resultSet.getString("theme.name"),
                                 resultSet.getString("theme.description"),
-                                resultSet.getInt("theme.price")
+                                resultSet.getLong("theme.price")
                         ),
                         resultSet.getDate("schedule.date").toLocalDate(),
                         resultSet.getTime("schedule.time").toLocalTime()
@@ -53,7 +53,7 @@ public class H2Mapper implements DatabaseMapper {
                         resultSet.getLong("theme.id"),
                         resultSet.getString("theme.name"),
                         resultSet.getString("theme.description"),
-                        resultSet.getInt("theme.price")
+                        resultSet.getLong("theme.price")
                 ),
                 resultSet.getDate("schedule.date").toLocalDate(),
                 resultSet.getTime("schedule.time").toLocalTime()
@@ -65,7 +65,7 @@ public class H2Mapper implements DatabaseMapper {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
-                resultSet.getInt("price")
+                resultSet.getLong("price")
         );
     }
 
@@ -78,7 +78,7 @@ public class H2Mapper implements DatabaseMapper {
                                 resultSet.getLong("theme.id"),
                                 resultSet.getString("theme.name"),
                                 resultSet.getString("theme.description"),
-                                resultSet.getInt("theme.price")
+                                resultSet.getLong("theme.price")
                         ),
                         resultSet.getDate("schedule.date").toLocalDate(),
                         resultSet.getTime("schedule.time").toLocalTime()

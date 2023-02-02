@@ -8,12 +8,12 @@ public class Theme {
     private Long id;
     private String name;
     private String description;
-    private int price;
+    private Long price;
 
     public Theme() {
     }
 
-    public Theme(Long id, String name, String description, int price) {
+    public Theme(Long id, String name, String description, Long price) {
         checkEmptyValue(name, price);
         this.id = id;
         this.name = name;
@@ -21,7 +21,7 @@ public class Theme {
         this.price = price;
     }
 
-    public Theme(String name, String description, int price) {
+    public Theme(String name, String description, Long price) {
         checkEmptyValue(name, price);
         this.name = name;
         this.description = description;
@@ -40,11 +40,11 @@ public class Theme {
         return description;
     }
 
-    public int getPrice() {
+    public Long getPrice() {
         return price;
     }
 
-    private void checkEmptyValue(String name, int price){
+    private void checkEmptyValue(String name, Long price){
         if (StringUtils.isNullOrEmpty(name)  || price == 0) {
             throw new NullPointerException(EMPTY_VALUE.getMessage());
         }
