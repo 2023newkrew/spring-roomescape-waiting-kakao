@@ -12,8 +12,8 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Member member) {
-        return memberDao.save(member);
+    public Long create(String username, String password, String name, String phone, String role) {
+        return memberDao.save(username, password, name, phone, role);
     }
 
     public Member findById(Long id) {

@@ -12,6 +12,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Component
@@ -34,15 +35,15 @@ public class ScheduleDao {
             resultSet.getTime("schedule.time").toLocalTime()
     );
 
-    public Long save(Schedule schedule) {
+    public Long save(Long themeId, LocalDate date, LocalTime time) {
         String sql = "INSERT INTO schedule (theme_id, date, time) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
+        System.out.println("time = " + time);
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, schedule.getTheme().getId());
-            ps.setDate(2, Date.valueOf(schedule.getDate()));
-            ps.setTime(3, Time.valueOf(schedule.getTime()));
+            ps.setLong(1, themeId);
+            ps.setDate(2, Date.valueOf(date));
+            ps.setTime(3, Time.valueOf(time));
             return ps;
 
         }, keyHolder);
@@ -58,12 +59,12 @@ public class ScheduleDao {
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
+    public List<Schedule> findByThemeIdAndDate(Long themeId, LocalDate date) {
         String sql = "SELECT * FROM schedule " +
                 "JOIN theme ON schedule.theme_id = theme.id " +
                 "WHERE schedule.theme_id = ? AND schedule.date = ?;";
 
-        return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(LocalDate.parse(date)));
+        return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(date));
     }
 
     public void deleteById(Long id) {

@@ -20,7 +20,12 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
-        Long id = memberService.create(memberRequest.toMember());
+        Long id = memberService.create(
+                memberRequest.getUsername(),
+                memberRequest.getPassword(),
+                memberRequest.getName(),
+                memberRequest.getPhone(),
+                memberRequest.getRole());
         return ResponseEntity.created(URI.create("/members/" + id)).build();
     }
 

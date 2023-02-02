@@ -25,15 +25,15 @@ public class ThemeDao {
             resultSet.getInt("price")
     );
 
-    public Long save(Theme theme) {
+    public Long save(String name, String desc, int price) {
         String sql = "INSERT INTO theme (name, desc, price) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDesc());
-            ps.setInt(3, theme.getPrice());
+            ps.setString(1, name);
+            ps.setString(2, desc);
+            ps.setInt(3, price);
             return ps;
 
         }, keyHolder);

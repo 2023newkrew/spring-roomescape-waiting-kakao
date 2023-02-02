@@ -15,12 +15,8 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-    public Long create(Theme theme) {
-        return themeDao.save(theme);
-    }
-
-    public Theme findById(Long id) {
-        return themeDao.findById(id);
+    public Long create(String name, String desc, int price) {
+        return themeDao.save(name, desc, price);
     }
 
     public List<Theme> findAll() {

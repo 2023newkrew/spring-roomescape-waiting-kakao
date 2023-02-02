@@ -44,12 +44,7 @@ public class ReservationService {
             throw new DuplicateEntityException();
         }
 
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
-
-        return reservationDao.save(newReservation);
+        return reservationDao.save(scheduleId, memberId);
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {

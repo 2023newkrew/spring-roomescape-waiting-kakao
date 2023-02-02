@@ -27,17 +27,17 @@ public class MemberDao implements LoginRepository {
             resultSet.getString("role")
     );
 
-    public Long save(Member member) {
+    public Long save(String username, String password, String name, String phone, String role) {
         String sql = "INSERT INTO member (username, password, name, phone, role) VALUES (?, ?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, member.getUsername());
-            ps.setString(2, member.getPassword());
-            ps.setString(3, member.getName());
-            ps.setString(4, member.getPhone());
-            ps.setString(5, member.getRole());
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ps.setString(3, name);
+            ps.setString(4, phone);
+            ps.setString(5, role);
             return ps;
 
         }, keyHolder);
