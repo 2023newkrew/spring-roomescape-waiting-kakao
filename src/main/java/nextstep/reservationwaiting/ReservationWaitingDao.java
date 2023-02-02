@@ -76,6 +76,8 @@ public class ReservationWaitingDao {
         try{
             return jdbcTemplate.query(sql, rowMapper, memberId);
         } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
             return Collections.emptyList();
         }
     }
@@ -86,6 +88,8 @@ public class ReservationWaitingDao {
         try {
             return jdbcTemplate.queryForObject(sql, Integer.class, scheduleId, reservationWaitingId);
         } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
             return 0;
         }
     }
@@ -104,6 +108,8 @@ public class ReservationWaitingDao {
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
         } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
@@ -123,6 +129,8 @@ public class ReservationWaitingDao {
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
         } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
