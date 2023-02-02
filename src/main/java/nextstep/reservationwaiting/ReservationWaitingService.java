@@ -31,7 +31,7 @@ public class ReservationWaitingService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Member member, ReservationWaitingRequest reservationRequest) {
+    public Long reserve(Member member, ReservationWaitingRequest reservationRequest) {
         if (member == null) {
             throw new AuthenticationException();
         }
@@ -40,22 +40,14 @@ public class ReservationWaitingService {
             throw new NullPointerException();
         }
         ReservationWaitingStatus currentStatus = ReservationWaitingStatus.WAITING;
-        if (tryInsertReservation(schedule, member)) {
+        try {
+            reservationDao.save(new Reservation(schedule, member));
             currentStatus = ReservationWaitingStatus.RESERVED;
+        } catch (DuplicateKeyException e) {
+            System.out.println("예약이 이미 존재하여 예약 대기열로 이동합니다.");
         }
         Long id = reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus));
         return id;
-    }
-
-    private boolean tryInsertReservation(Schedule schedule, Member member) {
-        try {
-            reservationDao.save(new Reservation(schedule, member));
-        } catch (DuplicateKeyException e) {
-            // 예약이 이미 존재할 때
-            System.out.println("예약이 이미 존재하여 예약 대기열로 이동합니다.");
-            return false;
-        }
-        return true;
     }
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {
