@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS member
     name     varchar(20) not null,
     phone    varchar(20) not null,
     role     varchar(20) not null,
-    primary key (id)
+    primary key (id),
+    unique(username)
 );
 
 CREATE TABLE IF NOT EXISTS reservation_waiting
