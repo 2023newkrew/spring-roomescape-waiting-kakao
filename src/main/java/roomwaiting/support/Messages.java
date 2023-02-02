@@ -22,7 +22,8 @@ public enum Messages {
     NOT_ALLOWED_SERVICE("Only allowed to ADMIN USERS"),
     CREATE_USER("User Create Success, Username: "),
     UPDATE_ADMIN("Users Role updated to Admin, Username: "),
-    ALREADY_ADMIN("Role of member already admin level")
+    ALREADY_ADMIN("Role of member already admin level"),
+    NEEDS_NOT_APPROVED_STATUS("Status should be NotApproved"),
 ;
 
     private final String message;

@@ -9,6 +9,7 @@ import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.NotAcceptableStatusException;
 
 
 @RestControllerAdvice
@@ -35,8 +36,14 @@ public class ExceptionHandlers {
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<Object> duplicateException(final RuntimeException ex) {
+    public ResponseEntity<Object> duplicateException(final DuplicateKeyException ex) {
         logger.warn(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(NotAcceptableStatusException.class)
+    public ResponseEntity<Object> notAcceptableStatusException(final NotAcceptableStatusException ex) {
+        logger.warn(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ex.getMessage());
     }
 }
