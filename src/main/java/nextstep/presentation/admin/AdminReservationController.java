@@ -23,6 +23,14 @@ public class AdminReservationController {
                 .build();
     }
 
+    @PutMapping("/{reservationId}/cancel-approve")
+    public ResponseEntity<Void> approveCancelReservation(@PathVariable Long reservationId) {
+        reservationService.approveCancelReservation(reservationId);
+
+        return ResponseEntity.ok()
+                .build();
+    }
+
     @PutMapping("/batch/transition")
     public ResponseEntity<Void> transitReservations(@RequestBody TransitionReservationStatusRequest transitionReservationStatusRequest) {
         reservationBatchService.transitReservationStatus(transitionReservationStatusRequest.getStatus());

@@ -96,6 +96,14 @@ public class ReservationService {
         reservationDao.updateReservationStatus(reservationId, CANCEL_PENDING.name());
     }
 
+    @Transactional
+    public void approveCancelReservation(Long reservationId) {
+        Reservation reservation = findById(reservationId);
+
+        reservationDao.updateReservationStatus(reservationId, CANCELED.name());
+        salesHistoryService.saveRefundHistory(reservation);
+    }
+
     private Reservation findById(Long reservationId) {
         return reservationDao.findById(reservationId)
                 .orElseThrow(() -> new ApplicationException(RESERVATION_NOT_FOUND));
