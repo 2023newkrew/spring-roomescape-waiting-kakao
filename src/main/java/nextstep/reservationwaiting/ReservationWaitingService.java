@@ -28,7 +28,7 @@ public class ReservationWaitingService {
         this.memberDao = memberDao;
     }
 
-    public String create(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
+    public Long create(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
         Member member = memberDao.findById(memberId);
         if (member == null) {
             throw new AuthenticationException();
@@ -39,18 +39,12 @@ public class ReservationWaitingService {
             throw new NoScheduleException("There is no following schedule");
         }
 
-        List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
-        if (reservations.isEmpty()) {
-            Reservation reservation = new Reservation(schedule, member);
-            return "/reservations/" + reservationDao.save(reservation);
-        }
-
         ReservationWaiting newReservationWaiting = new ReservationWaiting(
                 schedule,
                 member
         );
 
-        return "/reservation-waitings/" + reservationWaitingDao.save(newReservationWaiting);
+        return reservationWaitingDao.save(newReservationWaiting);
     }
 
     public List<ReservationWaitingResponse> findAllByMemberId(Long memberId) {
