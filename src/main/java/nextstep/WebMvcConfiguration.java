@@ -1,9 +1,9 @@
 package nextstep;
 
 import auth.*;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -11,21 +11,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @Configuration
-@PropertySource("classpath:application.properties")
+@EnableConfigurationProperties(SecurityTokenProperty.class)
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final Environment environment;
     private final UserDetailsDAO userDetailsDAO;
+    private final SecurityTokenProperty securityTokenProperty;
 
-    public WebMvcConfiguration(Environment environment, UserDetailsDAO userDetailsDAO) {
+    public WebMvcConfiguration(Environment environment, UserDetailsDAO userDetailsDAO, SecurityTokenProperty securityTokenProperty) {
         this.environment = environment;
         this.userDetailsDAO = userDetailsDAO;
+        this.securityTokenProperty = securityTokenProperty;
     }
 
     @Bean
     public JwtTokenProvider jwtTokenProvider(){
       return new JwtTokenProvider(
-              environment.getProperty("security.jwt.token.secret-key"),
-              Long.parseLong(environment.getProperty("security.jwt.token.expire-length"))
+              securityTokenProperty.getSecretKey(),
+              Long.parseLong(securityTokenProperty.getExpireLength())
       );
     };
 
