@@ -39,4 +39,7 @@ public class ReservationWaitings {
         return waitNum;
     }
 
+    boolean isCreator(Member other) {
+        return member.isSameMember(other);
+    }
 }

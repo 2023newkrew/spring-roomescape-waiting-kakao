@@ -61,4 +61,8 @@ public class Member implements UserDetails {
     public boolean checkWrongPassword(String password) {
         return !this.password.equals(password);
     }
+
+    public boolean isSameMember(Member other) {
+        return id.equals(other.id);
+    }
 }

@@ -63,7 +63,7 @@ public class ReservationWaitingsService {
 
     public void delete(Member member, Long id) {
         ReservationWaitings reservationWaitings = reservationWaitingsDao.findById(id);
-        if (reservationWaitings.getMember().getId() != member.getId()) {
+        if (!reservationWaitings.isCreator(member)) {
             throw new NotCreatorMemberException();
         }
         reservationWaitingsDao.delete(id);
