@@ -1,5 +1,6 @@
 package roomescape.nextstep;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import roomescape.auth.*;
 import roomescape.nextstep.login.LoginService;
@@ -15,6 +16,9 @@ import java.util.List;
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final MemberDao memberDao;
+
+    @Value("${security.jwt.token.secret-key}")
+    private String secretKey;
 
     public WebMvcConfiguration(MemberDao memberDao) {
         this.memberDao = memberDao;
@@ -44,6 +48,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
-        return new JwtTokenProvider();
+        return new JwtTokenProvider(secretKey);
     }
 }

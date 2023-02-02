@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.Date;
 
 public class JwtTokenProvider {
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    private final String secretKey;
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
+
+    public JwtTokenProvider(String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     public String createToken(String principal, String role) {
         Claims claims = Jwts.claims().setSubject(principal);
