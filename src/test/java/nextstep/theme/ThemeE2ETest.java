@@ -71,6 +71,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
         var response = RestAssured
                 .given().log().all()
                 .param("date", "2022-08-11")
+                .auth().oauth2(token.getAccessToken())
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
