@@ -14,10 +14,9 @@ public class ReservationWaiting {
     private final Long id;
     private final Schedule schedule;
     private final Member member;
-    private final Long waitNum;
 
     public ReservationWaiting(Schedule schedule, Member member) {
-        this(null, schedule, member, null);
+        this(null, schedule, member);
     }
 
     public Reservation toReservation() {

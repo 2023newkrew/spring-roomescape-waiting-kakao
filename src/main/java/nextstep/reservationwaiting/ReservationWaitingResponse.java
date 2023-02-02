@@ -11,7 +11,7 @@ public class ReservationWaitingResponse {
     private final ScheduleResponse scheduleResponse;
     private final Long waitNum;
 
-    public static ReservationWaitingResponse from(ReservationWaiting reservationWaiting) {
-        return new ReservationWaitingResponse(reservationWaiting.getId(), ScheduleResponse.from(reservationWaiting.getSchedule()), reservationWaiting.getWaitNum());
+    public static ReservationWaitingResponse from(ReservationWaiting reservationWaiting, Long waitNum) {
+        return new ReservationWaitingResponse(reservationWaiting.getId(), ScheduleResponse.from(reservationWaiting.getSchedule()), waitNum);
     }
 }

@@ -20,6 +20,16 @@ import java.util.Optional;
 public class ReservationWaitingDao {
     private final JdbcTemplate jdbcTemplate;
 
+    private final String SELECT_QUERY = "SELECT " +
+            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
+            "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+            "theme.id, theme.name, theme.desc, theme.price, " +
+            "member.id, member.username, member.password, member.name, member.phone, member.role ";
+
+    private final String INNER_JOIN_QUERY = "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
+            "inner join theme on schedule.theme_id = theme.id " +
+            "inner join member on reservation_waiting.member_id = member.id ";
+
     private final RowMapper<ReservationWaiting> rowMapper = (resultSet, rowNum) -> new ReservationWaiting(
             resultSet.getLong("reservation_waiting.id"),
             new Schedule(
@@ -40,8 +50,7 @@ public class ReservationWaitingDao {
                     .name(resultSet.getString("member.name"))
                     .phone(resultSet.getString("member.phone"))
                     .role(Role.valueOf(resultSet.getString("member.role")))
-                    .build(),
-            resultSet.getLong("wait_num")
+                    .build()
     );
 
     public Long save(ReservationWaiting reservationWaiting) {
@@ -60,38 +69,19 @@ public class ReservationWaitingDao {
     }
 
     public List<ReservationWaiting> findByMemberId(Long memberId) {
-        String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                "theme.id, theme.name, theme.desc, theme.price, " +
-                "member.id, member.username, member.password, member.name, member.phone, member.role, " +
-                "wait_num " +
-                "FROM (" +
-                "    SELECT " +
-                "    id, schedule_id, member_id, " +
-                "    ROW_NUMBER() OVER(PARTITION BY schedule_id ORDER BY id) AS wait_num " +
-                "    FROM reservation_waiting" +
-                ") AS reservation_waiting " +
-                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation_waiting.member_id = member.id " +
-                "WHERE member_id = ?;";
+        String sql = SELECT_QUERY +
+                "FROM reservation_waiting " +
+                INNER_JOIN_QUERY +
+                "WHERE member_id = ?; ";
 
         return jdbcTemplate.query(sql, rowMapper, memberId);
     }
 
     public Optional<ReservationWaiting> findById(Long id) {
-        String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                "theme.id, theme.name, theme.desc, theme.price, " +
-                "member.id, member.username, member.password, member.name, member.phone, member.role," +
-                "0 AS wait_num " +
-                "from reservation_waiting " +
-                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation_waiting.member_id = member.id " +
-                "where reservation_waiting.id = ?;";
+        String sql = SELECT_QUERY +
+                "FROM reservation_waiting " +
+                INNER_JOIN_QUERY +
+                "where reservation_waiting.id = ?; ";
 
         return jdbcTemplate.query(sql, rowMapper, id)
                 .stream()
@@ -99,16 +89,9 @@ public class ReservationWaitingDao {
     }
 
     public Optional<ReservationWaiting> findMinIdByScheduleId(Schedule schedule) {
-        String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                "theme.id, theme.name, theme.desc, theme.price, " +
-                "member.id, member.username, member.password, member.name, member.phone, member.role," +
-                "0 AS wait_num " +
+        String sql = SELECT_QUERY +
                 "from reservation_waiting " +
-                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation_waiting.member_id = member.id " +
+                INNER_JOIN_QUERY +
                 "WHERE reservation_waiting.id = (" +
                 "    SELECT " +
                 "    MIN(id) " +
@@ -124,5 +107,12 @@ public class ReservationWaitingDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation_waiting where id = ?;";
         jdbcTemplate.update(sql, id);
+    }
+
+    public Long rankBySceduleId(Long id, Long scheduleId) {
+        String sql = "SELECT rank " +
+                "FROM (SELECT RANK() OVER (ORDER BY id) rank, id FROM reservation_waiting WHERE schedule_id = ?) " +
+                "WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getLong(1), scheduleId, id);
     }
 }

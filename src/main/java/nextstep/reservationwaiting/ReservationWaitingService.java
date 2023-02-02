@@ -25,7 +25,8 @@ public class ReservationWaitingService {
     public List<ReservationWaitingResponse> findByMemberId(Long memberId) {
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByMemberId(memberId);
         return reservationWaitingList.stream()
-                .map(ReservationWaitingResponse::from)
+                .map(reservationWaiting -> ReservationWaitingResponse.from(reservationWaiting,
+                        reservationWaitingDao.rankBySceduleId(reservationWaiting.getId(), reservationWaiting.getSchedule().getId())))
                 .collect(Collectors.toList());
     }
 
