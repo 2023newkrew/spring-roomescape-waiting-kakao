@@ -158,11 +158,11 @@ class ReservationE2ETest extends AbstractE2ETest {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/-1")
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(ErrorCode.THEME_NOT_FOUND.getStatus());
+        assertThat(response.statusCode()).isEqualTo(ErrorCode.RESERVATION_NOT_FOUND.getStatus());
     }
 
     @DisplayName("다른 사람이 예약을삭제한다")
