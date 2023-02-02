@@ -11,19 +11,19 @@ import org.springframework.jdbc.core.RowMapper;
 public class RowMapperUtil {
 
     public static final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> new Member(
-            resultSet.getLong("id"),
-            resultSet.getString("username"),
-            resultSet.getString("password"),
-            resultSet.getString("name"),
-            resultSet.getString("phone"),
-            resultSet.getString("role")
+            resultSet.getLong("member.id"),
+            resultSet.getString("member.username"),
+            resultSet.getString("member.password"),
+            resultSet.getString("member.name"),
+            resultSet.getString("member.phone"),
+            resultSet.getString("member.role")
     );
 
     public static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("desc"),
-            resultSet.getInt("price")
+            resultSet.getLong("theme.id"),
+            resultSet.getString("theme.name"),
+            resultSet.getString("theme.desc"),
+            resultSet.getInt("theme.price")
     );
 
     public static final RowMapper<Schedule> scheduleRowMapper = (resultSet, rowNum) -> new Schedule(

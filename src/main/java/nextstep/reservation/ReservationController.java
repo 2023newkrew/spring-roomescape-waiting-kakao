@@ -41,7 +41,7 @@ public class ReservationController {
     @GetMapping("/reservations/mine")
     public ResponseEntity<List<ReservationResponse>> showMyReservations(@LoginMember Member member) {
         List<ReservationResponse> reservations = reservationService.findAllByMember(member);
-        return ResponseEntity.ok(reservations);
+        return ResponseEntity.ok().body(reservations);
     }
 
 
