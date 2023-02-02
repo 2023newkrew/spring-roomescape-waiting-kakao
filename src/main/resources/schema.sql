@@ -19,7 +19,7 @@ CREATE TABLE reservation
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
-    state       ENUM( 'UNACCEPTED', 'ACCEPTED', 'CANCELED', 'CANCEL_WAITING', 'REJECTED'),
+    state       varchar(20) not null,
     primary key (id)
 );
 
