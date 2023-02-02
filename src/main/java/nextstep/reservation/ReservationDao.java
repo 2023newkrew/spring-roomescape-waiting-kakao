@@ -1,5 +1,10 @@
 package nextstep.reservation;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
@@ -8,11 +13,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.util.Collections;
-import java.util.List;
 
 @Component
 public class ReservationDao {
@@ -113,8 +113,64 @@ public class ReservationDao {
         }
     }
 
-    public void deleteById(Long id) {
+    public List<Reservation> findByMemberId(Long memberId) {
+        String sql = "SELECT " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from reservation " +
+                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation.member_id = member.id " +
+                "where member.id = ?;";
+
+        try {
+            return jdbcTemplate.query(sql, rowMapper, memberId);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public int deleteById(Long id) {
         String sql = "DELETE FROM reservation where id = ?;";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
+    }
+
+    public Reservation findTopPriorityByScheduleId(Long id) {
+        String sql = "SELECT " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from reservation " +
+                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation.member_id = member.id " +
+                "where schedule.id = ? limit 1;";
+
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Long calcWaitNumByScheduleId(Long scheduleId, Long reservationId) {
+        String sql = "select count(*) from reservation " +
+                "where schedule_id = ? and id < ?;";
+        try {
+            return jdbcTemplate.query(sql,
+                    rs -> {
+                        if (rs.next()) {
+                            return rs.getLong(1);
+                        } else {
+                            throw new SQLException();
+                        }
+                    },
+                    scheduleId, reservationId);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
