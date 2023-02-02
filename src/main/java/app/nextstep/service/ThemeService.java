@@ -2,7 +2,7 @@ package app.nextstep.service;
 
 import app.nextstep.dao.ThemeDao;
 import app.nextstep.domain.Theme;
-import app.nextstep.dto.ThemeRequest;
+import app.nextstep.support.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +15,12 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-    public Long create(ThemeRequest themeRequest) {
-        return themeDao.save(themeRequest.toEntity());
+    public Long create(Theme theme) {
+        return themeDao.save(theme);
+    }
+
+    public Theme findById(Long id) {
+        return themeDao.findById(id);
     }
 
     public List<Theme> findAll() {
@@ -26,7 +30,7 @@ public class ThemeService {
     public void delete(Long id) {
         Theme theme = themeDao.findById(id);
         if (theme == null) {
-            throw new NullPointerException();
+            throw new EntityNotFoundException();
         }
 
         themeDao.delete(id);

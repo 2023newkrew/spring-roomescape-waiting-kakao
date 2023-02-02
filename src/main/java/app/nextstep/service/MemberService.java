@@ -2,7 +2,6 @@ package app.nextstep.service;
 
 import app.nextstep.dao.MemberDao;
 import app.nextstep.domain.Member;
-import app.nextstep.dto.MemberRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,8 +12,8 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
-    public Long create(MemberRequest memberRequest) {
-        return memberDao.save(memberRequest.toEntity());
+    public Long create(Member member) {
+        return memberDao.save(member);
     }
 
     public Member findById(Long id) {

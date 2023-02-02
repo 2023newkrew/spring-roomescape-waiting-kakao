@@ -25,7 +25,7 @@ public class ThemeRequest {
         return price;
     }
 
-    public Theme toEntity() {
+    public Theme toTheme() {
         return new Theme(
                 this.name,
                 this.desc,

@@ -32,7 +32,7 @@ public class ScheduleRequest {
         return time;
     }
 
-    public Schedule toEntity(Theme theme) {
+    public Schedule toSchedule(Theme theme) {
         return new Schedule(
                 theme,
                 LocalDate.parse(this.date),

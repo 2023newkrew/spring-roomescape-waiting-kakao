@@ -2,9 +2,6 @@ package app.nextstep.service;
 
 import app.nextstep.dao.ScheduleDao;
 import app.nextstep.domain.Schedule;
-import app.nextstep.dto.ScheduleRequest;
-import app.nextstep.domain.Theme;
-import app.nextstep.dao.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,16 +9,13 @@ import java.util.List;
 @Service
 public class ScheduleService {
     private ScheduleDao scheduleDao;
-    private ThemeDao themeDao;
 
-    public ScheduleService(ScheduleDao scheduleDao, ThemeDao themeDao) {
+    public ScheduleService(ScheduleDao scheduleDao) {
         this.scheduleDao = scheduleDao;
-        this.themeDao = themeDao;
     }
 
-    public Long create(ScheduleRequest scheduleRequest) {
-        Theme theme = themeDao.findById(scheduleRequest.getThemeId());
-        return scheduleDao.save(scheduleRequest.toEntity(theme));
+    public Long create(Schedule schedule) {
+        return scheduleDao.save(schedule);
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
