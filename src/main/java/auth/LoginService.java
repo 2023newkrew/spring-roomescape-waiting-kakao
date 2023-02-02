@@ -14,7 +14,7 @@ public class LoginService {
     public TokenResponse createToken(TokenRequest tokenRequest) {
         UserDetails userDetails = userDao.findByUsername(tokenRequest.getUsername())
                 .orElseThrow(AuthenticationException::new);
-        if (userDetails.checkWrongPassword(tokenRequest.getPassword())) {
+        if (!userDetails.checkPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
 

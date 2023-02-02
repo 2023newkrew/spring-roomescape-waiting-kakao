@@ -54,7 +54,7 @@ public class Member implements UserDetails {
         return role;
     }
 
-    public boolean checkWrongPassword(String password) {
-        return !this.password.equals(password);
+    public boolean checkPassword(String password) {
+        return this.password.equals(password);
     }
 }

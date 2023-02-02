@@ -7,5 +7,5 @@ public interface UserDetails {
     String getName();
     String getPhone();
     String getRole();
-    boolean checkWrongPassword(String password);
+    boolean checkPassword(String password);
 }
