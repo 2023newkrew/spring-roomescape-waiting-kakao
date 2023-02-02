@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import nextstep.exceptions.exception.CancelReservationStateException;
 import nextstep.exceptions.exception.DuplicatedReservationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
@@ -60,5 +61,26 @@ public class ReservationService {
         return reservations.stream()
                 .map(ReservationResponse::new)
                 .toList();
+    }
+
+    public ReservationResponse cancelReservation(Member member, Long id) {
+        if (member == null) {  // Todo : member Null check는 Intercepter로 이동
+            throw new AuthenticationException();
+        }
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(NullPointerException::new);
+        ReservationState state = getCancelReservationState(reservation);
+        reservationDao.updateState(id, state);
+        return new ReservationResponse(reservation, state);
+    }
+
+    private ReservationState getCancelReservationState(Reservation reservation) {
+        if (reservation.getState().equals(ReservationState.UN_APPROVE)) {
+            return ReservationState.CANCEL;
+        }
+        if (reservation.getState().equals(ReservationState.APPROVE)) {
+            return ReservationState.CANCEL_WAIT;
+        }
+        throw new CancelReservationStateException();
     }
 }
