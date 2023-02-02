@@ -43,7 +43,7 @@ public class ThemeDao {
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT id, name, desc, price from theme where id = ?;";
+        String sql = "SELECT id, name, desc, price from theme where id = ? limit 1;";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
