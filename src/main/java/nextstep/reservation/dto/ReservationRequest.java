@@ -8,7 +8,7 @@ public class ReservationRequest {
     @NotNull
     private Long scheduleId;
 
-    public ReservationRequest() {
+    protected ReservationRequest() {
     }
 
     public ReservationRequest(Long scheduleId) {

@@ -13,6 +13,7 @@ import nextstep.member.MemberRequest;
 import nextstep.member.Role;
 import nextstep.reservation.domain.ReservationStatus;
 import nextstep.reservation.dto.ReservationRequest;
+import nextstep.revenue.RevenueStatus;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,8 +110,53 @@ class ReservationAdminControllerTest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .jsonPath().get("status");
+                .jsonPath().getString("status");
         assertThat(reservationStatus).isEqualTo(ReservationStatus.APPROVED.toString());
+    }
+
+    @DisplayName("예약 승인 시 매출 이력이 생성된다.")
+    @Test
+    public void createRevenueAfterApprove() {
+        // given
+        createReservation(nonAdminToken.getAccessToken());
+
+        // when
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/admin/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        String revenueStatus = RestAssured
+                .given().log().all()
+                .auth().oauth2(nonAdminToken.getAccessToken())
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().getString("revenue.status");
+        assertThat(revenueStatus).isEqualTo(RevenueStatus.OK.toString());
+    }
+
+    @DisplayName("예약 승인 전에는 매출 이력이 존재하지 않는다.")
+    @Test
+    public void noRevenueBeforeApprove() {
+        // given
+        createReservation(nonAdminToken.getAccessToken());
+
+        // when // then
+        Object revenue = RestAssured
+                .given().log().all()
+                .auth().oauth2(nonAdminToken.getAccessToken())
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().get("revenue");
+        assertThat(revenue).isNull();
     }
 
     @DisplayName("일반 유저는 예약을 승인할 수 없다.")
@@ -295,6 +341,67 @@ class ReservationAdminControllerTest extends AbstractE2ETest {
                 .extract()
                 .jsonPath().get("status");
         assertThat(reservationStatus).isEqualTo(ReservationStatus.REFUSED.toString());
+    }
+
+    @DisplayName("승인된 예약 거절 시 매출 이력의 상태가 환불로 변경된다.")
+    @Test
+    public void refundRevenueAfterRefuse() {
+        // given
+        createReservation(nonAdminToken.getAccessToken());
+
+        // when
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/admin/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/admin/reservations/1/refuse")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        String revenueStatus = RestAssured
+                .given().log().all()
+                .auth().oauth2(nonAdminToken.getAccessToken())
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().getString("revenue.status");
+        assertThat(revenueStatus).isEqualTo(RevenueStatus.REFUND.toString());
+    }
+
+    @DisplayName("미승인 예약 거절 시 매출 이력이 생기지 않는다.")
+    @Test
+    public void noRevenueAfterRefuseUnapproved() {
+        // given
+        createReservation(nonAdminToken.getAccessToken());
+
+        // when
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/admin/reservations/1/refuse")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        Object revenue = RestAssured
+                .given().log().all()
+                .auth().oauth2(nonAdminToken.getAccessToken())
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().get("revenue");
+        assertThat(revenue).isNull();
     }
 
     @DisplayName("일반 유저는 예약을 거절할 수 없다.")
@@ -578,6 +685,47 @@ class ReservationAdminControllerTest extends AbstractE2ETest {
                 .extract()
                 .jsonPath().getString("status");
         assertThat(status).isEqualTo(ReservationStatus.CANCELLED.toString());
+    }
+
+    @DisplayName("취소 승인 시 매출 이력의 상태가 환불로 변경된다.")
+    @Test
+    public void refundRevenueAfterApproveCancel() {
+        // given
+        createReservation(nonAdminToken.getAccessToken());
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/admin/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(nonAdminToken.getAccessToken())
+                .when().post("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // when
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/admin/reservations/1/cancel-approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        String revenueStatus = RestAssured
+                .given().log().all()
+                .auth().oauth2(nonAdminToken.getAccessToken())
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().getString("revenue.status");
+        assertThat(revenueStatus).isEqualTo(RevenueStatus.REFUND.toString());
     }
 
     @DisplayName("관리자는 취소된 예약을 취소 승인할 수 없다.")
