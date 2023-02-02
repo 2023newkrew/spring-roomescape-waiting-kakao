@@ -114,7 +114,7 @@ public class ReservationDao {
         }
     }
 
-    public List<Reservation> findAllByUserId(Long id) {
+    public List<Reservation> findAllByUserId(Long userId) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -126,7 +126,7 @@ public class ReservationDao {
                 "inner join member on reservation.member_id = member.id " +
                 "where member.id = ?;";
         try {
-            return jdbcTemplate.query(sql, rowMapper, id);
+            return jdbcTemplate.query(sql, rowMapper, userId);
         } catch (Exception e) {
             return Collections.emptyList();
         }
