@@ -1,4 +1,4 @@
-package nextstep.presentation;
+package nextstep.presentation.front;
 
 import auth.dto.request.LoginMember;
 import auth.presentation.argumentresolver.AuthenticationPricipal;
