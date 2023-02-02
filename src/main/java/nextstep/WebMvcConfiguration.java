@@ -5,6 +5,7 @@ import nextstep.member.LoginController;
 import nextstep.member.MemberService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -14,15 +15,20 @@ import java.util.List;
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final MemberService memberService;
+    private final Environment env;
 
-    public WebMvcConfiguration(MemberService memberService) {
+    public WebMvcConfiguration(MemberService memberService, Environment env) {
         this.memberService = memberService;
+        this.env = env;
     }
 
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
-        return new JwtTokenProvider();
+        return new JwtTokenProvider(
+                env.getProperty("security.jwt.token.secret-key"),
+                env.getProperty("security.jwt.token.expire-length", Long.TYPE)
+        );
     }
 
     @Bean
