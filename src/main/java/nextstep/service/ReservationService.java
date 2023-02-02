@@ -22,6 +22,8 @@ import static nextstep.error.ErrorType.*;
 @Service
 public class ReservationService {
 
+    private final static int DEPOSIT_POLICY = 2000;
+
     private final ReservationDao reservationDao;
     private final ReservationWaitingService reservationWaitingService;
     private final MemberService memberService;
@@ -34,11 +36,15 @@ public class ReservationService {
         Member member = memberService.findById(memberId);
         Schedule schedule = scheduleService.findById(reservationRequest.getScheduleId());
 
-        if (existsByScheduleId(reservationRequest.getScheduleId())) {
-            return new CreateReservationResponse(reservationWaitingService.createReservationWaiting(member, schedule), false);
+        if (reservationRequest.isLessThanDepositPolicy(DEPOSIT_POLICY)) {
+            throw new ApplicationException(RESERVATION_DEPOSIT_NOT_ENOUGH, DEPOSIT_POLICY);
         }
 
-        return new CreateReservationResponse(reservationDao.save(new Reservation(schedule, member, 0)), true);
+        if (existsByScheduleId(reservationRequest.getScheduleId())) {
+            return new CreateReservationResponse(reservationWaitingService.createReservationWaiting(member, schedule, reservationRequest.getDeposit()), false);
+        }
+
+        return new CreateReservationResponse(reservationDao.save(new Reservation(schedule, member, reservationRequest.getDeposit())), true);
     }
 
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {

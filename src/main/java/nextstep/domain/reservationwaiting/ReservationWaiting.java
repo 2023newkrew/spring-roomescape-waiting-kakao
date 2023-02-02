@@ -9,6 +9,7 @@ public class ReservationWaiting {
     private Member member;
     private Schedule schedule;
     private int waitNum;
+    private int deposit;
 
     public ReservationWaiting(Long id, Member member, Schedule schedule, int waitNum) {
         this.id = id;
@@ -17,10 +18,11 @@ public class ReservationWaiting {
         this.waitNum = waitNum;
     }
 
-    public ReservationWaiting(Member member, Schedule schedule, int waitNum) {
+    public ReservationWaiting(Member member, Schedule schedule, int waitNum, int deposit) {
         this.member = member;
         this.schedule = schedule;
         this.waitNum = waitNum;
+        this.deposit = deposit;
     }
 
     public Long getId() {
@@ -37,6 +39,10 @@ public class ReservationWaiting {
 
     public int getWaitNum() {
         return waitNum;
+    }
+
+    public int getDeposit() {
+        return deposit;
     }
 
     public boolean sameMember(Long memberId){

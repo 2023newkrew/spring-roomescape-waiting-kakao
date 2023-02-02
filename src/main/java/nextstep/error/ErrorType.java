@@ -7,6 +7,7 @@ public enum ErrorType {
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST.value()),
     THEME_NOT_FOUND(HttpStatus.BAD_REQUEST.value()),
     RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST.value()),
+    RESERVATION_DEPOSIT_NOT_ENOUGH(HttpStatus.BAD_REQUEST.value()),
     RESERVATION_WAITING_NOT_FOUND(HttpStatus.BAD_REQUEST.value()),
     SCHEDULE_NOT_FOUND(HttpStatus.BAD_REQUEST.value()),
     DUPLICATE_THEME(HttpStatus.BAD_REQUEST.value()),

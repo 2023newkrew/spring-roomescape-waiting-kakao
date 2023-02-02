@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ErrorResponse> handleApplicationException(ApplicationException e) {
         ErrorType errorType = e.getErrorType();
-        String message = messageSource.getMessage(errorType.name(), null, Locale.KOREA);
+        String message = messageSource.getMessage(errorType.name(), e.getArgs(), Locale.KOREA);
 
         log.error(LOG_FORMAT, errorType.name(), errorType.getHttpStatus(), message);
 

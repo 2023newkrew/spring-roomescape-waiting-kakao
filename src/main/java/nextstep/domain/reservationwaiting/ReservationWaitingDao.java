@@ -52,7 +52,7 @@ public class ReservationWaitingDao {
     );
 
     public Long save(ReservationWaiting reservationWaiting) {
-        String sql = "INSERT INTO reservation_waiting (member_id, schedule_id, wait_num) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO reservation_waiting (member_id, schedule_id, wait_num, deposit) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -60,6 +60,7 @@ public class ReservationWaitingDao {
             ps.setLong(1, reservationWaiting.getMember().getId());
             ps.setLong(2, reservationWaiting.getSchedule().getId());
             ps.setInt(3, reservationWaiting.getWaitNum());
+            ps.setInt(4, reservationWaiting.getDeposit());
             return ps;
 
         }, keyHolder);

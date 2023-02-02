@@ -25,9 +25,9 @@ public class ReservationWaitingService {
     }
 
     @Transactional
-    public synchronized Long createReservationWaiting(Member member, Schedule schedule) {
+    public synchronized Long createReservationWaiting(Member member, Schedule schedule, int deposit) {
         int waitNum = reservationWaitingDao.findMaxWaitNum(schedule.getId()) + 1;
-        return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum));
+        return reservationWaitingDao.save(new ReservationWaiting(member, schedule, waitNum, deposit));
     }
 
     @Transactional
