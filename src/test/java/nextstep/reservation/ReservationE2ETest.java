@@ -195,7 +195,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token2.getAccessToken())
+                .auth().oauth2(token_another.getAccessToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();

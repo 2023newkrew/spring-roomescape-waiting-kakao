@@ -127,7 +127,7 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
         String id = createWaiting().header("Location").split("/")[2];
         RestAssured
                 .given().log().all()
-                .auth().oauth2(token2.getAccessToken())
+                .auth().oauth2(token_another.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
 
                 // when
@@ -172,28 +172,14 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> createReservation() {
-        return RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .body(reservationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservations")
-                .then().log().all()
-                .extract();
+    private void createReservation() {
+        RestAssured
+            .given().log().all()
+            .auth().oauth2(token.getAccessToken())
+            .body(reservationRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/reservations")
+            .then().log().all();
     }
 
-    public String requestCreateSchedule() {
-        ScheduleRequest body = new ScheduleRequest(1L, "2022-08-11", "13:00");
-        return RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(body)
-                .when().post("/admin/schedules")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .header("Location");
-    }
 }
