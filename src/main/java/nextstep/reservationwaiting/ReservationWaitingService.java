@@ -7,6 +7,7 @@ import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.support.NoScheduleException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class ReservationWaitingService {
 
         Schedule schedule = scheduleDao.findById(reservationWaitingRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new NoScheduleException("There is no following schedule");
         }
 
         List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
