@@ -1,11 +1,17 @@
-package auth;
+package nextstep.auth;
 
+import auth.AdminInterceptor;
+import auth.JwtTokenProvider;
+import auth.LoginMemberArgumentResolver;
+import auth.UserDetailsService;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+@Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final UserDetailsService<?> userDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
