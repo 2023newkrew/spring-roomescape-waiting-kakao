@@ -46,3 +46,13 @@ CREATE TABLE IF NOT EXISTS reservation_waiting
     status      varchar(20) not null,
     primary key (id)
 );
+
+CREATE TABLE IF NOT EXISTS sales
+(
+    id          bigint not null auto_increment,
+    reservation_id bigint not null,
+    amount      int not null,
+    primary key (id)
+);
+
+
