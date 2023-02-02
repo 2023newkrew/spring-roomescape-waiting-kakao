@@ -63,6 +63,19 @@ public class ThemeE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
+    @DisplayName("비로그인 사용자가 테마를 생성한다")
+    @Test
+    public void createWithoutLogin() {
+        ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(body)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
     @DisplayName("테마 목록을 조회한다")
     @Test
     public void showThemes() {
