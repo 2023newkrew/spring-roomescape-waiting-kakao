@@ -55,6 +55,13 @@ public class ReservationController {
         reservationService.cancelReservation(reservationId);
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/reservations/{id}/reject")
+    public ResponseEntity<Void> rejectReservation(@PathVariable("id") Long reservationId) {
+        reservationService.rejectReservation(reservationId);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> onException(Exception e) {
         e.printStackTrace();

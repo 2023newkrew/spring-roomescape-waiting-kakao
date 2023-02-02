@@ -84,7 +84,8 @@ public class ReservationService {
                 .orElseThrow(() -> new NotExistEntityException(Reservation.class));
         if (reservation.isUnapproved()) {
             // 예약 취소 확정
-            proceedReservationCancellation(reservation);
+            reservationDao.updateStatusById(reservation.getId(), ReservationStatus.CANCELED);
+            updateWaitingsByReservationCancellation(reservation);
         }
         if (reservation.isApproved()) {
             // 예약 취소 대기 상태로
@@ -92,8 +93,22 @@ public class ReservationService {
         }
     }
 
-    private void proceedReservationCancellation(Reservation reservation) {
-        reservationDao.updateStatusById(reservation.getId(), ReservationStatus.CANCELED);
+    public void rejectReservation(Long reservationId) {
+        Reservation reservation = reservationDao.findById(reservationId)
+                .orElseThrow(() -> new NotExistEntityException(Reservation.class));
+        if (reservation.isUnapproved()) {
+            // 미승인 예약 거절
+            reservationDao.updateStatusById(reservation.getId(), ReservationStatus.REJECTED);
+            updateWaitingsByReservationCancellation(reservation);
+        }
+        if (reservation.isApproved()) {
+            // 승인 예약 거절
+            reservationDao.updateStatusById(reservationId, ReservationStatus.WAIT_CANCEL);
+            updateWaitingsByReservationCancellation(reservation);
+        }
+    }
+
+    private void updateWaitingsByReservationCancellation(Reservation reservation) {
         reservationWaitingDao.updateTop1StatusByStatusAndScheduleId(
                 reservation.getSchedule().getId(),
                 ReservationWaitingStatus.RESERVED,
@@ -107,5 +122,4 @@ public class ReservationService {
                     ReservationWaitingStatus.RESERVED);
         }
     }
-
 }
