@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS reservation_waiting
     schedule_id bigint not null,
     member_id   bigint not null,
     status      varchar(20) not null,
+    created_at  datetime not null,
     primary key (id)
 );
 

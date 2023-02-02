@@ -44,7 +44,8 @@ public class ReservationWaitingDao {
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
             ),
-            ReservationWaitingStatus.valueOf(resultSet.getString("reservation_waiting.status"))
+            ReservationWaitingStatus.valueOf(resultSet.getString("reservation_waiting.status")),
+            resultSet.getTimestamp("reservation_waiting.created_at").toLocalDateTime()
     );
 
     private final RowMapper<ReservationWaiting> rowMapperWithWaitingNum = (resultSet, rowNum) -> new ReservationWaiting(
@@ -68,12 +69,13 @@ public class ReservationWaitingDao {
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
             ),
-            ReservationWaitingStatus.valueOf(resultSet.getString("rw.status"))
-            , resultSet.getLong("waiting_num")
+            ReservationWaitingStatus.valueOf(resultSet.getString("rw.status")),
+            resultSet.getTimestamp("rw.created_at").toLocalDateTime(),
+            resultSet.getLong("waiting_num")
     );
 
     public Long save(ReservationWaiting reservationWaiting) {
-        String sql = "INSERT INTO reservation_waiting (schedule_id, member_id, status) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO reservation_waiting (schedule_id, member_id, status, created_at) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -81,6 +83,7 @@ public class ReservationWaitingDao {
             ps.setLong(1, reservationWaiting.getSchedule().getId());
             ps.setLong(2, reservationWaiting.getMember().getId());
             ps.setString(3, reservationWaiting.getStatus().name());
+            ps.setString(4, reservationWaiting.getCreatedAt().toString());
             return ps;
 
         }, keyHolder);
@@ -90,11 +93,10 @@ public class ReservationWaitingDao {
 
     public Optional<ReservationWaiting> findById(Long id) {
         String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
+                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.status, reservation_waiting.created_at, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
-                "member.id, member.username, member.password, member.name, member.phone, member.role, " +
-                "reservation_waiting.status " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
                 "from reservation_waiting " +
                 "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
@@ -114,14 +116,12 @@ public class ReservationWaitingDao {
     }
 
     public Collection<ReservationWaiting> findAllByMemberIdWithOrder(Long memberId) {
-        String sql = "SELECT rw.id, rw.schedule_id, rw.member_id, " +
+        String sql = "SELECT rw.id, rw.schedule_id, rw.member_id, rw.status, rw.created_at, rw.waiting_num, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
-                "member.id, member.username, member.password, member.name, member.phone, member.role, " +
-                "rw.status, " +
-                "waiting_num " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
                 "from (" +
-                "   select *, row_number() over(partition by reservation_waiting.schedule_id order by reservation_waiting.id asc) waiting_num " +
+                "   select *, row_number() over(partition by reservation_waiting.schedule_id order by reservation_waiting.created_at asc) waiting_num " +
                 "   from reservation_waiting" +
                 "   where reservation_waiting.status = ? " +
                 ") rw " +

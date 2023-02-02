@@ -12,6 +12,7 @@ import nextstep.theme.ThemeDao;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,8 @@ public class ReservationWaitingService {
         } catch (DuplicateKeyException e) {
             System.out.println("예약이 이미 존재하여 예약 대기열로 이동합니다.");
         }
-        Long id = reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus));
+        LocalDateTime now = LocalDateTime.now();
+        Long id = reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus, now));
         return id;
     }
 
