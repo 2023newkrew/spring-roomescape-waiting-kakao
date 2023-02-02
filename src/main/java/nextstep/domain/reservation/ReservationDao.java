@@ -144,4 +144,37 @@ public class ReservationDao {
         jdbcTemplate.update(sql, status, id);
     }
 
+    public List<ReservationProjection> findAllByStatusAndCreatedAt(ReservationSearch reservationSearch) {
+        String sql = Objects.nonNull(reservationSearch.getLastReservationId())
+                ? "SELECT id, deposit, status FROM reservation WHERE status = ? AND ? < created_at AND ? > id LIMIT ?"
+                : "SELECT id, deposit, status FROM reservation WHERE status = ? AND ? < created_at LIMIT ?";
+        Object[] args = Objects.nonNull(reservationSearch.getLastReservationId())
+                ? new Object[] { reservationSearch.getStatus().name(), reservationSearch.getStart(), reservationSearch.getLastReservationId(), reservationSearch.getChunkSize() }
+                : new Object[] { reservationSearch.getStatus().name(), reservationSearch.getStart(), reservationSearch.getChunkSize() };
+
+        try {
+            return jdbcTemplate.query(
+                    sql,
+                    (resultSet, rowNum) -> new ReservationProjection(resultSet.getLong("id"), resultSet.getString("status"), resultSet.getInt("deposit")),
+                    args
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        } catch (Exception e) {
+            throw new ApplicationException(INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+    public void batchUpdateReservationStatus(String updatedStatus, List<ReservationProjection> unapprovedReservations) {
+        String sql = "UPDATE reservation SET status = ? WHERE id = ?";
+        List<Object[]> batchArgs = new ArrayList<>();
+        for (ReservationProjection unapprovedReservation : unapprovedReservations) {
+            batchArgs.add(new Object[]{ updatedStatus, unapprovedReservation.getId() });
+        }
+
+        jdbcTemplate.batchUpdate(sql, batchArgs);
+    }
+
 }

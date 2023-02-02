@@ -1,5 +1,9 @@
 package nextstep.domain.reservation;
 
+import nextstep.error.ApplicationException;
+
+import static nextstep.error.ErrorType.INTERNAL_SERVER_ERROR;
+
 public enum ReservationStatus {
 
     UNAPPROVED,
@@ -9,4 +13,11 @@ public enum ReservationStatus {
     REJECTED
     ;
 
+    public ReservationStatus getNextStatus() {
+        switch (this) {
+            case UNAPPROVED: return APPROVED;
+            case CANCEL_PENDING: return CANCELED;
+            default: throw new ApplicationException(INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -5,6 +5,7 @@ CREATE TABLE reservation
     member_id   bigint      not null,
     status      varchar(20) not null,
     deposit     int         not null,
+    created_at  datetime    not null,
     primary key (id)
 );
 

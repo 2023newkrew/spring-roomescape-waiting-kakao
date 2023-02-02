@@ -1,14 +1,11 @@
 package nextstep.utils;
 
-import nextstep.error.ApplicationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.function.Supplier;
-
-import static nextstep.error.ErrorType.INTERNAL_SERVER_ERROR;
 
 @Component
 public class TransactionUtil {
@@ -19,9 +16,22 @@ public class TransactionUtil {
         this.transactionManager = transactionManager;
     }
 
-    public <T> T executeReadOnlyTask(Supplier<T> supplier) {
+    public void executeTask(Runnable runnable) {
+        TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
+
+        try {
+            runnable.run();
+            transactionManager.commit(transaction);
+        } catch (Exception e) {
+            transactionManager.rollback(transaction);
+            throw e;
+        }
+    }
+
+
+    public <T> T executeTask(Supplier<T> supplier, boolean isReadOnly) {
         DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
-        transactionDefinition.setReadOnly(true);
+        transactionDefinition.setReadOnly(isReadOnly);
         TransactionStatus transaction = transactionManager.getTransaction(transactionDefinition);
 
         try {
@@ -31,8 +41,12 @@ public class TransactionUtil {
             return t;
         } catch (Exception e) {
             transactionManager.rollback(transaction);
-            throw new ApplicationException(INTERNAL_SERVER_ERROR);
+            throw e;
         }
+    }
+
+    public <T> T executeReadOnlyTask(Supplier<T> supplier) {
+        return executeTask(supplier, true);
     }
 
 }
