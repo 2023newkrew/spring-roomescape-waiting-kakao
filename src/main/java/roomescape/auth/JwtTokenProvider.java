@@ -1,7 +1,6 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.*;
-import roomescape.nextstep.exception.AuthenticationException;
 
 import java.util.Date;
 
@@ -29,11 +28,7 @@ public class JwtTokenProvider {
     }
 
     public String getPrincipal(String token) {
-        try {
-            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-        } catch(MalformedJwtException e) {
-            throw new AuthenticationException();
-        }
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
     public String getRole(String token) {
