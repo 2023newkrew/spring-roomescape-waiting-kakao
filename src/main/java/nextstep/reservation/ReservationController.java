@@ -53,4 +53,10 @@ public class ReservationController {
         reservationService.cancel(member, Long.parseLong(id));
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{id}/cancel-approve")
+    public ResponseEntity<Void> cancelApproveReservation(@PathVariable String id) {
+        reservationService.cancelApprove(Long.parseLong(id));
+        return ResponseEntity.ok().build();
+    }
 }

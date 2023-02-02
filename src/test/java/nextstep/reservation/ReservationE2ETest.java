@@ -372,4 +372,56 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract()
                 .jsonPath().getList(".", Reservation.class).get(0).getId();
     }
+
+    @DisplayName("관리자가 예약 취소를 승인한다.")
+    @Test
+    void adminCancelApprove() {
+        Long reservationId = createReservationAndGetId();
+
+        RestAssured.given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/reservations/" + reservationId + "/approve")
+                .then().log().all();
+
+        RestAssured.given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/" + reservationId + "/cancel")
+                .then().log().all();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().get("/reservations/" + reservationId + "/cancel-approve")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("관리자가 아닌 사용자의 예약 취소 승인은 실패한다.")
+    @Test
+    void should_failed_when_userCancelApprove() {
+        Long reservationId = createReservationAndGetId();
+
+        RestAssured.given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/reservations/" + reservationId + "/approve")
+                .then().log().all();
+
+        RestAssured.given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/" + reservationId + "/cancel")
+                .then().log().all();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/" + reservationId + "/cancel-approve")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
 }

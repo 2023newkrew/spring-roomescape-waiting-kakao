@@ -66,8 +66,7 @@ public class ReservationService {
             if (reservation.getStatus() == Reservation.Status.WAITING_APPROVAL) {
                 reservationDao.deleteById(reservationId);
             } else if (reservation.getStatus() == Reservation.Status.APPROVAL) {
-                reservationDao.deleteById(reservationId);
-                revenueDao.deleteByReservationId(reservationId);
+                cancelReservation(reservationId);
             }
             return;
         }
@@ -126,5 +125,21 @@ public class ReservationService {
         Long waitTicketNumber = reservation.getWaitTicketNumber();
         Long waitNum = reservationDao.getPriority(scheduleId, waitTicketNumber);
         return !isReservationNotWaiting(waitNum);
+    }
+
+    public void cancelApprove(long reservationId) {
+        Reservation reservation = reservationDao.findById(reservationId)
+                .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.RESERVATION_NOT_FOUND));
+
+        if (reservation.getStatus() != Reservation.Status.CANCEL_WAITING) {
+            throw new BusinessException(BusinessErrorCode.RESERVATION_NOT_CANCEL_WAITING);
+        }
+
+        cancelReservation(reservationId);
+    }
+
+    private void cancelReservation(long reservationId) {
+        reservationDao.deleteById(reservationId);
+        revenueDao.deleteByReservationId(reservationId);
     }
 }
