@@ -7,6 +7,7 @@ import nextstep.domain.saleshistory.SalesHistoryDao;
 import org.springframework.stereotype.Service;
 
 import static nextstep.domain.saleshistory.SalesHistoryStatus.PAYMENT;
+import static nextstep.domain.saleshistory.SalesHistoryStatus.REFUND;
 
 @RequiredArgsConstructor
 @Service
@@ -14,8 +15,12 @@ public class SalesHistoryService {
 
     private final SalesHistoryDao salesHistoryDao;
 
-    public void saveHistory(Reservation reservation) {
+    public void savePaymentHistory(Reservation reservation) {
         salesHistoryDao.save(new SalesHistory(reservation.getThemeId(), reservation.getDeposit(), PAYMENT));
+    }
+
+    public void saveRefundHistory(Reservation reservation) {
+        salesHistoryDao.save(new SalesHistory(reservation.getThemeId(), reservation.getDeposit(), REFUND));
     }
 
 }

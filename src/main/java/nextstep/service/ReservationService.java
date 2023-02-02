@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.domain.reservation.ReservationStatus.CANCELED;
+import static nextstep.domain.reservation.ReservationStatus.CANCEL_PENDING;
 import static nextstep.error.ErrorType.*;
 
 @RequiredArgsConstructor
@@ -63,18 +65,6 @@ public class ReservationService {
         return reservationDao.existsByScheduleId(scheduleId);
     }
 
-    @Transactional
-    public void deleteById(Long memberId, Long reservationId) {
-        Member member = memberService.findById(memberId);
-        Reservation reservation = findById(reservationId);
-
-        if (!reservation.sameMember(member)) {
-            throw new ApplicationException(UNAUTHORIZED_ERROR);
-        }
-
-        reservationDao.deleteById(reservationId);
-    }
-
     public List<ReservationResponse> findMyReservations(Long memberId) {
         return transactionUtil.executeReadOnlyTask(() -> reservationDao.findByMemberId(memberId))
                 .stream()
@@ -91,7 +81,19 @@ public class ReservationService {
         }
 
         reservationDao.updateReservationStatus(reservationId, reservation.getTransitionedStatus().name());
-        salesHistoryService.saveHistory(reservation);
+        salesHistoryService.savePaymentHistory(reservation);
+    }
+
+    @Transactional
+    public void cancelReservation(Long reservationId) {
+        Reservation reservation = findById(reservationId);
+        if (reservation.isUnapproved()) {
+            reservationDao.updateReservationStatus(reservationId, CANCELED.name());
+            salesHistoryService.saveRefundHistory(reservation);
+            return;
+        }
+
+        reservationDao.updateReservationStatus(reservationId, CANCEL_PENDING.name());
     }
 
     private Reservation findById(Long reservationId) {

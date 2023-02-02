@@ -4,7 +4,6 @@ import nextstep.domain.member.Member;
 import nextstep.domain.schedule.Schedule;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 import static nextstep.domain.reservation.ReservationStatus.UNAPPROVED;
 
@@ -67,8 +66,8 @@ public class Reservation {
         return schedule.getThemeId();
     }
 
-    public boolean sameMember(Member member) {
-        return member != null && Objects.equals(this.member.getId(), member.getId());
+    public boolean isUnapproved() {
+        return status.equals(UNAPPROVED);
     }
 
     public boolean isLessThanDepositPolicy(int depositPolicy) {

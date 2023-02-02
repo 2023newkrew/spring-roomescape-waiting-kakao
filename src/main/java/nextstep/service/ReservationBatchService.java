@@ -20,7 +20,7 @@ public class ReservationBatchService {
     private final static int CHUNK_SIZE = 20;
 
     private final ReservationDao reservationDao;
-    private final ReservationTransitionSnapshotRepository reservationTransitionSnapshotRepository;
+    private final ReservationTransitionSnapshotDao reservationTransitionSnapshotDao;
     private final TransactionUtil transactionUtil;
 
     public void transitReservationStatus(String statusName) {
@@ -44,7 +44,7 @@ public class ReservationBatchService {
     }
 
     private void recoverFailedReservations(LocalDateTime start) {
-        List<ReservationTransitionSnapshot> reservationTransitionSnapshots = reservationTransitionSnapshotRepository.findIsAfterPrevStartTime(start);
+        List<ReservationTransitionSnapshot> reservationTransitionSnapshots = reservationTransitionSnapshotDao.findIsAfterPrevStartTime(start);
 
         for (ReservationTransitionSnapshot reservationTransitionSnapshot : reservationTransitionSnapshots) {
             ReservationStatus status = reservationTransitionSnapshot.getReservationProjections().get(0).getStatus();
@@ -71,7 +71,7 @@ public class ReservationBatchService {
             reservationDao.batchUpdateReservationStatus(status.name(), reservationProjections);
         } catch (Exception e) {
             log.error("[Reservation Batch] Reservation Transition Batch Write Failed. Items: {}", reservationProjections);
-            reservationTransitionSnapshotRepository.save(new ReservationTransitionSnapshot(reservationProjections));
+            reservationTransitionSnapshotDao.save(new ReservationTransitionSnapshot(reservationProjections));
         }
     }
 
