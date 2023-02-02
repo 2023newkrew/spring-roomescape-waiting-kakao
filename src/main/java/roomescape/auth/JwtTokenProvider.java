@@ -1,17 +1,16 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.*;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 
 public class JwtTokenProvider {
     private final String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final long validityInMilliseconds;
 
-    public JwtTokenProvider(String secretKey) {
+    public JwtTokenProvider(String secretKey, long validityInMilliseconds) {
         this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
     }
 
     public String createToken(String principal, String role) {

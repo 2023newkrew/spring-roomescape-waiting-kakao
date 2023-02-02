@@ -22,6 +22,9 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
 
+    @Value("${security.jwt.token.expire-length}")
+    private long validityInMilliseconds;
+
     public WebMvcConfiguration(MemberDao memberDao) {
         this.memberDao = memberDao;
     }
@@ -43,6 +46,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
-        return new JwtTokenProvider(secretKey);
+        return new JwtTokenProvider(secretKey, validityInMilliseconds);
     }
 }
