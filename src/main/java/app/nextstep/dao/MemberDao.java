@@ -22,9 +22,9 @@ public class MemberDao implements LoginRepository {
             resultSet.getLong("id"),
             resultSet.getString("username"),
             resultSet.getString("password"),
+            resultSet.getString("role"),
             resultSet.getString("name"),
-            resultSet.getString("phone"),
-            resultSet.getString("role")
+            resultSet.getString("phone")
     );
 
     public Long save(String username, String password, String name, String phone, String role) {

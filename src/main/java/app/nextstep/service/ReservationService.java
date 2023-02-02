@@ -21,7 +21,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Long memberId, Long scheduleId) {
+    public Long create(Long scheduleId, Long memberId) {
         List<Reservation> reservation = reservationDao.findByScheduleId(scheduleId);
         if (!reservation.isEmpty()) {
             throw new DuplicateEntityException();

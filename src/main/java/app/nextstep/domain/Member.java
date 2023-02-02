@@ -9,7 +9,7 @@ public class Member extends User {
     public Member() {
     }
 
-    public Member(Long id, String username, String password, String name, String phone, String role) {
+    public Member(Long id, String username, String password, String role, String name, String phone) {
         super(id, username, password, role);
         this.name = name;
         this.phone = phone;

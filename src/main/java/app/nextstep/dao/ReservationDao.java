@@ -41,9 +41,9 @@ public class ReservationDao {
                     resultSet.getLong("member.id"),
                     resultSet.getString("member.username"),
                     resultSet.getString("member.password"),
+                    resultSet.getString("member.role"),
                     resultSet.getString("member.name"),
-                    resultSet.getString("member.phone"),
-                    resultSet.getString("member.role")
+                    resultSet.getString("member.phone")
             )
     );
 
