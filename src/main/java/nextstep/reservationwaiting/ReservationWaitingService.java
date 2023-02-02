@@ -39,7 +39,7 @@ public class ReservationWaitingService {
             throw new AuthenticationException();
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
-                .orElseThrow(() -> new NotExistEntityException(ScheduleDao.class));
+                .orElseThrow(() -> new NotExistEntityException(Schedule.class));
         ReservationWaitingStatus currentStatus = ReservationWaitingStatus.WAITING;
         if (tryInsertReservation(schedule, member)) {
             currentStatus = ReservationWaitingStatus.RESERVED;
