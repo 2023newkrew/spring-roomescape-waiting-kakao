@@ -14,6 +14,11 @@ public class BaseExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity onNotFoundException(NotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity onAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

@@ -54,6 +54,22 @@ public class ReservationWaitingDao {
         return keyHolder.getKey().longValue();
     }
 
+    public ReservationWaiting findById(Long id) {
+        String sql = "SELECT " +
+                "reservation_waiting.id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "FROM reservation_waiting " +
+                "INNER JOIN schedule ON reservation_waiting.schedule_id = schedule.id " +
+                "INNER JOIN theme ON schedule.theme_id = theme.id " +
+                "WHERE reservation_waiting.id = ?;";
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public List<ReservationWaiting> findByMemberId(Long memberId) {
         String sql = "SELECT " +
                 "reservation_waiting.id, reservation_waiting.member_id, reservation_waiting.wait_num, " +

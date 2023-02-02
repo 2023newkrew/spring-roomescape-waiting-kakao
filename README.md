@@ -80,8 +80,8 @@
 - ReservationWaiting create
   - [x] 로직 상의 분기와 오류로 인한 예외 구분하기 - 예약 존재 여부에 따른 분기처리
 - ReservationWaiting delete
-  - [ ] 애초에 존재하지 않거나, 본인의 것이 아니거나 하는 경우에 대해 따로 분기처리 하기 
-  - [ ] NullPointerException -> 의미에 맞게 바꾸기
+  - [x] 애초에 존재하지 않거나, 본인의 것이 아니거나 하는 경우에 대해 따로 분기처리 하기 
+  - [x] NullPointerException -> 의미에 맞게 바꾸기
 - 예외처리
   - [ ] Dao 에서 queryForObject 관련 try catch 부분 어떤 예외인지에 따라 별도 처리하기
     - record 가 없어서 발생하는 에러라면 null return
