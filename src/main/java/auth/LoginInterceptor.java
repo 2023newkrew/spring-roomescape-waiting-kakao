@@ -8,16 +8,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class LoginInterceptor implements HandlerInterceptor {
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public LoginInterceptor(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         if(request.getMethod().equals(HttpMethod.GET.name())) {
             return true;
         }
-        if (accessToken == null) {
-            throw new AuthenticationException();
-        }
+        String token = extractToken(request);
+        if(!jwtTokenProvider.validateToken(token))
+            throw new AuthorizationException();
+
         return true;
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if(authHeader==null)
+            throw new AuthorizationException();
+
+        return authHeader.split(" ")[1];
     }
 }
