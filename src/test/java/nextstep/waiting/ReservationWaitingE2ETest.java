@@ -10,11 +10,15 @@ import nextstep.theme.ThemeRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 class ReservationWaitingE2ETest extends AbstractE2ETest {
 
@@ -159,6 +163,34 @@ class ReservationWaitingE2ETest extends AbstractE2ETest {
 
         List<ReservationWaiting> reservationWaitings = response.jsonPath().getList(".", ReservationWaiting.class);
         Assertions.assertThat(reservationWaitings.size()).isEqualTo(2);
+    }
+
+    @DisplayName("동시 요청")
+    @RepeatedTest(100)
+    void multipleRequest() throws InterruptedException {
+        createReservation();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(5);
+        CountDownLatch latch = new CountDownLatch(5);
+
+        for(int i = 0; i < 5; i++) {
+            executorService.execute(()->{
+                createWaiting();
+                latch.countDown();
+            });
+        }
+        latch.await();
+
+        var response = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(token.getAccessToken())
+                .get("/reservation-waitings/mine");
+
+        List<ReservationWaiting> reservationWaitings = response.jsonPath().getList(".", ReservationWaiting.class);
+        List<ReservationWaiting> distict = reservationWaitings.stream().distinct().toList();
+
+        Assertions.assertThat(reservationWaitings.size()).isEqualTo(distict.size());
     }
 
     private ExtractableResponse<Response> createWaiting() {

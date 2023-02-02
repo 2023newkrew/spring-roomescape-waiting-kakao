@@ -47,4 +47,17 @@ public class ReservationWaiting {
     public boolean sameMember(Long memberId) {
         return Objects.equals(member.getId(), memberId);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReservationWaiting that = (ReservationWaiting) o;
+        return schedule.equals(that.schedule) && waitNum.equals(that.waitNum);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(schedule, waitNum);
+    }
 }
