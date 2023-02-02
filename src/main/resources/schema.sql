@@ -4,6 +4,7 @@ CREATE TABLE reservation
     schedule_id bigint not null,
     member_id   bigint not null,
     wait_num    bigint not null,
+    unique (schedule_id, wait_num),
     primary key (id)
 );
 

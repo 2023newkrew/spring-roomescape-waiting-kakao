@@ -109,7 +109,8 @@ public class ReservationDao {
                 "inner join schedule on reservation.schedule_id = schedule.id " +
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
-                "where reservation.id = ? and reservation.wait_num > 0;";
+                "where reservation.id = ? and reservation.wait_num > 0" +
+                "for update";
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
         } catch (Exception e) {
