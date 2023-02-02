@@ -3,19 +3,15 @@ package roomwaiting.nextstep.theme;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import roomwaiting.nextstep.RoomEscapeApplication;
-import roomwaiting.AcceptanceTestExecutionListener;
 import roomwaiting.nextstep.schedule.Schedule;
 import roomwaiting.nextstep.schedule.ScheduleDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.TestExecutionListeners;
 import roomwaiting.nextstep.AbstractE2ETest;
 
 import java.time.LocalDate;
@@ -25,8 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static roomwaiting.support.Messages.ID;
 import static roomwaiting.support.Messages.THEME_NOT_FOUND;
 
-@SpringBootTest(classes = {RoomEscapeApplication.class})
-@TestExecutionListeners(value = {AcceptanceTestExecutionListener.class,}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class ThemeTest extends AbstractE2ETest{
     @Autowired
     private JdbcTemplate jdbcTemplate;

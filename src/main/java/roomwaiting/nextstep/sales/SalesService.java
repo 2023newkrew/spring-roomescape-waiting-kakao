@@ -21,6 +21,8 @@ public class SalesService {
         return salesDao.findAllSales();
     }
 
-    // 매출 리스트 출력
+    public List<Sales> findByMemberId(Long memberId) {
+        return salesDao.findByMemberId(memberId);
+    }
 
 }

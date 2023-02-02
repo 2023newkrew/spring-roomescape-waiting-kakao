@@ -11,10 +11,6 @@ import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomwaiting.auth.token.JwtTokenProvider;
-import roomwaiting.nextstep.RoomEscapeApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestExecutionListeners;
-import roomwaiting.AcceptanceTestExecutionListener;
 import roomwaiting.nextstep.member.Member;
 import roomwaiting.nextstep.reservation.domain.Reservation;
 import roomwaiting.nextstep.reservation.domain.ReservationWaiting;
@@ -25,8 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 
-@SpringBootTest(classes = {RoomEscapeApplication.class})
-@TestExecutionListeners(value = {AcceptanceTestExecutionListener.class,}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class ReservationWaitingE2ETest extends ReservationCommon {
 
     @Autowired
@@ -59,7 +53,7 @@ public class ReservationWaitingE2ETest extends ReservationCommon {
     @Test
     void requestWaitingReservedSchedule(){
         // given
-        requestCreateReservation(token.getAccessToken());
+        requestCreateReservation(request, token.getAccessToken());
 
         // when
         Member otherUser = saveMember(jdbcTemplate, "member2", "pass1", "ADMIN");
@@ -85,7 +79,7 @@ public class ReservationWaitingE2ETest extends ReservationCommon {
     @Test
     void deleteWaiting(){
         // given
-        requestCreateReservation(token.getAccessToken());
+        requestCreateReservation(request, token.getAccessToken());
 
         // when
         createReservationWaiting(token.getAccessToken());
@@ -139,7 +133,7 @@ public class ReservationWaitingE2ETest extends ReservationCommon {
     @Test
     void deleteWaitingByOtherUser(){
         // given
-        requestCreateReservation(token.getAccessToken());
+        requestCreateReservation(request, token.getAccessToken());
         // when
         RestAssured
                 .given().log().all()
@@ -188,7 +182,7 @@ public class ReservationWaitingE2ETest extends ReservationCommon {
     @DisplayName("로그인을 하지 않은 상태로 예약 삭제를 할 수 없다")
     void deleteWaitingWIthNoneAuthority(){
         // given
-        requestCreateReservation(token.getAccessToken());
+        requestCreateReservation(request, token.getAccessToken());
         // when
         RestAssured
                 .given().log().all()

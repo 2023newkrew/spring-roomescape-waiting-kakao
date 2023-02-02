@@ -1,6 +1,9 @@
 package roomwaiting.nextstep;
 
 import io.restassured.RestAssured;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestExecutionListeners;
+import roomwaiting.AcceptanceTestExecutionListener;
 import roomwaiting.auth.token.TokenRequest;
 import roomwaiting.auth.token.TokenResponse;
 import io.restassured.response.ExtractableResponse;
@@ -18,6 +21,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import roomwaiting.nextstep.member.MemberService;
 
+@SpringBootTest(classes = {RoomEscapeApplication.class})
+@TestExecutionListeners(value = {AcceptanceTestExecutionListener.class,}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class AbstractE2ETest {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";

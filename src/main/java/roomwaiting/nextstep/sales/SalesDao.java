@@ -27,11 +27,11 @@ public class SalesDao {
     }
 
     public void updateSales(Sales sales) {
-        String sql = "INSERT INTO sales (member_id, price, schedule_id) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO sales (member_username, price, schedule_id) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, sales.getMember().getId());
+            ps.setString(1, sales.getMember().getUsername());
             ps.setLong(2, sales.getPrice());
             ps.setLong(3, sales.getSchedule().getId());
             return ps;
@@ -39,9 +39,14 @@ public class SalesDao {
     }
 
     public List<Sales> findAllSales() {
-        String sql = SELECT_SQL;
-        return jdbcTemplate.query(sql, databaseMapper.salesRowMapper());
+        return jdbcTemplate.query(SELECT_SQL, databaseMapper.salesRowMapper());
     }
+
+    public List<Sales> findByMemberId(Long memberId) {
+        String sql = SELECT_SQL + "where member.id = ?";
+        return jdbcTemplate.query(sql, databaseMapper.salesRowMapper(), memberId);
+    }
+
 
     private final String SELECT_SQL = "SELECT " +
             "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -51,6 +56,5 @@ public class SalesDao {
             "from sales " +
             "inner join schedule on sales.schedule_id = schedule.id " +
             "inner join theme on schedule.theme_id = theme.id " +
-            "inner join member on sales.member_id = member.id ";
-
+            "inner join member on sales.member_username = member.username ";
 }

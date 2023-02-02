@@ -41,7 +41,7 @@ public class ReservationController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<Reservation>> lookUpReservationWaitingList(@LoginMember UserDetails member) {
+    public ResponseEntity<List<Reservation>> lookUpReservationList(@LoginMember UserDetails member) {
         List<Reservation> reservationList = reservationService.lookUp(new Member(member));
         return ResponseEntity.ok().body(reservationList);
     }

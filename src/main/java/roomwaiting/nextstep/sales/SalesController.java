@@ -2,6 +2,7 @@ package roomwaiting.nextstep.sales;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +26,12 @@ public class SalesController {
     @GetMapping
     public ResponseEntity<List<Sales>> lookUp(){
         List<Sales> result = salesService.findAll();
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/members/{id}")
+    public ResponseEntity<List<Sales>> findByMemberId(@PathVariable Long id){
+        List<Sales> result = salesService.findByMemberId(id);
         return ResponseEntity.ok().body(result);
     }
 

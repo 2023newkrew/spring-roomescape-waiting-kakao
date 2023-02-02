@@ -8,16 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.TestExecutionListeners;
-import roomwaiting.AcceptanceTestExecutionListener;
 import roomwaiting.auth.token.JwtTokenProvider;
-import roomwaiting.nextstep.RoomEscapeApplication;
 import roomwaiting.nextstep.member.Member;
 import roomwaiting.nextstep.reservation.domain.Reservation;
+import roomwaiting.nextstep.reservation.dto.ReservationRequest;
+import roomwaiting.nextstep.schedule.ScheduleRequest;
 import roomwaiting.nextstep.theme.Theme;
 import roomwaiting.nextstep.theme.ThemeDao;
 
@@ -25,8 +23,7 @@ import java.util.List;
 
 import static roomwaiting.nextstep.reservation.ReservationStatus.*;
 
-@SpringBootTest(classes = {RoomEscapeApplication.class})
-@TestExecutionListeners(value = {AcceptanceTestExecutionListener.class,}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
+
 public class SalesTest extends ReservationCommon {
 
     @Autowired
@@ -37,15 +34,16 @@ public class SalesTest extends ReservationCommon {
     @Autowired
     ThemeDao themeDao;
 
+    private Member member1;
     private String memberToken;
     private String location;
     @BeforeEach
     public void setUp(){
         super.setUp();
-        Member member = saveMember(jdbcTemplate, "member", "PASS1", "MEMBER");
-        memberToken = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
-        ExtractableResponse<Response> response = requestCreateReservation(memberToken);
-        location = response.header("Location").split("/")[2];
+        member1 = saveMember(jdbcTemplate, "member1", "PASS1", "MEMBER");
+        memberToken = jwtTokenProvider.createToken(String.valueOf(member1.getId()), member1.getRole());
+        ExtractableResponse<Response> response = requestCreateReservation(request, memberToken);
+        location = response.header("Location").split("/")[2]; // reservation Location
     }
 
 
@@ -95,6 +93,58 @@ public class SalesTest extends ReservationCommon {
         cancelReservation(location, token.getAccessToken());
         Assertions.assertThat(requestGrossSales().body().asString()).isEqualTo("0");
         Assertions.assertThat(requestAllSales().jsonPath().getList(".").size()).isEqualTo(2);
+    }
+
+    @DisplayName("매출 변경 히스토리를 user별로 조회할 수 있다")
+    @Test
+    void salesLookUpMemberFilterTest(){
+        requestApprove(location, token.getAccessToken());
+        Assertions.assertThat(lookUpMemberId(member1.getId()).jsonPath().getList(".").size()).isEqualTo(1);
+
+        ReservationRequest request1 = requestCreator("2023-02-01", "12:00:00");
+        ExtractableResponse<Response> response1 = requestCreateReservation(request1, memberToken);
+        String location1 = response1.header("Location").split("/")[2]; // reservation Location
+        requestApprove(location1, token.getAccessToken());
+        Assertions.assertThat(lookUpMemberId(member1.getId()).jsonPath().getList(".").size()).isEqualTo(2);
+
+        Member member2 = saveMember(jdbcTemplate, "member2", "PASS1", "MEMBER");
+        String memberToken2 = jwtTokenProvider.createToken(String.valueOf(member2.getId()), member2.getRole());
+        ReservationRequest request2 = requestCreator("2023-02-02", "13:00:00");
+        ExtractableResponse<Response> response2 = requestCreateReservation(request2, memberToken2);
+        String location2 = response2.header("Location").split("/")[2]; // reservation Location
+        requestApprove(location2, token.getAccessToken());
+        Assertions.assertThat(lookUpMemberId(member1.getId()).jsonPath().getList(".").size()).isEqualTo(2);
+        Assertions.assertThat(lookUpMemberId(member2.getId()).jsonPath().getList(".").size()).isEqualTo(1);
+
+        Theme theme = themeDao.findById(themeId).get();
+        Assertions.assertThat(requestGrossSales().body().asString()).isEqualTo(String.valueOf(3*theme.getPrice()));
+    }
+
+    private ReservationRequest requestCreator(String date, String time){
+        ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, date, time);
+        var scheduleResponse = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(token.getAccessToken())
+                .body(scheduleRequest)
+                .when().post("/admin/schedules")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+        String[] scheduleLocation = scheduleResponse.header("Location").split("/");
+        scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
+        return new ReservationRequest(scheduleId);
+    }
+
+    private ExtractableResponse<Response> lookUpMemberId(Long memberId){
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .when().get("/admin/sales/members/" + memberId)
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> requestGrossSales(){

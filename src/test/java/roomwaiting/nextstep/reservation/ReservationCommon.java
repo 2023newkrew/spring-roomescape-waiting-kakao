@@ -14,7 +14,7 @@ import roomwaiting.nextstep.theme.ThemeRequest;
 
 public class ReservationCommon extends AbstractE2ETest {
     public static final String TEST_DATE = "2022-08-11";
-    public static final String TEST_TIME = "13:00";
+    public static final String TEST_TIME = "13:00:00";
 
     protected ReservationRequest request;
     protected Long themeId;
@@ -66,12 +66,12 @@ public class ReservationCommon extends AbstractE2ETest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> requestCreateReservation(String accessToken) {
+    protected ExtractableResponse<Response> requestCreateReservation(ReservationRequest requestBody, String accessToken) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .auth().oauth2(accessToken)
-                .body(request)
+                .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();

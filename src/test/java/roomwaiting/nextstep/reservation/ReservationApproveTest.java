@@ -7,13 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.TestExecutionListeners;
-import roomwaiting.AcceptanceTestExecutionListener;
 import roomwaiting.auth.token.JwtTokenProvider;
-import roomwaiting.nextstep.RoomEscapeApplication;
 import roomwaiting.nextstep.member.Member;
 import roomwaiting.nextstep.reservation.domain.Reservation;
 
@@ -21,8 +17,6 @@ import java.util.List;
 
 import static roomwaiting.nextstep.reservation.ReservationStatus.*;
 
-@SpringBootTest(classes = {RoomEscapeApplication.class})
-@TestExecutionListeners(value = {AcceptanceTestExecutionListener.class,}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class ReservationApproveTest extends ReservationCommon {
 
     @Autowired
@@ -38,7 +32,7 @@ public class ReservationApproveTest extends ReservationCommon {
     @DisplayName("Admin 유저만 예약 미승인 상태의 예약을 예약 승인 상태로 변경할 수 있다")
     @Test
     void approveTest() {
-        ExtractableResponse<Response> response = requestCreateReservation(token.getAccessToken());
+        ExtractableResponse<Response> response = requestCreateReservation(request, token.getAccessToken());
         String location = response.header("Location").split("/")[2];
 
         List<Reservation> lookUpPre = lookUpReservation(token.getAccessToken()).jsonPath().getList(".", Reservation.class);
@@ -63,7 +57,7 @@ public class ReservationApproveTest extends ReservationCommon {
     void memberReserveNotApproveCancel() {
         Member member = saveMember(jdbcTemplate, "MEMBER1", "PASS1", "MEMBER");
         String memberToken = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
-        ExtractableResponse<Response> response = requestCreateReservation(memberToken);
+        ExtractableResponse<Response> response = requestCreateReservation(request, memberToken);
         String location = response.header("Location").split("/")[2];
 
         List<Reservation> lookUpPre = lookUpReservation(memberToken).jsonPath().getList(".", Reservation.class);
@@ -83,7 +77,7 @@ public class ReservationApproveTest extends ReservationCommon {
     void memberReserveApproveCancel() {
         Member member = saveMember(jdbcTemplate, "MEMBER1", "PASS1", "MEMBER");
         String memberToken = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
-        ExtractableResponse<Response> response = requestCreateReservation(memberToken);
+        ExtractableResponse<Response> response = requestCreateReservation(request, memberToken);
         String location = response.header("Location").split("/")[2];
 
         requestApprove(location, token.getAccessToken());
@@ -104,7 +98,7 @@ public class ReservationApproveTest extends ReservationCommon {
     void adminNonApproveReserveCancel() {
         Member member = saveMember(jdbcTemplate, "MEMBER", "PASS1", "MEMBER");
         String memberToken = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
-        ExtractableResponse<Response> createReservation = requestCreateReservation(memberToken);
+        ExtractableResponse<Response> createReservation = requestCreateReservation(request, memberToken);
         String location = createReservation.header("Location").split("/")[2];
 
         ExtractableResponse<Response> notApproveCancel = cancelReservation(location, token.getAccessToken());
@@ -118,7 +112,7 @@ public class ReservationApproveTest extends ReservationCommon {
     void adminApproveReserveCancel() {
         Member member = saveMember(jdbcTemplate, "MEMBER", "PASS1", "MEMBER");
         String memberToken = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
-        ExtractableResponse<Response> createReservation = requestCreateReservation(memberToken);
+        ExtractableResponse<Response> createReservation = requestCreateReservation(request, memberToken);
         String location = createReservation.header("Location").split("/")[2];
         requestApprove(location, token.getAccessToken());
 
@@ -133,7 +127,7 @@ public class ReservationApproveTest extends ReservationCommon {
     void adminCancelApproveTest() {
         Member member = saveMember(jdbcTemplate, "MEMBER1", "PASS1", "MEMBER");
         String memberToken = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
-        ExtractableResponse<Response> response = requestCreateReservation(memberToken);
+        ExtractableResponse<Response> response = requestCreateReservation(request, memberToken);
         String location = response.header("Location").split("/")[2];
 
         requestApprove(location, token.getAccessToken());

@@ -4,8 +4,6 @@ import org.assertj.core.api.Assertions;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import roomwaiting.nextstep.RoomEscapeApplication;
-import roomwaiting.AcceptanceTestExecutionListener;
 import roomwaiting.nextstep.member.Member;
 import roomwaiting.nextstep.reservation.domain.Reservation;
 import roomwaiting.nextstep.reservation.dto.ReservationRequest;
@@ -13,11 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.TestExecutionListeners;
 import roomwaiting.nextstep.AbstractE2ETest;
 
 
@@ -26,8 +22,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@SpringBootTest(classes = {RoomEscapeApplication.class})
-@TestExecutionListeners(value = {AcceptanceTestExecutionListener.class,}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class ReservationTest extends ReservationCommon {
 
 
@@ -53,7 +47,7 @@ public class ReservationTest extends ReservationCommon {
     @DisplayName("스케줄이 있는 경우, 예약을 생성할 수 있다.")
     @Test
     void create() {
-        ExtractableResponse<Response> response = requestCreateReservation(token.getAccessToken());
+        ExtractableResponse<Response> response = requestCreateReservation(request, token.getAccessToken());
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
@@ -63,15 +57,15 @@ public class ReservationTest extends ReservationCommon {
         request = new ReservationRequest(
                 scheduleId+2
         );
-        ExtractableResponse<Response> response = requestCreateReservation(token.getAccessToken());
+        ExtractableResponse<Response> response = requestCreateReservation(request, token.getAccessToken());
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("중복 예약을 생성할 경우, 에러가 발생한다")
     @Test
     void createDuplicateReservation() {
-        requestCreateReservation(token.getAccessToken());
-        ExtractableResponse<Response> createReservation = requestCreateReservation(token.getAccessToken());
+        requestCreateReservation(request, token.getAccessToken());
+        ExtractableResponse<Response> createReservation = requestCreateReservation(request, token.getAccessToken());
         assertThat(createReservation.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
@@ -79,7 +73,7 @@ public class ReservationTest extends ReservationCommon {
     @DisplayName("예약을 조회할 수 있다")
     @Test
     void show() {
-        requestCreateReservation(token.getAccessToken());
+        requestCreateReservation(request, token.getAccessToken());
         List<Reservation> reservations = lookUpReservation(token.getAccessToken()).jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(1);
     }
@@ -94,7 +88,7 @@ public class ReservationTest extends ReservationCommon {
     @DisplayName("예약을 삭제할 수 있다")
     @Test
     void delete() {
-        var reservation = requestCreateReservation(token.getAccessToken());
+        var reservation = requestCreateReservation(request, token.getAccessToken());
         ExtractableResponse<Response> result = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -118,7 +112,7 @@ public class ReservationTest extends ReservationCommon {
     @DisplayName("다른 회원이 삭제하는 경우, 에러가 발생한다")
     @Test
     void otherUserDeleteTest(){
-        var reservation = requestCreateReservation(token.getAccessToken());
+        var reservation = requestCreateReservation(request, token.getAccessToken());
         String otherUserName = AbstractE2ETest.USERNAME + "22";
         Member member = AbstractE2ETest.saveMember(jdbcTemplate, otherUserName, AbstractE2ETest.PASSWORD, AbstractE2ETest.ADMIN);
         ExtractableResponse<Response> otherTokenResponse = AbstractE2ETest.generateToken(member.getUsername(), member.getPassword());
