@@ -17,10 +17,10 @@ public class ReservationWaiting {
     public ReservationWaiting() {
     }
 
-    public ReservationWaiting(Schedule schedule, Member member, ReservationWaitingStatus status, LocalDateTime createdAt) {
+    public ReservationWaiting(Schedule schedule, Member member, LocalDateTime createdAt) {
         this.schedule = schedule;
         this.member = member;
-        this.status = status;
+        this.status = ReservationWaitingStatus.WAITING;
         this.createdAt = createdAt;
     }
 
@@ -67,5 +67,17 @@ public class ReservationWaiting {
 
     public boolean isReservedBy(Member member) {
         return Objects.equals(this.member.getId(), member.getId());
+    }
+
+    public void waiting() {
+        this.status = ReservationWaitingStatus.WAITING;
+    }
+
+    public void reserved() {
+        this.status = ReservationWaitingStatus.RESERVED;
+    }
+
+    public void canceled() {
+        this.status = ReservationWaitingStatus.CANCELED;
     }
 }

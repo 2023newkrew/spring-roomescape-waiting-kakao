@@ -110,11 +110,6 @@ public class ReservationWaitingDao {
         }
     }
 
-    public void updateStatusById(Long id, ReservationWaitingStatus status) {
-        String sql = "UPDATE reservation_waiting SET status = ? where id = ?;";
-        jdbcTemplate.update(sql, status.name(), id);
-    }
-
     public Collection<ReservationWaiting> findAllByMemberIdWithOrder(Long memberId) {
         String sql = "SELECT rw.id, rw.schedule_id, rw.member_id, rw.status, rw.created_at, rw.waiting_num, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -131,5 +126,10 @@ public class ReservationWaitingDao {
                 "where rw.member_id = ?";
 
         return jdbcTemplate.query(sql, rowMapperWithWaitingNum, ReservationWaitingStatus.WAITING.name(), memberId);
+    }
+
+    public void cancelById(Long id) {
+        String sql = "UPDATE reservation_waiting SET status = ? where id = ?;";
+        jdbcTemplate.update(sql, ReservationWaitingStatus.CANCELED.name(), id);
     }
 }

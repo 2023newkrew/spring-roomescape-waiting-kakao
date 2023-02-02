@@ -38,15 +38,15 @@ public class ReservationWaitingService {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
                 .orElseThrow(NotExistEntityException::new);
 
-        ReservationWaitingStatus currentStatus = ReservationWaitingStatus.WAITING;
+        LocalDateTime now = LocalDateTime.now();
+        ReservationWaiting reservationWaiting = new ReservationWaiting(schedule, member, now);
         try {
             reservationDao.save(new Reservation(schedule, member));
-            currentStatus = ReservationWaitingStatus.RESERVED;
+            reservationWaiting.reserved();
         } catch (DuplicateKeyException e) {
-            System.out.println("예약이 이미 존재하여 예약 대기열로 이동합니다.");
+            reservationWaiting.waiting();
         }
-        LocalDateTime now = LocalDateTime.now();
-        Long id = reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus, now));
+        Long id = reservationWaitingDao.save(reservationWaiting);
         return id;
     }
 
@@ -58,13 +58,12 @@ public class ReservationWaitingService {
     }
 
     public void cancelById(Member member, Long id) {
-        ReservationWaitingStatus status = ReservationWaitingStatus.CANCELED;
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id)
                 .orElseThrow(NotExistEntityException::new);
 
         if (!reservationWaiting.isReservedBy(member)) {
             throw new AuthenticationException();
         }
-        reservationWaitingDao.updateStatusById(id, status);
+        reservationWaitingDao.cancelById(id);
     }
 }
