@@ -27,16 +27,61 @@ public class ReservationAndSalesService {
 
     private final SalesService salesService;
 
-    public boolean approveById(TokenData tokenData, Long id) {
-        Reservation reservation = reservationMapper.fromResponse(reservationService.getById(id));
+    public boolean approveById(TokenData tokenData, Long reservationId) {
+        Reservation reservation = reservationMapper.fromResponse(reservationService.getById(reservationId));
         validateReservationAdmin(reservation, tokenData);
         if (!reservation.getStatus().equals(ReservationStatus.UNAPPROVED)){
             throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
         }
         salesService.approveByReservationId(reservation);
-        return reservationService.approveById(id);
+        return reservationService.approveById(reservationId);
     }
 
+    public boolean cancelByReservationId(TokenData tokenData, Long reservationId) {
+        Reservation reservation = reservationMapper.fromResponse(reservationService.getById(reservationId));
+        try {
+            validateReservationAdmin(reservation, tokenData);
+            if (reservation.getStatus().equals(ReservationStatus.UNAPPROVED)){
+                return reservationService.cancelById(reservationId);
+            }
+            if (reservation.getStatus().equals(ReservationStatus.APPROVED)){
+                System.out.println("11111");
+                salesService.cancelByReservationId(reservationId);
+                System.out.println("@22222222");
+                return reservationService.cancelById(reservationId);
+            }
+            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
+        } catch (AuthenticationException e){
+            validateReservationMine(reservation, tokenData);
+            if (reservation.getStatus().equals(ReservationStatus.UNAPPROVED)){
+                return reservationService.cancelById(reservationId);
+            }
+            if (reservation.getStatus().equals(ReservationStatus.APPROVED)){
+                salesService.cancelByReservationId(reservationId);
+                return reservationService.cancelWaitById(reservationId);
+            }
+            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
+        }
+    }
+
+    @Transactional
+    public boolean cancelApproveByReservationId(TokenData tokenData, Long reservationId) {
+        Reservation reservation = reservationMapper.fromResponse(reservationService.getById(reservationId));
+        validateReservationAdmin(reservation, tokenData);
+        if (!reservation.getStatus().equals(ReservationStatus.CANCELED_WAIT)){
+            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
+        }
+        return reservationService.cancelApproveById(reservationId);
+    }
+
+    private void validateReservationMine(Reservation reservation, TokenData tokenData) {
+        if (Objects.isNull(reservation)) {
+            throw new ReservationException(ErrorMessageType.RESERVATION_NOT_EXISTS);
+        }
+        if (!tokenData.getId().equals(reservation.getMemberId())) {
+            throw new ReservationException(ErrorMessageType.NOT_RESERVATION_OWNER);
+        }
+    }
     private void validateReservationAdmin(Reservation reservation, TokenData tokenData) {
         if (Objects.isNull(reservation)) {
             throw new ReservationException(ErrorMessageType.RESERVATION_NOT_EXISTS);

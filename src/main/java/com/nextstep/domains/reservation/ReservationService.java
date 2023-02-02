@@ -1,8 +1,5 @@
 package com.nextstep.domains.reservation;
 
-import com.authorizationserver.domains.authorization.enums.RoleType;
-import com.authorizationserver.domains.authorization.exceptions.AuthenticationErrorMessageType;
-import com.authorizationserver.domains.authorization.exceptions.AuthenticationException;
 import com.authorizationserver.infrastructures.jwt.TokenData;
 import com.nextstep.domains.reservation.enums.ReservationStatus;
 import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
@@ -76,35 +73,18 @@ public class ReservationService {
     }
 
     @Transactional
-    public boolean cancelById(TokenData tokenData, Long id) {
-        Reservation reservation = repository.getById(id);
-        try {
-            validateReservationAdmin(reservation, tokenData);
-            if (reservation.getStatus().equals(ReservationStatus.UNAPPROVED) || reservation.getStatus().equals(ReservationStatus.APPROVED)){
-                repository.updateById(id, ReservationStatus.REJECTED);
-                return repository.deleteById(id);
-            }
-            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
-        } catch (AuthenticationException e){
-            validateReservationMine(reservation, tokenData);
-            if (reservation.getStatus().equals(ReservationStatus.UNAPPROVED)){
-                repository.updateById(id, ReservationStatus.CANCELED);
-                return repository.deleteById(id);
-            }
-            if (reservation.getStatus().equals(ReservationStatus.APPROVED)){
-                return repository.updateById(id, ReservationStatus.CANCELED_WAIT);
-            }
-            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
-        }
+    public boolean cancelById(Long id) {
+        repository.updateById(id, ReservationStatus.REJECTED);
+        return repository.deleteById(id);
     }
 
     @Transactional
-    public boolean cancelApproveById(TokenData tokenData, Long id) {
-        Reservation reservation = repository.getById(id);
-        validateReservationAdmin(reservation, tokenData);
-        if (!reservation.getStatus().equals(ReservationStatus.CANCELED_WAIT)){
-            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
-        }
+    public boolean cancelWaitById(Long id) {
+        return repository.updateById(id, ReservationStatus.CANCELED_WAIT);
+    }
+
+    @Transactional
+    public boolean cancelApproveById(Long id) {
         repository.updateById(id, ReservationStatus.CANCELED);
         return repository.deleteById(id);
     }
@@ -115,15 +95,6 @@ public class ReservationService {
         }
         if (!tokenData.getId().equals(reservation.getMemberId())) {
             throw new ReservationException(ErrorMessageType.NOT_RESERVATION_OWNER);
-        }
-    }
-
-    private void validateReservationAdmin(Reservation reservation, TokenData tokenData) {
-        if (Objects.isNull(reservation)) {
-            throw new ReservationException(ErrorMessageType.RESERVATION_NOT_EXISTS);
-        }
-        if (!tokenData.getRole().equals(RoleType.ADMIN.name())) {
-            throw new AuthenticationException(AuthenticationErrorMessageType.NOT_ADMIN);
         }
     }
 }
