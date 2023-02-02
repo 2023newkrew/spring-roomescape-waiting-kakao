@@ -1,6 +1,5 @@
 package nextstep.revenue;
 
-import nextstep.reservation.Reservation;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -36,5 +35,10 @@ public class RevenueDao {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    public void deleteByReservationId(Long reservationId) {
+        String sql = "DELETE FROM revenue where reservation_id = ?;";
+        jdbcTemplate.update(sql, reservationId);
     }
 }

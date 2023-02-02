@@ -18,6 +18,7 @@ import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,16 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(reservationId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.RESERVATION_NOT_FOUND));
 
+        if (isAdmin(member)) {
+            if (reservation.getStatus() == Reservation.Status.WAITING_APPROVAL) {
+                reservationDao.deleteById(reservationId);
+            } else if (reservation.getStatus() == Reservation.Status.APPROVAL) {
+                reservationDao.deleteById(reservationId);
+                revenueDao.deleteByReservationId(reservationId);
+            }
+            return;
+        }
+
         if (!reservation.isSameMember(member)) {
             throw new BusinessException(BusinessErrorCode.DELETE_FAILED_WHEN_NOT_MY_RESERVATION);
         }
@@ -71,6 +82,10 @@ public class ReservationService {
             reservation.changeStatus(Reservation.Status.CANCEL_WAITING);
             reservationDao.save(reservation);
         }
+    }
+
+    private static boolean isAdmin(Member member) {
+        return Objects.equals(member.getRole(), "ADMIN");
     }
 
     public List<Reservation> getReservationsByMember(Member member) {

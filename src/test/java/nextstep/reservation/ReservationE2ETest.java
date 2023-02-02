@@ -214,6 +214,20 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("관리자가 예약을 삭제한다")
+    @Test
+    void adminDelete() {
+        Long reservationId = createReservationAndGetId();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/" + reservationId + "/cancel")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 
     @DisplayName("예약대기를 삭제한다")
     @Test
