@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.*;
+import roomescape.nextstep.exception.AuthenticationException;
 
 import java.util.Date;
 

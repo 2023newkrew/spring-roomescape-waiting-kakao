@@ -1,5 +1,7 @@
 package roomescape.auth;
 
+import roomescape.nextstep.exception.AuthenticationException;
+
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;

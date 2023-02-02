@@ -2,6 +2,7 @@ package roomescape.nextstep.login;
 
 
 import roomescape.auth.*;
+import roomescape.nextstep.exception.AuthenticationException;
 
 public class LoginService {
 

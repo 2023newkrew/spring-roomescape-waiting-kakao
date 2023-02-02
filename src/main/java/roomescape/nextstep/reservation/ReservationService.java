@@ -1,7 +1,7 @@
 package roomescape.nextstep.reservation;
 
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.auth.AuthenticationException;
+import roomescape.nextstep.exception.AuthenticationException;
 import roomescape.nextstep.member.Member;
 import roomescape.nextstep.member.MemberDao;
 import roomescape.nextstep.schedule.Schedule;
