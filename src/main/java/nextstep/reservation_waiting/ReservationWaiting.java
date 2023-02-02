@@ -20,4 +20,8 @@ public class ReservationWaiting {
         this.member = member;
         this.waitNum = waitNum;
     }
+
+    public boolean isSameMember(Member member){
+        return this.member.equals(member);
+    }
 }

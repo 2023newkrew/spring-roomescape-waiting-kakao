@@ -56,7 +56,7 @@ public class ReservationService {
         if (reservation == null) {
             throw new NonExistEntityException();
         }
-        if (!reservation.getMember().equals(member)) {
+        if (!reservation.isSameMember(member)) {
             throw new AuthenticationException();
         }
 

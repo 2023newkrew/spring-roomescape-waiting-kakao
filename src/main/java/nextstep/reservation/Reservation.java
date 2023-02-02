@@ -35,6 +35,10 @@ public class Reservation {
         return member;
     }
 
+    public boolean isSameMember(Member member){
+        return this.member.equals(member);
+    }
+
     public static Reservation fromReservationWaiting(ReservationWaiting reservationWaiting) {
         return new Reservation(
                 reservationWaiting.getSchedule(),

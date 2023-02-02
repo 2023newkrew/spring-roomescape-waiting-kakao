@@ -52,7 +52,7 @@ public class ReservationWaitingService {
         ReservationWaiting reservationWaiting =
                 reservationWaitingDao.findById(id).orElseThrow(NonExistEntityException::new);
 
-        if(!reservationWaiting.getMember().equals(member)){
+        if(!reservationWaiting.isSameMember(member)){
             throw new AuthenticationException();
         }
 
