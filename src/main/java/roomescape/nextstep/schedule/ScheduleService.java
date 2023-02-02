@@ -1,5 +1,6 @@
 package roomescape.nextstep.schedule;
 
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.nextstep.theme.Theme;
 import roomescape.nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class ScheduleService {
         this.themeDao = themeDao;
     }
 
+    @Transactional
     public Long create(ScheduleRequest scheduleRequest) {
         Theme theme = themeDao.findById(scheduleRequest.themeId());
         return scheduleDao.save(scheduleRequest.toEntity(theme));

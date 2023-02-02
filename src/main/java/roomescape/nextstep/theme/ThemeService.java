@@ -1,6 +1,7 @@
 package roomescape.nextstep.theme;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class ThemeService {
         return themeDao.findAll();
     }
 
+    @Transactional
     public void delete(Long id) {
         Theme theme = themeDao.findById(id);
         if (theme == null) {

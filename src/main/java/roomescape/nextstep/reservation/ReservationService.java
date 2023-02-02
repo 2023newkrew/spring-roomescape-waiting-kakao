@@ -1,5 +1,6 @@
 package roomescape.nextstep.reservation;
 
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.AuthenticationException;
 import roomescape.nextstep.member.Member;
 import roomescape.nextstep.member.MemberDao;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ReservationService {
     public final ReservationDao reservationDao;
     public final ThemeDao themeDao;
