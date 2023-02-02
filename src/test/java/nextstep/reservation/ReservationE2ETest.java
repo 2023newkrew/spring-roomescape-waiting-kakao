@@ -220,20 +220,12 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("예약 취소 성공 시 첫번째 예약 대기가 예약 상태로 변경됨 - waiting 상태 2개 -> 1개로 변경")
+    @DisplayName("예약 취소 성공 시 첫번째 예약 대기가 예약 상태로 변경됨 - waiting 2개 -> 1개로 변경")
     @Test
     void cancelReservationAndCheckFirstWaiting() {
         createReservationWaiting(token);
         createReservationWaiting(token);
         createReservationWaiting(token);
-
-        RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().patch("/reservations/1/cancel")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value());
-
         var response2 = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -244,7 +236,26 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        List<ReservationWaitingResponse> reservationWaitingResponseList = response2.jsonPath().getList(".", ReservationWaitingResponse.class);
+        List<ReservationWaitingResponse> reservationWaitingResponseList2 = response2.jsonPath().getList(".", ReservationWaitingResponse.class);
+        assertThat(reservationWaitingResponseList2.size()).isEqualTo(2);
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        List<ReservationWaitingResponse> reservationWaitingResponseList = response.jsonPath().getList(".", ReservationWaitingResponse.class);
         assertThat(reservationWaitingResponseList.size()).isEqualTo(1);
     }
 

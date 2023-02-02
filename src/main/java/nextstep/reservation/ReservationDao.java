@@ -137,4 +137,9 @@ public class ReservationDao {
         String sql = "update reservation set status = ? where id = ?;";
         jdbcTemplate.update(sql, status.name(), id);
     }
+
+    public int countActiveReservationByScheduleId(Long scheduleId) {
+        String sql = "select count(*) from reservation where reservation.schedule_id = ? and not (reservation.status = ? or reservation.status = ?);";
+        return jdbcTemplate.queryForObject(sql, Integer.class, scheduleId, ReservationStatus.REJECTED.name(), ReservationStatus.CANCELED.name());
+    }
 }

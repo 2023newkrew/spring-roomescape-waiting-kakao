@@ -41,22 +41,12 @@ public class ReservationWaitingService {
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
                 .orElseThrow(() -> new NotExistEntityException(Schedule.class));
-        ReservationWaitingStatus currentStatus = ReservationWaitingStatus.WAITING;
-        if (tryInsertReservation(schedule, member)) {
-            currentStatus = ReservationWaitingStatus.RESERVED;
+        boolean isReserved = reservationDao.countActiveReservationByScheduleId(schedule.getId()) > 0;
+        if (!isReserved) {
+            // 예약이 존재하지 않으면 대기열에 추가하지 않고 예약 후 id 반환
+            return reservationDao.save(new Reservation(schedule, member, ReservationStatus.UNAPPROVED));
         }
-        return reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus));
-    }
-
-    private boolean tryInsertReservation(Schedule schedule, Member member) {
-        try {
-            reservationDao.save(new Reservation(schedule, member, ReservationStatus.UNAPPROVED));
-        } catch (DuplicateKeyException e) {
-            // 예약이 이미 존재할 때
-            System.out.println("예약이 이미 존재합니다. 예약 대기 상태로 등록합니다.");
-            return false;
-        }
-        return true;
+        return reservationWaitingDao.save(new ReservationWaiting(schedule, member));
     }
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {
@@ -64,7 +54,6 @@ public class ReservationWaitingService {
     }
 
     public void cancelById(Member member, Long id) {
-        ReservationWaitingStatus status = ReservationWaitingStatus.CANCELED;
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id)
                 .orElseThrow(() -> new NotExistEntityException(Reservation.class));
 
@@ -72,6 +61,6 @@ public class ReservationWaitingService {
             throw new AuthenticationException();
         }
 
-        reservationWaitingDao.updateStatusById(id, status);
+        reservationWaitingDao.deleteById(id);
     }
 }

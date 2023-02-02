@@ -4,8 +4,7 @@ CREATE TABLE IF NOT EXISTS reservation
     schedule_id bigint not null,
     member_id   bigint not null,
     status      varchar(20) not null,
-    primary key (id),
-    unique (schedule_id)
+    primary key (id)
 );
 
 CREATE TABLE IF NOT EXISTS theme
@@ -43,7 +42,7 @@ CREATE TABLE IF NOT EXISTS reservation_waiting
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
-    status      varchar(20) not null,
+    reg_time    datetime not null,
     primary key (id)
 );
 

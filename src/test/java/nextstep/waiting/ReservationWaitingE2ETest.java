@@ -83,6 +83,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     @DisplayName("내 예약 대기 취소 성공 시 NO CONTENT 응답")
     @Test
     void cancel() {
+        createReservationWaiting(token);
         var reservation = createReservationWaiting(token);
 
         var response = RestAssured
@@ -98,6 +99,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     @DisplayName("다른 사람이 예약 대기를 취소하면 UNAUTHORIZED 응답")
     @Test
     void deleteReservationOfOthers() {
+        createReservationWaiting(token);
         createReservationWaiting(token);
         var response = RestAssured
                 .given().log().all()

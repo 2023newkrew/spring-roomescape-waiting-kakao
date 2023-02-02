@@ -4,8 +4,8 @@ import auth.AuthenticationException;
 import nextstep.exception.NotExistEntityException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservationwaiting.ReservationWaiting;
 import nextstep.reservationwaiting.ReservationWaitingDao;
-import nextstep.reservationwaiting.ReservationWaitingStatus;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -13,10 +13,7 @@ import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.UnavailableException;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -119,18 +116,13 @@ public class ReservationService {
     }
 
     private void updateWaitingsByReservationCancellation(Reservation reservation) {
-        reservationWaitingDao.updateTop1StatusByStatusAndScheduleId(
-                reservation.getSchedule().getId(),
-                ReservationWaitingStatus.RESERVED,
-                ReservationWaitingStatus.CANCELED
-        );
-        long waitingSize = reservationWaitingDao.countWaitingByScheduleId(reservation.getSchedule().getId());
-        if (waitingSize > 0) {
-            reservationWaitingDao.updateTop1StatusByStatusAndScheduleId(
-                    reservation.getSchedule().getId(),
-                    ReservationWaitingStatus.WAITING,
-                    ReservationWaitingStatus.RESERVED);
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findTop1ByScheduleIdOrderByRegTime(reservation.getSchedule().getId()).orElse(null);
+        if(reservationWaiting == null) {
+            System.out.println("예약 대기가 존재하지 않음");
+            return;
         }
+        reservationWaitingDao.deleteById(reservationWaiting.getId());
+        reservationDao.save(Reservation.from(reservationWaiting));
     }
 
 

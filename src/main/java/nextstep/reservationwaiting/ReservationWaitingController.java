@@ -23,6 +23,9 @@ public class ReservationWaitingController {
     @PostMapping
     public ResponseEntity<Void> createReservationWaiting(@LoginMember Member member, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
         Long id = reservationWaitingService.create(member, reservationWaitingRequest);
+        if(id == null) {
+            return ResponseEntity.created(URI.create("/reservation/" + id)).build();
+        }
         return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
