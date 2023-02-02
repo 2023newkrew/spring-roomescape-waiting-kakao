@@ -41,4 +41,36 @@ public class Reservation {
     public boolean sameMember(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }
+
+    public static ReservationBuilder builder() {
+        return new ReservationBuilder();
+    }
+
+    public static class ReservationBuilder {
+        private Long id;
+        private Schedule schedule;
+        private Member member;
+
+        private ReservationBuilder() {
+        }
+
+        public ReservationBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public ReservationBuilder schedule(Schedule schedule) {
+            this.schedule = schedule;
+            return this;
+        }
+
+        public ReservationBuilder member(Member member) {
+            this.member = member;
+            return this;
+        }
+
+        public Reservation build() {
+            return new Reservation(id, schedule, member);
+        }
+    }
 }

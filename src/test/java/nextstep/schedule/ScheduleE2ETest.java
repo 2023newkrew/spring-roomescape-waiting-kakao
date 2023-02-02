@@ -63,7 +63,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
         assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
     }
 
-    @DisplayName("예약을 삭제한다")
+    @DisplayName("스케줄을 삭제한다")
     @Test
     void delete() {
         String location = requestCreateSchedule();

@@ -22,7 +22,7 @@ public class ScheduleController {
 
     @GetMapping("/schedules")
     public ResponseEntity<List<Schedule>> showReservations(@RequestParam Long themeId, @RequestParam String date) {
-        return ResponseEntity.ok().body(scheduleService.findByThemeIdAndDate(themeId, date));
+        return ResponseEntity.ok().body(scheduleService.findAllByThemeIdAndDate(themeId, date));
     }
 
     @DeleteMapping("/admin/schedules/{id}")

@@ -5,6 +5,7 @@ import auth.LoginMember;
 import auth.UserDetails;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationRequest;
+import nextstep.support.NotExistEntityException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class WaitingController {
     public ResponseEntity<Void> delete(@LoginMember UserDetails userDetails, @PathVariable Long waitingId){
         try {
             waitingService.delete(new Member(userDetails), waitingId);
-        } catch (NullPointerException e) {
+        } catch (NotExistEntityException e) {
             return ResponseEntity.badRequest().build();
         } catch (AuthorizationException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

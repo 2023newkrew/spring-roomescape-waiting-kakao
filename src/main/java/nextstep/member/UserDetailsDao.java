@@ -14,18 +14,18 @@ public class UserDetailsDao implements UserDetailsRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<UserDetails> rowMapper = (resultSet, rowNum) -> new UserDetails(
-            resultSet.getLong("id"),
-            resultSet.getString("username"),
-            resultSet.getString("password"),
-            resultSet.getString("name"),
-            resultSet.getString("phone"),
-            resultSet.getString("role")
-    );
+    private final RowMapper<UserDetails> rowMapper = (resultSet, rowNum) -> UserDetails.builder()
+            .id(resultSet.getLong("id"))
+            .username(resultSet.getString("username"))
+            .password(resultSet.getString("password"))
+            .name(resultSet.getString("name"))
+            .phone(resultSet.getString("phone"))
+            .role(resultSet.getString("role"))
+            .build();
 
     @Override
     public UserDetails findByUsername(final String username) {
-        String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
+        String sql = "SELECT * from member where username = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, username);
     }
 }

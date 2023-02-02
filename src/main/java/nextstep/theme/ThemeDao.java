@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class ThemeDao {
@@ -17,12 +19,12 @@ public class ThemeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("desc"),
-            resultSet.getInt("price")
-    );
+    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> Theme.builder()
+            .id(resultSet.getLong("id"))
+            .name(resultSet.getString("name"))
+            .desc(resultSet.getString("desc"))
+            .price(resultSet.getInt("price"))
+            .build();
 
     public Long save(Theme theme) {
         String sql = "INSERT INTO theme (name, desc, price) VALUES (?, ?, ?);";
@@ -37,21 +39,21 @@ public class ThemeDao {
 
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public Theme findById(Long id) {
-        String sql = "SELECT id, name, desc, price from theme where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    public Optional<Theme> findById(Long id) {
+        String sql = "SELECT * from theme where id = ?;";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT id, name, desc, price from theme;";
+        String sql = "SELECT * from theme;";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public void delete(Long id) {
+    public int delete(Long id) {
         String sql = "DELETE FROM reservation where id = ?;";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 }
