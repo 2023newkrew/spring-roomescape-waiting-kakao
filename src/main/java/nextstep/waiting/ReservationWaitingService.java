@@ -26,7 +26,7 @@ public class ReservationWaitingService {
         this.memberDao = memberDao;
     }
 
-    public Long save(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
+    public synchronized Long save(Long memberId, ReservationWaitingRequest reservationWaitingRequest) {
         Member member = memberDao.findById(memberId);
         if (member == null) {
             throw new AuthenticationException();
