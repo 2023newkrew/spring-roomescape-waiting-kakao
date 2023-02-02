@@ -1,5 +1,8 @@
 package nextstep.member;
 
+import lombok.Builder;
+
+@Builder
 public class Member {
     private Long id;
     private String username;

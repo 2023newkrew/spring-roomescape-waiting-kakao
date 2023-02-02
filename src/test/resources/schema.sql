@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS reservation;
 CREATE TABLE reservation
 (
     id          bigint not null auto_increment,
@@ -6,7 +7,7 @@ CREATE TABLE reservation
     created_datetime datetime not null default now(),
     primary key (id)
 );
-
+DROP TABLE IF EXISTS theme;
 CREATE TABLE theme
 (
     id    bigint       not null auto_increment,
@@ -15,7 +16,7 @@ CREATE TABLE theme
     price int          not null,
     primary key (id)
 );
-
+DROP TABLE IF EXISTS schedule;
 CREATE TABLE schedule
 (
     id       bigint not null auto_increment,
@@ -24,7 +25,7 @@ CREATE TABLE schedule
     time     time   not null,
     primary key (id)
 );
-
+DROP TABLE IF EXISTS member;
 CREATE TABLE member
 (
     id       bigint      not null auto_increment,

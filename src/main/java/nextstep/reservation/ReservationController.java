@@ -1,7 +1,7 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
-import nextstep.auth.LoginMember;
+import auth.AuthenticationException;
+import auth.LoginMember;
 import nextstep.member.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +36,12 @@ public class ReservationController {
         reservationService.deleteById(member, id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations/mine")
+    public ResponseEntity<List<ReservationResponse>> showMyReservations(@LoginMember Member member) {
+        List<ReservationResponse> reservations = reservationService.findAllByMember(member);
+        return ResponseEntity.ok(reservations);
     }
 
     @ExceptionHandler(Exception.class)

@@ -1,13 +1,13 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import auth.AuthenticationException;
+import nextstep.exceptions.exception.DuplicatedReservationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
-import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import nextstep.exceptions.exception.NotFoundObjectException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,43 +30,35 @@ public class ReservationService {
         if (member == null) {
             throw new AuthenticationException();
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(NotFoundObjectException::new);
 
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
-        }
-
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
-
-        return reservationDao.save(newReservation);
+        reservationDao.findByScheduleId(schedule.getId())
+                .ifPresent((reservation) ->
+                        {throw new DuplicatedReservationException();}
+                );
+        return reservationDao.save(new Reservation(schedule, member));
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
-
+        themeDao.findById(themeId).orElseThrow(NullPointerException::new);
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
+        Reservation reservation = reservationDao.findById(id).orElseThrow(NullPointerException::new);
 
         if (!reservation.sameMember(member)) {
             throw new AuthenticationException();
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public List<ReservationResponse> findAllByMember(Member member) {
+        List<Reservation> reservations = reservationDao.findAllByMemberId(member.getId());
+        return reservations.stream()
+                .map(ReservationResponse::new)
+                .toList();
     }
 }
