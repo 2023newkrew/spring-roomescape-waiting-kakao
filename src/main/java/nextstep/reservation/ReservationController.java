@@ -11,7 +11,6 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservations")
 public class ReservationController {
 
     public final ReservationService reservationService;
@@ -20,25 +19,30 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     public ResponseEntity<Void> createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
         Long id = reservationService.create(member, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
+    @PatchMapping("/admin/reservations/{id}/approve")
+    public ResponseEntity<Void> approveReservation(@PathVariable("id") Long reservationId) {
+        reservationService.approveReservation(reservationId);
+        return ResponseEntity.ok().build();
+    }
 
-    @GetMapping("/mine")
+    @GetMapping("/reservations/mine")
     public ResponseEntity<List<ReservationResponse>> findMyReservation(@LoginMember Member member) {
         List<ReservationResponse> results = reservationService.findMyReservations(member);
         return ResponseEntity.ok().body(results);
     }
 
-    @GetMapping()
+    @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<ReservationResponse> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@LoginMember Member member, @PathVariable Long id) {
         reservationService.deleteById(member, id);
 

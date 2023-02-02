@@ -70,4 +70,8 @@ public class ReservationService {
 
         reservationDao.deleteById(id);
     }
+
+    public void approveReservation(Long reservationId) {
+        reservationDao.updateStatusById(reservationId, ReservationStatus.APPROVED);
+    }
 }

@@ -179,6 +179,30 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    @DisplayName("예약 승인 - 어드민만 가능")
+    @Test
+    void approveReservation() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("admin/reservations/1/approve")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        var response2 = RestAssured
+                .given().log().all()
+                .auth().oauth2(someoneToken.getAccessToken())
+                .when().patch("admin/reservations/1/approve")
+                .then().log().all()
+                .extract();
+
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()

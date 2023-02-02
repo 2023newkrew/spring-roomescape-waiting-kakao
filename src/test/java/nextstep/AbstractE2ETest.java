@@ -13,11 +13,10 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AbstractE2ETest {
-    public static final String USERNAME = "username";
+    public static final String USERNAME = "adminuser";
     public static final String PASSWORD = "password";
     public static final String SOMEONE_USERNAME = "someone";
     public static final String SOMEONE_PASSWORD = "pwdpwd";
-
 
     protected TokenResponse token;
     protected TokenResponse someoneToken;
@@ -45,11 +44,11 @@ public class AbstractE2ETest {
 
         token = myResponse.as(TokenResponse.class);
 
-        MemberRequest someoneMmemberBody = new MemberRequest(SOMEONE_USERNAME, SOMEONE_PASSWORD, "someone", "010-1234-5678", "ADMIN");
+        MemberRequest someoneMemberBody = new MemberRequest(SOMEONE_USERNAME, SOMEONE_PASSWORD, "someone", "010-1234-5678", "NORMAL");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(someoneMmemberBody)
+                .body(someoneMemberBody)
                 .when().post("/members")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
@@ -64,5 +63,6 @@ public class AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
         someoneToken = someoneResponse.as(TokenResponse.class);
+
     }
 }

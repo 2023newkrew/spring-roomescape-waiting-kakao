@@ -108,11 +108,9 @@ public class ReservationDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
                 "where reservation.member_id = ?;";
-        try {
-            return jdbcTemplate.query(sql, rowMapper, memberId);
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
+
+        return jdbcTemplate.query(sql, rowMapper, memberId);
+
     }
 
     public List<Reservation> findByScheduleId(Long id) {
@@ -127,15 +125,16 @@ public class ReservationDao {
                 "inner join member on reservation.member_id = member.id " +
                 "where schedule.id = ?;";
 
-        try {
-            return jdbcTemplate.query(sql, rowMapper, id);
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
+        return jdbcTemplate.query(sql, rowMapper, id);
     }
 
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation where id = ?;";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void updateStatusById(Long id, ReservationStatus status) {
+        String sql = "update reservation set status = ? where id = ?;";
+        jdbcTemplate.update(sql, status.name(), id);
     }
 }
