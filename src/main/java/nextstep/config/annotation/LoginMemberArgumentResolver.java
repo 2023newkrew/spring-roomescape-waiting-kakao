@@ -1,6 +1,7 @@
 package nextstep.config.annotation;
 
 import auth.JwtTokenProvider;
+import auth.exception.AuthException;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.MemberService;
 import org.springframework.core.MethodParameter;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import static auth.exception.AuthErrorCode.INVALID_USER;
 
 @RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -27,7 +30,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
             return memberService.findById(Long.valueOf(jwtTokenProvider.getPrincipal(credential)));
         } catch (Exception e) {
-            return null;
+            throw new AuthException(INVALID_USER);
         }
     }
 }
