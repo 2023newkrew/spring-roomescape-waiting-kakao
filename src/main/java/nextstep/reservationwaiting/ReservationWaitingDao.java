@@ -1,5 +1,6 @@
 package nextstep.reservationwaiting;
 
+import nextstep.proxy.ObjectOrNull;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -54,20 +55,17 @@ public class ReservationWaitingDao {
         return keyHolder.getKey().longValue();
     }
 
+    @ObjectOrNull
     public ReservationWaiting findById(Long id) {
         String sql = "SELECT " +
                 "reservation_waiting.id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                "theme.id, theme.name, theme.desc, theme.price, " +
+                "theme.id, theme.name, theme.desc, theme.price " +
                 "FROM reservation_waiting " +
                 "INNER JOIN schedule ON reservation_waiting.schedule_id = schedule.id " +
                 "INNER JOIN theme ON schedule.theme_id = theme.id " +
                 "WHERE reservation_waiting.id = ?;";
-        try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
-            return null;
-        }
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     public List<ReservationWaiting> findByMemberId(Long memberId) {
@@ -79,13 +77,10 @@ public class ReservationWaitingDao {
                 "INNER JOIN schedule ON reservation_waiting.schedule_id = schedule.id " +
                 "INNER JOIN theme ON schedule.theme_id = theme.id " +
                 "WHERE reservation_waiting.member_id = ?;";
-        try {
-            return jdbcTemplate.query(sql, rowMapper, memberId);
-        } catch (Exception e) {
-            return null;
-        }
+        return jdbcTemplate.query(sql, rowMapper, memberId);
     }
 
+    @ObjectOrNull
     public ReservationWaiting findEarliestOneByScheduleId(Long scheduleId) {
         String sql = "SELECT " +
                 "reservation_waiting.id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
@@ -97,29 +92,12 @@ public class ReservationWaitingDao {
                 "WHERE reservation_waiting.schedule_id = ? " +
                 "ORDER BY reservation_waiting.wait_num ASC " +
                 "LIMIT 1;";
-        try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, scheduleId);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public boolean existById(Long id, Long memberId) {
-        String sql = "SELECT " +
-                "1 " +
-                "FROM reservation_waiting " +
-                "WHERE member_id = ? AND id = ? " +
-                "LIMIT 1;";
-        try {
-            return jdbcTemplate.queryForObject(sql, Integer.class, memberId, id) == 1;
-        } catch (Exception e) {
-            return false;
-        }
+        return jdbcTemplate.queryForObject(sql, rowMapper, scheduleId);
     }
 
     public Long findMaxWaitNumByScheduleId(Long scheduleId) {
         String sql = "SELECT " +
-                "max(reservation_waiting.wait_num) " +
+                "MAX(reservation_waiting.wait_num) " +
                 "FROM reservation_waiting " +
                 "WHERE reservation_waiting.schedule_id = ?;";
         try {

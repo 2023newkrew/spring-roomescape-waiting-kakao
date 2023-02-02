@@ -8,15 +8,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class BaseExceptionHandler {
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
-
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity onNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @ExceptionHandler(DuplicateEntityException.class)
+    public ResponseEntity onDuplicateEntityException(DuplicateEntityException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @ExceptionHandler(AuthenticationException.class)

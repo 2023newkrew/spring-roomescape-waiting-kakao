@@ -1,5 +1,6 @@
 package nextstep.theme;
 
+import nextstep.proxy.ObjectOrNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -40,6 +41,7 @@ public class ThemeDao {
         return keyHolder.getKey().longValue();
     }
 
+    @ObjectOrNull
     public Theme findById(Long id) {
         String sql = "SELECT id, name, desc, price FROM theme WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);

@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import nextstep.proxy.ObjectOrNull;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -49,6 +50,7 @@ public class ScheduleDao {
         return keyHolder.getKey().longValue();
     }
 
+    @ObjectOrNull
     public Schedule findById(Long id) {
         String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
                 "FROM schedule " +

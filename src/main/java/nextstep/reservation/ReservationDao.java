@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import nextstep.member.Member;
+import nextstep.proxy.ObjectOrNull;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -76,6 +77,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(date));
     }
 
+    @ObjectOrNull
     public Reservation findById(Long id) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, " +
@@ -87,11 +89,7 @@ public class ReservationDao {
                 "INNER JOIN theme ON schedule.theme_id = theme.id " +
                 "INNER JOIN member ON reservation.member_id = member.id " +
                 "WHERE reservation.id = ?;";
-        try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
-            return null;
-        }
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     public List<Reservation> findByScheduleId(Long id) {
