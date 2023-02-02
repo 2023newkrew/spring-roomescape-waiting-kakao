@@ -73,12 +73,25 @@ public class ReservationService {
     @Transactional
     public boolean approveById(TokenData tokenData, Long id) {
         Reservation reservation = repository.getById(id);
-        System.out.println(tokenData.getRole());
         validateReservationAdmin(reservation, tokenData);
         if (!reservation.getStatus().equals(StatusType.UNAPPROVED)){
             throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
         }
         return repository.updateById(id, StatusType.APPROVED);
+    }
+
+    @Transactional
+    public boolean cancelById(TokenData tokenData, Long id) {
+        Reservation reservation = repository.getById(id);
+        validateReservationMine(reservation, tokenData);
+        if (reservation.getStatus().equals(StatusType.UNAPPROVED)){
+            repository.updateById(id, StatusType.CANCELED);
+            return repository.deleteById(id);
+        }
+        if (reservation.getStatus().equals(StatusType.APPROVED)){
+            return repository.updateById(id, StatusType.CANCELED_WAIT);
+        }
+        throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
     }
 
     private void validateReservationMine(Reservation reservation, TokenData tokenData) {

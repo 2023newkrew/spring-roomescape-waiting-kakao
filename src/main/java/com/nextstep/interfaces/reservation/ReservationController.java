@@ -73,7 +73,15 @@ public class ReservationController {
             @UseContext TokenData tokenData,
             @PathVariable("reservation_id") Long reservationId
     ){
-        return ResponseEntity.ok(service.approveById(tokenData,reservationId));
+        return ResponseEntity.ok(service.approveById(tokenData, reservationId));
+    }
+
+    @PatchMapping("/{reservation_id}/cancel")
+    public ResponseEntity<Boolean> cancelReservation(
+            @UseContext TokenData tokenData,
+            @PathVariable("reservation_id") Long reservationId
+    ){
+        return ResponseEntity.ok(service.cancelById(tokenData, reservationId));
     }
 
     private void validateSchedule(ScheduleResponse schedule) {
