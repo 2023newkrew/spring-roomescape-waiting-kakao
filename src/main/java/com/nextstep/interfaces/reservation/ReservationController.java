@@ -84,6 +84,14 @@ public class ReservationController {
         return ResponseEntity.ok(service.cancelById(tokenData, reservationId));
     }
 
+    @PatchMapping("/{reservation_id}/cancel-approve")
+    public ResponseEntity<Boolean> cancelApproveReservation(
+            @UseContext TokenData tokenData,
+            @PathVariable("reservation_id") Long reservationId
+    ){
+        return ResponseEntity.ok(service.cancelApproveById(tokenData, reservationId));
+    }
+
     private void validateSchedule(ScheduleResponse schedule) {
         if (Objects.isNull(schedule)) {
             throw new ScheduleException(ErrorMessageType.SCHEDULE_NOT_EXISTS);

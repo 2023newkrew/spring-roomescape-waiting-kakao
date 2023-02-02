@@ -103,6 +103,17 @@ public class ReservationService {
         }
     }
 
+    @Transactional
+    public boolean cancelApproveById(TokenData tokenData, Long id) {
+        Reservation reservation = repository.getById(id);
+        validateReservationAdmin(reservation, tokenData);
+        if (!reservation.getStatus().equals(StatusType.CANCELED_WAIT)){
+            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
+        }
+        repository.updateById(id, StatusType.CANCELED);
+        return repository.deleteById(id);
+    }
+
     private void validateReservationMine(Reservation reservation, TokenData tokenData) {
         if (Objects.isNull(reservation)) {
             throw new ReservationException(ErrorMessageType.RESERVATION_NOT_EXISTS);

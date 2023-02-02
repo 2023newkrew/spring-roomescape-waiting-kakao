@@ -102,7 +102,6 @@ public class ReservationControllerTest extends AbstractControllerTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-
     class cancel {
         @DisplayName("예약 취소 - 미승인 상태 - 사용자")
         @Test
@@ -147,6 +146,24 @@ public class ReservationControllerTest extends AbstractControllerTest {
                     .statusCode(HttpStatus.OK.value());
 
             response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+            then(response);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class cancel_approve {
+        @DisplayName("예약 취소 승인")
+        @Test
+        void should_cancel_approve() {
+            patch(authGiven(), DEFAULT_PATH + "/2/approve");
+            patch(authGivenAnother(), DEFAULT_PATH + "/2/cancel");
+            var response = patch(authGiven(), DEFAULT_PATH + "/2/cancel-approve");
+            then(response)
+                    .statusCode(HttpStatus.OK.value());
+
+            response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+
             then(response);
         }
     }
