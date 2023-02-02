@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 
 @Component
 public class MemberDao {
@@ -46,6 +47,11 @@ public class MemberDao {
     public Member findById(Long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
+
+    public List<Member> findAll(){
+        String sql = "SELECT * from member;";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     public Member findByUsername(String username) {
