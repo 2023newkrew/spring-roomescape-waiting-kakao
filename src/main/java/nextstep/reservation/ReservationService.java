@@ -50,7 +50,7 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
-    public List<ReservationResponse> findMyReservations(Member member) {
+    public List<ReservationResponse> findMemberReservations(Member member) {
         try {
             return reservationDao.findAllByMemberId(member.getId()).stream()
                     .map(r -> new ReservationResponse(r.getId(), r.getSchedule()))
