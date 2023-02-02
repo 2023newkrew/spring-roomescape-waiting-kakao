@@ -95,6 +95,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         var response = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(token.getAccessToken())
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
@@ -165,6 +166,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void showEmptyReservations() {
         var response = RestAssured
                 .given().log().all()
+                .auth().oauth2(token.getAccessToken())
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
