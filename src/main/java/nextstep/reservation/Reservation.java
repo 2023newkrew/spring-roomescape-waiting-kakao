@@ -36,7 +36,7 @@ public class Reservation {
         return member;
     }
 
-    public boolean sameMember(Member member) {
-        return member != null && Objects.equals(this.member.getId(), member.getId());
+    public boolean isReservedBy(Member member) {
+        return Objects.equals(this.member.getId(), member.getId());
     }
 }

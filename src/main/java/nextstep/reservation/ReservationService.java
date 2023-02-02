@@ -57,7 +57,7 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NotExistEntityException::new);
 
-        if (!reservation.sameMember(member)) {
+        if (!reservation.isReservedBy(member)) {
             throw new AuthenticationException();
         }
         reservationDao.deleteById(id);
