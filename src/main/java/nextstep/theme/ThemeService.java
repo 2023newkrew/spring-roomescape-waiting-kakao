@@ -1,16 +1,15 @@
 package nextstep.theme;
 
+import lombok.RequiredArgsConstructor;
+import nextstep.support.exception.NonExistThemeException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ThemeService {
-    private ThemeDao themeDao;
-
-    public ThemeService(ThemeDao themeDao) {
-        this.themeDao = themeDao;
-    }
+    private final ThemeDao themeDao;
 
     public Long create(ThemeRequest themeRequest) {
         return themeDao.save(themeRequest.toEntity());
@@ -21,11 +20,10 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
-        Theme theme = themeDao.findById(id);
-        if (theme == null) {
-            throw new NullPointerException();
+        if (themeDao.findById(id)
+                .isEmpty()) {
+            throw new NonExistThemeException();
         }
-
         themeDao.delete(id);
     }
 }

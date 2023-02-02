@@ -1,9 +1,11 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
-import nextstep.auth.LoginMember;
+import auth.LoginMember;
+import auth.UserDetails;
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
-import org.springframework.http.HttpStatus;
+import nextstep.member.MemberService;
+import nextstep.reservation_waiting.ReservationWaitingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,40 +13,44 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ReservationController {
 
-    public final ReservationService reservationService;
-
-    public ReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
+    private final ReservationWaitingService reservationWaitingService;
+    private final ReservationService reservationService;
+    private final MemberService memberService;
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<URI> createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
+        Member member = memberService.findById(userDetails.getId());
         Long id = reservationService.create(member, reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + id)).build();
+        return ResponseEntity.created(URI.create("/reservations/" + id))
+                .build();
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<List<Reservation>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
-        return ResponseEntity.ok().body(results);
+        return ResponseEntity.ok()
+                .body(results);
+    }
+
+    @GetMapping("/reservations/mine")
+    public ResponseEntity<List<Reservation>> readOwnReservations(@LoginMember UserDetails userDetails) {
+        Member member = memberService.findById(userDetails.getId());
+        List<Reservation> own = reservationService.findOwn(member);
+        return ResponseEntity.ok()
+                .body(own);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
-        reservationService.deleteById(member, id);
-
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+        Member member = memberService.findById(userDetails.getId());
+        Reservation reservation = reservationService.findById(id);
+        reservationService.deleteById(reservation, member);
+        reservationWaitingService.confirm(reservation);
+        return ResponseEntity.noContent()
+                .build();
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
 }

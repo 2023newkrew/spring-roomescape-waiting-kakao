@@ -1,9 +1,9 @@
 package nextstep.theme;
 
+import auth.login.TokenRequest;
+import auth.login.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
 import nextstep.member.MemberRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,41 +12,57 @@ import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ThemeE2ETest extends AbstractE2ETest {
+class ThemeE2ETest extends AbstractE2ETest {
     @DisplayName("테마를 생성한다")
     @Test
-    public void create() {
+    void create() {
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2(token.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
-                .when().post("/admin/themes")
-                .then().log().all()
+                .when()
+                .post("/admin/themes")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.CREATED.value());
     }
 
     @DisplayName("어드민이 아닌 사람이 테마를 생성한다")
     @Test
-    public void createFromNormalUser() {
+    void createFromNormalUser() {
 
-        MemberRequest memberBody = new MemberRequest(USERNAME+1, PASSWORD, "name", "010-1234-5678", "");
+        MemberRequest memberBody = new MemberRequest(USERNAME + 1, PASSWORD, "name", "010-1234-5678", "");
         RestAssured
-                .given().log().all()
+                .given()
+                .log()
+                .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(memberBody)
-                .when().post("/members")
-                .then().log().all()
+                .when()
+                .post("/members")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        TokenRequest tokenBody = new TokenRequest(USERNAME+1, PASSWORD);
+        TokenRequest tokenBody = new TokenRequest(USERNAME + 1, PASSWORD);
         var response = RestAssured
-                .given().log().all()
+                .given()
+                .log()
+                .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(tokenBody)
-                .when().post("/login/token")
-                .then().log().all()
+                .when()
+                .post("/login/token")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
@@ -54,28 +70,40 @@ public class ThemeE2ETest extends AbstractE2ETest {
 
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2(token.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
+                .when()
+                .post("/admin/themes")
+                .then()
+                .log()
+                .all()
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @DisplayName("테마 목록을 조회한다")
     @Test
-    public void showThemes() {
+    void showThemes() {
         createTheme();
 
         var response = RestAssured
-                .given().log().all()
+                .given()
+                .log()
+                .all()
                 .param("date", "2022-08-11")
-                .when().get("/themes")
-                .then().log().all()
+                .when()
+                .get("/themes")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
-        assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
+        assertThat(response.jsonPath()
+                .getList(".")).hasSize(1);
     }
 
     @DisplayName("테마를 삭제한다")
@@ -84,10 +112,16 @@ public class ThemeE2ETest extends AbstractE2ETest {
         Long id = createTheme();
 
         var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().delete("/admin/themes/" + id)
-                .then().log().all()
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2(token.getAccessToken())
+                .when()
+                .delete("/admin/themes/" + id)
+                .then()
+                .log()
+                .all()
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -96,14 +130,21 @@ public class ThemeE2ETest extends AbstractE2ETest {
     public Long createTheme() {
         ThemeRequest body = new ThemeRequest("테마이름", "테마설명", 22000);
         String location = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .given()
+                .log()
+                .all()
+                .auth()
+                .oauth2(token.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
-                .when().post("/admin/themes")
-                .then().log().all()
+                .when()
+                .post("/admin/themes")
+                .then()
+                .log()
+                .all()
                 .statusCode(HttpStatus.CREATED.value())
-                .extract().header("Location");
+                .extract()
+                .header("Location");
         return Long.parseLong(location.split("/")[2]);
     }
 }

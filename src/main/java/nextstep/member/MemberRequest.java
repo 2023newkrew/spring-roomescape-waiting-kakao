@@ -1,5 +1,8 @@
 package nextstep.member;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class MemberRequest {
     private String username;
     private String password;
