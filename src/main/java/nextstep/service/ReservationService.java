@@ -1,5 +1,6 @@
 package nextstep.service;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.domain.member.Member;
 import nextstep.domain.reservation.Reservation;
 import nextstep.domain.reservation.ReservationDao;
@@ -8,6 +9,7 @@ import nextstep.dto.response.CreateReservationResponse;
 import nextstep.dto.response.ReservationResponse;
 import nextstep.domain.schedule.Schedule;
 import nextstep.error.ApplicationException;
+import nextstep.utils.TransactionUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.error.ErrorType.*;
 
+@RequiredArgsConstructor
 @Service
 public class ReservationService {
 
@@ -24,14 +27,7 @@ public class ReservationService {
     private final MemberService memberService;
     private final ScheduleService scheduleService;
     private final ThemeService themeService;
-
-    public ReservationService(ReservationDao reservationDao, ReservationWaitingService reservationWaitingService, MemberService memberService, ScheduleService scheduleService, ThemeService themeService) {
-        this.reservationDao = reservationDao;
-        this.reservationWaitingService = reservationWaitingService;
-        this.memberService = memberService;
-        this.scheduleService = scheduleService;
-        this.themeService = themeService;
-    }
+    private final TransactionUtil transactionUtil;
 
     @Transactional
     public CreateReservationResponse createReservationOrReservationWaiting(Long memberId, ReservationRequest reservationRequest) {
@@ -45,10 +41,11 @@ public class ReservationService {
         return new CreateReservationResponse(reservationDao.save(new Reservation(schedule, member, 0)), true);
     }
 
-    @Transactional(readOnly = true)
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
-        themeService.findById(themeId);
-        return reservationDao.findAllByThemeIdAndDate(themeId, date)
+        return transactionUtil.executeReadOnlyTask(() -> {
+                    themeService.checkThemeExists(themeId);
+                    return reservationDao.findAllByThemeIdAndDate(themeId, date);
+                })
                 .stream()
                 .map(ReservationResponse::new)
                 .collect(Collectors.toList());
@@ -71,9 +68,8 @@ public class ReservationService {
         reservationDao.deleteById(reservationId);
     }
 
-    @Transactional(readOnly = true)
     public List<ReservationResponse> findMyReservations(Long memberId) {
-        return reservationDao.findByMemberId(memberId)
+        return transactionUtil.executeReadOnlyTask(() -> reservationDao.findByMemberId(memberId))
                 .stream()
                 .map(ReservationResponse::new)
                 .collect(Collectors.toList());

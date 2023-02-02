@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,11 @@ public class ThemeDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public Boolean existsById(Long id) {
+        String sql = "SELECT 1 FROM theme WHERE id = ?;";
+        return jdbcTemplate.query(sql, ResultSet::next, id);
     }
 
     public List<Theme> findAll() {

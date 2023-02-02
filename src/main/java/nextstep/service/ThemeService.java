@@ -36,6 +36,13 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
+    public void checkThemeExists(Long id) {
+        if (!themeDao.existsById(id)) {
+            throw new ApplicationException(THEME_NOT_FOUND);
+        }
+    }
+
+    @Transactional(readOnly = true)
     public Theme findById(Long id) {
         return themeDao.findById(id)
                 .orElseThrow(() -> new ApplicationException(THEME_NOT_FOUND));
@@ -43,7 +50,7 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        findById(id);
+        checkThemeExists(id);
         themeDao.delete(id);
     }
 }
