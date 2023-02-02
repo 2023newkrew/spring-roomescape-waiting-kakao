@@ -2,7 +2,6 @@ package nextstep.reservation;
 
 import nextstep.member.MemberDao;
 import nextstep.schedule.ScheduleDao;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,16 +83,16 @@ public class ReservationDaoTest {
 
     @DisplayName("예약 상태를 변경할 수 있다.")
     @Test
-    void updateState() {
-        reservationDao.updateState(1L, ReservationState.APPROVE);
-        assertThat(reservationDao.findById(1L).get().getState()).isEqualTo(ReservationState.APPROVE);
-        reservationDao.updateState(1L, ReservationState.CANCEL);
-        assertThat(reservationDao.findById(1L).get().getState()).isEqualTo(ReservationState.CANCEL);
-        reservationDao.updateState(1L, ReservationState.CANCEL_WAIT);
-        assertThat(reservationDao.findById(1L).get().getState()).isEqualTo(ReservationState.CANCEL_WAIT);
-        reservationDao.updateState(1L, ReservationState.REJECT);
-        assertThat(reservationDao.findById(1L).get().getState()).isEqualTo(ReservationState.REJECT);
-        reservationDao.updateState(1L, ReservationState.UN_APPROVE);
-        assertThat(reservationDao.findById(1L).get().getState()).isEqualTo(ReservationState.UN_APPROVE);
+    void updatestatus() {
+        reservationDao.updateStatus(1L, ReservationStatus.APPROVE);
+        assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.APPROVE);
+        reservationDao.updateStatus(1L, ReservationStatus.CANCEL);
+        assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.CANCEL);
+        reservationDao.updateStatus(1L, ReservationStatus.CANCEL_WAIT);
+        assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.CANCEL_WAIT);
+        reservationDao.updateStatus(1L, ReservationStatus.REJECT);
+        assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.REJECT);
+        reservationDao.updateStatus(1L, ReservationStatus.UN_APPROVE);
+        assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.UN_APPROVE);
     }
 }

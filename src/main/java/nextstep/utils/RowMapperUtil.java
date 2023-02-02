@@ -2,7 +2,7 @@ package nextstep.utils;
 
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
-import nextstep.reservation.ReservationState;
+import nextstep.reservation.ReservationStatus;
 import nextstep.reservation_waiting.ReservationWaiting;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
@@ -38,7 +38,7 @@ public class RowMapperUtil {
             scheduleRowMapper.mapRow(resultSet, rowNum),
             memberRowMapper.mapRow(resultSet, rowNum),
             resultSet.getTimestamp("reservation.created_datetime").toLocalDateTime(),
-            ReservationState.from(resultSet.getString("reservation.state"))
+            ReservationStatus.from(resultSet.getString("reservation.status"))
     );
 
     public static final RowMapper<ReservationWaiting> reservationWaitingRowMapper = (resultSet, rowNum) -> new ReservationWaiting(

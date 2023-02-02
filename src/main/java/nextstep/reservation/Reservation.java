@@ -21,7 +21,7 @@ public class Reservation {
     private Schedule schedule;
     private Member member;
     private LocalDateTime createdDateTime;
-    private ReservationState state;
+    private ReservationStatus status;
 
     public Reservation(Schedule schedule, Member member) {
         this.schedule = schedule;

@@ -4,7 +4,7 @@ CREATE TABLE reservation
     schedule_id bigint not null,
     member_id   bigint not null,
     created_datetime datetime not null default now(),
-    state       varchar(20) not null default 'UN_APPROVE',
+    status       varchar(20) not null default 'UN_APPROVE',
     primary key (id)
 );
 

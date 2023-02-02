@@ -67,32 +67,32 @@ public class ReservationService {
         if (!reservation.sameMember(member)) {
             throw new AuthorizationException();
         }
-        ReservationState state = reservation.getState().changeToCancelFromMember();
-        reservationDao.updateState(id, state);
-        return new ReservationResponse(reservation, state);
+        ReservationStatus status = reservation.getStatus().changeToCancelFromMember();
+        reservationDao.updateStatus(id, status);
+        return new ReservationResponse(reservation, status);
     }
     
     public ReservationResponse cancelReservationFromAdmin(Long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NullPointerException::new);
-        ReservationState state = reservation.getState().changeToCancelFromAdmin();
-        reservationDao.updateState(id, state);
-        return new ReservationResponse(reservation, state);
+        ReservationStatus status = reservation.getStatus().changeToCancelFromAdmin();
+        reservationDao.updateStatus(id, status);
+        return new ReservationResponse(reservation, status);
     }
 
     public ReservationResponse approveReservationFromAdmin(Long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NotFoundObjectException::new);
-        ReservationState state = reservation.getState().changeToApprove();
-        reservationDao.updateState(id, state);
-        return new ReservationResponse(reservation, state);
+        ReservationStatus status = reservation.getStatus().changeToApprove();
+        reservationDao.updateStatus(id, status);
+        return new ReservationResponse(reservation, status);
     }
 
     public ReservationResponse rejectReservationFromAdmin(Long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NotFoundObjectException::new);
-        ReservationState state = reservation.getState().changeToReject();
-        reservationDao.updateState(id, state);
-        return new ReservationResponse(reservation, state);
+        ReservationStatus status = reservation.getStatus().changeToReject();
+        reservationDao.updateStatus(id, status);
+        return new ReservationResponse(reservation, status);
     }
 }

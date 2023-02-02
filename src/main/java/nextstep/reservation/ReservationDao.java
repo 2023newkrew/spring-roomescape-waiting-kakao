@@ -129,8 +129,8 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationWaitingRowMapper, memberId);
     }
 
-    public void updateState(Long id, ReservationState state) {
-        String sql = "update reservation set state = (?) where RESERVATION.id = (?)";
-        jdbcTemplate.update(sql, state.name(), id);
+    public void updateStatus(Long id, ReservationStatus status) {
+        String sql = "update reservation set status = (?) where RESERVATION.id = (?)";
+        jdbcTemplate.update(sql, status.name(), id);
     }
 }
