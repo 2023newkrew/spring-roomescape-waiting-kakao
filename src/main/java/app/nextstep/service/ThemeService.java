@@ -14,12 +14,12 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Long create(Theme theme) {
-        return themeRepository.save(theme);
-    }
-
     public List<Theme> findAll() {
         return themeRepository.findAll();
+    }
+
+    public Long create(Theme theme) {
+        return themeRepository.save(theme);
     }
 
     public void delete(Long id) {

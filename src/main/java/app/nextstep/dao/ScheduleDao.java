@@ -32,14 +32,6 @@ public class ScheduleDao {
             resultSet.getTime("schedule.time")
     );
 
-    public ScheduleEntity findById(Long id) {
-        String sql = "SELECT * FROM schedule " +
-                "JOIN theme ON schedule.theme_id = theme.id " +
-                "WHERE schedule.id = ?;";
-
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
-    }
-
     public List<ScheduleEntity> findByThemeIdAndDate(Long themeId, Date date) {
         String sql = "SELECT * FROM schedule " +
                 "JOIN theme ON schedule.theme_id = theme.id " +

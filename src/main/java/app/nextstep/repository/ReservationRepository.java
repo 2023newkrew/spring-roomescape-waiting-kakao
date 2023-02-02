@@ -39,7 +39,7 @@ public class ReservationRepository {
     }
 
     public Long save(Reservation reservation) {
-        return reservationDao.save(
+        return reservationDao.saveConfirmed(
                 reservation.getSchedule().getId(),
                 reservation.getMember().getId());
     }

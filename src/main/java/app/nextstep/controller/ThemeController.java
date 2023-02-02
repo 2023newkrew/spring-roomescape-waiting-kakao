@@ -29,7 +29,7 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<Theme>> showThemes() {
+    public ResponseEntity<List<Theme>> getThemes() {
         List<Theme> results = themeService.findAll();
         return ResponseEntity.ok().body(results);
     }
@@ -37,7 +37,6 @@ public class ThemeController {
     @DeleteMapping("/admin/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.delete(id);
-
         return ResponseEntity.noContent().build();
     }
 }

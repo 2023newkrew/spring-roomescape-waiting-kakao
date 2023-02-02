@@ -41,7 +41,8 @@ public class ReservationDao {
                     resultSet.getString("member.password"),
                     resultSet.getString("member.role"),
                     resultSet.getString("member.name"),
-                    resultSet.getString("member.phone")));
+                    resultSet.getString("member.phone")),
+            resultSet.getString("reservation.status"));
 
     public ReservationEntity findById(Long id) {
         String sql = "SELECT * FROM reservation " +
@@ -80,8 +81,8 @@ public class ReservationDao {
         }
     }
 
-    public Long save(Long scheduleId, Long memberId) {
-        String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
+    public Long saveConfirmed(Long scheduleId, Long memberId) {
+        String sql = "INSERT INTO reservation (schedule_id, member_id, status) VALUES (?, ?, 'CONFIRMED');";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {

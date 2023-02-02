@@ -19,10 +19,6 @@ public class ScheduleRepository {
         this.scheduleDao = scheduleDao;
     }
 
-    public Schedule findById(Long id) {
-        return scheduleDao.findById(id).toSchedule();
-    }
-
     public List<Schedule> findByThemeIdAndDate(Long themeId, LocalDate date) {
         List<Schedule> schedules = new ArrayList<>();
         for (ScheduleEntity scheduleEntity : scheduleDao.findByThemeIdAndDate(themeId, Date.valueOf(date))) {

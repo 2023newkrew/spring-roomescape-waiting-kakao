@@ -16,10 +16,6 @@ public class ThemeRepository {
         this.themeDao = themeDao;
     }
 
-    public Theme findById(Long id) {
-        return themeDao.findById(id).toTheme();
-    }
-
     public List<Theme> findAll() {
         List<Theme> themes = new ArrayList<>();
         for (ThemeEntity themeEntity : themeDao.findAll()) {

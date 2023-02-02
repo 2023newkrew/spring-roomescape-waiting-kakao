@@ -6,11 +6,13 @@ public class ReservationEntity {
     private Long id;
     private ScheduleEntity schedule;
     private MemberEntity member;
+    private String status;
 
-    public ReservationEntity(Long id, ScheduleEntity schedule, MemberEntity member) {
+    public ReservationEntity(Long id, ScheduleEntity schedule, MemberEntity member, String status) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+        this.status = status;
     }
 
     public Reservation toReservation() {

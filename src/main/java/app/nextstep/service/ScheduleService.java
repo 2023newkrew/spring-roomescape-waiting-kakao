@@ -15,12 +15,12 @@ public class ScheduleService {
         this.scheduleRepository = scheduleRepository;
     }
 
-    public Long create(Schedule schedule) {
-        return scheduleRepository.save(schedule);
-    }
-
     public List<Schedule> findByThemeIdAndDate(Long themeId, LocalDate date) {
         return scheduleRepository.findByThemeIdAndDate(themeId, date);
+    }
+
+    public Long create(Schedule schedule) {
+        return scheduleRepository.save(schedule);
     }
 
     public void delete(Long id) {

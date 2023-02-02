@@ -26,7 +26,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<List<Schedule>> showReservations(
+    public ResponseEntity<List<Schedule>> getReservations(
             @RequestParam Long themeId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         return ResponseEntity.ok().body(scheduleService.findByThemeIdAndDate(themeId, date));

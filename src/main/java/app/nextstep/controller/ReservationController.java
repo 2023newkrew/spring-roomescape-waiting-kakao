@@ -25,21 +25,26 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity createReservation(@LoginUser Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(reservationRequest.toReservation(member.getId()));
+        Long id = reservationService.createReservation(reservationRequest.toReservation(member.getId()));
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity getReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, LocalDate.parse(date));
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginUser Member member, @PathVariable Long id) {
-        reservationService.deleteById(id, member.getId());
-
+        reservationService.delete(id, member.getId());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reservation-waitings")
+    public ResponseEntity createWaiting(@LoginUser Member member, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.createWaiting(reservationRequest.toReservation(member.getId()));
+        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
     @ExceptionHandler(AuthenticationException.class)

@@ -18,20 +18,23 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public Long create(Reservation reservation) {
-        List<Reservation> reservations = reservationRepository.findByScheduleId(reservation.getSchedule().getId());
-        if (!reservations.isEmpty()) {
-            throw new DuplicateEntityException();
-        }
-
-        return reservationRepository.save(reservation);
-    }
-
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, LocalDate date) {
         return reservationRepository.findByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Long id, Long memberId) {
+    public Long createReservation(Reservation reservation) {
+        List<Reservation> reservations = reservationRepository.findByScheduleId(reservation.getSchedule().getId());
+        if (!reservations.isEmpty()) {
+            throw new DuplicateEntityException();
+        }
+        return reservationRepository.save(reservation);
+    }
+
+    public Long createWaiting(Reservation reservation) {
+        return reservationRepository.save(reservation);
+    }
+
+    public void delete(Long id, Long memberId) {
         Reservation reservation = reservationRepository.findById(id);
 
         if (reservation == null) {

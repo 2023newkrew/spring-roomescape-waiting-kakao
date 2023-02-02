@@ -25,11 +25,6 @@ public class ThemeDao {
             resultSet.getInt("price")
     );
 
-    public ThemeEntity findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
-    }
-
     public List<ThemeEntity> findAll() {
         String sql = "SELECT * FROM theme;";
         return jdbcTemplate.query(sql, rowMapper);
