@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,11 @@ public class ReservationApproveTest extends ReservationCommon {
     JdbcTemplate jdbcTemplate;
     @Autowired
     JwtTokenProvider jwtTokenProvider;
+
+    @BeforeEach
+    public void setUp(){
+        super.setUp();
+    }
 
     @DisplayName("Admin 유저만 예약 미승인 상태의 예약을 예약 승인 상태로 변경할 수 있다")
     @Test
@@ -123,6 +129,23 @@ public class ReservationApproveTest extends ReservationCommon {
         Assertions.assertThat(lookUpApprove.get(0).getStatus()).isEqualTo(DECLINE);
     }
 
+    @DisplayName("예약 취소 대기 상태의 예약을 관리자가 취소승인 하는경우 예약 취소 상태가 된다")
+    @Test
+    void adminCancelApproveTest(){
+        Member member = saveMember(jdbcTemplate, "MEMBER1", "PASS1", "MEMBER");
+        String memberToken = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
+        ExtractableResponse<Response> response = requestCreateReservation(memberToken);
+        String location = response.header("Location").split("/")[2];
+
+        requestApprove(location, token.getAccessToken());
+        cancelReservation(location, memberToken);
+
+        ExtractableResponse<Response> result = requestCancelApprove(location, token.getAccessToken());
+        Assertions.assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<Reservation> lookUpReservation = lookUpReservation(memberToken).jsonPath().getList(".", Reservation.class);
+        Assertions.assertThat(lookUpReservation.get(0).getStatus()).isEqualTo(CANCEL);
+    }
+
     private ExtractableResponse<Response> requestApprove(String location, String accessToken) {
         return RestAssured
                 .given().log().all()
@@ -141,6 +164,17 @@ public class ReservationApproveTest extends ReservationCommon {
                 .auth().oauth2(accessToken)
                 .body(request)
                 .when().patch("/reservations/" + location + "/cancel")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> requestCancelApprove(String location, String accessToken) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(accessToken)
+                .body(request)
+                .when().patch("/reservations/" + location + "/cancel-approve")
                 .then().log().all()
                 .extract();
     }

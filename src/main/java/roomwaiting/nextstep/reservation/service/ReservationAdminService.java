@@ -5,8 +5,7 @@ import org.springframework.web.server.NotAcceptableStatusException;
 import roomwaiting.nextstep.reservation.dao.ReservationDao;
 import roomwaiting.nextstep.reservation.domain.Reservation;
 
-import static roomwaiting.nextstep.reservation.ReservationStatus.APPROVED;
-import static roomwaiting.nextstep.reservation.ReservationStatus.NOT_APPROVED;
+import static roomwaiting.nextstep.reservation.ReservationStatus.*;
 import static roomwaiting.support.Messages.*;
 
 @Service
@@ -23,6 +22,17 @@ public class ReservationAdminService {
         );
         if (reservation.getStatus() == NOT_APPROVED) {
             reservationDao.updateState(APPROVED, id);
+            return;
+        }
+        throw new NotAcceptableStatusException(NEEDS_NOT_APPROVED_STATUS.getMessage());
+    }
+
+    public void cancelApprove(Long id){
+        Reservation reservation = reservationDao.findById(id).orElseThrow(() ->
+                new NullPointerException(RESERVATION_NOT_FOUND.getMessage())
+        );
+        if (reservation.getStatus() == CANCEL_WAIT){
+            reservationDao.updateState(CANCEL, id);
             return;
         }
         throw new NotAcceptableStatusException(NEEDS_NOT_APPROVED_STATUS.getMessage());

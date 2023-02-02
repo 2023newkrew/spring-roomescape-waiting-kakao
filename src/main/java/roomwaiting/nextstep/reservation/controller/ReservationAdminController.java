@@ -21,5 +21,10 @@ public class ReservationAdminController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/{id}/cancel-approve")
+    public ResponseEntity<Void> cancelApprove(@PathVariable Long id) {
+        reservationAdminService.cancelApprove(id);
+        return ResponseEntity.ok().build();
+    }
 }
 
