@@ -202,15 +202,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 삭제한다")
     @Test
     void delete() {
-        var reservation = createReservation();
-
-        Long reservationId = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .when().get(reservation.header("Location"))
-                .then().log().all()
-                .extract()
-                .jsonPath().getList(".", Reservation.class).get(0).getId();
+        Long reservationId = createReservationAndGetId();
 
         var response = RestAssured
                 .given().log().all()
@@ -323,5 +315,47 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
+    }
+
+    @DisplayName("예약을 승인한다.")
+    @Test
+    void reservationApprove() {
+        Long reservationId = createReservationAndGetId();
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/reservations/" + reservationId + "/approve")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("관리자가 아닌 사용자의 예약 승인은 실패한다.")
+    @Test
+    void should_canNotReservationApprove_when_notAdmin() {
+        Long reservationId = createReservationAndGetId();
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/reservations/" + reservationId + "/approve")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    private Long createReservationAndGetId() {
+        var reservation = createReservation();
+
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get(reservation.header("Location"))
+                .then().log().all()
+                .extract()
+                .jsonPath().getList(".", Reservation.class).get(0).getId();
     }
 }

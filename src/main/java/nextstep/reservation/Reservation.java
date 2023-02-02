@@ -1,9 +1,6 @@
 package nextstep.reservation;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
@@ -12,6 +9,7 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
+@EqualsAndHashCode(of = {"id"})
 public class Reservation {
 
     private Long id;
@@ -30,21 +28,8 @@ public class Reservation {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Reservation that = (Reservation) o;
-        return id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public void changeStatus(Status status) {
+        this.status = status;
     }
 
     @Getter

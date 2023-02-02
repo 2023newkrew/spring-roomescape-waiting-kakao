@@ -48,4 +48,10 @@ public class ReservationController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(reservations);
     }
+
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<Void> approveReservation(@PathVariable String id) {
+        reservationService.approve(Long.parseLong(id));
+        return ResponseEntity.ok().build();
+    }
 }
