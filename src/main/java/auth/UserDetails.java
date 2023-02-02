@@ -1,18 +1,28 @@
-package nextstep.member;
+package auth;
 
-public class MemberRequest {
+/**
+ * Username, Password 등 사용자 로그인 정보를 저장하는 클래스
+ * Member에 대한 의존을 제거하기 위해 생성
+ */
+public class UserDetails {
+    private final Long id;
     private final String username;
     private final String password;
     private final String name;
     private final String phone;
     private final String role;
 
-    public MemberRequest(String username, String password, String name, String phone, String role) {
+    public UserDetails(final Long id, final String username, final String password, final String name, final String phone, final String role) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.name = name;
         this.phone = phone;
         this.role = role;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getUsername() {
@@ -27,19 +37,15 @@ public class MemberRequest {
         return name;
     }
 
-    /* RestAssured에서 사용 */
-    @SuppressWarnings("unused")
     public String getPhone() {
         return phone;
     }
 
-    /* RestAssured에서 사용 */
-    @SuppressWarnings("unused")
     public String getRole() {
         return role;
     }
 
-    public Member toEntity() {
-        return new Member(username, password, name, phone, role);
+    public boolean checkWrongPassword(String password){
+        return !this.password.equals(password);
     }
 }

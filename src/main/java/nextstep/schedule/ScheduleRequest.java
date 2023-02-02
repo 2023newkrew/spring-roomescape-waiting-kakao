@@ -10,6 +10,8 @@ public class ScheduleRequest {
     private String date;
     private String time;
 
+    /* RequestBody에서 사용 */
+    @SuppressWarnings("unused")
     public ScheduleRequest() {
     }
 
@@ -27,6 +29,8 @@ public class ScheduleRequest {
         return date;
     }
 
+    /* RequestBody에서 사용 */
+    @SuppressWarnings("unused")
     public String getTime() {
         return time;
     }

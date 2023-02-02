@@ -1,6 +1,6 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -11,6 +11,7 @@ import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -48,6 +49,11 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
+    public boolean isReserved(Long scheduleId) {
+        List<Reservation> reservation = reservationDao.findByScheduleId(scheduleId);
+        return !reservation.isEmpty();
+    }
+
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
@@ -68,5 +74,11 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public List<ReservationResponse> findAllByMemberId(Member member) {
+        return reservationDao.findAllByMemberId(member.getId()).stream()
+                .map(ReservationResponse::new)
+                .collect(Collectors.toList());
     }
 }

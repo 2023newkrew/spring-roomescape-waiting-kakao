@@ -1,8 +1,8 @@
-package nextstep.auth;
+package auth;
 
 public class TokenRequest {
-    private String username;
-    private String password;
+    private final String username;
+    private final String password;
 
     public TokenRequest(String username, String password) {
         this.username = username;
