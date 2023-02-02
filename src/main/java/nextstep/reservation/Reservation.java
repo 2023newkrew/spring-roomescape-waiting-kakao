@@ -46,4 +46,12 @@ public class Reservation {
     public boolean sameMember(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }
+
+    public boolean isUnapproved() {
+        return status != null && status.isUnapproved();
+    }
+
+    public boolean isApproved() {
+        return status != null && status.isApproved();
+    }
 }

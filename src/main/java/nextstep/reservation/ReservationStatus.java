@@ -2,5 +2,13 @@ package nextstep.reservation;
 
 public enum ReservationStatus {
 
-    UNAPPROVED, APPROVED, CANCELED, WAIT_CANCEL, REJECTED
+    UNAPPROVED, APPROVED, CANCELED, WAIT_CANCEL, REJECTED;
+
+    public boolean isUnapproved() {
+        return this.equals(ReservationStatus.UNAPPROVED);
+    }
+
+    public boolean isApproved() {
+        return this.equals(ReservationStatus.APPROVED);
+    }
 }

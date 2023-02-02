@@ -1,9 +1,11 @@
 package nextstep.reservation;
 
+import auth.TokenResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
+import nextstep.reservationwaiting.ReservationWaitingResponse;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -203,6 +205,49 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    @DisplayName("예약 취소 성공 시 200 코드 응답")
+    @Test
+    void cancelReservation() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("예약 취소 성공 시 첫번째 예약 대기가 예약 상태로 변경됨 - waiting 상태 2개 -> 1개로 변경")
+    @Test
+    void cancelReservationAndCheckFirstWaiting() {
+        createReservationWaiting(token);
+        createReservationWaiting(token);
+        createReservationWaiting(token);
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        var response2 = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        List<ReservationWaitingResponse> reservationWaitingResponseList = response2.jsonPath().getList(".", ReservationWaitingResponse.class);
+        assertThat(reservationWaitingResponseList.size()).isEqualTo(1);
+    }
+
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()
@@ -211,6 +256,18 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
                 .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> createReservationWaiting(TokenResponse tokenResponse) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(tokenResponse.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
                 .extract();
     }
 }

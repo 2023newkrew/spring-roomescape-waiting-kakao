@@ -136,4 +136,20 @@ public class ReservationWaitingDao {
             return Collections.emptyList();
         }
     }
+
+    public void updateTop1StatusByStatusAndScheduleId(Long scheduleId, ReservationWaitingStatus from, ReservationWaitingStatus to) {
+        String sql = "update reservation_waiting set reservation_waiting.status = ? " +
+                "where reservation_waiting.schedule_id = ? and reservation_waiting.status = ? " +
+                "limit 1";
+        int effected = jdbcTemplate.update(sql, to.name(), scheduleId, from.name());
+        System.out.println("############################################"+effected);
+    }
+
+    public long countWaitingByScheduleId(Long scheduleId) {
+        String sql = "select count(*) from reservation_waiting " +
+                "where reservation_waiting.schedule_id = ? and reservation_waiting.status = ?";
+        long count = jdbcTemplate.queryForObject(sql, Long.class, scheduleId, ReservationWaitingStatus.WAITING.name());
+        System.out.println("###@@@@@@@"+count);
+        return count;
+    }
 }

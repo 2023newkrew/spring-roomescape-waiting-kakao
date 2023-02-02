@@ -4,6 +4,8 @@ import auth.AuthenticationException;
 import nextstep.exception.NotExistEntityException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservationwaiting.ReservationWaitingDao;
+import nextstep.reservationwaiting.ReservationWaitingStatus;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
@@ -17,16 +19,18 @@ import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    private final ReservationDao reservationDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final MemberDao memberDao;
+    private final ReservationWaitingDao reservationWaitingDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, ReservationWaitingDao reservationWaitingDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.reservationWaitingDao = reservationWaitingDao;
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
@@ -74,4 +78,34 @@ public class ReservationService {
     public void approveReservation(Long reservationId) {
         reservationDao.updateStatusById(reservationId, ReservationStatus.APPROVED);
     }
+
+    public void cancelReservation(Long reservationId) {
+        Reservation reservation = reservationDao.findById(reservationId)
+                .orElseThrow(() -> new NotExistEntityException(Reservation.class));
+        if (reservation.isUnapproved()) {
+            // 예약 취소 확정
+            proceedReservationCancellation(reservation);
+        }
+        if (reservation.isApproved()) {
+            // 예약 취소 대기 상태로
+            reservationDao.updateStatusById(reservationId, ReservationStatus.WAIT_CANCEL);
+        }
+    }
+
+    private void proceedReservationCancellation(Reservation reservation) {
+        reservationDao.updateStatusById(reservation.getId(), ReservationStatus.CANCELED);
+        reservationWaitingDao.updateTop1StatusByStatusAndScheduleId(
+                reservation.getSchedule().getId(),
+                ReservationWaitingStatus.RESERVED,
+                ReservationWaitingStatus.CANCELED
+        );
+        long waitingSize = reservationWaitingDao.countWaitingByScheduleId(reservation.getSchedule().getId());
+        if (waitingSize > 0) {
+            reservationWaitingDao.updateTop1StatusByStatusAndScheduleId(
+                    reservation.getSchedule().getId(),
+                    ReservationWaitingStatus.WAITING,
+                    ReservationWaitingStatus.RESERVED);
+        }
+    }
+
 }

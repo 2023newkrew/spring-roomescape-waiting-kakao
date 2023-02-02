@@ -24,11 +24,6 @@ public class ReservationController {
         Long id = reservationService.create(member, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
-    @PatchMapping("/admin/reservations/{id}/approve")
-    public ResponseEntity<Void> approveReservation(@PathVariable("id") Long reservationId) {
-        reservationService.approveReservation(reservationId);
-        return ResponseEntity.ok().build();
-    }
 
     @GetMapping("/reservations/mine")
     public ResponseEntity<List<ReservationResponse>> findMyReservation(@LoginMember Member member) {
@@ -49,6 +44,17 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/admin/reservations/{id}/approve")
+    public ResponseEntity<Void> approveReservation(@PathVariable("id") Long reservationId) {
+        reservationService.approveReservation(reservationId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/reservations/{id}/cancel")
+    public ResponseEntity<Void> cancelReservation(@PathVariable("id") Long reservationId) {
+        reservationService.cancelReservation(reservationId);
+        return ResponseEntity.ok().build();
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> onException(Exception e) {
         e.printStackTrace();
