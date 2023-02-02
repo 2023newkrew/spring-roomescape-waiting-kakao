@@ -1,5 +1,7 @@
-package roomescape.auth;
+package roomescape.nextstep.login;
 
+
+import roomescape.auth.*;
 
 public class LoginService {
 

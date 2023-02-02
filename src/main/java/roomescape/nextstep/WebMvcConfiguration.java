@@ -2,6 +2,7 @@ package roomescape.nextstep;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import roomescape.auth.*;
+import roomescape.nextstep.login.LoginService;
 import roomescape.nextstep.member.MemberDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
