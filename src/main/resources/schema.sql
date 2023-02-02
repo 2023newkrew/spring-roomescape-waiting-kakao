@@ -6,6 +6,15 @@ CREATE TABLE reservation
     primary key (id)
 );
 
+CREATE TABLE waiting_reservation
+(
+    id          bigint not null auto_increment,
+    schedule_id bigint not null,
+    member_id   bigint not null,
+    wait_num    bigint not null,
+    primary key (id)
+);
+
 CREATE TABLE theme
 (
     id    bigint       not null auto_increment,

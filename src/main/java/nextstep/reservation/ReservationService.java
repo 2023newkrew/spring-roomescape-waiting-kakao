@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import auth.AuthenticationException;
+import auth.UserDetails;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -8,34 +9,45 @@ import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import nextstep.waitingreservation.WaitingReservation;
+import nextstep.waitingreservation.WaitingReservationDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    private final ReservationDao reservationDao;
+    private final WaitingReservationDao waitingReservationDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final MemberDao memberDao;
+    private static final Long LOWEST_WAIT_NUM = 0L;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, WaitingReservationDao waitingReservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
+        this.waitingReservationDao = waitingReservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
+    @Transactional
+    public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
+        Member member = memberDao.findById(userDetails.getId());
+
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new NoSuchElementException("No such schedule exist.");
         }
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
+
         if (!reservation.isEmpty()) {
             throw new DuplicateEntityException();
         }
@@ -48,25 +60,48 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
-            throw new NullPointerException();
+            throw new NoSuchElementException("No such theme exist.");
         }
 
-        return reservationDao.findAllByThemeIdAndDate(themeId, date);
+        return reservationDao.findAllByThemeIdAndDate(themeId, date)
+                .stream()
+                .map(ReservationResponse::new)
+                .collect(Collectors.toList());
     }
 
-    public void deleteById(Member member, Long id) {
+    public List<ReservationResponse> findMyReservations(UserDetails userDetails) {
+        return reservationDao.findAllByMemberId(userDetails.getId())
+                .stream()
+                .map(ReservationResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteById(UserDetails userDetails, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
-            throw new NullPointerException();
+            throw new NoSuchElementException("No such reservation exist.");
         }
-
-        if (!reservation.sameMember(member)) {
+        if (!reservation.sameMember(userDetails)) {
             throw new AuthenticationException();
         }
-
         reservationDao.deleteById(id);
+
+        Optional<WaitingReservation> firstWaitingReservation = waitingReservationDao.findByScheduleIdAndWaitNum(
+                reservation.getSchedule().getId(),
+                LOWEST_WAIT_NUM
+        );
+        firstWaitingReservation.ifPresent(this::moveWaitingReservationToReservation);
+    }
+
+    @Transactional
+    private void moveWaitingReservationToReservation(WaitingReservation waitingReservation) {
+        waitingReservationDao.deleteById(waitingReservation.getId());
+        waitingReservationDao.adjustWaitNumByScheduleIdAndBaseNum(waitingReservation.getSchedule().getId(), LOWEST_WAIT_NUM);
+        Reservation reservation = new Reservation(waitingReservation.getSchedule(), waitingReservation.getMember());
+        reservationDao.save(reservation);
     }
 }

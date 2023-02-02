@@ -1,5 +1,7 @@
 package nextstep.member;
 
+import auth.UserDetails;
+import auth.UserDetailsDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 
 @Component
-public class MemberDao {
+public class MemberDao implements UserDetailsDao {
     public final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
@@ -51,5 +53,15 @@ public class MemberDao {
     public Member findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, username);
+    }
+
+    @Override
+    public UserDetails findUserDetailsById(Long id) {
+        return findById(id).toUserDetails();
+    }
+
+    @Override
+    public UserDetails findUserDetailsByUsername(String username) {
+        return findByUsername(username).toUserDetails();
     }
 }

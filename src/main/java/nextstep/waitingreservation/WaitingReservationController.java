@@ -1,0 +1,51 @@
+package nextstep.waitingreservation;
+
+import auth.AuthenticationException;
+import auth.LoginMember;
+import auth.UserDetails;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping("/reservation-waitings")
+public class WaitingReservationController {
+    private final WaitingReservationService waitingReservationService;
+
+    public WaitingReservationController(WaitingReservationService waitingReservationService) {
+        this.waitingReservationService = waitingReservationService;
+    }
+
+    @PostMapping()
+    public ResponseEntity<Void> createWaiting(@LoginMember UserDetails userDetails, @RequestBody WaitingReservationRequest waitingReservationRequest) {
+        Long id = waitingReservationService.create(userDetails, waitingReservationRequest);
+        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<WaitingReservationResponse>> getMyReservationWaitings(@LoginMember UserDetails userDetails) {
+        List<WaitingReservationResponse> myWaitingReservations = waitingReservationService.findMyWaitingReservations(userDetails);
+        return ResponseEntity.ok(myWaitingReservations);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+        waitingReservationService.deleteById(userDetails, id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> onException(Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+}
