@@ -1,21 +1,14 @@
-package nextstep.auth;
+package auth;
 
-import nextstep.member.Member;
-import nextstep.member.MemberDao;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
-@Service
+@RequiredArgsConstructor
 public class LoginService {
-    private MemberDao memberDao;
-    private JwtTokenProvider jwtTokenProvider;
-
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
+    private final MemberDao memberDao;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        Member member = memberDao.findByUsername(tokenRequest.getUsername());
+        MemberDetail member = memberDao.findByUsername(tokenRequest.getUsername());
         if (member == null || member.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
@@ -29,7 +22,7 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    public Member extractMember(String credential) {
+    public MemberDetail extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
         return memberDao.findById(id);
     }

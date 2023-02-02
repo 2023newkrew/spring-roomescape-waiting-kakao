@@ -2,8 +2,8 @@ package nextstep.theme;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
+import auth.TokenRequest;
+import auth.TokenResponse;
 import nextstep.member.MemberRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,7 +75,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
-        assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
+        assertThat(response.jsonPath().getList(".").size()).isEqualTo(3);
     }
 
     @DisplayName("테마를 삭제한다")

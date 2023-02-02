@@ -1,9 +1,12 @@
 package nextstep;
 
 import io.restassured.RestAssured;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
+import auth.TokenRequest;
+import auth.TokenResponse;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.member.MemberRequest;
+import nextstep.reservation_waiting.ReservationWaitingRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -40,5 +43,17 @@ public class AbstractE2ETest {
                 .extract();
 
         token = response.as(TokenResponse.class);
+    }
+
+    protected ExtractableResponse<Response> sendReservationWaiting(ReservationWaitingRequest request) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
     }
 }

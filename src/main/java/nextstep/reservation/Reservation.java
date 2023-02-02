@@ -1,9 +1,8 @@
 package nextstep.reservation;
 
 import nextstep.member.Member;
+import nextstep.reservation_waiting.ReservationWaiting;
 import nextstep.schedule.Schedule;
-
-import java.util.Objects;
 
 public class Reservation {
     private Long id;
@@ -36,7 +35,14 @@ public class Reservation {
         return member;
     }
 
-    public boolean sameMember(Member member) {
-        return member != null && Objects.equals(this.member.getId(), member.getId());
+    public boolean isSameMember(Member member){
+        return this.member.equals(member);
+    }
+
+    public static Reservation fromReservationWaiting(ReservationWaiting reservationWaiting) {
+        return new Reservation(
+                reservationWaiting.getSchedule(),
+                reservationWaiting.getMember()
+        );
     }
 }

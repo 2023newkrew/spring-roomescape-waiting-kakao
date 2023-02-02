@@ -1,5 +1,7 @@
 package nextstep.member;
 
+import auth.MemberDao;
+import auth.MemberDetail;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,10 +11,10 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 
 @Component
-public class MemberDao {
+public class MemberDaoImpl implements MemberDao {
     public final JdbcTemplate jdbcTemplate;
 
-    public MemberDao(JdbcTemplate jdbcTemplate) {
+    public MemberDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -25,6 +27,7 @@ public class MemberDao {
             resultSet.getString("role")
     );
 
+    @Override
     public Long save(Member member) {
         String sql = "INSERT INTO member (username, password, name, phone, role) VALUES (?, ?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -43,13 +46,15 @@ public class MemberDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Member findById(Long id) {
+    @Override
+    public MemberDetail findById(Long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return jdbcTemplate.queryForObject(sql, rowMapper, id).toMemberDetail();
     }
 
-    public Member findByUsername(String username) {
+    @Override
+    public MemberDetail findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username);
+        return jdbcTemplate.queryForObject(sql, rowMapper, username).toMemberDetail();
     }
 }
