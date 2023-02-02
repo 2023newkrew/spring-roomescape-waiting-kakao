@@ -3,6 +3,7 @@ package nextstep.reservationwaiting;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -99,8 +100,11 @@ public class ReservationWaitingDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation_waiting.member_id = member.id " +
                 "where reservation_waiting.id = ?;";
-
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void updateStatusById(Long id, ReservationWaitingStatus status) {
