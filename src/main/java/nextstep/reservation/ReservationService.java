@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import auth.AuthenticationException;
+import auth.UserDetails;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
@@ -11,6 +12,7 @@ import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -26,10 +28,13 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
+    public Long create(UserDetails userDetails, ReservationRequest reservationRequest) {
+        if (userDetails == null) {
             throw new AuthenticationException();
         }
+
+        Member member = memberDao.findById(userDetails.getId());
+
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
             throw new NullPointerException();
@@ -42,31 +47,89 @@ public class ReservationService {
 
         Reservation newReservation = new Reservation(
                 schedule,
-                member
+                member,
+                0L
         );
 
         return reservationDao.save(newReservation);
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
             throw new NullPointerException();
         }
 
-        return reservationDao.findAllByThemeIdAndDate(themeId, date);
+        return reservationDao.findAllByThemeIdAndDate(themeId, date)
+                .stream()
+                .map(ReservationResponse::new)
+                .collect(Collectors.toList());
     }
 
-    public void deleteById(Member member, Long id) {
+    public List<ReservationResponse> findMyReservations(UserDetails userDetails) {
+        return reservationDao.findByMemberId(userDetails.getId())
+                .stream()
+                .map(ReservationResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<ReservationWaitingResponse> findMyReservationWaitings(UserDetails userDetails) {
+        return reservationDao.findWaitingByMemberId(userDetails.getId())
+                .stream()
+                .map(ReservationWaitingResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteById(UserDetails userDetails, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
             throw new NullPointerException();
         }
 
-        if (!reservation.sameMember(member)) {
+        if (!reservation.sameMember(userDetails)) {
             throw new AuthenticationException();
         }
 
         reservationDao.deleteById(id);
+
+        reservationDao.adjustWaitingNumByScheduleIdAndBaseNum(reservation.getSchedule().getId(), 0L);
+    }
+
+    public Long createWaiting(UserDetails userDetails, ReservationRequest reservationRequest) {
+        if (userDetails == null) {
+            throw new AuthenticationException();
+        }
+
+        Member member = memberDao.findById(userDetails.getId());
+
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+        if (schedule == null) {
+            throw new NullPointerException();
+        }
+
+        List<Reservation> reservations = reservationDao.findByScheduleId(schedule.getId());
+
+        Reservation newReservation = new Reservation(
+                schedule,
+                member,
+                (long) reservations.size()
+        );
+
+        return reservationDao.save(newReservation);
+    }
+
+    public void deleteWaitingById(UserDetails userDetails, Long id) {
+        Reservation reservation = reservationDao.findWaitingById(id);
+        if (reservation == null) {
+            throw new NullPointerException();
+        }
+
+        if (!reservation.sameMember(userDetails)) {
+            throw new AuthenticationException();
+        }
+
+        reservationDao.deleteWaitingById(id);
+
+        reservationDao.adjustWaitingNumByScheduleIdAndBaseNum(reservation.getSchedule().getId(), reservation.getWaitNum());
     }
 }
