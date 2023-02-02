@@ -1,18 +1,18 @@
-package nextstep.auth;
+package auth;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
+@RequiredArgsConstructor
+@Component
 public class AdminInterceptor implements HandlerInterceptor {
-    private JwtTokenProvider jwtTokenProvider;
-
-    public AdminInterceptor(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

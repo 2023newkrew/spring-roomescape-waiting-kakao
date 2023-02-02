@@ -3,6 +3,7 @@ CREATE TABLE reservation
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
+    created_datetime datetime not null default now(),
     primary key (id)
 );
 
