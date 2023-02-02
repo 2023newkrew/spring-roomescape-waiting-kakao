@@ -15,25 +15,21 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
     @Override
     public Optional<UserDetails> authenticate(String username, String password) {
-        Member member;
         try {
-            member = memberService.findByUsernameAndPassword(username, password);
+            Member member = memberService.findByUsernameAndPassword(username, password);
+            return Optional.of(new UserDetails(member.getId()));
         } catch (MemberException e) {
             return Optional.empty();
         }
-
-        return Optional.of(new UserDetails(member.getId(), member.getRole().name()));
     }
 
     @Override
-    public Optional<String> getRole(Long id) {
-        MemberResponse memberResponse;
+    public boolean isAdmin(Long id) {
         try {
-            memberResponse = memberService.findById(id);
+            MemberResponse member = memberService.findById(id);
+            return member.getRole() == Role.ADMIN;
         } catch (MemberException e) {
-            return Optional.empty();
+            return false;
         }
-
-        return Optional.of(memberResponse.getRole());
     }
 }

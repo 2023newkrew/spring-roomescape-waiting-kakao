@@ -18,7 +18,7 @@ public class AuthConfig {
     private final UserAuthenticator userAuthenticator;
     @Bean
     public LoginService loginService() {
-        return new LoginService(jwtTokenProvider(), userAuthenticator);
+        return new LoginService(jwtTokenProvider(), userAuthenticator, tokenExtractor());
     }
 
     @Bean
@@ -38,16 +38,16 @@ public class AuthConfig {
 
     @Bean
     public LoginInterceptor loginInterceptor() {
-        return new LoginInterceptor(jwtTokenProvider(), userAuthenticator, tokenExtractor());
+        return new LoginInterceptor(loginService());
     }
 
     @Bean
     public AdminInterceptor adminInterceptor() {
-        return new AdminInterceptor();
+        return new AdminInterceptor(loginService());
     }
 
     @Bean
     public LoginMemberArgumentResolver loginMemberArgumentResolver() {
-        return new LoginMemberArgumentResolver(loginService(), tokenExtractor());
+        return new LoginMemberArgumentResolver(loginService());
     }
 }
