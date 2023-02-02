@@ -178,4 +178,18 @@ public class ReservationDao {
             throw new EntityNotFoundException(ErrorCode.NO_RESERVATION);
         }
     }
+
+    public Reservation rejectReservation(Long id) {
+        Reservation reservation = findByIdForUpdate(id);
+
+        String updateSql = "UPDATE reservation SET state='REJECTED' where id = ?;";
+        jdbcTemplate.update(updateSql, reservation.getId());
+
+        if (reservation.getState().equals(ReservationState.ACCEPTED)) {
+            String updateSalesSql = "UPDATE sales SET refunded = true where reservation_id = ?;";
+            jdbcTemplate.update(updateSalesSql, reservation.getId());
+        }
+
+        return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.REJECTED);
+    }
 }

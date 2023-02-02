@@ -142,4 +142,9 @@ public class ReservationService {
 
         return new ReservationResponse(reservationDao.cancelReservation(id));
     }
+
+    @Transactional
+    public ReservationResponse rejectReservation(Long id) {
+        return new ReservationResponse(reservationDao.rejectReservation(id));
+    }
 }

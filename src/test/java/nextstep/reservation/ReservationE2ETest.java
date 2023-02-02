@@ -372,6 +372,24 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
+    @DisplayName("예약 거절")
+    @Test
+    void rejectReservation() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("admin/reservations/1/reject")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        Reservation reservation = response.jsonPath().getObject(".", Reservation.class);
+        assertThat(reservation.getState()).isEqualTo(ReservationState.REJECTED);
+    }
+
     private ExtractableResponse<Response> createReservationWaiting() {
         return RestAssured
                 .given().log().all()

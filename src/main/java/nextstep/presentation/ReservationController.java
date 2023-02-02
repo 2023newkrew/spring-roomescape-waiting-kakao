@@ -76,4 +76,10 @@ public class ReservationController {
         ReservationResponse reservation = reservationService.cancelReservation(userDetails.getId(), id);
         return ResponseEntity.ok().body(reservation);
     }
+
+    @PatchMapping("/admin/reservations/{id}/reject")
+    public ResponseEntity<ReservationResponse> rejectReservation(@PathVariable Long id) {
+        ReservationResponse reservation = reservationService.rejectReservation(id);
+        return ResponseEntity.ok().body(reservation);
+    }
 }
