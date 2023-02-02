@@ -16,12 +16,9 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if(request.getMethod().equals(HttpMethod.GET.name())) {
-            return true;
-        }
         String token = extractToken(request);
         if(!jwtTokenProvider.validateToken(token))
-            throw new AuthorizationException();
+            throw new AuthenticationException();
 
         return true;
     }
@@ -29,7 +26,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     private String extractToken(HttpServletRequest request) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if(authHeader==null)
-            throw new AuthorizationException();
+            throw new AuthenticationException();
 
         return authHeader.split(" ")[1];
     }
