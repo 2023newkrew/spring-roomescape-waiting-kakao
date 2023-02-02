@@ -52,40 +52,40 @@ public class ReservationController {
 
     @GetMapping("/reservations/mine")
     public ResponseEntity<List<ReservationResponse>> readMyReservations(@LoginMember UserDetails userDetails) {
-        List<Reservation> reservations = reservationService.findAllByUserDetails(userDetails);
-        List<ReservationReadDto> results = reservationService.classifyReservation(reservations, ReservationState.RESERVED);
+        List<Reservation> reservations = reservationService.findReservationsByUserDetails(userDetails);
+        List<ReservationReadDto> results = reservationService.classifyReservations(reservations, ReservationState.RESERVED);
         return ResponseEntity.ok().body(results.stream().map(ReservationReadDto::toReservationResponse).collect(Collectors.toList()));
     }
 
     @GetMapping("/reservation-waitings/mine")
     public ResponseEntity<List<ReservationWaitingResponse>> readReservationWaitings(@LoginMember UserDetails userDetails) {
-        List<Reservation> reservations = reservationService.findAllByUserDetails(userDetails);
-        List<ReservationReadDto> results = reservationService.classifyReservation(reservations, ReservationState.WAITING);
+        List<Reservation> reservations = reservationService.findReservationsByUserDetails(userDetails);
+        List<ReservationReadDto> results = reservationService.classifyReservations(reservations, ReservationState.WAITING);
         return ResponseEntity.ok().body(results.stream().map(ReservationReadDto::toReservationWaitingResponse).collect(Collectors.toList()));
     }
 
     @GetMapping("/reservations/{id}")
     public ResponseEntity<ReservationResponse> readReservationById(@PathVariable Long id) {
-        ReservationReadDto reservationReadDto = reservationService.findById(id);
+        ReservationReadDto reservationReadDto = reservationService.findReservationById(id);
         return ResponseEntity.ok().body(reservationReadDto.toReservationResponse());
     }
 
     @GetMapping("/reservation-waitings/{id}")
     public ResponseEntity<ReservationWaitingResponse> readReservationWaitingById(@PathVariable Long id) {
-        ReservationReadDto reservationReadDto = reservationService.findById(id);
+        ReservationReadDto reservationReadDto = reservationService.findReservationById(id);
         return ResponseEntity.ok().body(reservationReadDto.toReservationWaitingResponse());
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
-        int deletedRowCount = reservationService.deleteById(userDetails, id);
+        int deletedRowCount = reservationService.cancelReservation(userDetails, id);
 
         return ResponseEntity.ok().body(Collections.singletonMap("deletedReservationCount", deletedRowCount));
     }
 
     @DeleteMapping("/reservation-waitings/{id}")
     public ResponseEntity deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
-        int deletedRowCount = reservationService.deleteById(userDetails, id);
+        int deletedRowCount = reservationService.cancelReservation(userDetails, id);
 
         return ResponseEntity.ok().body(Collections.singletonMap("deletedReservationCount", deletedRowCount));
     }

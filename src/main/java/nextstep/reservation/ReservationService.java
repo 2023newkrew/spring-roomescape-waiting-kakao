@@ -4,7 +4,6 @@ import auth.AuthenticationException;
 import auth.UserDetails;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
@@ -52,14 +51,14 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public List<Reservation> findAllByUserDetails(UserDetails userDetails) {
+    public List<Reservation> findReservationsByUserDetails(UserDetails userDetails) {
         if (userDetails == null) {
             throw new AuthenticationException();
         }
         return reservationDao.findByMemberId(userDetails.getId());
     }
 
-    public int deleteById(UserDetails userDetails, Long id) {
+    public int cancelReservation(UserDetails userDetails, Long id) {
         if (userDetails == null) {
             throw new AuthenticationException();
         }
@@ -79,7 +78,7 @@ public class ReservationService {
         return (reservationState == ReservationState.RESERVED && waitNum == 0) || (reservationState == ReservationState.WAITING && waitNum > 0);
     }
 
-    public List<ReservationReadDto> classifyReservation(List<Reservation> reservations, ReservationState reservationState) {
+    public List<ReservationReadDto> classifyReservations(List<Reservation> reservations, ReservationState reservationState) {
         List<ReservationReadDto> reservationReadDtos = new ArrayList<>();
         for (Reservation reservation : reservations) {
             Long waitNum = getWaitNum(reservation);
@@ -101,7 +100,7 @@ public class ReservationService {
         );
     }
 
-    public ReservationReadDto findById(Long id) {
+    public ReservationReadDto findReservationById(Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
             throw new NullPointerException();
