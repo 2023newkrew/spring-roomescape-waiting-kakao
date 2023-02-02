@@ -1,6 +1,8 @@
 package roomescape.auth;
 
 import io.restassured.RestAssured;
+import roomescape.nextstep.login.TokenRequest;
+import roomescape.nextstep.login.TokenResponse;
 import roomescape.nextstep.member.MemberRequest;
 import roomescape.nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;

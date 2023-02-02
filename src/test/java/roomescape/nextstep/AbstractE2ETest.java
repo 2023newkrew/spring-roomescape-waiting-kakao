@@ -1,8 +1,8 @@
 package roomescape.nextstep;
 
 import io.restassured.RestAssured;
-import roomescape.auth.TokenRequest;
-import roomescape.auth.TokenResponse;
+import roomescape.nextstep.login.TokenRequest;
+import roomescape.nextstep.login.TokenResponse;
 import roomescape.nextstep.member.MemberRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;

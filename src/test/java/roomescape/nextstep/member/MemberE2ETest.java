@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.auth.TokenRequest;
-import roomescape.auth.TokenResponse;
+import roomescape.nextstep.login.TokenRequest;
+import roomescape.nextstep.login.TokenResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
