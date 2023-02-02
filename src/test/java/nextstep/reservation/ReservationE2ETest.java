@@ -439,6 +439,18 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("예약 취소 시 대기 예약을 등록")
+    @Test
+    void makeReservationFromWaiting() {
+        createReservation();
+        createReservationWaiting();
+        assertThat(findReservationWaitings()).hasSize(1);
+
+        cancelReservationForTest();
+        assertThat(findReservations()).hasSize(2);
+        assertThat(findReservationWaitings()).isEmpty();
+    }
+
     private ExtractableResponse<Response> createReservationWaiting() {
         return RestAssured
                 .given().log().all()
@@ -470,5 +482,38 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
+    }
+
+    private void cancelReservationForTest() {
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+    }
+
+    private List<Reservation> findReservations() {
+        return RestAssured
+                .given().log().all()
+                .param("themeId", themeId)
+                .param("date", DATE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().get("/reservations")
+                .then().log().all()
+                .extract().jsonPath().getList(".", Reservation.class);
+
+    }
+
+    private List<ReservationWaiting> findReservationWaitings() {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(userToken.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract().jsonPath().getList(".", ReservationWaiting.class);
     }
 }

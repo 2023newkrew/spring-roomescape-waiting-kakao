@@ -3,9 +3,11 @@ package nextstep.domain.sales;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 
+@Component
 public class SalesDao {
 
     public final JdbcTemplate jdbcTemplate;
@@ -28,5 +30,11 @@ public class SalesDao {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    public Integer refund(Long id) {
+        String sql = "UPDATE SALES SET refunded = true where id = ?";
+
+        return jdbcTemplate.update(sql, id);
     }
 }

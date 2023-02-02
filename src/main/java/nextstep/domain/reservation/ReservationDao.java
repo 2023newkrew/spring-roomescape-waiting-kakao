@@ -134,32 +134,12 @@ public class ReservationDao {
         return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.ACCEPTED);
     }
 
-    public Reservation cancelReservation(Long id) {
+    public Reservation updateState(Long id, ReservationState state) {
         Reservation reservation = findByIdForUpdate(id);
-        ReservationState currentState = reservation.getState();
+        String updateSql = "UPDATE reservation SET state=? where id = ?;";
+        jdbcTemplate.update(updateSql, state.name(), reservation.getId());
 
-        if (currentState.equals(ReservationState.ACCEPTED)) {
-            return cancelForAccepted(reservation);
-        }
-        if (currentState.equals(ReservationState.UNACCEPTED)) {
-            return cancelForUnaccepted(reservation);
-        }
-
-        throw new IllegalStateException("취소할 수 없는 예약입니다");
-    }
-
-    private Reservation cancelForAccepted(Reservation reservation) {
-        String updateSql = "UPDATE reservation SET state='CANCEL_WAITING' where id = ?;";
-        jdbcTemplate.update(updateSql, reservation.getId());
-
-        return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.CANCEL_WAITING);
-    }
-
-    private Reservation cancelForUnaccepted(Reservation reservation) {
-        String updateSql = "UPDATE reservation SET state='CANCELED' where id = ?;";
-        jdbcTemplate.update(updateSql, reservation.getId());
-
-        return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.CANCELED);
+        return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), state);
     }
 
     private Reservation findByIdForUpdate(Long id) {
@@ -175,30 +155,5 @@ public class ReservationDao {
         } catch (DataAccessException e) {
             throw new EntityNotFoundException(ErrorCode.NO_RESERVATION);
         }
-    }
-
-    public Reservation rejectReservation(Long id) {
-        Reservation reservation = findByIdForUpdate(id);
-
-        String updateSql = "UPDATE reservation SET state='REJECTED' where id = ?;";
-        jdbcTemplate.update(updateSql, reservation.getId());
-
-        if (reservation.getState().equals(ReservationState.ACCEPTED)) {
-            String updateSalesSql = "UPDATE sales SET refunded = true where reservation_id = ?;";
-            jdbcTemplate.update(updateSalesSql, reservation.getId());
-        }
-
-        return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.REJECTED);
-    }
-
-    public Reservation approveCancel(Long id) {
-        Reservation reservation = findByIdForUpdate(id);
-
-        String updateSql = "UPDATE reservation SET state='CANCELED' where id = ?;";
-        jdbcTemplate.update(updateSql, reservation.getId());
-        String updateSalesSql = "UPDATE sales SET refunded = true where reservation_id = ?;";
-        jdbcTemplate.update(updateSalesSql, reservation.getId());
-
-        return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.CANCELED);
     }
 }

@@ -5,6 +5,7 @@ import auth.exception.AuthorizationException;
 import nextstep.domain.member.Member;
 import nextstep.domain.member.MemberDao;
 import nextstep.domain.reservation.*;
+import nextstep.domain.sales.SalesDao;
 import nextstep.domain.schedule.Schedule;
 import nextstep.domain.schedule.ScheduleDao;
 import nextstep.domain.theme.Theme;
@@ -29,13 +30,16 @@ public class ReservationService {
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
+    public final ReservationManager reservationManager;
 
-    public ReservationService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, SalesDao salesDao) {
         this.reservationDao = reservationDao;
         this.reservationWaitingDao = reservationWaitingDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+
+        reservationManager = new ReservationManager(reservationDao, reservationWaitingDao, salesDao);
     }
 
     @Transactional
@@ -130,30 +134,21 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse acceptReservation(Long id) {
-        return new ReservationResponse(reservationDao.acceptReservation(id));
+        return new ReservationResponse(reservationManager.acceptReservation(id));
     }
 
     @Transactional
     public ReservationResponse cancelReservation(Long memberId, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (!reservation.sameMember(memberId)) {
-            throw new AuthorizationException();
-        }
-
-        return new ReservationResponse(reservationDao.cancelReservation(id));
+        return new ReservationResponse(reservationManager.cancelReservation(memberId, id));
     }
 
     @Transactional
     public ReservationResponse rejectReservation(Long id) {
-        return new ReservationResponse(reservationDao.rejectReservation(id));
+        return new ReservationResponse(reservationManager.rejectReservation(id));
     }
 
+    @Transactional
     public ReservationResponse approveCancel(Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (!reservation.getState().equals(ReservationState.CANCEL_WAITING)) {
-            throw new IllegalStateException("취소 대기 상태가 아닙니다");
-        }
-
-        return new ReservationResponse(reservationDao.approveCancel(id));
+        return new ReservationResponse(reservationManager.approveCancel(id));
     }
 }
