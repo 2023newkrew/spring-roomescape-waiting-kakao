@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS reservation
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
+    status      varchar(20) not null,
     primary key (id),
     unique (schedule_id)
 );
