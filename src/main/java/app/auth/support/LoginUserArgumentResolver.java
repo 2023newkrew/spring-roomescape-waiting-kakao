@@ -1,5 +1,6 @@
 package app.auth.support;
 
+import app.auth.domain.User;
 import app.auth.service.LoginService;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -21,10 +22,10 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public User resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         try {
-            String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
-            return loginService.extractMember(credential);
+            String token = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
+            return loginService.extractUser(token);
         } catch (Exception e) {
             throw new AuthenticationException();
         }

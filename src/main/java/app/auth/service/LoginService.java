@@ -28,8 +28,8 @@ public class LoginService {
         return new TokenResponse(accessToken);
     }
 
-    public User extractMember(String credential) {
-        Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
+    public User extractUser(String token) {
+        Long id = Long.parseLong(jwtTokenProvider.getPrincipal(token));
         return loginRepository.findById(id);
     }
 }

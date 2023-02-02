@@ -1,18 +1,11 @@
 package app.nextstep.domain;
 
-import java.util.Objects;
-
 public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
 
     public Reservation() {
-    }
-
-    public Reservation(Schedule schedule, Member member) {
-        this.schedule = schedule;
-        this.member = member;
     }
 
     public Reservation(Long id, Schedule schedule, Member member) {
@@ -33,7 +26,7 @@ public class Reservation {
         return member;
     }
 
-    public boolean sameMember(Member member) {
-        return member != null && Objects.equals(this.member.getId(), member.getId());
+    public boolean isReservationOf(Long memberId) {
+        return this.member.getId().equals(memberId);
     }
 }

@@ -1,7 +1,5 @@
 package app.nextstep.dto;
 
-import app.nextstep.domain.Theme;
-
 public class ThemeRequest {
     private String name;
     private String desc;
@@ -23,13 +21,5 @@ public class ThemeRequest {
 
     public int getPrice() {
         return price;
-    }
-
-    public Theme toTheme() {
-        return new Theme(
-                this.name,
-                this.desc,
-                this.price
-        );
     }
 }

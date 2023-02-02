@@ -1,7 +1,5 @@
 package app.nextstep.dto;
 
-import app.nextstep.domain.Member;
-
 public class MemberRequest {
     private String username;
     private String password;
@@ -35,9 +33,5 @@ public class MemberRequest {
 
     public String getRole() {
         return role;
-    }
-
-    public Member toMember() {
-        return new Member(username, password, name, phone, role);
     }
 }

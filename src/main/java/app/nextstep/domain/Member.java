@@ -15,12 +15,6 @@ public class Member extends User {
         this.phone = phone;
     }
 
-    public Member(String username, String password, String name, String phone, String role) {
-        super(null, username, password, role);
-        this.name = name;
-        this.phone = phone;
-    }
-
     public String getName() {
         return name;
     }

@@ -1,11 +1,5 @@
 package app.nextstep.dto;
 
-import app.nextstep.domain.Schedule;
-import app.nextstep.domain.Theme;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 public class ScheduleRequest {
     private Long themeId;
     private String date;
@@ -30,13 +24,5 @@ public class ScheduleRequest {
 
     public String getTime() {
         return time;
-    }
-
-    public Schedule toSchedule(Theme theme) {
-        return new Schedule(
-                theme,
-                LocalDate.parse(this.date),
-                LocalTime.parse(this.time)
-        );
     }
 }

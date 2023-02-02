@@ -19,12 +19,6 @@ public class Schedule {
         this.time = time;
     }
 
-    public Schedule(Theme theme, LocalDate date, LocalTime time) {
-        this.theme = theme;
-        this.date = date;
-        this.time = time;
-    }
-
     public Long getId() {
         return id;
     }
