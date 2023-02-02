@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/sales")
 public class SalesController {
@@ -20,5 +22,10 @@ public class SalesController {
         return ResponseEntity.ok().body(results);
     }
     // 매출 리스트 출력
+    @GetMapping
+    public ResponseEntity<List<Sales>> lookUp(){
+        List<Sales> result = salesService.findAll();
+        return ResponseEntity.ok().body(result);
+    }
 
 }

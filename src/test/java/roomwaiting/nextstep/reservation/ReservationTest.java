@@ -30,9 +30,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestExecutionListeners(value = {AcceptanceTestExecutionListener.class,}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class ReservationTest extends ReservationCommon {
 
+
     @Autowired
     JdbcTemplate jdbcTemplate;
-
     @BeforeEach
     public void setUp() {
         super.setUp();

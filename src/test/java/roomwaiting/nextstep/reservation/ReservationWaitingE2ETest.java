@@ -31,7 +31,6 @@ public class ReservationWaitingE2ETest extends ReservationCommon {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 

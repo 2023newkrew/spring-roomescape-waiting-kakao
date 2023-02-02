@@ -2,8 +2,8 @@ package roomwaiting.nextstep.sales;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 
-import static roomwaiting.support.Messages.EMPTY_SALES;
 
 @Service
 public class SalesService {
@@ -14,14 +14,13 @@ public class SalesService {
     }
 
     public Long allAmount(){
-        return salesDao.findAllAmount().orElseThrow(()->
-                new NullPointerException(EMPTY_SALES.getMessage())
-        );
+        return salesDao.findAllAmount().orElse(0L);
     }
 
+    public List<Sales> findAll() {
+        return salesDao.findAllSales();
+    }
 
     // 매출 리스트 출력
-
-    // ReservationAdmionService -> Sales +/- 등록
 
 }

@@ -1,6 +1,5 @@
 package roomwaiting.nextstep.reservation;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestExecutionListeners;
 import roomwaiting.AcceptanceTestExecutionListener;
@@ -26,6 +24,7 @@ import static roomwaiting.nextstep.reservation.ReservationStatus.*;
 @SpringBootTest(classes = {RoomEscapeApplication.class})
 @TestExecutionListeners(value = {AcceptanceTestExecutionListener.class,}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class ReservationApproveTest extends ReservationCommon {
+
     @Autowired
     JdbcTemplate jdbcTemplate;
     @Autowired
@@ -131,7 +130,7 @@ public class ReservationApproveTest extends ReservationCommon {
 
     @DisplayName("예약 취소 대기 상태의 예약을 관리자가 취소승인 하는경우 예약 취소 상태가 된다")
     @Test
-    void adminCancelApproveTest(){
+    void adminCancelApproveTest() {
         Member member = saveMember(jdbcTemplate, "MEMBER1", "PASS1", "MEMBER");
         String memberToken = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
         ExtractableResponse<Response> response = requestCreateReservation(memberToken);
@@ -144,38 +143,5 @@ public class ReservationApproveTest extends ReservationCommon {
         Assertions.assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Reservation> lookUpReservation = lookUpReservation(memberToken).jsonPath().getList(".", Reservation.class);
         Assertions.assertThat(lookUpReservation.get(0).getStatus()).isEqualTo(CANCEL);
-    }
-
-    private ExtractableResponse<Response> requestApprove(String location, String accessToken) {
-        return RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .auth().oauth2(accessToken)
-                .body(request)
-                .when().patch("/reservations/" + location + "/approve")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> cancelReservation(String location, String accessToken) {
-        return RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .auth().oauth2(accessToken)
-                .body(request)
-                .when().patch("/reservations/" + location + "/cancel")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> requestCancelApprove(String location, String accessToken) {
-        return RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .auth().oauth2(accessToken)
-                .body(request)
-                .when().patch("/reservations/" + location + "/cancel-approve")
-                .then().log().all()
-                .extract();
     }
 }

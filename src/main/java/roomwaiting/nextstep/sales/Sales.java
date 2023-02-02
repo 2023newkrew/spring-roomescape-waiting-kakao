@@ -13,6 +13,12 @@ public class Sales {
     public Sales() {
     }
 
+    public Sales(Member member, Long price, Schedule schedule) {
+        this.member = member;
+        this.price = price;
+        this.schedule = schedule;
+    }
+
     public Sales(Long id, Member member, Long price, Schedule schedule) {
         this.id = id;
         this.member = member;

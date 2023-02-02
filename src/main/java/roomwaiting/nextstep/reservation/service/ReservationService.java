@@ -4,9 +4,10 @@ import org.springframework.web.server.NotAcceptableStatusException;
 import roomwaiting.nextstep.member.Member;
 import roomwaiting.nextstep.member.Role;
 import roomwaiting.nextstep.reservation.dto.ReservationRequest;
+import roomwaiting.nextstep.sales.Sales;
+import roomwaiting.nextstep.sales.SalesDao;
 import roomwaiting.nextstep.schedule.Schedule;
 import roomwaiting.nextstep.schedule.ScheduleDao;
-import roomwaiting.nextstep.member.MemberDao;
 import roomwaiting.nextstep.reservation.domain.Reservation;
 import roomwaiting.nextstep.reservation.dao.ReservationDao;
 import roomwaiting.nextstep.theme.ThemeDao;
@@ -23,16 +24,16 @@ import static roomwaiting.support.Messages.*;
 
 @Service
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    private final ReservationDao reservationDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final SalesDao salesDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, SalesDao salesDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
+        this.salesDao = salesDao;
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
@@ -88,8 +89,12 @@ public class ReservationService {
         if (Objects.equals(member.getRole(), Role.ADMIN.name())) {
             if (reservation.getStatus() == NOT_APPROVED || reservation.getStatus() == APPROVED){
                 reservationDao.updateState(DECLINE, id);
-                return;
             }
+            if (reservation.getStatus() == APPROVED){
+                salesDao.updateSales(new Sales(reservation.getMember(),
+                        -reservation.getSchedule().getTheme().getPrice(), reservation.getSchedule()));
+            }
+            return;
         }
         throw new NotAcceptableStatusException(NEEDS_APPROVED_STATUS.getMessage() +
                 OR.getMessage() + NEEDS_NOT_APPROVED_STATUS.getMessage());

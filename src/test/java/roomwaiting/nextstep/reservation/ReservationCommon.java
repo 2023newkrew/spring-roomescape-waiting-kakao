@@ -20,6 +20,7 @@ public class ReservationCommon extends AbstractE2ETest {
     protected Long themeId;
     protected Long scheduleId;
 
+
     @BeforeEach
     protected void setUp() {
         super.setUp();
@@ -72,6 +73,39 @@ public class ReservationCommon extends AbstractE2ETest {
                 .auth().oauth2(accessToken)
                 .body(request)
                 .when().post("/reservations")
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> requestApprove(String location, String accessToken) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(accessToken)
+                .body(request)
+                .when().patch("/reservations/" + location + "/approve")
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> cancelReservation(String location, String accessToken) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(accessToken)
+                .body(request)
+                .when().patch("/reservations/" + location + "/cancel")
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> requestCancelApprove(String location, String accessToken) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(accessToken)
+                .body(request)
+                .when().patch("/reservations/" + location + "/cancel-approve")
                 .then().log().all()
                 .extract();
     }
