@@ -83,15 +83,24 @@ public class ReservationService {
     @Transactional
     public boolean cancelById(TokenData tokenData, Long id) {
         Reservation reservation = repository.getById(id);
-        validateReservationMine(reservation, tokenData);
-        if (reservation.getStatus().equals(StatusType.UNAPPROVED)){
-            repository.updateById(id, StatusType.CANCELED);
-            return repository.deleteById(id);
+        try {
+            validateReservationAdmin(reservation, tokenData);
+            if (reservation.getStatus().equals(StatusType.UNAPPROVED) || reservation.getStatus().equals(StatusType.APPROVED)){
+                repository.updateById(id, StatusType.REJECTED);
+                return repository.deleteById(id);
+            }
+            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
+        } catch (AuthenticationException e){
+            validateReservationMine(reservation, tokenData);
+            if (reservation.getStatus().equals(StatusType.UNAPPROVED)){
+                repository.updateById(id, StatusType.CANCELED);
+                return repository.deleteById(id);
+            }
+            if (reservation.getStatus().equals(StatusType.APPROVED)){
+                return repository.updateById(id, StatusType.CANCELED_WAIT);
+            }
+            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
         }
-        if (reservation.getStatus().equals(StatusType.APPROVED)){
-            return repository.updateById(id, StatusType.CANCELED_WAIT);
-        }
-        throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
     }
 
     private void validateReservationMine(Reservation reservation, TokenData tokenData) {

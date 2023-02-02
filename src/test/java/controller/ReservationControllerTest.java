@@ -104,7 +104,7 @@ public class ReservationControllerTest extends AbstractControllerTest {
     @Nested
 
     class cancel {
-        @DisplayName("예약 취소 - 미승인 상태")
+        @DisplayName("예약 취소 - 미승인 상태 - 사용자")
         @Test
         void should_cancel_unapproved_reservation() {
             var response = patch(authGivenAnother(), DEFAULT_PATH + "/2/cancel");
@@ -115,11 +115,34 @@ public class ReservationControllerTest extends AbstractControllerTest {
             then(response);
         }
 
-        @DisplayName("예약 취소 - 승인 상태")
+        @DisplayName("예약 취소 - 승인 상태 - 사용자")
         @Test
         void should_cancel_approved_reservation() {
             patch(authGiven(), DEFAULT_PATH + "/2/approve");
             var response = patch(authGivenAnother(), DEFAULT_PATH + "/2/cancel");
+            then(response)
+                    .statusCode(HttpStatus.OK.value());
+
+            response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+            then(response);
+        }
+
+        @DisplayName("예약 취소 - 미승인 상태 - 관리자")
+        @Test
+        void should_cancel_unapproved_reservation_admin() {
+            var response = patch(authGiven(), DEFAULT_PATH + "/2/cancel");
+            then(response)
+                    .statusCode(HttpStatus.OK.value());
+
+            response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+            then(response);
+        }
+
+        @DisplayName("예약 취소 - 승인 상태 - 관리자")
+        @Test
+        void should_cancel_approved_reservation_admin() {
+            patch(authGiven(), DEFAULT_PATH + "/2/approve");
+            var response = patch(authGiven(), DEFAULT_PATH + "/2/cancel");
             then(response)
                     .statusCode(HttpStatus.OK.value());
 
