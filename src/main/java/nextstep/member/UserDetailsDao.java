@@ -25,7 +25,13 @@ public class UserDetailsDao implements UserDetailsRepository {
 
     @Override
     public UserDetails findByUsername(final String username) {
-        String sql = "SELECT * from member where username = ?;";
+        String sql = "SELECT * from member WHERE username = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, username);
+    }
+
+    @Override
+    public UserDetails findById(final Long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 }
