@@ -4,9 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
-import nextstep.waiting.dto.response.ReservationWaitingResponseDto;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
+import nextstep.waiting.dto.response.ReservationWaitingResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -204,10 +204,18 @@ class ReservationE2ETest extends AbstractE2ETest {
     void delete() {
         var reservation = createReservation();
 
+        Long reservationId = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get(reservation.header("Location"))
+                .then().log().all()
+                .extract()
+                .jsonPath().getList(".", Reservation.class).get(0).getId();
+
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete(reservation.header("Location"))
+                .when().delete("/reservations/" + reservationId)
                 .then().log().all()
                 .extract();
 
@@ -228,10 +236,18 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
+        long waitingReservationId = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get(waitingReservation.header("Location"))
+                .then().log().all()
+                .extract()
+                .jsonPath().getList(".", ReservationWaitingResponseDto.class).get(0).getId();
+
         var waitingResponse = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete(waitingReservation.header("Location"))
+                .when().delete("/reservation-waitings/" + waitingReservationId)
                 .then().log().all()
                 .extract();
 
