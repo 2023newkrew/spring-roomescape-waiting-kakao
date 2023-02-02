@@ -29,6 +29,7 @@ public class ReservationService {
     private final MemberService memberService;
     private final ScheduleService scheduleService;
     private final ThemeService themeService;
+    private final SalesHistoryService salesHistoryService;
     private final TransactionUtil transactionUtil;
 
     @Transactional
@@ -81,6 +82,7 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void approveReservation(Long reservationId) {
         Reservation reservation = findById(reservationId);
 
@@ -89,6 +91,7 @@ public class ReservationService {
         }
 
         reservationDao.updateReservationStatus(reservationId, reservation.getTransitionedStatus().name());
+        salesHistoryService.saveHistory(reservation);
     }
 
     private Reservation findById(Long reservationId) {

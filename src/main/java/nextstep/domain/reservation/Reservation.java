@@ -63,6 +63,10 @@ public class Reservation {
         return createdAt;
     }
 
+    public Long getThemeId() {
+        return schedule.getThemeId();
+    }
+
     public boolean sameMember(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }

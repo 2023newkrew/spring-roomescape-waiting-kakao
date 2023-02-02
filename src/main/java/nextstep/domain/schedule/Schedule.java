@@ -42,4 +42,8 @@ public class Schedule {
     public LocalTime getTime() {
         return time;
     }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
 }
