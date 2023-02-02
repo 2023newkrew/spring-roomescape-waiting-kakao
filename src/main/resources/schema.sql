@@ -52,3 +52,13 @@ CREATE TABLE waiting
     FOREIGN KEY (schedule_id) REFERENCES schedule (id),
     UNIQUE (member_id, schedule_id)
 );
+
+CREATE TABLE sales
+(
+    id             BIGINT NOT NULL AUTO_INCREMENT,
+    reservation_id BIGINT NOT NULL,
+    amount         BIGINT NOT NULL,
+    status         varchar(20) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (reservation_id) REFERENCES reservation (id)
+);
