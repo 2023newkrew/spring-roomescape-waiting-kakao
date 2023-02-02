@@ -38,6 +38,6 @@ public class MemberRequest {
     }
 
     public Member toMember() {
-        return new Member(null, username, password, role, name, phone);
+        return new Member(username, password, role, name, phone);
     }
 }

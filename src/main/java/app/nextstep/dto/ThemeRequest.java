@@ -26,6 +26,6 @@ public class ThemeRequest {
     }
 
     public Theme toTheme() {
-        return new Theme(null, name, desc, price);
+        return new Theme(name, desc, price);
     }
 }

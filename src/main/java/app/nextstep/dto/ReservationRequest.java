@@ -20,8 +20,7 @@ public class ReservationRequest {
 
     public Reservation toReservation(Long memberId) {
         return new Reservation(
-                null,
-                new Schedule(scheduleId, null, null, null),
-                new Member(memberId, null, null, null, null, null));
+                new Schedule(scheduleId),
+                new Member(memberId));
     }
 }

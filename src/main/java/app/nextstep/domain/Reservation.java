@@ -6,12 +6,17 @@ public class Reservation {
     private Member member;
 
     public Reservation() {
+
     }
 
     public Reservation(Long id, Schedule schedule, Member member) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+    }
+
+    public Reservation(Schedule schedule, Member member) {
+        this(null, schedule, member);
     }
 
     public Long getId() {

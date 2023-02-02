@@ -7,6 +7,7 @@ public class Theme {
     private Integer price;
 
     public Theme() {
+
     }
 
     public Theme(Long id, String name, String desc, Integer price) {
@@ -15,6 +16,15 @@ public class Theme {
         this.desc = desc;
         this.price = price;
     }
+
+    public Theme(String name, String desc, Integer price) {
+        this(null, name, desc, price);
+    }
+
+    public Theme(Long id) {
+        this(id, null, null, null);
+    }
+
 
     public Long getId() {
         return id;

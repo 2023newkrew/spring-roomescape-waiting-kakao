@@ -10,6 +10,7 @@ public class Schedule {
     private LocalTime time;
 
     public Schedule() {
+
     }
 
     public Schedule(Long id, Theme theme, LocalDate date, LocalTime time) {
@@ -17,6 +18,14 @@ public class Schedule {
         this.theme = theme;
         this.date = date;
         this.time = time;
+    }
+
+    public Schedule(Theme theme, LocalDate date, LocalTime time) {
+        this(null, theme, date, time);
+    }
+
+    public Schedule(Long id) {
+        this(id, null, null, null);
     }
 
     public Long getId() {

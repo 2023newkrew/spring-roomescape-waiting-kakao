@@ -34,8 +34,7 @@ public class ScheduleRequest {
 
     public Schedule toSchedule() {
         return new Schedule(
-                null,
-                new Theme(themeId, null, null, null),
+                new Theme(themeId),
                 LocalDate.parse(date),
                 LocalTime.parse(time));
     }

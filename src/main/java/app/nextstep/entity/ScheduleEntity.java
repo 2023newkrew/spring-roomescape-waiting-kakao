@@ -12,9 +12,6 @@ public class ScheduleEntity {
     private Date date;
     private Time time;
 
-    public ScheduleEntity() {
-    }
-
     public ScheduleEntity(Long id, ThemeEntity theme, Date date, Time time) {
         this.id = id;
         this.theme = theme;

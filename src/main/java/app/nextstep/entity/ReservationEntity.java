@@ -7,9 +7,6 @@ public class ReservationEntity {
     private ScheduleEntity schedule;
     private MemberEntity member;
 
-    public ReservationEntity() {
-    }
-
     public ReservationEntity(Long id, ScheduleEntity schedule, MemberEntity member) {
         this.id = id;
         this.schedule = schedule;

@@ -8,9 +8,6 @@ public class ThemeEntity {
     private String desc;
     private Integer price;
 
-    public ThemeEntity() {
-    }
-
     public ThemeEntity(Long id, String name, String desc, Integer price) {
         this.id = id;
         this.name = name;

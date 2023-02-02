@@ -10,9 +10,6 @@ public class MemberEntity {
     private String phone;
     private String role;
 
-    public MemberEntity() {
-    }
-
     public MemberEntity(Long id, String username, String password, String role, String name, String phone) {
         this.id = id;
         this.username = username;
