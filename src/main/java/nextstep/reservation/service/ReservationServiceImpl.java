@@ -10,8 +10,7 @@ import nextstep.schedule.domain.ScheduleEntity;
 import nextstep.schedule.exception.ScheduleErrorMessage;
 import nextstep.schedule.exception.ScheduleException;
 import nextstep.schedule.service.ScheduleService;
-import nextstep.waiting.domain.WaitingEntity;
-import nextstep.waiting.repository.WaitingRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +24,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository repository;
 
-    private final WaitingRepository waitingRepository;
-
     private final ScheduleService scheduleService;
+
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     @Override
@@ -61,14 +60,12 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public boolean deleteById(MemberEntity member, Long id) {
         ReservationEntity reservation = getValidReservation(member, id);
-
-        WaitingEntity waiting = waitingRepository.getFirstBySchedule(reservation.getSchedule());
-        if (Objects.isNull(waiting)) {
-            return repository.deleteById(id);
+        boolean deleted = repository.deleteById(id);
+        if (deleted) {
+            publisher.publishEvent(reservation);
         }
-        waitingRepository.deleteById(waiting.getId());
 
-        return repository.updateById(id, waiting.getMemberId());
+        return deleted;
     }
 
     private ReservationEntity getValidReservation(MemberEntity member, Long id) {

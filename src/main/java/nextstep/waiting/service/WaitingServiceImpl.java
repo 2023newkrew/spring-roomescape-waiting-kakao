@@ -5,10 +5,12 @@ import nextstep.member.domain.MemberEntity;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.repository.ReservationRepository;
+import nextstep.schedule.domain.ScheduleEntity;
 import nextstep.waiting.domain.WaitingEntity;
 import nextstep.waiting.exception.WaitingErrorMessage;
 import nextstep.waiting.exception.WaitingException;
 import nextstep.waiting.repository.WaitingRepository;
+import org.springframework.context.event.EventListener;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +76,19 @@ public class WaitingServiceImpl implements WaitingService {
         }
         if (!Objects.equals(waiting.getMemberId(), member.getId())) {
             throw new WaitingException(WaitingErrorMessage.NOT_OWNER);
+        }
+    }
+
+    @Transactional
+    @EventListener
+    @Override
+    public void onReservationDeleted(ReservationEntity reservation) {
+        ScheduleEntity schedule = reservation.getSchedule();
+        WaitingEntity waiting = repository.getFirstBySchedule(schedule);
+        if (Objects.nonNull(waiting)) {
+            ReservationEntity newReservation = new ReservationEntity(null, waiting.getMember(), schedule);
+            repository.deleteById(waiting.getId());
+            reservationRepository.insert(newReservation);
         }
     }
 }
