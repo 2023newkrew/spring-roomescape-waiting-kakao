@@ -17,6 +17,15 @@ public class SalesHistory {
         this.createdAt = LocalDateTime.now();
     }
 
+    public SalesHistory(Long id, Long themeId, int amount, String status) {
+        this(themeId, amount, SalesHistoryStatus.valueOf(status));
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
     public Long getThemeId() {
         return themeId;
     }

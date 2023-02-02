@@ -30,7 +30,7 @@ public class Reservation {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
-        this.status = UNAPPROVED;
+        this.status = ReservationStatus.valueOf(status);
         this.deposit = deposit;
     }
 
