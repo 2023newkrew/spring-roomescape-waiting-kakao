@@ -9,6 +9,7 @@ import nextstep.member.Member;
 import nextstep.reservation.dao.ReservationDao;
 import nextstep.reservation.dao.ReservationWaitingDao;
 import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.domain.ReservationStatus;
 import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.revenue.RevenueDao;
@@ -44,7 +45,6 @@ public class ReservationService {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
         List<Reservation> reservation = reservationDao.findAllByScheduleId(schedule.getId());
-        reservation.forEach(reservation1 -> System.out.println("DFASDFASDFA : " + reservation1.getStatus()));
         if (!reservation.isEmpty()) {
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION);
         }
@@ -76,15 +76,7 @@ public class ReservationService {
         Reservation reservation = getReservation(id);
         checkAuthorizationOfReservation(reservation, member);
         reservationDao.deleteById(id);
-        ReservationWaiting reservationWaiting = reservationWaitingDao
-                .findFirstByScheduleId(
-                        reservation.getSchedule().getId()
-                );
-        if (Objects.isNull(reservationWaiting)) {
-            return;
-        }
-        reservationWaitingDao.deleteById(reservationWaiting.getId());
-        reservationDao.save(reservationWaiting.convertToReservation());
+        passNextWaiting(reservation);
     }
 
     public List<Reservation> lookUp(Member member) {
@@ -104,6 +96,9 @@ public class ReservationService {
         checkAuthorizationOfReservation(reservation, member);
         reservation.cancel();
         reservationDao.save(reservation);
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            passNextWaiting(reservation);
+        }
     }
 
     @AdminRequired
@@ -114,6 +109,9 @@ public class ReservationService {
             revenueDao.save(reservation.getRevenue());
         }
         reservationDao.save(reservation);
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            passNextWaiting(reservation);
+        }
     }
 
     @AdminRequired
@@ -122,6 +120,9 @@ public class ReservationService {
         reservation.approveCancel();
         revenueDao.save(reservation.getRevenue());
         reservationDao.save(reservation);
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            passNextWaiting(reservation);
+        }
     }
 
     private Reservation getReservation(Long id) {
@@ -136,5 +137,17 @@ public class ReservationService {
         if (!reservation.isMine(member)) {
             throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
         }
+    }
+
+    private void passNextWaiting(Reservation reservation) {
+        ReservationWaiting reservationWaiting = reservationWaitingDao
+                .findFirstByScheduleId(
+                        reservation.getSchedule().getId()
+                );
+        if (Objects.isNull(reservationWaiting)) {
+            return;
+        }
+        reservationWaitingDao.deleteById(reservationWaiting.getId());
+        reservationDao.save(reservationWaiting.convertToReservation());
     }
 }
