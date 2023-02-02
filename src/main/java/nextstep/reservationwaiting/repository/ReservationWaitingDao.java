@@ -11,6 +11,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,17 +45,19 @@ public class ReservationWaitingDao {
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
-            )
+            ),
+            resultSet.getTimestamp("reservation_waiting.created_at").toLocalDateTime()
     );
 
     public Long save(ReservationWaiting reservationWaiting) {
-        String sql = "INSERT INTO RESERVATION_WAITING (schedule_id, member_id) VALUES (?, ?);";
+        String sql = "INSERT INTO RESERVATION_WAITING (schedule_id, member_id, created_at) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, reservationWaiting.getSchedule().getId());
             ps.setLong(2, reservationWaiting.getMember().getId());
+            ps.setTimestamp(3, Timestamp.valueOf(reservationWaiting.getCreatedAt()));
             return ps;
 
         }, keyHolder);
@@ -63,7 +67,7 @@ public class ReservationWaitingDao {
 
     public List<ReservationWaiting> findAllByMemberId(Long memberId) {
         String sql = "SELECT " +
-                "reservation_waiting.id, " +
+                "reservation_waiting.id, reservation_waiting.created_at, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -80,15 +84,15 @@ public class ReservationWaitingDao {
         }
     }
 
-    public int getWaitNum(Long scheduleId, Long reservationWaitingId) {
-        String sql = "SELECT COUNT(*) FROM (SELECT id FROM reservation_waiting WHERE schedule_id = ? AND id <= ? LIMIT 100)";
+    public int getWaitNum(Long scheduleId, LocalDateTime createdAt) {
+        String sql = "SELECT COUNT(*) FROM (SELECT id FROM reservation_waiting WHERE schedule_id = ? AND created_at <= ? LIMIT 100)";
 
-        return jdbcTemplate.queryForObject(sql, Integer.class, scheduleId, reservationWaitingId);
+        return jdbcTemplate.queryForObject(sql, Integer.class, scheduleId, createdAt);
     }
 
     public ReservationWaiting findById(Long id) {
         String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
+                "reservation_waiting.id, reservation_waiting.created_at, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -106,7 +110,7 @@ public class ReservationWaitingDao {
 
     public ReservationWaiting findByScheduleId(Long id) {
         String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
+                "reservation_waiting.id, reservation_waiting.created_at, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +

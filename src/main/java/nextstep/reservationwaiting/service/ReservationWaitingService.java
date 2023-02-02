@@ -75,8 +75,8 @@ public class ReservationWaitingService {
                 .collect(Collectors.toList());
     }
 
-    public String getWaitNumString(ReservationWaiting v) {
-        int waitNum = reservationWaitingDao.getWaitNum(v.getSchedule().getId(), v.getId());
+    public String getWaitNumString(ReservationWaiting reservationWaiting) {
+        int waitNum = reservationWaitingDao.getWaitNum(reservationWaiting.getSchedule().getId(), reservationWaiting.getCreatedAt());
         if (waitNum >= 100){
             return "100+";
         }
