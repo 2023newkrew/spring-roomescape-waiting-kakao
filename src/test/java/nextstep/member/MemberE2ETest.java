@@ -1,8 +1,8 @@
 package nextstep.member;
 
 import io.restassured.RestAssured;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
+import auth.TokenRequest;
+import auth.TokenResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ public class MemberE2ETest {
         token = response.as(TokenResponse.class);
     }
 
-    @DisplayName("멤버를 생성한다")
+    @DisplayName("멤버 생성 성공 시 CREATED 응답")
     @Test
     public void create() {
         MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", "ADMIN");
@@ -58,7 +58,7 @@ public class MemberE2ETest {
                 .statusCode(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("내 정보를 조회한다")
+    @DisplayName("내 정보 조회 성공 시 Member를 응답")
     @Test
     public void showThemes() {
         var response = RestAssured
