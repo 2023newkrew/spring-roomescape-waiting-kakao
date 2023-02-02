@@ -1,7 +1,11 @@
 package nextstep.reservationwaiting;
 
+import static nextstep.reservationwaiting.ReservationWaitingStatus.FINISHED;
+import static nextstep.reservationwaiting.ReservationWaitingStatus.IN_PROGRESS;
+import static nextstep.reservationwaiting.ReservationWaitingStatus.WAITING;
 import static nextstep.utils.Validator.checkFieldIsNull;
 
+import nextstep.exception.InvalidChangeStatusException;
 import nextstep.schedule.Schedule;
 
 public class ReservationWaiting {
@@ -9,14 +13,14 @@ public class ReservationWaiting {
     private final Schedule schedule;
     private final Long memberId;
     private final Long waitNum;
+    private ReservationWaitingStatus status;
 
-    private ReservationWaiting(Schedule schedule, Long memberId, Long waitNum) {
-        checkFieldIsNull(schedule, "schedule");
-        checkFieldIsNull(memberId, "memberId");
-        checkFieldIsNull(waitNum, "waitNum");
+    private ReservationWaiting(Schedule schedule, Long memberId, Long waitNum, ReservationWaitingStatus status) {
         this.schedule = schedule;
         this.memberId = memberId;
         this.waitNum = waitNum;
+        this.status = status;
+        checkFields();
     }
 
     public static ReservationWaiting giveId(ReservationWaiting reservationWaiting, Long id) {
@@ -24,6 +28,27 @@ public class ReservationWaiting {
         checkFieldIsNull(id, "id");
         reservationWaiting.id = id;
         return reservationWaiting;
+    }
+
+    public void toInProgress() {
+        if (status.equals(WAITING)) {
+            status = IN_PROGRESS;
+            return;
+        }
+        throw new InvalidChangeStatusException(WAITING.toString(),
+                IN_PROGRESS.toString(), getClass().getSimpleName());
+    }
+
+    public void toFinished() {
+        if (status.equals(IN_PROGRESS)) {
+            status = FINISHED;
+            return;
+        }
+        throw new InvalidChangeStatusException(IN_PROGRESS.toString(), FINISHED.toString(), getClass().getSimpleName());
+    }
+
+    public void toDropped() {
+        status = FINISHED;
     }
 
     public static ReservationWaitingBuilder builder() {
@@ -46,10 +71,16 @@ public class ReservationWaiting {
         return waitNum;
     }
 
+    public ReservationWaitingStatus getStatus() {
+        return status;
+    }
+
     public static class ReservationWaitingBuilder {
+
         private Schedule schedule;
         private Long memberId;
         private Long waitNum;
+        private ReservationWaitingStatus status = WAITING;
 
         public ReservationWaitingBuilder schedule(Schedule schedule) {
             this.schedule = schedule;
@@ -68,9 +99,21 @@ public class ReservationWaiting {
             return this;
         }
 
-        public ReservationWaiting build() {
-            return new ReservationWaiting(schedule, memberId, waitNum);
+        public ReservationWaitingBuilder status(ReservationWaitingStatus status) {
+            this.status = status;
+            return this;
         }
+
+        public ReservationWaiting build() {
+            return new ReservationWaiting(schedule, memberId, waitNum, status);
+        }
+
     }
 
+    private void checkFields() {
+        checkFieldIsNull(schedule, "schedule");
+        checkFieldIsNull(memberId, "memberId");
+        checkFieldIsNull(waitNum, "waitNum");
+        checkFieldIsNull(status, "status");
+    }
 }

@@ -37,9 +37,10 @@ CREATE TABLE member
 
 CREATE TABLE reservation_waiting
 (
-    id          bigint not null auto_increment,
-    schedule_id bigint not null COMMENT 'SCHEDULE PK(FK)',
-    member_id   bigint not null COMMENT 'MEMBER PK(FK)',
-    wait_num    bigint not null COMMENT '예약 대기 번호'
+    id          bigint  not null auto_increment,
+    schedule_id bigint  not null COMMENT 'SCHEDULE PK(FK)',
+    member_id   bigint  not null COMMENT 'MEMBER PK(FK)',
+    wait_num    bigint  not null COMMENT '예약 대기 번호',
+    wait_status tinyint not null COMMENT '예약 대기 상태'
 );
 

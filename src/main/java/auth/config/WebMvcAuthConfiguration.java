@@ -3,6 +3,7 @@ package auth.config;
 import auth.LoginService;
 import auth.utils.JwtTokenProvider;
 import java.util.List;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -21,7 +22,7 @@ public class WebMvcAuthConfiguration implements WebMvcConfigurer {
     }
 
     @Override
-    public void addArgumentResolvers(List argumentResolvers) {
-        argumentResolvers.add(new LoginMemberArgumentResolver(loginService));
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new LoginMemberArgumentResolver(loginService));
     }
 }

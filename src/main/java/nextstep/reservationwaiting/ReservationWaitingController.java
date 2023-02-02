@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import nextstep.exception.CanMakeReservationException;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationService;
-import nextstep.reservation.dto.ReservationResponse;
 import nextstep.reservationwaiting.dto.ReservationWaitingRequest;
 import nextstep.reservationwaiting.dto.ReservationWaitingResponse;
+import nextstep.reservationwaiting.dto.ReservationWaitingResponseWithCurrentWaitNum;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/reservation-waitings")
+@RequestMapping
 public class ReservationWaitingController {
     private final ReservationWaitingService reservationWaitingService;
     private final ReservationService reservationService;
@@ -32,7 +32,7 @@ public class ReservationWaitingController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
+    @PostMapping("/reservation-waitings")
     public ResponseEntity<Void> create(@LoginMember Member member,
                                        @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
         boolean isDuplicate = reservationService.isDuplicateByScheduleId(reservationWaitingRequest.getScheduleId());
@@ -44,22 +44,32 @@ public class ReservationWaitingController {
 
     }
 
-    @GetMapping("mine")
+    @GetMapping("/reservation-waitings/mine")
     public ResponseEntity<List<ReservationWaitingResponse>> findByMemberId(@LoginMember Member member) {
         return ResponseEntity.ok(
                 reservationWaitingService.findAllByMemberId(member.getId()).stream().map(ReservationWaitingResponse::of)
                         .collect(Collectors.toList()));
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<ReservationResponse> findById(@LoginMember Member member, @PathVariable Long id) {
+    @GetMapping("/reservation-waitings/{id}")
+    public ResponseEntity<ReservationWaitingResponseWithCurrentWaitNum> findById(@LoginMember Member member,
+                                                                                 @PathVariable Long id) {
+        ReservationWaiting reservationWaiting = reservationWaitingService.findById(member, id);
+        return ResponseEntity.ok(
+                new ReservationWaitingResponseWithCurrentWaitNum(reservationWaiting,
+                        reservationWaitingService.findCurrentWaitNum(reservationWaiting.getSchedule().getId(),
+                                reservationWaiting.getWaitNum())));
+    }
+
+    @DeleteMapping("/admin/reservation-waitings/{id}")
+    public ResponseEntity<Void> deleteById(@LoginMember Member member, @PathVariable Long id) {
         reservationWaitingService.deleteById(member, id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteById(@LoginMember Member member, @PathVariable Long id) {
-        reservationWaitingService.deleteById(member, id);
+    @DeleteMapping("/reservation-waitings/{id}")
+    public ResponseEntity<Void> dropById(@LoginMember Member member, @PathVariable Long id) {
+        reservationWaitingService.dropById(member, id);
         return ResponseEntity.noContent().build();
     }
 

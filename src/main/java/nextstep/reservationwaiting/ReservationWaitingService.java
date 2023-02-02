@@ -32,6 +32,7 @@ public class ReservationWaitingService {
                 .memberId(member.getId())
                 .waitNum(reservationWaitingDao.findMaxWaitNumByScheduleId(reservationWaitingRequest.getScheduleId()) + 1)
                 .build();
+        newReservationWaiting.toInProgress();
         return reservationWaitingDao.save(newReservationWaiting);
     }
 
@@ -57,5 +58,13 @@ public class ReservationWaitingService {
             throw new ReservationAuthorizationWebException("해당 권한이 존재해야 하니다.", "member is null", "check valid",
                     ReservationController.class.getSimpleName());
         }
+    }
+
+    public int findCurrentWaitNum(Long scheduleId,Long waitNum) {
+        return reservationWaitingDao.countFinishedByScheduleIdAndWaitNum(scheduleId, waitNum);
+    }
+
+    public void dropById(Member member, Long id) {
+        reservationWaitingDao.dropById(member.getId(), id);
     }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import nextstep.AbstractE2ETest;
 import nextstep.reservationwaiting.dto.ReservationWaitingRequest;
 import nextstep.reservationwaiting.dto.ReservationWaitingResponse;
+import nextstep.reservationwaiting.dto.ReservationWaitingResponseWithCurrentWaitNum;
 import nextstep.schedule.dto.ScheduleRequest;
 import nextstep.theme.dto.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -160,7 +161,7 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
         assertThat(reservationWaitings.size()).isEqualTo(1);
     }
 
-    @DisplayName("예약을 삭제한다")
+    @DisplayName("운영자가 예약을 삭제한다")
     @Test
     void delete() {
         createReservation();
@@ -169,14 +170,14 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete(reservationWaiting.header("Location"))
+                .when().delete("/admin"+reservationWaiting.header("Location"))
                 .then().log().all()
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("없는 예약대기를 삭제한다")
+    @DisplayName("운영자가 없는 예약대기를 삭제한다")
     @Test
     void deleteNotExistReservationWaiting() {
         createReservation();
@@ -184,11 +185,55 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete(DEFAULT_PATH + "/1")
+                .when().delete("/admin/reservation-waitings" + "/1")
                 .then().log().all()
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("id 로 단건 조회가 가능하다.")
+    @Test
+    void singleShow() {
+        createReservation();
+        createReservationWaiting();
+        createReservationWaiting();
+
+        ReservationWaitingResponseWithCurrentWaitNum response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get(DEFAULT_PATH + "/2")
+                .then().log().all()
+                .extract()
+                .as(ReservationWaitingResponseWithCurrentWaitNum.class);
+
+
+        assertThat(response.getCurrentWaitNum()).isEqualTo(1);
+    }
+
+    @DisplayName("사용자가 삭제하면 dropped로 변경된다")
+    @Test
+    void toDropped() {
+        createReservation();
+        createReservationWaiting();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete(DEFAULT_PATH + "/1")
+                .then().log().all();
+
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get(DEFAULT_PATH + "/1")
+                .then().log().all()
+                .extract();
+
+
+        assertThat(response.jsonPath().getString("status")).isEqualTo("DROPPED");
+
     }
 
     private ExtractableResponse<Response> createReservationWaiting() {

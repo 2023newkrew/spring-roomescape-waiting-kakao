@@ -139,6 +139,24 @@ class ReservationWaitingDaoTest {
         Assertions.assertThat(foundReservationWaiting).isEmpty();
     }
 
+    @Test
+    @DisplayName("현재 대기자수 조회 기능")
+    void count(){
+        // given
+        reservationWaitingDao.save(createReservationWaitingByWaitNum(1L));
+        reservationWaitingDao.save(createReservationWaitingByWaitNum(2L));
+        ReservationWaiting reservationWaiting = createReservationWaitingByWaitNum(3L);
+        Long id = reservationWaitingDao.save(reservationWaiting);
+
+        // when
+        int currentWaitNum = reservationWaitingDao.countFinishedByScheduleIdAndWaitNum(reservationWaiting.getSchedule().getId(),
+                reservationWaiting.getWaitNum());
+
+        // then
+        Assertions.assertThat(currentWaitNum).isEqualTo(2);
+
+    }
+
 
     private ReservationWaiting createReservationWaitingByWaitNum(Long waitNum) {
         return ReservationWaiting.builder()
@@ -153,6 +171,7 @@ class ReservationWaitingDaoTest {
                                 .date(LocalDate.parse("2023-01-26"))
                                 .build(), scheduleId))
                 .waitNum(waitNum)
+                .status(ReservationWaitingStatus.IN_PROGRESS)
                 .memberId(1L).build();
     }
 
@@ -167,7 +186,8 @@ class ReservationWaitingDaoTest {
                 "    id          bigint not null auto_increment,\n" +
                 "    schedule_id bigint not null,\n" +
                 "    member_id   bigint not null,\n" +
-                "    wait_num    bigint not null\n" +
+                "    wait_num    bigint not null,\n " +
+                "    wait_status tinyint not null" +
                 ");" +
                 "" +
                 "CREATE TABLE schedule\n" +
