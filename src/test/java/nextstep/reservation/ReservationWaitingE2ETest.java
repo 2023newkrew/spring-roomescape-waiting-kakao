@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import nextstep.AbstractE2ETest;
 import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.domain.ReservationStatus;
 import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.schedule.ScheduleRequest;
@@ -258,7 +259,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
     }
 
     @Test
-    @DisplayName("로그인을 하지 않은 상태로 예약 삭제를 할 수 없다")
+    @DisplayName("로그인을 하지 않은 상태로 예약 대기를 삭제 할 수 없다")
     void deleteWaitingWIthNoneAuthority() {
         // given
         createReservation();
@@ -280,9 +281,202 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .extract();
     }
 
+    @DisplayName("미승인된 예약 거절 시 다음 대기가 예약이 된다.")
+    @Test
+    public void refuseUnapprovedAndPassNext() {
+        // given
+        createReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        // when
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/admin/reservations/1/refuse")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        String reservationStatus1 = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().get("status");
+        assertThat(reservationStatus1).isEqualTo(ReservationStatus.REFUSED.toString());
+        String reservationStatus2 = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/2")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().get("status");
+        assertThat(reservationStatus2).isEqualTo(ReservationStatus.UNAPPROVED.toString());
+    }
+
+    @DisplayName("승인된 예약 거절 시 다음 대기가 예약이 된다.")
+    @Test
+    public void refuseApprovedAndPassNext() {
+        // given
+        createReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/admin/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        // when
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/admin/reservations/1/refuse")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        String reservationStatus1 = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().get("status");
+        assertThat(reservationStatus1).isEqualTo(ReservationStatus.REFUSED.toString());
+        String reservationStatus2 = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/2")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().get("status");
+        assertThat(reservationStatus2).isEqualTo(ReservationStatus.UNAPPROVED.toString());
+    }
+
+    @DisplayName("미승인된 예약 취소 시 다음 대기가 예약이 된다.")
+    @Test
+    public void cancelUnapprovedAndPassNext() {
+        // given
+        createReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        // when
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        String reservationStatus1 = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().get("status");
+        assertThat(reservationStatus1).isEqualTo(ReservationStatus.CANCELLED.toString());
+        String reservationStatus2 = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/2")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().get("status");
+        assertThat(reservationStatus2).isEqualTo(ReservationStatus.UNAPPROVED.toString());
+    }
+
+    @DisplayName("승인된 예약 취소 시 다음 대기가 예약이 되지 않는다.")
+    @Test
+    public void cancelApprovedAndNotPassNext() {
+        // given
+        createReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/admin/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        // when
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().post("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        String reservationStatus1 = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().get("status");
+        assertThat(reservationStatus1).isEqualTo(ReservationStatus.CANCEL_WAITING.toString());
+
+        var responseWaiting = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .param("themeId", themeId)
+                .param("date", DATE)
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+        List<ReservationWaiting> waitingList = responseWaiting.jsonPath().getList(".", ReservationWaiting.class);
+        assertThat(waitingList.size()).isEqualTo(1);
+    }
+
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()
+                .auth().oauth2(token.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")

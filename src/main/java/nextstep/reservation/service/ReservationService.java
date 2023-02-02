@@ -109,9 +109,7 @@ public class ReservationService {
             revenueDao.save(reservation.getRevenue());
         }
         reservationDao.save(reservation);
-        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
-            passNextWaiting(reservation);
-        }
+        passNextWaiting(reservation);
     }
 
     @AdminRequired
@@ -120,9 +118,7 @@ public class ReservationService {
         reservation.approveCancel();
         revenueDao.save(reservation.getRevenue());
         reservationDao.save(reservation);
-        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
-            passNextWaiting(reservation);
-        }
+        passNextWaiting(reservation);
     }
 
     private Reservation getReservation(Long id) {
