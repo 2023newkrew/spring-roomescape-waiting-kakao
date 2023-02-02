@@ -34,8 +34,10 @@ public class ReservationController {
     public final MemberService memberService;
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember UserDetails userDetails, @RequestBody ReservationRequest reservationRequest) {
-        ReservationCreateDto reservationCreateDto = reservationService.create(memberService.findByUserDetatils(userDetails), reservationRequest);
+    public ResponseEntity createReservation(@LoginMember UserDetails userDetails,
+                                            @RequestBody ReservationRequest reservationRequest) {
+        ReservationCreateDto reservationCreateDto = reservationService.create(
+                memberService.findByUserDetatils(userDetails), reservationRequest);
         Long id = reservationCreateDto.getId();
         if (reservationCreateDto.isReserved()) {
             return ResponseEntity.created(URI.create("/reservations/" + id)).build();
@@ -55,15 +57,20 @@ public class ReservationController {
     @GetMapping("/reservations/mine")
     public ResponseEntity<List<ReservationResponse>> readMyReservations(@LoginMember UserDetails userDetails) {
         List<Reservation> reservations = reservationService.findReservationsByUserDetails(userDetails);
-        List<ReservationReadDto> results = reservationService.classifyReservations(reservations, ReservationState.RESERVED);
-        return ResponseEntity.ok().body(results.stream().map(ReservationReadDto::toReservationResponse).collect(Collectors.toList()));
+        List<ReservationReadDto> results = reservationService.classifyReservations(reservations,
+                ReservationState.RESERVED);
+        return ResponseEntity.ok()
+                .body(results.stream().map(ReservationReadDto::toReservationResponse).collect(Collectors.toList()));
     }
 
     @GetMapping("/reservation-waitings/mine")
-    public ResponseEntity<List<ReservationWaitingResponse>> readReservationWaitings(@LoginMember UserDetails userDetails) {
+    public ResponseEntity<List<ReservationWaitingResponse>> readReservationWaitings(
+            @LoginMember UserDetails userDetails) {
         List<Reservation> reservations = reservationService.findReservationsByUserDetails(userDetails);
-        List<ReservationReadDto> results = reservationService.classifyReservations(reservations, ReservationState.WAITING);
-        return ResponseEntity.ok().body(results.stream().map(ReservationReadDto::toReservationWaitingResponse).collect(Collectors.toList()));
+        List<ReservationReadDto> results = reservationService.classifyReservations(reservations,
+                ReservationState.WAITING);
+        return ResponseEntity.ok().body(results.stream().map(ReservationReadDto::toReservationWaitingResponse)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/reservations/{id}")
@@ -79,13 +86,15 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<ReservationCancelResponse> deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<ReservationCancelResponse> deleteReservation(@LoginMember UserDetails userDetails,
+                                                                       @PathVariable Long id) {
         ReservationDeleteDto reservationDeleteDto = reservationService.cancelReservation(userDetails, id);
         return ResponseEntity.ok().body(reservationDeleteDto.toReservationCancelResponse());
     }
 
     @DeleteMapping("/reservation-waitings/{id}")
-    public ResponseEntity<ReservationCancelResponse> deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<ReservationCancelResponse> deleteReservationWaiting(@LoginMember UserDetails userDetails,
+                                                                              @PathVariable Long id) {
         ReservationDeleteDto reservationDeleteDto = reservationService.cancelReservation(userDetails, id);
         return ResponseEntity.ok().body(reservationDeleteDto.toReservationCancelResponse());
     }

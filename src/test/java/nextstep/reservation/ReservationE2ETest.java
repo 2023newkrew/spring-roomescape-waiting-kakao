@@ -157,7 +157,8 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        List<ReservationWaitingResponse> reservationWaitingResponses = response.jsonPath().getList(".", ReservationWaitingResponse.class);
+        List<ReservationWaitingResponse> reservationWaitingResponses = response.jsonPath()
+                .getList(".", ReservationWaitingResponse.class);
         assertThat(reservationWaitingResponses.size()).isEqualTo(1);
         assertThat(reservationWaitingResponses.get(0).getId()).isEqualTo(2);
         assertThat(reservationWaitingResponses.get(0).getSchedule().getId()).isEqualTo(1);

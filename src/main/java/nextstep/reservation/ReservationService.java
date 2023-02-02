@@ -76,10 +76,12 @@ public class ReservationService {
     }
 
     private boolean isClassified(ReservationState reservationState, Long waitNum) {
-        return (reservationState == ReservationState.RESERVED && waitNum == 0) || (reservationState == ReservationState.WAITING && waitNum > 0);
+        return (reservationState == ReservationState.RESERVED && waitNum == 0) || (
+                reservationState == ReservationState.WAITING && waitNum > 0);
     }
 
-    public List<ReservationReadDto> classifyReservations(List<Reservation> reservations, ReservationState reservationState) {
+    public List<ReservationReadDto> classifyReservations(List<Reservation> reservations,
+                                                         ReservationState reservationState) {
         List<ReservationReadDto> reservationReadDtos = new ArrayList<>();
         for (Reservation reservation : reservations) {
             Long waitNum = getWaitNum(reservation);
