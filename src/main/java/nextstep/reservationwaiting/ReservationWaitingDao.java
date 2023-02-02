@@ -128,8 +128,8 @@ public class ReservationWaitingDao {
         return jdbcTemplate.query(sql, rowMapperWithWaitingNum, ReservationWaitingStatus.WAITING.name(), memberId);
     }
 
-    public void cancelById(Long id) {
+    public Boolean cancelById(Long id) {
         String sql = "UPDATE reservation_waiting SET status = ? where id = ?;";
-        jdbcTemplate.update(sql, ReservationWaitingStatus.CANCELED.name(), id);
+        return jdbcTemplate.update(sql, ReservationWaitingStatus.CANCELED.name(), id) > 0;
     }
 }

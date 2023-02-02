@@ -31,6 +31,8 @@ public class ScheduleService {
     }
 
     public void deleteById(Long id) {
-        scheduleDao.deleteById(id);
+        if (!scheduleDao.deleteById(id)) {
+            throw new NotExistEntityException();
+        }
     }
 }

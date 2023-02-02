@@ -74,8 +74,8 @@ public class ScheduleDao {
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(LocalDate.parse(date)));
     }
 
-    public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM schedule where id = ?;", id);
+    public Boolean deleteById(Long id) {
+        String sql = "DELETE FROM schedule where id = ?;";
+        return jdbcTemplate.update(sql, id) > 0;
     }
-
 }

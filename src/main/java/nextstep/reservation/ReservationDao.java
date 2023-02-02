@@ -131,8 +131,8 @@ public class ReservationDao {
         }
     }
 
-    public void deleteById(Long id) {
+    public Boolean deleteById(Long id) {
         String sql = "DELETE FROM reservation where id = ?;";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) > 0;
     }
 }

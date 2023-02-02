@@ -24,8 +24,10 @@ public class ThemeService {
                 .collect(Collectors.toList());
     }
 
-    public Boolean delete(Long id) {
-        return themeDao.delete(id);
+    public void delete(Long id) {
+        if (!themeDao.deleteById(id)) {
+            throw new NotExistEntityException();
+        }
     }
 
     public void checkIsExist(Long id) {

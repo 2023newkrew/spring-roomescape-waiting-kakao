@@ -61,7 +61,9 @@ public class ReservationService {
         if (!reservation.isReservedBy(member)) {
             throw new AuthenticationException();
         }
-        reservationDao.deleteById(id);
+        if (!reservationDao.deleteById(id)) {
+            throw new NotExistEntityException();
+        };
     }
 
     public void checkIsNotExistByScheduleId(Long scheduleId) {

@@ -64,6 +64,8 @@ public class ReservationWaitingService {
         if (!reservationWaiting.isReservedBy(member)) {
             throw new AuthenticationException();
         }
-        reservationWaitingDao.cancelById(id);
+        if (!reservationWaitingDao.cancelById(id)) {
+            throw new NotExistEntityException();
+        };
     }
 }
