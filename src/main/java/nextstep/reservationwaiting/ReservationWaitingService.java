@@ -11,6 +11,7 @@ import nextstep.support.NotExistEntityException;
 import nextstep.theme.ThemeDao;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +33,7 @@ public class ReservationWaitingService {
         this.memberDao = memberDao;
     }
 
+    @Transactional
     public Long reserve(Member member, ReservationWaitingRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
                 .orElseThrow(NotExistEntityException::new);
