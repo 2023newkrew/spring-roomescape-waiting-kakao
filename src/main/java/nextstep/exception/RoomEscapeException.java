@@ -1,7 +1,7 @@
 package nextstep.exception;
 
 public class RoomEscapeException extends RuntimeException {
-    private ErrorCode errorCode;
+    private final ErrorCode errorCode;
 
     public RoomEscapeException(ErrorCode errorCode) {
         super(errorCode.getMessage());

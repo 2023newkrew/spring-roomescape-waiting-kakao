@@ -1,12 +1,10 @@
 package nextstep.reservation;
 
-import nextstep.member.Member;
-import nextstep.member.MemberDao;
-import nextstep.schedule.Schedule;
-import nextstep.schedule.ScheduleDao;
 import nextstep.exception.ErrorCode;
 import nextstep.exception.RoomEscapeException;
-import nextstep.theme.ThemeDao;
+import nextstep.member.Member;
+import nextstep.schedule.Schedule;
+import nextstep.schedule.ScheduleDao;
 import nextstep.theme.ThemeService;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +15,12 @@ import java.util.stream.Collectors;
 @Service
 public class ReservationService {
     public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
     public final ThemeService themeService;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, ThemeService themeService) {
+    public ReservationService(ReservationDao reservationDao, ScheduleDao scheduleDao, ThemeService themeService) {
         this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
         this.themeService = themeService;
     }
 
@@ -62,7 +56,7 @@ public class ReservationService {
         }
         if (!reservationDao.deleteById(id)) {
             throw new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS);
-        };
+        }
     }
 
     public void checkIsNotExistByScheduleId(Long scheduleId) {

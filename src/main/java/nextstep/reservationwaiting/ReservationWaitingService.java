@@ -1,14 +1,12 @@
 package nextstep.reservationwaiting;
 
+import nextstep.exception.ErrorCode;
+import nextstep.exception.RoomEscapeException;
 import nextstep.member.Member;
-import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.exception.ErrorCode;
-import nextstep.exception.RoomEscapeException;
-import nextstep.theme.ThemeDao;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +19,12 @@ import java.util.stream.Collectors;
 public class ReservationWaitingService {
     public final ReservationDao reservationDao;
     public final ReservationWaitingDao reservationWaitingDao;
-    public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
 
-    public ReservationWaitingService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationWaitingService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ScheduleDao scheduleDao) {
         this.reservationDao = reservationDao;
         this.reservationWaitingDao = reservationWaitingDao;
-        this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
     }
 
     @Transactional
@@ -46,15 +40,13 @@ public class ReservationWaitingService {
         } catch (DuplicateKeyException e) {
             reservationWaiting.waiting();
         }
-        Long id = reservationWaitingDao.save(reservationWaiting);
-        return id;
+        return reservationWaitingDao.save(reservationWaiting);
     }
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {
-        List<ReservationWaitingResponse> res = reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()).stream()
+        return reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()).stream()
                 .map(ReservationWaitingResponse::fromEntity)
                 .collect(Collectors.toList());
-        return res;
     }
 
     public void cancelById(Member member, Long id) {
@@ -66,6 +58,6 @@ public class ReservationWaitingService {
         }
         if (!reservationWaitingDao.cancelById(id)) {
             throw new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS);
-        };
+        }
     }
 }
