@@ -18,6 +18,7 @@ public enum ErrorMessageType {
     NOT_WAITING_OWNER(HttpStatus.FORBIDDEN, "예약 대기한 사용자가 아닙니다."),
     RESERVATION_STATUS_CONFLICT(HttpStatus.BAD_REQUEST, "예약 상태가 알맞자 않습니다.");
 
+
     @Getter
     final HttpStatus httpStatus;
 
