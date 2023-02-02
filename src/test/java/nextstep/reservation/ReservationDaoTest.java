@@ -59,7 +59,7 @@ class ReservationDaoTest {
     }
 
     private Reservation generateReservation(Schedule schedule, Member member) {
-        Long firstReservationId = reservationDao.save(new Reservation(schedule, member));
+        Long firstReservationId = reservationDao.save(new Reservation(schedule, member, Reservation.Status.WAITING_APPROVAL));
         return reservationDao.findById(firstReservationId).orElseThrow();
     }
 

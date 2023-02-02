@@ -40,7 +40,8 @@ public class ReservationDao {
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
             ),
-            resultSet.getLong("reservation.wait_ticket_num")
+            resultSet.getLong("reservation.wait_ticket_num"),
+            Reservation.Status.valueOf(resultSet.getString("reservation.status"))
     );
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
@@ -48,13 +49,14 @@ public class ReservationDao {
     }
 
     public Long save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
+        String sql = "INSERT INTO reservation (schedule_id, member_id, status) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
             ps.setLong(1, reservation.getSchedule().getId());
             ps.setLong(2, reservation.getMember().getId());
+            ps.setString(3, reservation.getStatus().name());
             return ps;
 
         }, keyHolder);
@@ -64,7 +66,7 @@ public class ReservationDao {
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.wait_ticket_num," +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.wait_ticket_num, reservation.status," +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -79,7 +81,7 @@ public class ReservationDao {
 
     public Optional<Reservation> findById(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.wait_ticket_num," +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.wait_ticket_num, reservation.status," +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -97,7 +99,7 @@ public class ReservationDao {
 
     public List<Reservation> findByMemberId(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.wait_ticket_num," +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.wait_ticket_num, reservation.status," +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -116,7 +118,7 @@ public class ReservationDao {
 
     public List<Reservation> findAllByScheduleId(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.wait_ticket_num," +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.wait_ticket_num, reservation.status," +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +

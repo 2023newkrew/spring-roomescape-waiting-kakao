@@ -18,10 +18,12 @@ public class Reservation {
     private Schedule schedule;
     private Member member;
     private Long waitTicketNumber;
+    private Status status;
 
-    public Reservation(Schedule schedule, Member member) {
+    public Reservation(Schedule schedule, Member member, Status status) {
         this.schedule = schedule;
         this.member = member;
+        this.status = status;
     }
 
     public boolean sameMember(Member member) {
@@ -43,5 +45,21 @@ public class Reservation {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Getter
+    public enum Status {
+        WAITING_APPROVAL("예약 미승인"),
+        APPROVAL("예약 승인"),
+        CANCEL("예약 취소"),
+        CANCEL_WAITING("예약 취소 대기"),
+        REJECT("예약 거절"),
+        ;
+
+        private final String koreanStatus;
+
+        Status(String koreanStatus) {
+            this.koreanStatus = koreanStatus;
+        }
     }
 }

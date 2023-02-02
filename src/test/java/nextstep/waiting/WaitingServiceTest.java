@@ -46,11 +46,11 @@ class WaitingServiceTest {
     @DisplayName("많은 예약들 속에서 해당 회원의 예약 대기만 가져와야 한다.")
     void should_getReservationWaitingsByMember_when_manyReservations() {
         List<Reservation> reservationsByMemberId = List.of(
-                new Reservation(1L, mock(Schedule.class), mock(Member.class), 0L),
-                new Reservation(2L, mock(Schedule.class), mock(Member.class), 1L),
-                new Reservation(3L, mock(Schedule.class), mock(Member.class), 2L),
-                new Reservation(4L, mock(Schedule.class), mock(Member.class), 3L),
-                new Reservation(5L, mock(Schedule.class), mock(Member.class), 4L)
+                new Reservation(1L, mock(Schedule.class), mock(Member.class), 0L, Reservation.Status.WAITING_APPROVAL),
+                new Reservation(2L, mock(Schedule.class), mock(Member.class), 1L, Reservation.Status.WAITING_APPROVAL),
+                new Reservation(3L, mock(Schedule.class), mock(Member.class), 2L, Reservation.Status.WAITING_APPROVAL),
+                new Reservation(4L, mock(Schedule.class), mock(Member.class), 3L, Reservation.Status.WAITING_APPROVAL),
+                new Reservation(5L, mock(Schedule.class), mock(Member.class), 4L, Reservation.Status.WAITING_APPROVAL)
         );
         when(reservationDao.getPriority(any(), eq(0L))).thenReturn(0L);
         when(reservationDao.getPriority(any(), eq(1L))).thenReturn(0L);

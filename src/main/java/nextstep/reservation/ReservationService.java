@@ -40,9 +40,9 @@ public class ReservationService {
             throw new BusinessException(BusinessErrorCode.RESERVATION_ALREADY_EXIST_AT_THAT_TIME);
         }
 
-        Reservation newReservation = new Reservation(schedule, member);
+        Reservation newReservation = new Reservation(schedule, member, Reservation.Status.WAITING_APPROVAL);
 
-        return new Reservation(reservationDao.save(newReservation), schedule, member, 0L);
+        return new Reservation(reservationDao.save(newReservation), schedule, member, 0L, Reservation.Status.WAITING_APPROVAL);
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
