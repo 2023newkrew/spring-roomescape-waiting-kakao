@@ -1,8 +1,8 @@
 package nextstep;
 
 import io.restassured.RestAssured;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
 import nextstep.member.MemberRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,32 +13,55 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AbstractE2ETest {
-    public static final String USERNAME = "username";
+    public static final String USERNAME1 = "username1";
+    public static final String USERNAME2 = "username2";
     public static final String PASSWORD = "password";
 
     protected TokenResponse token;
+    protected TokenResponse otherPersonToken;
 
     @BeforeEach
     protected void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        MemberRequest memberBody1 = new MemberRequest(USERNAME1, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        MemberRequest memberBody2 = new MemberRequest(USERNAME2, PASSWORD, "name", "010-1234-5678", "USER");
+        TokenRequest tokenBody1 = new TokenRequest(USERNAME1, PASSWORD);
+        TokenRequest tokenBody2 = new TokenRequest(USERNAME2, PASSWORD);
+
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(memberBody)
+                .body(memberBody1)
                 .when().post("/members")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
-        var response = RestAssured
+        var response1 = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(tokenBody)
+                .body(tokenBody1)
                 .when().post("/login/token")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        token = response.as(TokenResponse.class);
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(memberBody2)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+
+        var response2 = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(tokenBody2)
+                .when().post("/login/token")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        token = response1.as(TokenResponse.class);
+        otherPersonToken = response2.as(TokenResponse.class);
     }
 }

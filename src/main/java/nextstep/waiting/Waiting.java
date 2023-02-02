@@ -1,27 +1,28 @@
-package nextstep.reservation;
+package nextstep.waiting;
 
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
 import java.util.Objects;
 
-public class Reservation {
+public class Waiting {
     private Long id;
     private Schedule schedule;
     private Member member;
+    private Long waitNum;
 
-    public Reservation() {
+    public Waiting() {
     }
 
-    public Reservation(Schedule schedule, Member member) {
-        this.schedule = schedule;
-        this.member = member;
+    public Waiting(Schedule schedule, Member member) {
+        this(null, schedule, member, null);
     }
 
-    public Reservation(Long id, Schedule schedule, Member member) {
+    public Waiting(Long id, Schedule schedule, Member member, Long waitNum) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+        this.waitNum = waitNum;
     }
 
     public Long getId() {
@@ -34,6 +35,10 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    public Long getWaitNum() {
+        return waitNum;
     }
 
     public void setId(Long id) {
