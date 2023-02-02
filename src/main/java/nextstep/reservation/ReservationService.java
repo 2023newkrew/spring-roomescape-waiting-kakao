@@ -63,7 +63,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse cancelReservation(Member member, Long id) {
+    public ReservationResponse cancelReservationFromMember(Member member, Long id) {
         if (member == null) {  // Todo : member Null check는 Intercepter로 이동
             throw new AuthenticationException();
         }
@@ -72,6 +72,16 @@ public class ReservationService {
         ReservationState state = getCancelReservationState(reservation);
         reservationDao.updateState(id, state);
         return new ReservationResponse(reservation, state);
+    }
+    
+    public ReservationResponse cancelReservationFromAdmin(Long id) {
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(NullPointerException::new);
+        if (!reservation.getState().equals(ReservationState.CANCEL_WAIT)) {
+            throw new CancelReservationStateException("예약 취소 대기상태가 아닙니다.");
+        }
+        reservationDao.updateState(id, ReservationState.CANCEL);
+        return new ReservationResponse(reservation, ReservationState.CANCEL);
     }
 
     private ReservationState getCancelReservationState(Reservation reservation) {

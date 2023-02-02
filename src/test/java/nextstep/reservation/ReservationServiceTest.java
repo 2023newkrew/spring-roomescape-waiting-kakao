@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -62,33 +61,51 @@ public class ReservationServiceTest {
 
     @Test
     void 예약이_존재하지_않으면_예외를_발생시킨다() {
-        assertThatThrownBy(() -> reservationService.cancelReservation(member, 1L))
+        assertThatThrownBy(() -> reservationService.cancelReservationFromMember(member, 1L))
                 .isInstanceOf(NullPointerException.class);
     }
 
 
     @Test
     void 미승인_상태의_예약을_취소하면_예약은_취소가_된다() {
-        given(reservationDao.findById(1L)).willReturn(Optional.of(reservation));
         reservation.setState(ReservationState.UN_APPROVE);
-        assertThat(reservationService.cancelReservation(member, 1L).getState())
+        given(reservationDao.findById(1L)).willReturn(Optional.of(reservation));
+        assertThat(reservationService.cancelReservationFromMember(member, 1L).getState())
                 .isEqualTo(ReservationState.CANCEL);
     }
 
     @Test
     void 승인_상태의_예약을_취소하면_예약은_취소대기가_된다() {
-        given(reservationDao.findById(1L)).willReturn(Optional.of(reservation));
         reservation.setState(ReservationState.APPROVE);
-        assertThat(reservationService.cancelReservation(member, 1L).getState())
+        given(reservationDao.findById(1L)).willReturn(Optional.of(reservation));
+        assertThat(reservationService.cancelReservationFromMember(member, 1L).getState())
                 .isEqualTo(ReservationState.CANCEL_WAIT);
     }
 
     @ParameterizedTest
     @EnumSource(value = ReservationState.class, names = {"CANCEL", "CANCEL_WAIT", "REJECT"})
     void 승인_미승인_상태가_아닌_예약은_예외가_발생한다(ReservationState state) {
-        given(reservationDao.findById(1L)).willReturn(Optional.of(reservation));
         reservation.setState(state);
-        assertThatThrownBy(() -> reservationService.cancelReservation(member, 1L))
+        given(reservationDao.findById(1L)).willReturn(Optional.of(reservation));
+        assertThatThrownBy(() -> reservationService.cancelReservationFromMember(member, 1L))
+                .isInstanceOf(CancelReservationStateException.class);
+    }
+
+    @Test
+    void 취소대기_상태의_예약을_취소할_수_있다() {
+        reservation.setState(ReservationState.CANCEL_WAIT);
+        given(reservationDao.findById(reservation.getId())).willReturn(Optional.of(reservation));
+        assertThat(reservationService.cancelReservationFromAdmin(reservation.getId()).getState())
+                .isEqualTo(ReservationState.CANCEL);
+
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = ReservationState.class, names = {"UN_APPROVE", "APPROVE", "CANCEL", "REJECT"})
+    void 취소대기_상태_이외의_예약은_취소하면_예외가_발생한다(ReservationState state) {
+        reservation.setState(state);
+        given(reservationDao.findById(reservation.getId())).willReturn(Optional.of(reservation));
+        assertThatThrownBy(() -> reservationService.cancelReservationFromAdmin(reservation.getId()))
                 .isInstanceOf(CancelReservationStateException.class);
     }
 

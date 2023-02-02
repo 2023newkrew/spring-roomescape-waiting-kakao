@@ -47,7 +47,13 @@ public class ReservationController {
 
     @PatchMapping("/reservations/{id}/cancel")
     public ResponseEntity<ReservationResponse> cancelReservation(@LoginMember Member member, @PathVariable Long id) {
-        ReservationResponse reservationResponse = reservationService.cancelReservation(member, id);
+        ReservationResponse reservationResponse = reservationService.cancelReservationFromMember(member, id);
+        return ResponseEntity.ok(reservationResponse);
+    }
+
+    @PatchMapping("/admin/reservations/{id}/cancel")
+    public ResponseEntity<ReservationResponse> adminCancelReservation(@PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService.cancelReservationFromAdmin(id);
         return ResponseEntity.ok(reservationResponse);
     }
 
