@@ -87,8 +87,8 @@ public class ReservationDao {
             "inner join theme on schedule.theme_id = theme.id " +
             "inner join member on reservation.member_id = member.id ";
 
-    public void updateState(ReservationStatus approved, Long id) {
+    public void updateState(ReservationStatus status, Long id) {
         String sql = "UPDATE reservation SET STATUS=? where id = ?;";
-        jdbcTemplate.update(sql, approved.name(), id);
+        jdbcTemplate.update(sql, status.name(), id);
     }
 }

@@ -54,22 +54,22 @@ public class ReservationCommon extends AbstractE2ETest {
         );
     }
 
-    protected ExtractableResponse<Response> lookUpReservation() {
+    protected ExtractableResponse<Response> lookUpReservation(String accessToken) {
         return RestAssured
                 .given().log().all()
                 .param("themeId", themeId)
                 .param("date", TEST_DATE)
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(accessToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .extract();
     }
 
-    protected ExtractableResponse<Response> requestCreateReservation() {
+    protected ExtractableResponse<Response> requestCreateReservation(String accessToken) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(accessToken)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()

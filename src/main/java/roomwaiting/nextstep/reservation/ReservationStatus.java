@@ -4,7 +4,7 @@ public enum ReservationStatus {
     NOT_APPROVED("Reservation Not Approved"),
     APPROVED("Reservation Approved"),
     CANCEL("Reservation Cancel"),
-    WAITING_CANCEL("Reservation Cancel Waiting"),
+    CANCEL_WAIT("Reservation Cancel Waiting"),
     DECLINE("Reservation Declined"),
     ;
 

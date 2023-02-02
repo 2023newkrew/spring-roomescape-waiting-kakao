@@ -7,8 +7,7 @@ import roomwaiting.nextstep.reservation.domain.Reservation;
 
 import static roomwaiting.nextstep.reservation.ReservationStatus.APPROVED;
 import static roomwaiting.nextstep.reservation.ReservationStatus.NOT_APPROVED;
-import static roomwaiting.support.Messages.NEEDS_NOT_APPROVED_STATUS;
-import static roomwaiting.support.Messages.RESERVATION_NOT_FOUND;
+import static roomwaiting.support.Messages.*;
 
 @Service
 public class ReservationAdminService {

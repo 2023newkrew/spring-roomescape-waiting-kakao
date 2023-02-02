@@ -1,6 +1,8 @@
 package roomwaiting.nextstep.reservation.service;
 
+import org.springframework.web.server.NotAcceptableStatusException;
 import roomwaiting.nextstep.member.Member;
+import roomwaiting.nextstep.member.Role;
 import roomwaiting.nextstep.reservation.dto.ReservationRequest;
 import roomwaiting.nextstep.schedule.Schedule;
 import roomwaiting.nextstep.schedule.ScheduleDao;
@@ -14,8 +16,9 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
-import static roomwaiting.nextstep.reservation.ReservationStatus.NOT_APPROVED;
+import static roomwaiting.nextstep.reservation.ReservationStatus.*;
 import static roomwaiting.support.Messages.*;
 
 @Service
@@ -66,5 +69,24 @@ public class ReservationService {
 
     public List<Reservation> lookUp(Member member) {
         return reservationDao.findAllByMemberId(member.getId());
+    }
+
+    public void cancel(Member member, Long id) {
+        Reservation reservation = reservationDao.findById(id).orElseThrow(() ->
+                new NullPointerException(RESERVATION_NOT_FOUND.getMessage() + ID + id)
+        );
+        if (Objects.equals(member.getRole(), Role.MEMBER.name())) {
+            if (reservation.getStatus() == NOT_APPROVED) {
+                reservationDao.updateState(CANCEL, id);
+                return;
+            }
+            if (reservation.getStatus() == APPROVED){
+                reservationDao.updateState(CANCEL_WAIT, id);
+                return;
+            }
+            throw new NotAcceptableStatusException(NEEDS_APPROVED_STATUS.getMessage() +
+                                                    OR.getMessage() + NEEDS_NOT_APPROVED_STATUS.getMessage());
+        }
+        // member
     }
 }

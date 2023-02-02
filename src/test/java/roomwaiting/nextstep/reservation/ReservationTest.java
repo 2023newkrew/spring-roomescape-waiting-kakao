@@ -53,7 +53,7 @@ public class ReservationTest extends ReservationCommon {
     @DisplayName("스케줄이 있는 경우, 예약을 생성할 수 있다.")
     @Test
     void create() {
-        ExtractableResponse<Response> response = requestCreateReservation();
+        ExtractableResponse<Response> response = requestCreateReservation(token.getAccessToken());
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
@@ -63,15 +63,15 @@ public class ReservationTest extends ReservationCommon {
         request = new ReservationRequest(
                 scheduleId+2
         );
-        ExtractableResponse<Response> response = requestCreateReservation();
+        ExtractableResponse<Response> response = requestCreateReservation(token.getAccessToken());
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("중복 예약을 생성할 경우, 에러가 발생한다")
     @Test
     void createDuplicateReservation() {
-        requestCreateReservation();
-        ExtractableResponse<Response> createReservation = requestCreateReservation();
+        requestCreateReservation(token.getAccessToken());
+        ExtractableResponse<Response> createReservation = requestCreateReservation(token.getAccessToken());
         assertThat(createReservation.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
@@ -79,22 +79,22 @@ public class ReservationTest extends ReservationCommon {
     @DisplayName("예약을 조회할 수 있다")
     @Test
     void show() {
-        requestCreateReservation();
-        List<Reservation> reservations = lookUpReservation().jsonPath().getList(".", Reservation.class);
+        requestCreateReservation(token.getAccessToken());
+        List<Reservation> reservations = lookUpReservation(token.getAccessToken()).jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(1);
     }
 
     @DisplayName("예약이 없을 때 예약 목록은 비어있다.")
     @Test
     void showEmptyReservations() {
-        List<Reservation> reservations = lookUpReservation().jsonPath().getList(".", Reservation.class);
+        List<Reservation> reservations = lookUpReservation(token.getAccessToken()).jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(0);
     }
 
     @DisplayName("예약을 삭제할 수 있다")
     @Test
     void delete() {
-        var reservation = requestCreateReservation();
+        var reservation = requestCreateReservation(token.getAccessToken());
         ExtractableResponse<Response> result = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -118,7 +118,7 @@ public class ReservationTest extends ReservationCommon {
     @DisplayName("다른 회원이 삭제하는 경우, 에러가 발생한다")
     @Test
     void otherUserDeleteTest(){
-        var reservation = requestCreateReservation();
+        var reservation = requestCreateReservation(token.getAccessToken());
         String otherUserName = AbstractE2ETest.USERNAME + "22";
         Member member = AbstractE2ETest.saveMember(jdbcTemplate, otherUserName, AbstractE2ETest.PASSWORD, AbstractE2ETest.ADMIN);
         ExtractableResponse<Response> otherTokenResponse = AbstractE2ETest.generateToken(member.getUsername(), member.getPassword());

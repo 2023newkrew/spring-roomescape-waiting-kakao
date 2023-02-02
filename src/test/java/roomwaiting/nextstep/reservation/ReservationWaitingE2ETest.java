@@ -52,7 +52,7 @@ public class ReservationWaitingE2ETest extends ReservationCommon {
                 .then().log().all()
                 .extract();
 
-        List<Reservation> reservations = lookUpReservation().jsonPath().getList(".", Reservation.class);
+        List<Reservation> reservations = lookUpReservation(token.getAccessToken()).jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(1);
     }
 
@@ -60,14 +60,14 @@ public class ReservationWaitingE2ETest extends ReservationCommon {
     @Test
     void requestWaitingReservedSchedule(){
         // given
-        requestCreateReservation();
+        requestCreateReservation(token.getAccessToken());
 
         // when
         Member otherUser = saveMember(jdbcTemplate, "member2", "pass1", "ADMIN");
         String otherToken = jwtTokenProvider.createToken(String.valueOf(otherUser.getId()), otherUser.getRole());
         createReservationWaiting(otherToken);
 
-        List<Reservation> reservations = lookUpReservation().jsonPath().getList(".", Reservation.class);
+        List<Reservation> reservations = lookUpReservation(token.getAccessToken()).jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(1);
 
         var responseWaiting = RestAssured
@@ -86,7 +86,7 @@ public class ReservationWaitingE2ETest extends ReservationCommon {
     @Test
     void deleteWaiting(){
         // given
-        requestCreateReservation();
+        requestCreateReservation(token.getAccessToken());
 
         // when
         createReservationWaiting(token.getAccessToken());
@@ -140,7 +140,7 @@ public class ReservationWaitingE2ETest extends ReservationCommon {
     @Test
     void deleteWaitingByOtherUser(){
         // given
-        requestCreateReservation();
+        requestCreateReservation(token.getAccessToken());
         // when
         RestAssured
                 .given().log().all()
@@ -189,7 +189,7 @@ public class ReservationWaitingE2ETest extends ReservationCommon {
     @DisplayName("로그인을 하지 않은 상태로 예약 삭제를 할 수 없다")
     void deleteWaitingWIthNoneAuthority(){
         // given
-        requestCreateReservation();
+        requestCreateReservation(token.getAccessToken());
         // when
         RestAssured
                 .given().log().all()

@@ -1,5 +1,6 @@
 package roomwaiting.nextstep.reservation.controller;
 
+import org.springframework.web.bind.annotation.*;
 import roomwaiting.auth.principal.LoginMember;
 import roomwaiting.auth.userdetail.UserDetails;
 import java.net.URI;
@@ -10,14 +11,6 @@ import roomwaiting.nextstep.reservation.domain.Reservation;
 import roomwaiting.nextstep.reservation.dto.ReservationRequest;
 import roomwaiting.nextstep.reservation.service.ReservationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/reservations")
@@ -51,5 +44,11 @@ public class ReservationController {
     public ResponseEntity<List<Reservation>> lookUpReservationWaitingList(@LoginMember UserDetails member) {
         List<Reservation> reservationList = reservationService.lookUp(new Member(member));
         return ResponseEntity.ok().body(reservationList);
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelReservation(@LoginMember UserDetails member, @PathVariable Long id){
+        reservationService.cancel(new Member(member), id);
+        return ResponseEntity.ok().build();
     }
 }
