@@ -127,4 +127,9 @@ public class ReservationService {
                 .map(ReservationResponse::new)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public ReservationResponse acceptReservation(Long id) {
+        return new ReservationResponse(reservationDao.acceptReservation(id));
+    }
 }

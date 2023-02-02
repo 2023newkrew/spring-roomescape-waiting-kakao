@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
 import nextstep.domain.reservation.Reservation;
+import nextstep.domain.reservation.ReservationState;
 import nextstep.domain.reservation.ReservationWaiting;
 import nextstep.dto.request.ReservationRequest;
 import nextstep.dto.request.ScheduleRequest;
@@ -300,6 +301,24 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().delete("/reservation-waitings/1")
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("예약 승인")
+    @Test
+    void approveReservation() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/admin/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        Reservation reservation = response.jsonPath().getObject(".", Reservation.class);
+        assertThat(reservation.getState()).isEqualTo(ReservationState.ACCEPTED);
     }
 
     private ExtractableResponse<Response> createReservationWaiting() {

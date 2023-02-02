@@ -64,4 +64,10 @@ public class ReservationController {
         List<ReservationWaitingResponse> reservationWaitings = reservationService.findMyReservationWaitings(userDetails.getId());
         return ResponseEntity.ok(reservationWaitings);
     }
+
+    @PatchMapping("/admin/reservations/{id}/approve")
+    public ResponseEntity<ReservationResponse> approveReservation(@PathVariable Long id) {
+        ReservationResponse reservation = reservationService.acceptReservation(id);
+        return ResponseEntity.ok().body(reservation);
+    }
 }

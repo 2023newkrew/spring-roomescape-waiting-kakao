@@ -3,6 +3,9 @@ package nextstep.domain.reservation;
 import nextstep.domain.member.Member;
 import nextstep.domain.schedule.Schedule;
 import nextstep.domain.theme.Theme;
+import nextstep.error.ErrorCode;
+import nextstep.error.exception.EntityNotFoundException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,6 +16,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class ReservationDao {
@@ -90,12 +94,12 @@ public class ReservationDao {
         }
     }
 
-    public List<Reservation> findByScheduleId(Long id) {
+    public List<Reservation> findByScheduleId(Long scheduleId) {
         String sql = RESERVATION_BASE_SQL +
                 "where schedule.id = ?;";
 
         try {
-            return jdbcTemplate.query(sql, rowMapper, id);
+            return jdbcTemplate.query(sql, rowMapper, scheduleId);
         } catch (Exception e) {
             return Collections.emptyList();
         }
@@ -117,4 +121,30 @@ public class ReservationDao {
         }
     }
 
+    public Reservation acceptReservation(Long id) {
+        Reservation reservation = findByIdForUpdate(id);
+
+        String updateSql = "UPDATE reservation SET state='ACCEPTED' where id = ?;";
+        jdbcTemplate.update(updateSql, id);
+
+        String salesSql = "INSERT INTO sales (reservation_id, refunded) VALUES (?,false);";
+        jdbcTemplate.update(salesSql, id);
+
+        return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.ACCEPTED);
+    }
+
+    private Reservation findByIdForUpdate(Long id) {
+        String selectSql = RESERVATION_BASE_SQL + " WHERE reservation.id = ? FOR UPDATE;";
+        
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(selectSql, rowMapper, id);
+
+            if (Objects.isNull(reservation))
+                throw new EntityNotFoundException(ErrorCode.NO_RESERVATION);
+
+            return reservation;
+        } catch (DataAccessException e) {
+            throw new EntityNotFoundException(ErrorCode.NO_RESERVATION);
+        }
+    }
 }
