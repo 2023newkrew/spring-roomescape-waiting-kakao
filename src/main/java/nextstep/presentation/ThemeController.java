@@ -1,7 +1,7 @@
 package nextstep.presentation;
 
-import nextstep.domain.theme.Theme;
 import nextstep.dto.request.ThemeRequest;
+import nextstep.dto.response.ThemeResponse;
 import nextstep.service.ThemeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,9 +29,8 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<Theme>> showThemes() {
-        List<Theme> results = themeService.findAll();
-        return ResponseEntity.ok().body(results);
+    public ResponseEntity<List<ThemeResponse>> showThemes() {
+        return ResponseEntity.ok(themeService.findAll());
     }
 
     @DeleteMapping("/admin/themes/{id}")

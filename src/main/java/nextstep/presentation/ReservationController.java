@@ -2,7 +2,6 @@ package nextstep.presentation;
 
 import auth.dto.request.LoginMember;
 import auth.presentation.argumentresolver.AuthenticationPricipal;
-import nextstep.domain.reservation.Reservation;
 import nextstep.dto.request.ReservationRequest;
 import nextstep.dto.response.CreateReservationResponse;
 import nextstep.dto.response.ReservationResponse;
@@ -27,7 +26,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity createReservation(@AuthenticationPricipal LoginMember loginMember, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<Void> createReservation(@AuthenticationPricipal LoginMember loginMember, @RequestBody ReservationRequest reservationRequest) {
         CreateReservationResponse createReservationResponse = reservationService.createReservationOrReservationWaiting(loginMember.getId(), reservationRequest);
         String urlPrefix = createReservationResponse.isReservationCreated() ? RESERVATION_URL_PREFIX : RESERVATION_WAITING_URL_PREFIX;
 
@@ -36,8 +35,8 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
-        List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
+    public ResponseEntity<List<ReservationResponse>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
+        List<ReservationResponse> results = reservationService.findAllByThemeIdAndDate(themeId, date);
 
         return ResponseEntity.ok(results);
     }
@@ -50,7 +49,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{reservationId}")
-    public ResponseEntity deleteReservation(@AuthenticationPricipal LoginMember loginMember, @PathVariable Long reservationId) {
+    public ResponseEntity<Void> deleteReservation(@AuthenticationPricipal LoginMember loginMember, @PathVariable Long reservationId) {
         reservationService.deleteById(loginMember.getId(), reservationId);
 
         return ResponseEntity.noContent()

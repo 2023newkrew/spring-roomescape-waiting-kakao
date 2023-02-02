@@ -2,6 +2,7 @@ package nextstep.presentation;
 
 import nextstep.domain.schedule.Schedule;
 import nextstep.dto.request.ScheduleRequest;
+import nextstep.dto.response.ScheduleResponse;
 import nextstep.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,18 +19,18 @@ public class ScheduleController {
     }
 
     @PostMapping("/admin/schedules")
-    public ResponseEntity createSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+    public ResponseEntity<Void> createSchedule(@RequestBody ScheduleRequest scheduleRequest) {
         Long id = scheduleService.create(scheduleRequest);
         return ResponseEntity.created(URI.create("/schedules/" + id)).build();
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<List<Schedule>> showReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<List<ScheduleResponse>> showReservations(@RequestParam Long themeId, @RequestParam String date) {
         return ResponseEntity.ok().body(scheduleService.findByThemeIdAndDate(themeId, date));
     }
 
     @DeleteMapping("/admin/schedules/{id}")
-    public ResponseEntity deleteReservation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         scheduleService.deleteById(id);
 
         return ResponseEntity.noContent().build();

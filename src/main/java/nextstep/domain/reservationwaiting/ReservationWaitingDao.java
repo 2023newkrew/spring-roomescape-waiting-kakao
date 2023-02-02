@@ -3,6 +3,7 @@ package nextstep.domain.reservationwaiting;
 import nextstep.domain.member.Member;
 import nextstep.domain.schedule.Schedule;
 import nextstep.domain.theme.Theme;
+import nextstep.error.ApplicationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +15,8 @@ import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static nextstep.error.ErrorType.INTERNAL_SERVER_ERROR;
 
 @Component
 public class ReservationWaitingDao {
@@ -69,8 +72,10 @@ public class ReservationWaitingDao {
 
         try {
             return jdbcTemplate.queryForObject(sql, Integer.class, scheduleId);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return 0;
+        } catch (Exception e) {
+            throw new ApplicationException(INTERNAL_SERVER_ERROR);
         }
     }
 

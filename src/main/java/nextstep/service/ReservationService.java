@@ -42,13 +42,16 @@ public class ReservationService {
             return new CreateReservationResponse(reservationWaitingService.createReservationWaiting(member, schedule), false);
         }
 
-        return new CreateReservationResponse(reservationDao.save(new Reservation(schedule, member)), true);
+        return new CreateReservationResponse(reservationDao.save(new Reservation(schedule, member, 0)), true);
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
         themeService.findById(themeId);
-        return reservationDao.findAllByThemeIdAndDate(themeId, date);
+        return reservationDao.findAllByThemeIdAndDate(themeId, date)
+                .stream()
+                .map(ReservationResponse::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
