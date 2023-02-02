@@ -1,9 +1,24 @@
 <configuration>
+    <property name="LOG_DIR" value="./log" />
+    <property name="LOG_PATH_NAME" value="${LOG_DIR}/http-logback.log" />
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH_NAME}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH_NAME}.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>1</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%t{yyyy-MM-dd HH:mm:ss}\t%a\t%r\t%s\t%i{Referer}\t%i{User-Agent}\t%D\t%I</pattern>
+        </encoder>
+    </appender>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%fullRequest%n%n%fullResponse</pattern>
         </encoder>
     </appender>
 
+    <appender-ref ref="FILE" />
     <appender-ref ref="STDOUT"/>
 </configuration>
