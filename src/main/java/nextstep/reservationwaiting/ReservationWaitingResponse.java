@@ -27,7 +27,7 @@ public class ReservationWaitingResponse {
         return waitNum;
     }
 
-    public static ReservationWaitingResponse from(ReservationWaiting reservationWaiting) {
+    public static ReservationWaitingResponse fromEntity(ReservationWaiting reservationWaiting) {
         return new ReservationWaitingResponse(reservationWaiting.getId(), reservationWaiting.getSchedule(), reservationWaiting.getWaitingNum());
     }
 }

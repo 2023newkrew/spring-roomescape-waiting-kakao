@@ -19,7 +19,7 @@ public class ReservationResponse {
         return schedule;
     }
 
-    public static ReservationResponse from(Reservation reservation) {
+    public static ReservationResponse fromEntity(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getSchedule()

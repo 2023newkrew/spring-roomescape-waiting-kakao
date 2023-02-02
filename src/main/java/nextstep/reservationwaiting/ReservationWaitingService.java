@@ -52,7 +52,7 @@ public class ReservationWaitingService {
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {
         List<ReservationWaitingResponse> res = reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()).stream()
-                .map(ReservationWaitingResponse::from)
+                .map(ReservationWaitingResponse::fromEntity)
                 .collect(Collectors.toList());
         return res;
     }

@@ -4,6 +4,7 @@ import nextstep.support.NotExistEntityException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ThemeService {
@@ -17,8 +18,10 @@ public class ThemeService {
         return themeDao.save(themeRequest.toEntity());
     }
 
-    public List<Theme> findAll() {
-        return themeDao.findAll();
+    public List<ThemeResponse> findAll() {
+        return themeDao.findAll().stream()
+                .map(ThemeResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public Boolean delete(Long id) {

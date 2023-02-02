@@ -27,8 +27,8 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<DataResponse<List<Theme>>> showThemes() {
-        List<Theme> results = themeService.findAll();
+    public ResponseEntity<DataResponse<List<ThemeResponse>>> showThemes() {
+        List<ThemeResponse> results = themeService.findAll();
         return ResponseEntity.ok().body(DataResponse.of(results));
     }
 

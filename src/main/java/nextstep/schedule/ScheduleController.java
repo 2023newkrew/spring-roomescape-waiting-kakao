@@ -22,8 +22,8 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<DataResponse<List<Schedule>>> showReservations(@RequestParam Long themeId, @RequestParam String date) {
-        List<Schedule> results = scheduleService.findByThemeIdAndDate(themeId, date);
+    public ResponseEntity<DataResponse<List<ScheduleResponse>>> showReservations(@RequestParam Long themeId, @RequestParam String date) {
+        List<ScheduleResponse> results = scheduleService.findByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(DataResponse.of(results));
     }
 

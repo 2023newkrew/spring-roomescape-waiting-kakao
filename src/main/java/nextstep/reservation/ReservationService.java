@@ -43,14 +43,14 @@ public class ReservationService {
 
     public List<ReservationResponse> findMemberReservations(Member member) {
         return reservationDao.findAllByMemberId(member.getId()).stream()
-                .map(ReservationResponse::from)
+                .map(ReservationResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, Date date) {
         themeService.checkIsExist(themeId);
         return reservationDao.findAllByThemeIdAndDate(themeId, date).stream()
-                .map(ReservationResponse::from)
+                .map(ReservationResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 
