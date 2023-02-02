@@ -2,7 +2,9 @@ package roomescape.nextstep;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import roomescape.auth.*;
+import roomescape.nextstep.login.LoginMemberArgumentResolver;
 import roomescape.nextstep.login.LoginService;
 import roomescape.nextstep.member.MemberDao;
 import org.springframework.context.annotation.Bean;
@@ -24,20 +26,13 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         this.memberDao = memberDao;
     }
 
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
- //       registry.addInterceptor(new AdminInterceptor(jwtTokenProvider())).addPathPatterns("/admin/**");
- //   }
-
     @Bean
     public FilterRegistrationBean<Filter> setFilterRegistration() {
-        FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>(new AdminFilter(jwtTokenProvider()));
-        filterRegistrationBean.addUrlPatterns("/admin/*");
-        return filterRegistrationBean;
+        return new FilterRegistrationBean<>(new AuthFilter(jwtTokenProvider()));
     }
 
     @Override
-    public void addArgumentResolvers(List argumentResolvers) {
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new LoginMemberArgumentResolver(loginService()));
     }
 
