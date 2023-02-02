@@ -26,7 +26,9 @@ public enum Messages {
     ALREADY_ADMIN("Role of member already admin level"),
     NEEDS_NOT_APPROVED_STATUS("Status should be NotApproved"),
     NEEDS_APPROVED_STATUS("Status should be Approved"),
-;
+    EMPTY_SALES("There's No Sales"),
+
+    ;
 
     private final String message;
 
@@ -34,7 +36,7 @@ public enum Messages {
         this.message = message;
     }
 
-    public String getMessage(){
+    public String getMessage() {
         return message;
     }
 }

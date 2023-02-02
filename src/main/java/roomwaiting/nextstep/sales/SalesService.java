@@ -2,9 +2,23 @@ package roomwaiting.nextstep.sales;
 
 import org.springframework.stereotype.Service;
 
+
+import static roomwaiting.support.Messages.EMPTY_SALES;
+
 @Service
 public class SalesService {
-    // 총 매출 확인
+    private final SalesDao salesDao;
+
+    public SalesService(SalesDao salesDao) {
+        this.salesDao = salesDao;
+    }
+
+    public Long allAmount(){
+        return salesDao.findAllAmount().orElseThrow(()->
+                new NullPointerException(EMPTY_SALES.getMessage())
+        );
+    }
+
 
     // 매출 리스트 출력
 
