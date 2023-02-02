@@ -41,17 +41,17 @@ public class ThemeDao {
     }
 
     public Theme findById(Long id) {
-        String sql = "SELECT id, name, desc, price from theme where id = ?;";
+        String sql = "SELECT id, name, desc, price FROM theme WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT id, name, desc, price from theme;";
+        String sql = "SELECT id, name, desc, price FROM theme;";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     public void delete(Long id) {
-        String sql = "DELETE FROM reservation where id = ?;";
+        String sql = "DELETE FROM reservation WHERE id = ?;";
         jdbcTemplate.update(sql, id);
     }
 }

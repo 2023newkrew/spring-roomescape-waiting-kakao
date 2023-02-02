@@ -59,10 +59,10 @@ public class ReservationWaitingDao {
                 "reservation_waiting.id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
-                "from reservation_waiting " +
-                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "where reservation_waiting.member_id = ?;";
+                "FROM reservation_waiting " +
+                "INNER JOIN schedule ON reservation_waiting.schedule_id = schedule.id " +
+                "INNER JOIN theme ON schedule.theme_id = theme.id " +
+                "WHERE reservation_waiting.member_id = ?;";
         try {
             return jdbcTemplate.query(sql, rowMapper, memberId);
         } catch (Exception e) {
@@ -75,12 +75,12 @@ public class ReservationWaitingDao {
                 "reservation_waiting.id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price " +
-                "from reservation_waiting " +
-                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "where reservation_waiting.schedule_id = ? " +
-                "order by reservation_waiting.wait_num asc " +
-                "limit 1;";
+                "FROM reservation_waiting " +
+                "INNER JOIN schedule ON reservation_waiting.schedule_id = schedule.id " +
+                "INNER JOIN theme ON schedule.theme_id = theme.id " +
+                "WHERE reservation_waiting.schedule_id = ? " +
+                "ORDER BY reservation_waiting.wait_num ASC " +
+                "LIMIT 1;";
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, scheduleId);
         } catch (Exception e) {
@@ -91,8 +91,8 @@ public class ReservationWaitingDao {
     public boolean existById(Long id, Long memberId) {
         String sql = "SELECT " +
                 "1 " +
-                "from reservation_waiting " +
-                "where member_id = ? and id = ? " +
+                "FROM reservation_waiting " +
+                "WHERE member_id = ? AND id = ? " +
                 "LIMIT 1;";
         try {
             return jdbcTemplate.queryForObject(sql, Integer.class, memberId, id) == 1;
@@ -104,8 +104,8 @@ public class ReservationWaitingDao {
     public Long findMaxWaitNumByScheduleId(Long scheduleId) {
         String sql = "SELECT " +
                 "max(reservation_waiting.wait_num) " +
-                "from reservation_waiting " +
-                "where reservation_waiting.schedule_id = ?;";
+                "FROM reservation_waiting " +
+                "WHERE reservation_waiting.schedule_id = ?;";
         try {
             return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Long.class, scheduleId));
         } catch (Exception e) {
@@ -114,7 +114,7 @@ public class ReservationWaitingDao {
     }
 
     public void deleteById(Long id) {
-        String sql = "DELETE FROM reservation_waiting where id = ?;";
+        String sql = "DELETE FROM reservation_waiting WHERE id = ?;";
         jdbcTemplate.update(sql, id);
     }
 }
