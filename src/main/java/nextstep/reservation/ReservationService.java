@@ -53,7 +53,7 @@ public class ReservationService {
     public List<ReservationResponse> findMemberReservations(Member member) {
         try {
             return reservationDao.findAllByMemberId(member.getId()).stream()
-                    .map(r -> new ReservationResponse(r.getId(), r.getSchedule()))
+                    .map(ReservationResponse::from)
                     .collect(Collectors.toList());
         } catch (RuntimeException e) {
             e.printStackTrace();
