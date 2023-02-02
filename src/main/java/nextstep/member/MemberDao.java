@@ -1,5 +1,7 @@
 package nextstep.member;
 
+import nextstep.support.MemberNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -45,11 +47,21 @@ public class MemberDao {
 
     public Member findById(Long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        }
+        catch (EmptyResultDataAccessException e) {
+            throw new MemberNotFoundException();
+        }
     }
 
     public Member findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username);
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, username);
+        }
+        catch (EmptyResultDataAccessException e) {
+            throw new MemberNotFoundException();
+        }
     }
 }

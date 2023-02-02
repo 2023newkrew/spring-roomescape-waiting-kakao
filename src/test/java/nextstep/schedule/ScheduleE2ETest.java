@@ -53,6 +53,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
+                .auth().oauth2(token.getAccessToken())
                 .param("themeId", themeId)
                 .param("date", "2022-08-11")
                 .when().get("/schedules")

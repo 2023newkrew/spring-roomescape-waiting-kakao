@@ -2,8 +2,8 @@ package nextstep.theme;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
+import auth.TokenRequest;
+import auth.TokenResponse;
 import nextstep.member.MemberRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,6 +71,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
         var response = RestAssured
                 .given().log().all()
                 .param("date", "2022-08-11")
+                .auth().oauth2(token.getAccessToken())
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())

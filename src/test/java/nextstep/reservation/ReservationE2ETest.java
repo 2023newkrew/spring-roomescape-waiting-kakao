@@ -94,6 +94,8 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(token.getAccessToken())
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
@@ -102,7 +104,30 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
         assertThat(reservations.size()).isEqualTo(1);
+
     }
+
+    @DisplayName("나의 예약을 조회한다")
+    @Test
+    void showMe() {
+        // given
+        createReservation();
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+
+        // when
+                .when().get("/reservations/mine")
+
+        // then
+                .then().log().all()
+                .extract();
+
+        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        assertThat(reservations.size()).isEqualTo(1);
+    }
+
 
     @DisplayName("예약을 삭제한다")
     @Test
@@ -141,6 +166,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void showEmptyReservations() {
         var response = RestAssured
                 .given().log().all()
+                .auth().oauth2(token.getAccessToken())
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")

@@ -1,7 +1,7 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
-import nextstep.auth.LoginMember;
+import auth.AuthenticationException;
+import auth.LoginMember;
 import nextstep.member.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,8 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.create(member, reservationRequest);
+    public ResponseEntity createReservation(@LoginMember Long memberId, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.create(memberId, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
@@ -31,10 +31,15 @@ public class ReservationController {
         return ResponseEntity.ok().body(results);
     }
 
-    @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
-        reservationService.deleteById(member, id);
+    @GetMapping("/reservations/mine")
+    public ResponseEntity findByMemberId(@LoginMember Long memberId) {
+        List<Reservation> reservations = reservationService.findByMemberId(memberId);
+        return ResponseEntity.ok().body(reservations);
+    }
 
+    @DeleteMapping("/reservations/{id}")
+    public ResponseEntity deleteReservation(@LoginMember Long memberId, @PathVariable Long id) {
+        reservationService.deleteById(memberId, id);
         return ResponseEntity.noContent().build();
     }
 
