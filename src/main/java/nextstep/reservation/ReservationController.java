@@ -57,6 +57,18 @@ public class ReservationController {
         return ResponseEntity.ok(reservationResponse);
     }
 
+    @PatchMapping("/admin/reservations/{id}/approve")
+    public ResponseEntity<ReservationResponse> approveReservation(@PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService.approveReservation(id);
+        return ResponseEntity.ok(reservationResponse);
+    }
+
+    @PatchMapping("/admin/reservations/{id}/reject")
+    public ResponseEntity<ReservationResponse> rejectReservation(@PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService.rejectReservation(id);
+        return ResponseEntity.ok(reservationResponse);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity onException(Exception e) {
         return ResponseEntity.badRequest().build();

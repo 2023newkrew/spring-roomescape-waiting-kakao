@@ -1,7 +1,6 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
-import nextstep.exceptions.exception.CancelReservationStateException;
 import nextstep.exceptions.exception.DuplicatedReservationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
@@ -15,6 +14,7 @@ import java.util.List;
 
 @Service
 public class ReservationService {
+
     public final ReservationDao reservationDao;
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
@@ -69,7 +69,7 @@ public class ReservationService {
         }
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NullPointerException::new);
-        ReservationState state = getCancelReservationState(reservation);
+        ReservationState state = reservation.getState().changeToCancelFromMember();
         reservationDao.updateState(id, state);
         return new ReservationResponse(reservation, state);
     }
@@ -77,20 +77,24 @@ public class ReservationService {
     public ReservationResponse cancelReservationFromAdmin(Long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NullPointerException::new);
-        if (!reservation.getState().equals(ReservationState.CANCEL_WAIT)) {
-            throw new CancelReservationStateException("예약 취소 대기상태가 아닙니다.");
-        }
-        reservationDao.updateState(id, ReservationState.CANCEL);
-        return new ReservationResponse(reservation, ReservationState.CANCEL);
+        ReservationState state = reservation.getState().changeToCancelFromAdmin();
+        reservationDao.updateState(id, state);
+        return new ReservationResponse(reservation, state);
     }
 
-    private ReservationState getCancelReservationState(Reservation reservation) {
-        if (reservation.getState().equals(ReservationState.UN_APPROVE)) {
-            return ReservationState.CANCEL;
-        }
-        if (reservation.getState().equals(ReservationState.APPROVE)) {
-            return ReservationState.CANCEL_WAIT;
-        }
-        throw new CancelReservationStateException();
+    public ReservationResponse approveReservation(Long id) {
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(NotFoundObjectException::new);
+        ReservationState state = reservation.getState().changeToApprove();
+        reservationDao.updateState(id, state);
+        return new ReservationResponse(reservation, state);
+    }
+
+    public ReservationResponse rejectReservation(Long id) {
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(NotFoundObjectException::new);
+        ReservationState state = reservation.getState().changeToReject();
+        reservationDao.updateState(id, state);
+        return new ReservationResponse(reservation, state);
     }
 }
