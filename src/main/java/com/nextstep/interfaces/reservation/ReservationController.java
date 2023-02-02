@@ -1,5 +1,6 @@
 package com.nextstep.interfaces.reservation;
 
+import com.authorizationserver.infrastructures.jwt.TokenData;
 import com.nextstep.infrastructures.web.UseContext;
 import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
 import com.nextstep.interfaces.reservation.dtos.ReservationResponse;
@@ -34,11 +35,11 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<Void> createReservation(
-            @UseContext Long memberId,
+            @UseContext TokenData tokenData,
             @RequestBody ReservationRequest request) {
         ScheduleResponse scheduleResponse = scheduleService.getById(request.getScheduleId());
         validateSchedule(scheduleResponse);
-        ReservationResponse reservation = service.create(memberId, request, scheduleResponse);
+        ReservationResponse reservation = service.create(tokenData.getId(), request, scheduleResponse);
         URI location = URI.create(RESERVATION_PATH + reservation.getId());
 
 
@@ -51,20 +52,20 @@ public class ReservationController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<ReservationResponse>> getByMemberId(@UseContext Long memberId) {
-        return ResponseEntity.ok(service.getByMemberId(memberId));
+    public ResponseEntity<List<ReservationResponse>> getByMemberId(@UseContext TokenData tokenData) {
+        return ResponseEntity.ok(service.getByMemberId(tokenData.getId()));
     }
 
     @Transactional
     @DeleteMapping("/{reservation_id}")
     public ResponseEntity<Boolean> deleteReservation(
-            @UseContext Long memberId,
+            @UseContext TokenData tokenData,
             @PathVariable("reservation_id") Long reservationId) {
         Waiting waiting = waitingService.getFirstByScheduleId(reservationId);
         if (!Objects.isNull(waiting)){
             waitingService.deleteById(waiting.getMemberId(),waiting.getScheduleId());
         }
-        return ResponseEntity.ok(service.deleteById(memberId, reservationId, waiting));
+        return ResponseEntity.ok(service.deleteById(tokenData.getId(), reservationId, waiting));
     }
 
     private void validateSchedule(ScheduleResponse schedule) {

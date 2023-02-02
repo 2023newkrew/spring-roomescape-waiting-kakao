@@ -1,5 +1,6 @@
 package com.nextstep.interfaces.member;
 
+import com.authorizationserver.infrastructures.jwt.TokenData;
 import com.nextstep.infrastructures.web.UseContext;
 import com.nextstep.interfaces.member.dtos.MemberRequest;
 import com.nextstep.interfaces.member.dtos.MemberResponse;
@@ -35,7 +36,7 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<MemberResponse> me(@UseContext Long id) {
-        return ResponseEntity.ok(service.getById(id));
+    public ResponseEntity<MemberResponse> me(@UseContext TokenData tokenData) {
+        return ResponseEntity.ok(service.getById(tokenData.getId()));
     }
 }
