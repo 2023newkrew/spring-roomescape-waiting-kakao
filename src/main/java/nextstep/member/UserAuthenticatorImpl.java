@@ -4,10 +4,12 @@ import auth.UserAuthenticator;
 import auth.entity.UserDetails;
 import lombok.RequiredArgsConstructor;
 import nextstep.exception.MemberException;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Component
 public class UserAuthenticatorImpl implements UserAuthenticator {
     private final MemberService memberService;
 

@@ -9,24 +9,16 @@ import auth.jwt.JwtTokenProvider;
 import auth.jwt.TokenExtractor;
 import auth.service.LoginService;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.MemberService;
-import nextstep.member.UserAuthenticatorImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
 public class AuthConfig {
-    private final MemberService memberService;
-
-    @Bean
-    public UserAuthenticator userValidator() {
-        return new UserAuthenticatorImpl(memberService);
-    }
-
+    private final UserAuthenticator userAuthenticator;
     @Bean
     public LoginService loginService() {
-        return new LoginService(jwtTokenProvider(), userValidator());
+        return new LoginService(jwtTokenProvider(), userAuthenticator);
     }
 
     @Bean
@@ -46,7 +38,7 @@ public class AuthConfig {
 
     @Bean
     public LoginInterceptor loginInterceptor() {
-        return new LoginInterceptor(jwtTokenProvider(), userValidator(), tokenExtractor());
+        return new LoginInterceptor(jwtTokenProvider(), userAuthenticator, tokenExtractor());
     }
 
     @Bean
