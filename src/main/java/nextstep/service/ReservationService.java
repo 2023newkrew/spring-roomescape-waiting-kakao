@@ -147,4 +147,13 @@ public class ReservationService {
     public ReservationResponse rejectReservation(Long id) {
         return new ReservationResponse(reservationDao.rejectReservation(id));
     }
+
+    public ReservationResponse approveCancel(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        if (!reservation.getState().equals(ReservationState.CANCEL_WAITING)) {
+            throw new IllegalStateException("취소 대기 상태가 아닙니다");
+        }
+
+        return new ReservationResponse(reservationDao.approveCancel(id));
+    }
 }

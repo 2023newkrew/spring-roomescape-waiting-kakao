@@ -151,8 +151,6 @@ public class ReservationDao {
     private Reservation cancelForAccepted(Reservation reservation) {
         String updateSql = "UPDATE reservation SET state='CANCEL_WAITING' where id = ?;";
         jdbcTemplate.update(updateSql, reservation.getId());
-        String updateSalesSql = "UPDATE sales SET refunded = true where reservation_id = ?;";
-        jdbcTemplate.update(updateSalesSql, reservation.getId());
 
         return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.CANCEL_WAITING);
     }
@@ -191,5 +189,16 @@ public class ReservationDao {
         }
 
         return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.REJECTED);
+    }
+
+    public Reservation approveCancel(Long id) {
+        Reservation reservation = findByIdForUpdate(id);
+
+        String updateSql = "UPDATE reservation SET state='CANCELED' where id = ?;";
+        jdbcTemplate.update(updateSql, reservation.getId());
+        String updateSalesSql = "UPDATE sales SET refunded = true where reservation_id = ?;";
+        jdbcTemplate.update(updateSalesSql, reservation.getId());
+
+        return new Reservation(reservation.getId(), reservation.getSchedule(), reservation.getMember(), ReservationState.CANCELED);
     }
 }

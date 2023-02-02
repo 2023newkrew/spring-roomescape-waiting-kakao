@@ -82,4 +82,10 @@ public class ReservationController {
         ReservationResponse reservation = reservationService.rejectReservation(id);
         return ResponseEntity.ok().body(reservation);
     }
+
+    @PatchMapping("/admin/reservations/{id}/cancel-approve")
+    public ResponseEntity<ReservationResponse> approveCancel(@PathVariable Long id) {
+        ReservationResponse reservation = reservationService.approveCancel(id);
+        return ResponseEntity.ok().body(reservation);
+    }
 }

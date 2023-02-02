@@ -25,6 +25,12 @@ public class GlobalExceptionHandler {
         return getResponseEntity(e);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
+        ErrorResponse errorResponse = new ErrorResponse(400, e.getMessage());
+        return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
+    }
+
     private ResponseEntity<ErrorResponse> getResponseEntity(CustomException e) {
         ErrorResponse errorResponse = ErrorResponse.of(e.getErrorCode());
         return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);

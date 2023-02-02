@@ -390,6 +390,47 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservation.getState()).isEqualTo(ReservationState.REJECTED);
     }
 
+    @DisplayName("예약 취소 대기 승인")
+    @Test
+    void approveCancelWaiting() {
+        createReservation();
+        acceptReservation();
+
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        var response = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("admin/reservations/1/cancel-approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        Reservation reservation = response.jsonPath().getObject(".", Reservation.class);
+        assertThat(reservation.getState()).isEqualTo(ReservationState.CANCELED);
+    }
+
+    @DisplayName("취소 대기가 아닌 예약에 대해 취소 대기 승인")
+    @Test
+    void approveInvalidWaiting() {
+        createReservation();
+
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("admin/reservations/1/cancel-approve")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> createReservationWaiting() {
         return RestAssured
                 .given().log().all()
