@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.MemberService;
 import nextstep.reservation.dto.ReservationCreateDto;
+import nextstep.reservation.dto.ReservationDeleteDto;
 import nextstep.reservation.dto.ReservationReadDto;
 import nextstep.reservation.response.ReservationResponse;
 import nextstep.reservation.response.ReservationWaitingResponse;
@@ -77,17 +78,15 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
-        int deletedRowCount = reservationService.cancelReservation(userDetails, id);
-
-        return ResponseEntity.ok().body(Collections.singletonMap("deletedReservationCount", deletedRowCount));
+    public ResponseEntity<ReservationDeleteDto> deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+        ReservationDeleteDto reservationDeleteDto = reservationService.cancelReservation(userDetails, id);
+        return ResponseEntity.ok().body(reservationDeleteDto);
     }
 
     @DeleteMapping("/reservation-waitings/{id}")
-    public ResponseEntity deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
-        int deletedRowCount = reservationService.cancelReservation(userDetails, id);
-
-        return ResponseEntity.ok().body(Collections.singletonMap("deletedReservationCount", deletedRowCount));
+    public ResponseEntity<ReservationDeleteDto> deleteReservationWaiting(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+        ReservationDeleteDto reservationDeleteDto = reservationService.cancelReservation(userDetails, id);
+        return ResponseEntity.ok().body(reservationDeleteDto);
     }
 
 

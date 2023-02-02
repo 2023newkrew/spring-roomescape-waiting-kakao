@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.reservation.dto.ReservationCreateDto;
+import nextstep.reservation.dto.ReservationDeleteDto;
 import nextstep.reservation.dto.ReservationReadDto;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
@@ -58,20 +59,20 @@ public class ReservationService {
         return reservationDao.findByMemberId(userDetails.getId());
     }
 
-    public int cancelReservation(UserDetails userDetails, Long id) {
+    public ReservationDeleteDto cancelReservation(UserDetails userDetails, Long id) {
         if (userDetails == null) {
             throw new AuthenticationException();
         }
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
-            return 0;
+            return new ReservationDeleteDto(0);
         }
 
         if (!reservation.sameMemberId(userDetails.getId())) {
             throw new AuthenticationException();
         }
 
-        return reservationDao.deleteById(id);
+        return new ReservationDeleteDto(reservationDao.deleteById(id));
     }
 
     private boolean isClassified(ReservationState reservationState, Long waitNum) {
