@@ -80,13 +80,18 @@ public class ReservationService {
                 reservationDao.updateState(CANCEL, id);
                 return;
             }
-            if (reservation.getStatus() == APPROVED){
+            if (reservation.getStatus() == APPROVED) {
                 reservationDao.updateState(CANCEL_WAIT, id);
                 return;
             }
-            throw new NotAcceptableStatusException(NEEDS_APPROVED_STATUS.getMessage() +
-                                                    OR.getMessage() + NEEDS_NOT_APPROVED_STATUS.getMessage());
         }
-        // member
+        if (Objects.equals(member.getRole(), Role.ADMIN.name())) {
+            if (reservation.getStatus() == NOT_APPROVED || reservation.getStatus() == APPROVED){
+                reservationDao.updateState(DECLINE, id);
+                return;
+            }
+        }
+        throw new NotAcceptableStatusException(NEEDS_APPROVED_STATUS.getMessage() +
+                OR.getMessage() + NEEDS_NOT_APPROVED_STATUS.getMessage());
     }
 }

@@ -94,6 +94,35 @@ public class ReservationApproveTest extends ReservationCommon {
         Assertions.assertThat(lookUpPost.get(0).getStatus()).isEqualTo(CANCEL_WAIT);
     }
 
+    @DisplayName("관리자가 예약을 거절할 때 예약이 미승인 상태면 예약 거절 상태가 된다")
+    @Test
+    void adminNonApproveReserveCancel() {
+        Member member = saveMember(jdbcTemplate, "MEMBER", "PASS1", "MEMBER");
+        String memberToken = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
+        ExtractableResponse<Response> createReservation = requestCreateReservation(memberToken);
+        String location = createReservation.header("Location").split("/")[2];
+
+        ExtractableResponse<Response> notApproveCancel = cancelReservation(location, token.getAccessToken());
+        Assertions.assertThat(notApproveCancel.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<Reservation> lookUpNotApprove = lookUpReservation(memberToken).jsonPath().getList(".", Reservation.class);
+        Assertions.assertThat(lookUpNotApprove.get(0).getStatus()).isEqualTo(DECLINE);
+    }
+
+    @DisplayName("관리자가 예약을 거절할 때 예약이 승인 상태면 예약 거절 상태가 된다")
+    @Test
+    void adminApproveReserveCancel() {
+        Member member = saveMember(jdbcTemplate, "MEMBER", "PASS1", "MEMBER");
+        String memberToken = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
+        ExtractableResponse<Response> createReservation = requestCreateReservation(memberToken);
+        String location = createReservation.header("Location").split("/")[2];
+        requestApprove(location, token.getAccessToken());
+
+        ExtractableResponse<Response> approveCancel = cancelReservation(location, token.getAccessToken());
+        Assertions.assertThat(approveCancel.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<Reservation> lookUpApprove = lookUpReservation(memberToken).jsonPath().getList(".", Reservation.class);
+        Assertions.assertThat(lookUpApprove.get(0).getStatus()).isEqualTo(DECLINE);
+    }
+
     private ExtractableResponse<Response> requestApprove(String location, String accessToken) {
         return RestAssured
                 .given().log().all()
