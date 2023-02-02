@@ -6,6 +6,7 @@ import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
+import nextstep.reservation.ReservationStatus;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.ThemeDao;
@@ -49,7 +50,7 @@ public class ReservationWaitingService {
 
     private boolean tryInsertReservation(Schedule schedule, Member member) {
         try {
-            reservationDao.save(new Reservation(schedule, member));
+            reservationDao.save(new Reservation(schedule, member, ReservationStatus.UNAPPROVED));
         } catch (DuplicateKeyException e) {
             // 예약이 이미 존재할 때
             System.out.println("예약이 이미 존재합니다. 예약 대기 상태로 등록합니다.");

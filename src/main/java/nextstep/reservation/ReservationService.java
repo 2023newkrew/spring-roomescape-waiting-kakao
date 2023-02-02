@@ -43,7 +43,8 @@ public class ReservationService {
 
         Reservation newReservation = new Reservation(
                 schedule,
-                member
+                member,
+                ReservationStatus.UNAPPROVED
         );
 
         return reservationDao.save(newReservation);
