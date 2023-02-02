@@ -3,7 +3,7 @@ package com.nextstep.domains.reservation.dao;
 import com.authorizationserver.domains.authorization.enums.RoleType;
 import com.nextstep.domains.reservation.Reservation;
 import com.nextstep.domains.member.Member;
-import com.nextstep.domains.reservation.enums.StatusType;
+import com.nextstep.domains.reservation.enums.ReservationStatus;
 import com.nextstep.domains.schedule.Schedule;
 import com.nextstep.domains.theme.Theme;
 import org.springframework.stereotype.Component;
@@ -37,7 +37,7 @@ public class ReservationResultSetParser {
                 resultSet.getLong("reservation.id"),
                 parseMember(resultSet),
                 parseSchedule(resultSet),
-                StatusType.valueOf(resultSet.getString("reservation.status"))
+                ReservationStatus.valueOf(resultSet.getString("reservation.status"))
         );
     }
 

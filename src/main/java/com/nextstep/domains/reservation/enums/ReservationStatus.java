@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 @AllArgsConstructor
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum StatusType {
+public enum ReservationStatus {
     UNAPPROVED("예악 미승인"),
     APPROVED("예약 승인"),
     CANCELED("예약 취소"),
@@ -13,11 +13,11 @@ public enum StatusType {
     REJECTED("예약 거절");
 
     @Getter
-    private final String type;
+    private final String desc;
 
-    public static StatusType typeOf(String name) {
-        for (StatusType status : StatusType.values()) {
-            if (status.getType().equals(name)) {
+    public static ReservationStatus typeOf(String name) {
+        for (ReservationStatus status : ReservationStatus.values()) {
+            if (status.getDesc().equals(name)) {
                 return status;
             }
         }

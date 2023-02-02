@@ -12,7 +12,9 @@ import org.springframework.http.HttpStatus;
 
 public class ReservationControllerTest extends AbstractControllerTest {
 
-    static final String DEFAULT_PATH = "/reservations";
+    static final String DEFAULT_RESERVATION_PATH = "/reservations";
+
+    static final String DEFAULT_SALES_PATH = "/admin/sales";
 
     @BeforeEach
     void setUp() {
@@ -69,9 +71,9 @@ public class ReservationControllerTest extends AbstractControllerTest {
         @DisplayName("예약 취소 시 예약 대기가 예약으로 바뀌는지 확인")
         @Test
         void should_deleteWaiting_when_mine() {
-            delete(authGiven(), DEFAULT_PATH + "/1");
+            delete(authGiven(), DEFAULT_RESERVATION_PATH + "/1");
 
-            var response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+            var response = get(authGivenAnother(), DEFAULT_RESERVATION_PATH + "/mine");
 
             then(response);
         }
@@ -83,20 +85,25 @@ public class ReservationControllerTest extends AbstractControllerTest {
         @DisplayName("예약 승인")
         @Test
         void should_approve_reservation() {
-            var response = patch(authGiven(), DEFAULT_PATH + "/1/approve");
+            var response = patch(authGiven(), DEFAULT_RESERVATION_PATH + "/1/approve");
             then(response)
                     .statusCode(HttpStatus.OK.value());
 
-            response = get(authGiven(), DEFAULT_PATH + "/mine");
+            response = get(authGiven(), DEFAULT_RESERVATION_PATH + "/mine");
+            then(response);
+
+            response = get(authGiven(), DEFAULT_SALES_PATH);
             then(response);
         }
 
         @DisplayName("예약 승인 - 관리자가 아닐 경우")
         @Test
         void should_approve_reservation_not_admin() {
-            var response = patch(authGivenAnother(), DEFAULT_PATH + "/1/approve");
+            var response = patch(authGivenAnother(), DEFAULT_RESERVATION_PATH + "/1/approve");
             then(response)
                     .statusCode(HttpStatus.FORBIDDEN.value());
+            response = get(authGiven(), DEFAULT_SALES_PATH);
+            then(response);
         }
     }
 
@@ -106,46 +113,58 @@ public class ReservationControllerTest extends AbstractControllerTest {
         @DisplayName("예약 취소 - 미승인 상태 - 사용자")
         @Test
         void should_cancel_unapproved_reservation() {
-            var response = patch(authGivenAnother(), DEFAULT_PATH + "/2/cancel");
+            var response = patch(authGivenAnother(), DEFAULT_RESERVATION_PATH + "/2/cancel");
             then(response)
                     .statusCode(HttpStatus.OK.value());
 
-            response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+            response = get(authGivenAnother(), DEFAULT_RESERVATION_PATH + "/mine");
+            then(response);
+
+            response = get(authGiven(), DEFAULT_SALES_PATH);
             then(response);
         }
 
         @DisplayName("예약 취소 - 승인 상태 - 사용자")
         @Test
         void should_cancel_approved_reservation() {
-            patch(authGiven(), DEFAULT_PATH + "/2/approve");
-            var response = patch(authGivenAnother(), DEFAULT_PATH + "/2/cancel");
+            patch(authGiven(), DEFAULT_RESERVATION_PATH + "/2/approve");
+            var response = patch(authGivenAnother(), DEFAULT_RESERVATION_PATH + "/2/cancel");
             then(response)
                     .statusCode(HttpStatus.OK.value());
 
-            response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+            response = get(authGivenAnother(), DEFAULT_RESERVATION_PATH + "/mine");
+            then(response);
+
+            response = get(authGiven(), DEFAULT_SALES_PATH);
             then(response);
         }
 
         @DisplayName("예약 취소 - 미승인 상태 - 관리자")
         @Test
         void should_cancel_unapproved_reservation_admin() {
-            var response = patch(authGiven(), DEFAULT_PATH + "/2/cancel");
+            var response = patch(authGiven(), DEFAULT_RESERVATION_PATH + "/2/cancel");
             then(response)
                     .statusCode(HttpStatus.OK.value());
 
-            response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+            response = get(authGivenAnother(), DEFAULT_RESERVATION_PATH + "/mine");
+            then(response);
+
+            response = get(authGiven(), DEFAULT_SALES_PATH);
             then(response);
         }
 
         @DisplayName("예약 취소 - 승인 상태 - 관리자")
         @Test
         void should_cancel_approved_reservation_admin() {
-            patch(authGiven(), DEFAULT_PATH + "/2/approve");
-            var response = patch(authGiven(), DEFAULT_PATH + "/2/cancel");
+            patch(authGiven(), DEFAULT_RESERVATION_PATH + "/2/approve");
+            var response = patch(authGiven(), DEFAULT_RESERVATION_PATH + "/2/cancel");
             then(response)
                     .statusCode(HttpStatus.OK.value());
 
-            response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+            response = get(authGivenAnother(), DEFAULT_RESERVATION_PATH + "/mine");
+            then(response);
+
+            response = get(authGiven(), DEFAULT_SALES_PATH);
             then(response);
         }
     }
@@ -156,14 +175,17 @@ public class ReservationControllerTest extends AbstractControllerTest {
         @DisplayName("예약 취소 승인")
         @Test
         void should_cancel_approve() {
-            patch(authGiven(), DEFAULT_PATH + "/2/approve");
-            patch(authGivenAnother(), DEFAULT_PATH + "/2/cancel");
-            var response = patch(authGiven(), DEFAULT_PATH + "/2/cancel-approve");
+            patch(authGiven(), DEFAULT_RESERVATION_PATH + "/2/approve");
+            patch(authGivenAnother(), DEFAULT_RESERVATION_PATH + "/2/cancel");
+            var response = patch(authGiven(), DEFAULT_RESERVATION_PATH + "/2/cancel-approve");
             then(response)
                     .statusCode(HttpStatus.OK.value());
 
-            response = get(authGivenAnother(), DEFAULT_PATH + "/mine");
+            response = get(authGivenAnother(), DEFAULT_RESERVATION_PATH + "/mine");
 
+            then(response);
+
+            response = get(authGiven(), DEFAULT_SALES_PATH);
             then(response);
         }
     }

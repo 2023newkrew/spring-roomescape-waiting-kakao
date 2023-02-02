@@ -4,7 +4,7 @@ import com.authorizationserver.domains.authorization.enums.RoleType;
 import com.authorizationserver.domains.authorization.exceptions.AuthenticationErrorMessageType;
 import com.authorizationserver.domains.authorization.exceptions.AuthenticationException;
 import com.authorizationserver.infrastructures.jwt.TokenData;
-import com.nextstep.domains.reservation.enums.StatusType;
+import com.nextstep.domains.reservation.enums.ReservationStatus;
 import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
 import com.nextstep.interfaces.reservation.dtos.ReservationResponse;
 import com.nextstep.interfaces.reservation.dtos.ReservationMapper;
@@ -71,13 +71,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public boolean approveById(TokenData tokenData, Long id) {
-        Reservation reservation = repository.getById(id);
-        validateReservationAdmin(reservation, tokenData);
-        if (!reservation.getStatus().equals(StatusType.UNAPPROVED)){
-            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
-        }
-        return repository.updateById(id, StatusType.APPROVED);
+    public boolean approveById(Long id) {
+        return repository.updateById(id, ReservationStatus.APPROVED);
     }
 
     @Transactional
@@ -85,19 +80,19 @@ public class ReservationService {
         Reservation reservation = repository.getById(id);
         try {
             validateReservationAdmin(reservation, tokenData);
-            if (reservation.getStatus().equals(StatusType.UNAPPROVED) || reservation.getStatus().equals(StatusType.APPROVED)){
-                repository.updateById(id, StatusType.REJECTED);
+            if (reservation.getStatus().equals(ReservationStatus.UNAPPROVED) || reservation.getStatus().equals(ReservationStatus.APPROVED)){
+                repository.updateById(id, ReservationStatus.REJECTED);
                 return repository.deleteById(id);
             }
             throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
         } catch (AuthenticationException e){
             validateReservationMine(reservation, tokenData);
-            if (reservation.getStatus().equals(StatusType.UNAPPROVED)){
-                repository.updateById(id, StatusType.CANCELED);
+            if (reservation.getStatus().equals(ReservationStatus.UNAPPROVED)){
+                repository.updateById(id, ReservationStatus.CANCELED);
                 return repository.deleteById(id);
             }
-            if (reservation.getStatus().equals(StatusType.APPROVED)){
-                return repository.updateById(id, StatusType.CANCELED_WAIT);
+            if (reservation.getStatus().equals(ReservationStatus.APPROVED)){
+                return repository.updateById(id, ReservationStatus.CANCELED_WAIT);
             }
             throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
         }
@@ -107,10 +102,10 @@ public class ReservationService {
     public boolean cancelApproveById(TokenData tokenData, Long id) {
         Reservation reservation = repository.getById(id);
         validateReservationAdmin(reservation, tokenData);
-        if (!reservation.getStatus().equals(StatusType.CANCELED_WAIT)){
+        if (!reservation.getStatus().equals(ReservationStatus.CANCELED_WAIT)){
             throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
         }
-        repository.updateById(id, StatusType.CANCELED);
+        repository.updateById(id, ReservationStatus.CANCELED);
         return repository.deleteById(id);
     }
 

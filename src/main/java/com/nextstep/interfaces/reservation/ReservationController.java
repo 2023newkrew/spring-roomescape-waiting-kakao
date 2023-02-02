@@ -1,6 +1,7 @@
 package com.nextstep.interfaces.reservation;
 
 import com.authorizationserver.infrastructures.jwt.TokenData;
+import com.nextstep.application.ReservationAndSalesService;
 import com.nextstep.infrastructures.web.UseContext;
 import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
 import com.nextstep.interfaces.reservation.dtos.ReservationResponse;
@@ -28,6 +29,8 @@ public class ReservationController {
     private static final String RESERVATION_PATH = "/reservations/";
 
     private final ReservationService service;
+
+    private final ReservationAndSalesService reservationAndSalesService;
 
     private final ScheduleService scheduleService;
 
@@ -73,7 +76,7 @@ public class ReservationController {
             @UseContext TokenData tokenData,
             @PathVariable("reservation_id") Long reservationId
     ){
-        return ResponseEntity.ok(service.approveById(tokenData, reservationId));
+        return ResponseEntity.ok(reservationAndSalesService.approveById(tokenData, reservationId));
     }
 
     @PatchMapping("/{reservation_id}/cancel")

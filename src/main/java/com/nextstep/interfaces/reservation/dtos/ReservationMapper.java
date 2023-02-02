@@ -14,4 +14,6 @@ public interface ReservationMapper {
     Reservation fromRequest(Long memberId, ReservationRequest request);
 
     ReservationResponse toResponse(Reservation reservation);
+
+    Reservation fromResponse(ReservationResponse response);
 }

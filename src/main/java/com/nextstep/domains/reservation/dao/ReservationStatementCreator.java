@@ -1,7 +1,7 @@
 package com.nextstep.domains.reservation.dao;
 
 import com.nextstep.domains.reservation.Reservation;
-import com.nextstep.domains.reservation.enums.StatusType;
+import com.nextstep.domains.reservation.enums.ReservationStatus;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -87,7 +87,7 @@ public class ReservationStatementCreator {
         return ps;
     }
 
-    public PreparedStatement createUpdateById(Connection connection, Long id, StatusType status) throws SQLException {
+    public PreparedStatement createUpdateById(Connection connection, Long id, ReservationStatus status) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(UPDATE_STATUS_BY_ID_SQL);
         ps.setLong(2, id);
         ps.setString(1, status.name());
