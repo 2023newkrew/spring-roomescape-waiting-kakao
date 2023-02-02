@@ -8,17 +8,27 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-@Component
+@Repository
 public class ReservationWaitingDao {
 
     private final JdbcTemplate jdbcTemplate;
+
+    private static final String BASE_SELECT_SQL = "SELECT " +
+            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
+            "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+            "theme.id, theme.name, theme.desc, theme.price, " +
+            "member.id, member.username, member.password, member.name, member.phone, member.role " +
+            "from reservation_waiting " +
+            "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
+            "inner join theme on schedule.theme_id = theme.id " +
+            "inner join member on reservation_waiting.member_id = member.id ";
 
     public ReservationWaitingDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -45,18 +55,18 @@ public class ReservationWaitingDao {
                     resultSet.getDate("schedule.date").toLocalDate(),
                     resultSet.getTime("schedule.time").toLocalTime()
             ),
-            resultSet.getInt("reservation_waiting.wait_num")
+            findMaxWaitNum(resultSet.getLong("schedule.id"), resultSet.getLong("reservation_waiting.id"))
     );
 
+
     public Long save(ReservationWaiting reservationWaiting) {
-        String sql = "INSERT INTO reservation_waiting (member_id, schedule_id, wait_num) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO reservation_waiting (member_id, schedule_id) VALUES (?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, reservationWaiting.getMember().getId());
             ps.setLong(2, reservationWaiting.getSchedule().getId());
-            ps.setInt(3, reservationWaiting.getWaitNum());
             return ps;
 
         }, keyHolder);
@@ -64,11 +74,11 @@ public class ReservationWaitingDao {
         return keyHolder.getKey().longValue();
     }
 
-    public int findMaxWaitNum(Long scheduleId) {
-        String sql = "SELECT MAX(wait_num) FROM reservation_waiting WHERE schedule_id = ?";
+    private int findMaxWaitNum(Long scheduleId, Long id) {
+        String sql = "SELECT COUNT(id) FROM reservation_waiting WHERE schedule_id = ? AND id <= ? LIMIT 100;";
 
         try {
-            Integer result = jdbcTemplate.queryForObject(sql, Integer.class, scheduleId);
+            Integer result = jdbcTemplate.queryForObject(sql, Integer.class, scheduleId, id);
             if (Objects.isNull(result)) return 0;
             return result;
         } catch (EmptyResultDataAccessException e) {
@@ -77,19 +87,21 @@ public class ReservationWaitingDao {
     }
 
     public ReservationWaiting findById(Long id) {
-        String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                "theme.id, theme.name, theme.desc, theme.price, " +
-                "member.id, member.username, member.password, member.name, member.phone, member.role " +
-                "from reservation_waiting " +
-                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation_waiting.member_id = member.id " +
-                "where reservation_waiting.id = ?;";
+        String sql = BASE_SELECT_SQL + "where reservation_waiting.id = ?;";
 
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public ReservationWaiting findByScheduleId(Long scheduleId) {
+        String sql = BASE_SELECT_SQL +
+                "WHERE reservation_waiting.id = (SELECT MIN(id) FROM reservation_waiting WHERE schedule_id = ? ) ;";
+
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, scheduleId);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -102,16 +114,7 @@ public class ReservationWaitingDao {
     }
 
     public List<ReservationWaiting> findReservationWaitingsByMemberId(Long memberId) {
-        String sql = "SELECT " +
-                "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, reservation_waiting.wait_num, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                "theme.id, theme.name, theme.desc, theme.price, " +
-                "member.id, member.username, member.password, member.name, member.phone, member.role " +
-                "from reservation_waiting " +
-                "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "inner join member on reservation_waiting.member_id = member.id " +
-                "where member.id = ?;";
+        String sql = BASE_SELECT_SQL + "where member.id = ?;";
 
         try {
             return jdbcTemplate.query(sql, rowMapper, memberId);

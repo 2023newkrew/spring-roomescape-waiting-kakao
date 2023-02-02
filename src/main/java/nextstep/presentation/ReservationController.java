@@ -64,4 +64,28 @@ public class ReservationController {
         List<ReservationWaitingResponse> reservationWaitings = reservationService.findMyReservationWaitings(userDetails.getId());
         return ResponseEntity.ok(reservationWaitings);
     }
+
+    @PatchMapping("/admin/reservations/{id}/approve")
+    public ResponseEntity<ReservationResponse> approveReservation(@PathVariable Long id) {
+        ReservationResponse reservation = reservationService.acceptReservation(id);
+        return ResponseEntity.ok().body(reservation);
+    }
+
+    @PatchMapping("/reservations/{id}/cancel")
+    public ResponseEntity<ReservationResponse> cancelReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+        ReservationResponse reservation = reservationService.cancelReservation(userDetails.getId(), id);
+        return ResponseEntity.ok().body(reservation);
+    }
+
+    @PatchMapping("/admin/reservations/{id}/reject")
+    public ResponseEntity<ReservationResponse> rejectReservation(@PathVariable Long id) {
+        ReservationResponse reservation = reservationService.rejectReservation(id);
+        return ResponseEntity.ok().body(reservation);
+    }
+
+    @PatchMapping("/admin/reservations/{id}/cancel-approve")
+    public ResponseEntity<ReservationResponse> approveCancel(@PathVariable Long id) {
+        ReservationResponse reservation = reservationService.approveCancel(id);
+        return ResponseEntity.ok().body(reservation);
+    }
 }

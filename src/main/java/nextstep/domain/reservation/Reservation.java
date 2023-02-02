@@ -9,19 +9,22 @@ public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
+    private ReservationState state;
 
     public Reservation() {
     }
 
-    public Reservation(Schedule schedule, Member member) {
+    public Reservation(Schedule schedule, Member member, ReservationState state) {
         this.schedule = schedule;
         this.member = member;
+        this.state = state;
     }
 
-    public Reservation(Long id, Schedule schedule, Member member) {
+    public Reservation(Long id, Schedule schedule, Member member, ReservationState state) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+        this.state = state;
     }
 
     public Long getId() {
@@ -34,6 +37,10 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    public ReservationState getState() {
+        return state;
     }
 
     public boolean sameMember(Long memberId) {
