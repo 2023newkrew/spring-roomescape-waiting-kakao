@@ -1,8 +1,6 @@
 package nextstep.member;
 
-import auth.AuthenticationProvider;
-import auth.TokenRequest;
-import auth.TokenResponse;
+import auth.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,10 +17,12 @@ public class LoginController {
 
     @PostMapping("/login/token")
     public ResponseEntity<TokenResponse> loginToken(@RequestBody TokenRequest tokenRequest) {
-        TokenResponse token = authenticationProvider.createToken(
-                memberService.findByUsername(tokenRequest.getUsername()).toUserDetails(),
-                tokenRequest.getPassword()
-        );
+        UserDetails userDetails =  memberService.findByUsername(tokenRequest.getUsername()).toUserDetails();
+        if(userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())){
+            throw new AuthenticationException();
+        }
+
+        TokenResponse token = authenticationProvider.createToken(memberService.findByUsername(tokenRequest.getUsername()).toUserDetails());
         return ResponseEntity.ok(token);
     }
 }

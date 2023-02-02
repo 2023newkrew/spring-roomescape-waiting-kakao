@@ -7,13 +7,8 @@ public class AuthenticationProvider {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public TokenResponse createToken(UserDetails userDetails, String password) {
-        if (userDetails == null || userDetails.checkWrongPassword(password)) {
-            throw new AuthenticationException();
-        }
-
+    public TokenResponse createToken(UserDetails userDetails) {
         String accessToken = jwtTokenProvider.createToken(userDetails.getId() + "", userDetails.getRole());
-
         return new TokenResponse(accessToken);
     }
 
