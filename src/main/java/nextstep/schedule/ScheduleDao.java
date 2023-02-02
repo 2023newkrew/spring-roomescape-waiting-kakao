@@ -79,7 +79,7 @@ public class ScheduleDao {
                         +
                         "from schedule " +
                         "inner join theme on schedule.theme_id = theme.id " +
-                        "where schedule.theme_id = ?;";
+                        "where schedule.theme_id = ? for update ;";
 
         return jdbcTemplate.query(sql, rowMapper, themeId);
     }
