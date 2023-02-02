@@ -34,7 +34,7 @@ CREATE TABLE reservation
     id          BIGINT NOT NULL AUTO_INCREMENT,
     member_id   BIGINT NOT NULL,
     schedule_id BIGINT NOT NULL,
-    status      varchar(20) not null default '예약 미승인',
+    status      varchar(20) not null default 'UNAPPROVED',
     deleted     bit    not null default false,
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id),

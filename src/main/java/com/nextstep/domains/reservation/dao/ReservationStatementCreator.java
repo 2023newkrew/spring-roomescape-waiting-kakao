@@ -1,6 +1,7 @@
 package com.nextstep.domains.reservation.dao;
 
 import com.nextstep.domains.reservation.Reservation;
+import com.nextstep.domains.reservation.enums.StatusType;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -42,9 +43,9 @@ public class ReservationStatementCreator {
                     "inner join theme on schedule.theme_id = theme.id " +
                     "where reservation.member_id = ?;";
 
-    private static final String UPDATE_BY_ID_SQL = "UPDATE reservation SET member_id = ? WHERE id = ?";
+    private static final String UPDATE_STATUS_BY_ID_SQL = "UPDATE reservation SET status = ? WHERE id = ?";
     
-    private static final String DELETE_BY_ID_SQL = "DELETE FROM reservation WHERE id = ?";
+    private static final String DELETE_BY_ID_SQL = "UPDATE reservation SET deleted = true WHERE id = ?";
 
     public PreparedStatement createSelectByScheduleId(
             Connection connection, Long scheduleId) throws SQLException {
@@ -86,10 +87,10 @@ public class ReservationStatementCreator {
         return ps;
     }
 
-    public PreparedStatement createUpdateById(Connection connection, Long id, Long memberId) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(UPDATE_BY_ID_SQL);
+    public PreparedStatement createUpdateById(Connection connection, Long id, StatusType status) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(UPDATE_STATUS_BY_ID_SQL);
         ps.setLong(2, id);
-        ps.setLong(1, memberId);
+        ps.setString(1, status.name());
 
         return ps;
     }

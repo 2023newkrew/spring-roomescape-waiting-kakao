@@ -1,5 +1,6 @@
 package com.nextstep.domains.reservation;
 
+import com.nextstep.domains.reservation.enums.StatusType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,7 @@ public class Reservation {
     private final Schedule schedule;
 
     @Getter
-    private final String status;
+    private final StatusType status;
 
     public Long getMemberId() {
         if (Objects.isNull(member)) {

@@ -1,6 +1,7 @@
 package com.nextstep.domains.reservation;
 
 import com.nextstep.domains.reservation.dao.ReservationStatementCreator;
+import com.nextstep.domains.reservation.enums.StatusType;
 import lombok.RequiredArgsConstructor;
 import com.nextstep.domains.reservation.dao.ReservationResultSetParser;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -68,8 +69,8 @@ public class ReservationRepository {
     }
 
 
-    public boolean updateById(Long id, Long memberId) {
-        int updatedRow = jdbcTemplate.update(connection -> statementCreator.createUpdateById(connection, id, memberId));
+    public boolean updateById(Long id, StatusType status) {
+        int updatedRow = jdbcTemplate.update(connection -> statementCreator.createUpdateById(connection, id, status));
 
         return updatedRow > 0;
     }
