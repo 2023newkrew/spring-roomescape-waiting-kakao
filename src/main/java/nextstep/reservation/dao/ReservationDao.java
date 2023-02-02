@@ -95,7 +95,7 @@ public class ReservationDao {
     }
 
     public Long update(Reservation reservation) {
-        String sql = "UPDATE SET status = ?, revenue_id = ? WHERE id = ?;";
+        String sql = "UPDATE reservation SET status = ?, revenue_id = ? WHERE id = ?;";
 
         int updatedCount = jdbcTemplate.update(
                 sql,

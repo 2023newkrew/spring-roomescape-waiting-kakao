@@ -66,11 +66,15 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
+    public Reservation findById(Member member, Long id) {
+        Reservation reservation = getReservation(id);
+        checkAuthorizationOfReservation(reservation, member);
+        return reservation;
+    }
+
     public void deleteById(Member member, Long id) {
         Reservation reservation = getReservation(id);
-        if (!reservation.isMine(member)) {
-            throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
-        }
+        checkAuthorizationOfReservation(reservation, member);
         reservationDao.deleteById(id);
         ReservationWaiting reservationWaiting = reservationWaitingDao
                 .findFirstByScheduleId(
@@ -97,9 +101,7 @@ public class ReservationService {
 
     public void cancelReservation(Member member, Long id) {
         Reservation reservation = getReservation(id);
-        if (!reservation.isMine(member)) {
-            throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
-        }
+        checkAuthorizationOfReservation(reservation, member);
         reservation.cancel();
         reservationDao.save(reservation);
     }
@@ -108,7 +110,9 @@ public class ReservationService {
     public void refuseReservation(Member member, Long id) {
         Reservation reservation = getReservation(id);
         reservation.refuse();
-        revenueDao.save(reservation.getRevenue());
+        if (Objects.nonNull(reservation.getRevenue())) {
+            revenueDao.save(reservation.getRevenue());
+        }
         reservationDao.save(reservation);
     }
 
@@ -126,5 +130,11 @@ public class ReservationService {
             throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
         }
         return reservation;
+    }
+
+    private void checkAuthorizationOfReservation(Reservation reservation, Member member) {
+        if (!reservation.isMine(member)) {
+            throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
     }
 }

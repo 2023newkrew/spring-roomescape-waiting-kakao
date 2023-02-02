@@ -49,8 +49,8 @@ public class RevenueDao {
     }
 
     public long update(Revenue revenue) {
-        String sql = "update set status = ? where id = ?;";
-        int updatedCount = jdbcTemplate.update(sql, revenue.getStatus().toString(), revenue.getAmount());
+        String sql = "update revenue set status = ? where id = ?;";
+        int updatedCount = jdbcTemplate.update(sql, revenue.getStatus().toString(), revenue.getId());
         if (updatedCount != 1) {
             throw new RoomReservationException(ErrorCode.RECORD_NOT_UPDATED);
         }
