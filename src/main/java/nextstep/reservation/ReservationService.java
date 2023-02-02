@@ -6,11 +6,11 @@ import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
-import nextstep.theme.Theme;
+import nextstep.support.NotExistEntityException;
 import nextstep.theme.ThemeDao;
+import nextstep.theme.ThemeService;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,68 +20,55 @@ public class ReservationService {
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
+    public final ThemeService themeService;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, ThemeService themeService) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.themeService = themeService;
     }
 
     public Long reserve(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
+        if (member == null) {  // todo move auth
             throw new AuthenticationException();
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(NotExistEntityException::new);
 
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
-        }
+        checkIsNotExistByScheduleId(schedule.getId());
 
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
-
+        Reservation newReservation = new Reservation(schedule, member);
         return reservationDao.save(newReservation);
     }
 
     public List<ReservationResponse> findMemberReservations(Member member) {
-        try {
-            return reservationDao.findAllByMemberId(member.getId()).stream()
-                    .map(ReservationResponse::from)
-                    .collect(Collectors.toList());
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
+        return reservationDao.findAllByMemberId(member.getId()).stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
     }
 
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
-
+        themeService.checkIsExist(themeId);
         return reservationDao.findAllByThemeIdAndDate(themeId, date).stream()
                 .map(ReservationResponse::from)
                 .collect(Collectors.toList());
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(NotExistEntityException::new);
 
         if (!reservation.sameMember(member)) {
             throw new AuthenticationException();
         }
-
         reservationDao.deleteById(id);
+    }
+
+    public void checkIsNotExistByScheduleId(Long scheduleId) {
+        if (reservationDao.findByScheduleId(scheduleId).isPresent()) {
+            throw new DuplicateEntityException();
+        }
     }
 }

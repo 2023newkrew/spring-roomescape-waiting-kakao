@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ReservationDao {
@@ -76,7 +76,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(date));
     }
 
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -87,11 +87,8 @@ public class ReservationDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
                 "where reservation.id = ?;";
-        try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
-            return null;
-        }
+
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
     }
 
     public List<Reservation> findAllByMemberId(Long memberId) {
@@ -105,14 +102,11 @@ public class ReservationDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
                 "where reservation.member_id = ?;";
-        try {
-            return jdbcTemplate.query(sql, rowMapper, memberId);
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
+
+        return jdbcTemplate.query(sql, rowMapper, memberId);
     }
 
-    public List<Reservation> findByScheduleId(Long id) {
+    public Optional<Reservation> findByScheduleId(Long id) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -124,11 +118,7 @@ public class ReservationDao {
                 "inner join member on reservation.member_id = member.id " +
                 "where schedule.id = ?;";
 
-        try {
-            return jdbcTemplate.query(sql, rowMapper, id);
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
     }
 
     public void deleteById(Long id) {

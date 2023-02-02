@@ -7,11 +7,11 @@ import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.support.NotExistEntityException;
 import nextstep.theme.ThemeDao;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,10 +35,9 @@ public class ReservationWaitingService {
         if (member == null) {
             throw new AuthenticationException();
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(NotExistEntityException::new);
+
         ReservationWaitingStatus currentStatus = ReservationWaitingStatus.WAITING;
         try {
             reservationDao.save(new Reservation(schedule, member));
@@ -51,28 +50,20 @@ public class ReservationWaitingService {
     }
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {
-        try {
-            List<ReservationWaitingResponse> res = reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()).stream()
-                    .map(ReservationWaitingResponse::from)
-                    .collect(Collectors.toList());
-            return res;
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
+        List<ReservationWaitingResponse> res = reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()).stream()
+                .map(ReservationWaitingResponse::from)
+                .collect(Collectors.toList());
+        return res;
     }
 
     public void cancelById(Member member, Long id) {
         ReservationWaitingStatus status = ReservationWaitingStatus.CANCELED;
-        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
-        if (reservationWaiting == null) {
-            throw new NullPointerException();
-        }
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id)
+                .orElseThrow(NotExistEntityException::new);
 
         if (!reservationWaiting.sameMember(member)) {
             throw new AuthenticationException();
         }
-
         reservationWaitingDao.updateStatusById(id, status);
     }
 }

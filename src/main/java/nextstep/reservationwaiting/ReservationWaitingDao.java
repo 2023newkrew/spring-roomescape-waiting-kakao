@@ -11,8 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ReservationWaitingDao {
@@ -88,7 +87,7 @@ public class ReservationWaitingDao {
         return keyHolder.getKey().longValue();
     }
 
-    public ReservationWaiting findById(Long id) {
+    public Optional<ReservationWaiting> findById(Long id) {
         String sql = "SELECT " +
                 "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -100,16 +99,8 @@ public class ReservationWaitingDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation_waiting.member_id = member.id " +
                 "where reservation_waiting.id = ?;";
-        try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
-    public Long getRank(ReservationWaiting reservationWaiting) {
-        String sql = "SELECT COUNT(*) FROM reservation_waiting WHERE schedule_id = ? AND id < ?;";
-        return jdbcTemplate.queryForObject(sql, Long.class, reservationWaiting.getSchedule().getId(), reservationWaiting.getId());
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
     }
 
     public void updateStatusById(Long id, ReservationWaitingStatus status) {
@@ -133,11 +124,7 @@ public class ReservationWaitingDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on rw.member_id = member.id " +
                 "where rw.member_id = ?";
-        try {
-            return jdbcTemplate.query(sql, rowMapperWithWaitingNum, ReservationWaitingStatus.WAITING.name(), memberId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
+
+        return jdbcTemplate.query(sql, rowMapperWithWaitingNum, ReservationWaitingStatus.WAITING.name(), memberId);
     }
 }

@@ -1,5 +1,7 @@
 package auth;
 
+import nextstep.support.NotExistEntityException;
+
 public class LoginService {
     private final UserDao userDao;
     private final JwtTokenProvider jwtTokenProvider;
@@ -10,8 +12,9 @@ public class LoginService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetails userDetails = userDao.findByUsername(tokenRequest.getUsername());
-        if (userDetails == null || userDetails.checkWrongPassword(tokenRequest.getPassword())) {
+        UserDetails userDetails = userDao.findByUsername(tokenRequest.getUsername())
+                .orElseThrow(AuthenticationException::new);
+        if (userDetails.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException();
         }
 
@@ -26,6 +29,7 @@ public class LoginService {
 
     public UserDetails extractMember(String credential) {
         Long id = Long.parseLong(jwtTokenProvider.getPrincipal(credential));
-        return userDao.findById(id);
+        return userDao.findById(id)
+                .orElseThrow(NotExistEntityException::new);
     }
 }

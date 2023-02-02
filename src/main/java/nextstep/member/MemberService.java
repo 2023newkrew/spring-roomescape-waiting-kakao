@@ -1,5 +1,6 @@
 package nextstep.member;
 
+import nextstep.support.NotExistEntityException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,7 @@ public class MemberService {
     }
 
     public Member findById(Long id) {
-        return memberDao.findById(id);
+        return memberDao.findById(id)
+                .orElseThrow(NotExistEntityException::new);
     }
 }
