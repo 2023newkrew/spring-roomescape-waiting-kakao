@@ -3,7 +3,6 @@ package nextstep.service;
 import lombok.RequiredArgsConstructor;
 import nextstep.domain.dto.request.ThemeRequest;
 import nextstep.domain.dto.response.ThemeResponse;
-import nextstep.domain.persist.Theme;
 import nextstep.repository.ThemeDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +15,8 @@ import java.util.stream.Collectors;
 public class ThemeService {
     private final ThemeDao themeDao;
 
-    public Long create(ThemeRequest themeRequest) {
+    @Transactional
+    public Long addTheme(ThemeRequest themeRequest) {
         return themeDao.save(themeRequest.toEntity());
     }
 
@@ -29,7 +29,7 @@ public class ThemeService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void removeTheme(Long id) {
         themeDao.deleteById(id);
     }
 }

@@ -8,7 +8,6 @@ import java.util.Arrays;
 @AllArgsConstructor
 @Getter
 public enum Roles {
-
     ADMIN("ADMIN", 3),
     USER("USER", 2),
     GUEST("GUEST", 1);

@@ -38,7 +38,7 @@ public class ReservationService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public String create(UserDetails userDetails, ReservationRequest reservationRequest) {
+    public String addReservation(UserDetails userDetails, ReservationRequest reservationRequest) {
         Schedule schedule = getSchedule(reservationRequest);
 
         if (isReservationAlreadyExist(schedule)) {
@@ -58,10 +58,10 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteById(UserDetails userDetails, Long id) {
-        Reservation reservation = findReservationById(id);
+    public void removeReservation(UserDetails userDetails, Long id) {
+        Reservation reservation = getReservation(id);
 
-        if (!reservationOwner(userDetails, reservation)) {
+        if (isNotReservationOwner(userDetails, reservation)) {
             throw new NotReservationOwnerException();
         }
 
@@ -69,8 +69,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public void approveById(Long id) {
-        Reservation reservation = findReservationById(id);
+    public void approveReservation(Long id) {
+        Reservation reservation = getReservation(id);
 
         if (!statusEquals(reservation, NOT_APPROVED)) {
             throw new IllegalReservationApproveException();
@@ -82,10 +82,10 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancelById(UserDetails userDetails, Long id) {
-        Reservation reservation = findReservationById(id);
+    public void cancelReservation(UserDetails userDetails, Long id) {
+        Reservation reservation = getReservation(id);
 
-        if (!isAdmin(userDetails) && !reservationOwner(userDetails, reservation)) {
+        if (isNotAdmin(userDetails) && isNotReservationOwner(userDetails, reservation)) {
             throw new NotReservationOwnerException();
         }
 
@@ -102,8 +102,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public void rejectById(Long id) {
-        Reservation reservation = findReservationById(id);
+    public void rejectReservation(Long id) {
+        Reservation reservation = getReservation(id);
 
         if (statusEquals(reservation, APPROVED)) {
             eventPublisher.publishEvent(new ReservationApproveEvent(Rejected));
@@ -113,8 +113,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public void approveCancelById(Long id) {
-        Reservation reservation = findReservationById(id);
+    public void approveCancelReservation(Long id) {
+        Reservation reservation = getReservation(id);
 
         if (!statusEquals(reservation, WAIT_CANCEL)) {
             throw new IllegalReservationCancelException();
@@ -125,12 +125,12 @@ public class ReservationService {
         eventPublisher.publishEvent(new ReservationApproveEvent(Canceled));
     }
 
-    private boolean isAdmin(UserDetails userDetails) {
-        return userDetails.getRole().equals(ADMIN);
+    private boolean isNotAdmin(UserDetails userDetails) {
+        return !userDetails.getRole().equals(ADMIN);
     }
 
     @Transactional
-    public Reservation findReservationById(Long id) {
+    public Reservation getReservation(Long id) {
         Reservation reservation = reservationDao.findById(id);
 
         if (reservation == null) {
@@ -157,7 +157,7 @@ public class ReservationService {
         return !reservation.isEmpty();
     }
 
-    private boolean reservationOwner(UserDetails userDetails, Reservation reservation) {
-        return reservation.sameMember(convertUserDetailToMember(userDetails));
+    private boolean isNotReservationOwner(UserDetails userDetails, Reservation reservation) {
+        return !reservation.sameMember(convertUserDetailToMember(userDetails));
     }
 }

@@ -19,7 +19,7 @@ public class LoginController {
 
     @Operation(summary = "로그인 API")
     @PostMapping("/token")
-    public ResponseEntity<TokenResponse> loginToken(@RequestBody TokenRequest tokenRequest) {
+    public ResponseEntity<TokenResponse> tokenLogin(@RequestBody TokenRequest tokenRequest) {
         TokenResponse token = loginService.createToken(tokenRequest);
         return ResponseEntity.ok(token);
     }

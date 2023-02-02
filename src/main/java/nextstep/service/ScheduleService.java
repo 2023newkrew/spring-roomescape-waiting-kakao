@@ -18,18 +18,18 @@ public class ScheduleService {
     private final ThemeDao themeDao;
 
     @Transactional
-    public Long create(ScheduleRequest scheduleRequest) {
+    public Long addSchedule(ScheduleRequest scheduleRequest) {
         Theme theme = themeDao.findById(scheduleRequest.getThemeId());
         return scheduleDao.save(scheduleRequest.toEntity(theme));
     }
 
     @Transactional(readOnly = true)
-    public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
+    public List<Schedule> findAllByThemeIdAndDate(Long themeId, String date) {
         return scheduleDao.findByThemeIdAndDate(themeId, date);
     }
 
     @Transactional
-    public void deleteById(Long id) {
+    public void removeSchedule(Long id) {
         scheduleDao.deleteById(id);
     }
 }
