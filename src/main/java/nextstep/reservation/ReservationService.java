@@ -51,9 +51,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findMyReservations(Member member) {
         try {
-            return reservationDao.findAllByMemberId(member.getId()).stream()
-                    .map(r -> new ReservationResponse(r.getId(), r.getSchedule()))
-                    .collect(Collectors.toList());
+            return ReservationResponse.from(reservationDao.findAllByMemberId(member.getId()));
         } catch (RuntimeException e) {
             e.printStackTrace();
             return Collections.emptyList();
@@ -63,10 +61,7 @@ public class ReservationService {
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId)
                 .orElseThrow(() -> new NotExistEntityException(Theme.class));
-
-        return reservationDao.findAllByThemeIdAndDate(themeId, date).stream()
-                .map(ReservationResponse::from)
-                .collect(Collectors.toList());
+        return ReservationResponse.from(reservationDao.findAllByThemeIdAndDate(themeId, date));
     }
 
     public void deleteById(Member member, Long id) {

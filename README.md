@@ -34,7 +34,7 @@
 
 
 ### 리팩토링 목록
-- [ ] Reservation List 를 ReservationResponse List로 변환하는 메서드 추가
+- [x] Reservation List 를 ReservationResponse List로 변환하는 메서드 추가
 - [ ] ReservationService의 findMyReservations에서 예외 처리 개선
 - [ ] ReservationResponse DTO에서 Schedule 대신 ScheduleResponse를 의존하도록 개선
 - [ ] ReservationWaitingService의 예약 대기 생성 기능에 트랜잭션 처리
