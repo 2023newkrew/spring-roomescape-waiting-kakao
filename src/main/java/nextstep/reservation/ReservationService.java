@@ -11,6 +11,7 @@ import nextstep.theme.ThemeDao;
 import nextstep.theme.ThemeService;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +47,7 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
+    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, Date date) {
         themeService.checkIsExist(themeId);
         return reservationDao.findAllByThemeIdAndDate(themeId, date).stream()
                 .map(ReservationResponse::from)

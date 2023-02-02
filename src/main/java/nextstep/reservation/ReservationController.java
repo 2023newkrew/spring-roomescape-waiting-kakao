@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.sql.Date;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<List<ReservationResponse>> findReservations(@RequestParam Long themeId, @RequestParam Date date) {
         List<ReservationResponse> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
