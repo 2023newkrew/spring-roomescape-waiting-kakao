@@ -1,5 +1,10 @@
 package com.nextstep.domains.reservation;
 
+import com.authorizationserver.domains.authorization.enums.RoleType;
+import com.authorizationserver.domains.authorization.exceptions.AuthenticationErrorMessageType;
+import com.authorizationserver.domains.authorization.exceptions.AuthenticationException;
+import com.authorizationserver.infrastructures.jwt.TokenData;
+import com.nextstep.domains.reservation.enums.StatusType;
 import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
 import com.nextstep.interfaces.reservation.dtos.ReservationResponse;
 import com.nextstep.interfaces.reservation.dtos.ReservationMapper;
@@ -55,28 +60,42 @@ public class ReservationService {
     }
 
     @Transactional
-    public boolean deleteById(Long memberId, Long id, Waiting waiting) {
-        System.out.println("5");
+    public boolean deleteById(TokenData tokenData, Long id, Waiting waiting) {
         Reservation reservation = repository.getById(id);
-        System.out.println("6");
-        validateReservation(reservation, memberId);
-        System.out.println("7");
+        validateReservationMine(reservation, tokenData);
         Reservation nextReservation = mapper.fromRequest(waiting.getMemberId(), new ReservationRequest(reservation.getScheduleId()));
-        System.out.println("1");
         if (!Objects.isNull(waiting)) {
-            System.out.println("2");
             repository.insert(nextReservation);
         }
-        System.out.println("3");
         return repository.deleteById(id);
     }
 
-    private void validateReservation(Reservation reservation, Long memberId) {
+    @Transactional
+    public boolean approveById(TokenData tokenData, Long id) {
+        Reservation reservation = repository.getById(id);
+        System.out.println(tokenData.getRole());
+        validateReservationAdmin(reservation, tokenData);
+        if (!reservation.getStatus().equals(StatusType.UNAPPROVED)){
+            throw new ReservationException(ErrorMessageType.RESERVATION_STATUS_CONFLICT);
+        }
+        return repository.updateById(id, StatusType.APPROVED);
+    }
+
+    private void validateReservationMine(Reservation reservation, TokenData tokenData) {
         if (Objects.isNull(reservation)) {
             throw new ReservationException(ErrorMessageType.RESERVATION_NOT_EXISTS);
         }
-        if (!memberId.equals(reservation.getMemberId())) {
+        if (!tokenData.getId().equals(reservation.getMemberId())) {
             throw new ReservationException(ErrorMessageType.NOT_RESERVATION_OWNER);
+        }
+    }
+
+    private void validateReservationAdmin(Reservation reservation, TokenData tokenData) {
+        if (Objects.isNull(reservation)) {
+            throw new ReservationException(ErrorMessageType.RESERVATION_NOT_EXISTS);
+        }
+        if (!tokenData.getRole().equals(RoleType.ADMIN.name())) {
+            throw new AuthenticationException(AuthenticationErrorMessageType.NOT_ADMIN);
         }
     }
 }

@@ -9,6 +9,7 @@ import com.nextstep.interfaces.theme.dtos.ThemeRequest;
 import com.nextstep.interfaces.waiting.dtos.WaitingRequest;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
+import org.springframework.http.HttpStatus;
 
 public class ReservationControllerTest extends AbstractControllerTest {
 
@@ -51,7 +52,7 @@ public class ReservationControllerTest extends AbstractControllerTest {
     }
 
     private RequestSpecification authGivenAnother() {
-        String anotherToken = provider.createToken(new TokenData(2L, "ADMIN"));
+        String anotherToken = provider.createToken(new TokenData(2L, "MEMBER"));
 
         return given()
                 .auth()
@@ -70,6 +71,29 @@ public class ReservationControllerTest extends AbstractControllerTest {
 
             then(response)
                     .body("member.id", Matchers.contains(2));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class approve {
+        @DisplayName("예약 승인")
+        @Test
+        void should_approve_reservation() {
+            var response = patch(authGiven(), DEFAULT_PATH + "/1/approve");
+            then(response)
+                    .statusCode(HttpStatus.OK.value());
+
+            response = get(authGiven(), DEFAULT_PATH + "/mine");
+            then(response);
+        }
+
+        @DisplayName("예약 승인 - 관리자가 아닐 경우")
+        @Test
+        void should_approve_reservation_not_admin() {
+            var response = patch(authGivenAnother(), DEFAULT_PATH + "/1/approve");
+            then(response)
+                    .statusCode(HttpStatus.FORBIDDEN.value());
         }
     }
 }

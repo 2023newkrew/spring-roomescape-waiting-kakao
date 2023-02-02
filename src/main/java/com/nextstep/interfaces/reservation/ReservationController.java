@@ -65,7 +65,15 @@ public class ReservationController {
         if (!Objects.isNull(waiting)){
             waitingService.deleteById(waiting.getMemberId(),waiting.getScheduleId());
         }
-        return ResponseEntity.ok(service.deleteById(tokenData.getId(), reservationId, waiting));
+        return ResponseEntity.ok(service.deleteById(tokenData, reservationId, waiting));
+    }
+
+    @PatchMapping("/{reservation_id}/approve")
+    public ResponseEntity<Boolean> approveReservation(
+            @UseContext TokenData tokenData,
+            @PathVariable("reservation_id") Long reservationId
+    ){
+        return ResponseEntity.ok(service.approveById(tokenData,reservationId));
     }
 
     private void validateSchedule(ScheduleResponse schedule) {

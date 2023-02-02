@@ -49,6 +49,12 @@ public abstract class AbstractControllerTest {
                 .post(path, pathParams);
     }
 
+    <T> Response patch(RequestSpecification given, String path, Object... pathParams) {
+        return given
+                .when()
+                .patch(path, pathParams);
+    }
+
     <T> Response delete(RequestSpecification given, String path, Object... pathParams) {
         return given
                 .when()
