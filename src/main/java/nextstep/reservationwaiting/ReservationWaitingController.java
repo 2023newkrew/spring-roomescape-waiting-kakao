@@ -39,8 +39,8 @@ public class ReservationWaitingController {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity onException(Exception e) {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<String> onException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler(AuthenticationException.class)
