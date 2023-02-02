@@ -15,14 +15,15 @@
       - [x] 예약 대기의 경우 대기 순번도 함께 조회할 수 있다.
 
 - 추가 정의
-  - 예약 취소 시 예약 대기 순번이 가장 빠른 예약 대기를 예약으로 전환한다.
-  - 예약 대기 순번은 현재까지 발급된 대기 순번 다음 번호로 발급되며 고정된다(ex. 은행 대기번호).
+  - 예약과 예약 대기를 같은 테이블에서 관리한다. 
+  - 예약 대기의 경우 순번(waitNum)은 1번부터 시작한다.
+  - 예약 대기를 따로 신청하지 않고 예약을 신청하면 예약 또는 예약 대기가 된다.
 
 
 - API 명세
-  - 예약 대기
+  - 예약
 ```
-POST /reservation-waitings HTTP/1.1
+POST /reservations HTTP/1.1
 authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjYzMjk4NTkwLCJleHAiOjE2NjMzMDIxOTAsInJvbGUiOiJBRE1JTiJ9.-OO1QxEpcKhmC34HpmuBhlnwhKdZ39U8q91QkTdH9i0
 content-type: application/json; charset=UTF-8
 host: localhost:8080
@@ -85,14 +86,13 @@ Content-Type: application/json
             "date": "2022-08-20",
             "time": "13:00:00"
         },
-        "memberId": 1,
-        "priority": 12
+        "waitNum" : 2
     }
 ]
 ```
-- 예약 대기 취소
+- 예약 취소
 ```
-DELETE /reservation-waitings/1 HTTP/1.1
+DELETE /reservations/1 HTTP/1.1
 authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjYzMjk5MDcwLCJleHAiOjE2NjMzMDI2NzAsInJvbGUiOiJBRE1JTiJ9.zgz7h7lrKLNw4wP9I0W8apQnMUn3WHnmqQ1N2jNqwlQ
 ```
 ```

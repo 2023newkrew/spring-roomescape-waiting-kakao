@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
-import java.util.Objects;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -21,7 +19,7 @@ public class Reservation {
         this.member = member;
     }
 
-    public boolean sameMember(Member member) {
-        return member != null && Objects.equals(this.member.getId(), member.getId());
+    public boolean sameMemberId(Long id) {
+        return member.sameId(id);
     }
 }

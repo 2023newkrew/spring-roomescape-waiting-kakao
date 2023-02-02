@@ -23,7 +23,7 @@ public class Member {
         this.role = role;
     }
 
-    public boolean checkWrongPassword(String password) {
-        return !this.password.equals(password);
+    public boolean sameId(Long id) {
+        return this.id.equals(id);
     }
 }

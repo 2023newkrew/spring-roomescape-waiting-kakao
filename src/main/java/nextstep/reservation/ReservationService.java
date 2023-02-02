@@ -1,36 +1,30 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import auth.UserDetails;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
-import nextstep.reservationwaiting.ReservationWaiting;
-import nextstep.reservationwaiting.ReservationWaitingDao;
+import nextstep.reservation.dto.ReservationCreateDto;
+import nextstep.reservation.dto.ReservationReadDto;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
+@RequiredArgsConstructor
 @Service
 public class ReservationService {
     public final ReservationDao reservationDao;
-    public final ReservationWaitingDao reservationWaitingDao;
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, ReservationWaitingDao reservationWaitingDao) {
-        this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
-        this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
-        this.reservationWaitingDao = reservationWaitingDao;
-    }
-
-    public Long create(Member member, ReservationRequest reservationRequest) {
+    public ReservationCreateDto create(Member member, ReservationRequest reservationRequest) {
         if (member == null) {
             throw new AuthenticationException();
         }
@@ -39,22 +33,14 @@ public class ReservationService {
             throw new NullPointerException();
         }
 
+        boolean isReserved = true;
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            Long maxPriority = reservationWaitingDao.getMaxPriorityNumber(schedule);
-            if (maxPriority == null) {
-                maxPriority = 0L;
-            }
-            Long newPriority = maxPriority + 1;
-            reservationWaitingDao.save(new ReservationWaiting(schedule, member.getId(), newPriority));
+            isReserved = false;
         }
 
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
-
-        return reservationDao.save(newReservation);
+        Long id = reservationDao.save(new Reservation(schedule, member));
+        return new ReservationCreateDto(isReserved, id);
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
@@ -66,28 +52,61 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public Schedule deleteByIdAndGetSchedule(Member member, Long id) {
+    public List<Reservation> findAllByUserDetails(UserDetails userDetails) {
+        if (userDetails == null) {
+            throw new AuthenticationException();
+        }
+        return reservationDao.findByMemberId(userDetails.getId());
+    }
+
+    public int deleteById(UserDetails userDetails, Long id) {
+        if (userDetails == null) {
+            throw new AuthenticationException();
+        }
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            return 0;
+        }
+
+        if (!reservation.sameMemberId(userDetails.getId())) {
+            throw new AuthenticationException();
+        }
+
+        return reservationDao.deleteById(id);
+    }
+
+    private boolean isClassified(ReservationState reservationState, Long waitNum) {
+        return (reservationState == ReservationState.RESERVED && waitNum == 0) || (reservationState == ReservationState.WAITING && waitNum > 0);
+    }
+
+    public List<ReservationReadDto> classifyReservation(List<Reservation> reservations, ReservationState reservationState) {
+        List<ReservationReadDto> reservationReadDtos = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            Long waitNum = getWaitNum(reservation);
+            if (isClassified(reservationState, waitNum)) {
+                reservationReadDtos.add(new ReservationReadDto(
+                        reservation.getId(),
+                        reservation.getSchedule(),
+                        waitNum)
+                );
+            }
+        }
+        return reservationReadDtos;
+    }
+
+    public Long getWaitNum(Reservation reservation) {
+        return reservationDao.calcWaitNumByScheduleId(
+                reservation.getSchedule().getId(),
+                reservation.getId()
+        );
+    }
+
+    public ReservationReadDto findById(Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
             throw new NullPointerException();
         }
-
-        if (!reservation.sameMember(member)) {
-            throw new AuthenticationException();
-        }
-        reservationDao.deleteById(id);
-        return reservation.getSchedule();
-    }
-
-    public List<Reservation> findByMemberId(Long memberId) {
-        return reservationDao.findByMemberId(memberId);
-    }
-
-    public boolean isScheduleReserved(Long scheduleId) {
-        List<Reservation> reservations = reservationDao.findByScheduleId(scheduleId);
-        if (reservations.size() == 0) {
-            return false;
-        }
-        return true;
+        Long waitNum = getWaitNum(reservation);
+        return new ReservationReadDto(reservation.getId(), reservation.getSchedule(), waitNum);
     }
 }
