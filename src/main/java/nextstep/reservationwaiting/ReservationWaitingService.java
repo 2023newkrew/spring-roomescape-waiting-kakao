@@ -11,6 +11,7 @@ import nextstep.schedule.ScheduleDao;
 import nextstep.theme.ThemeDao;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,7 @@ public class ReservationWaitingService {
         this.memberDao = memberDao;
     }
 
+    @Transactional
     public Long create(Member member, ReservationWaitingRequest reservationRequest) {
         if (member == null) {
             throw new AuthenticationException();
