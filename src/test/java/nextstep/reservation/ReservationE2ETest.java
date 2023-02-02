@@ -133,7 +133,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @DisplayName("예약이 없을 때 예약 목록을 조회한다")
@@ -161,7 +161,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("다른 사람이 예약을삭제한다")

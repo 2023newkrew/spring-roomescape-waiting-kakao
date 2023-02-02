@@ -1,5 +1,7 @@
 package auth;
 
+import nextstep.exception.ErrorCode;
+import nextstep.exception.RoomEscapeException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -19,7 +21,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         String credential = request.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
         String role = jwtTokenProvider.getRole(credential);
         if (!Objects.equals(role, "ADMIN")) {
-            throw new AuthenticationException();
+            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
         }
 
         return true;

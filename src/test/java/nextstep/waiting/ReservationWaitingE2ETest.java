@@ -106,7 +106,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @DisplayName("내 예약 대기를 조회한다 - 처음 예약 대기 신청은 예약으로 전환, 나머지는 예약 대기 상태")

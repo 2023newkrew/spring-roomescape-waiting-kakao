@@ -1,13 +1,13 @@
 package nextstep.reservationwaiting;
 
-import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.NotExistEntityException;
+import nextstep.exception.ErrorCode;
+import nextstep.exception.RoomEscapeException;
 import nextstep.theme.ThemeDao;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class ReservationWaitingService {
     @Transactional
     public Long reserve(Member member, ReservationWaitingRequest reservationRequest) {
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
-                .orElseThrow(NotExistEntityException::new);
+                .orElseThrow(() -> new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS));
 
         LocalDateTime now = LocalDateTime.now();
         ReservationWaiting reservationWaiting = new ReservationWaiting(schedule, member, now);
@@ -59,13 +59,13 @@ public class ReservationWaitingService {
 
     public void cancelById(Member member, Long id) {
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id)
-                .orElseThrow(NotExistEntityException::new);
+                .orElseThrow(() -> new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS));
 
         if (!reservationWaiting.isReservedBy(member)) {
-            throw new AuthenticationException();
+            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
         }
         if (!reservationWaitingDao.cancelById(id)) {
-            throw new NotExistEntityException();
+            throw new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS);
         };
     }
 }

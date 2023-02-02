@@ -1,5 +1,7 @@
 package auth;
 
+import nextstep.exception.ErrorCode;
+import nextstep.exception.RoomEscapeException;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -25,7 +27,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
             return loginService.extractMember(credential);
         } catch (Exception e) {
-            throw new AuthenticationException();
+            throw new RoomEscapeException(ErrorCode.INVALID_TOKEN);
         }
     }
 }

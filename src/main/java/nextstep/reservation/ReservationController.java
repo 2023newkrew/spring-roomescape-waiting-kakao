@@ -1,10 +1,8 @@
 package nextstep.reservation;
 
-import auth.AuthenticationException;
 import auth.LoginMember;
 import nextstep.member.Member;
 import nextstep.support.DataResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,15 +42,5 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(@LoginMember Member member, @PathVariable Long id) {
         reservationService.deleteById(member, id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> onException(Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

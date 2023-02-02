@@ -1,10 +1,8 @@
 package nextstep.reservationwaiting;
 
-import auth.AuthenticationException;
 import auth.LoginMember;
 import nextstep.member.Member;
 import nextstep.support.DataResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,18 +36,5 @@ public class ReservationWaitingController {
         reservationWaitingService.cancelById(member, id);
 
         return ResponseEntity.noContent().build();
-    }
-
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Void> onAuthenticationException(AuthenticationException e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Void> runtimeException(RuntimeException e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

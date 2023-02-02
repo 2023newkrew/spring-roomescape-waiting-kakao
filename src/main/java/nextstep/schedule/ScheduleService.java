@@ -1,6 +1,7 @@
 package nextstep.schedule;
 
-import nextstep.support.NotExistEntityException;
+import nextstep.exception.ErrorCode;
+import nextstep.exception.RoomEscapeException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class ScheduleService {
 
     public Long create(ScheduleRequest scheduleRequest) {
         Theme theme = themeDao.findById(scheduleRequest.getThemeId())
-                .orElseThrow(NotExistEntityException::new);
+                .orElseThrow(() -> new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS));
         return scheduleDao.save(scheduleRequest.toEntity(theme));
     }
 
@@ -32,7 +33,7 @@ public class ScheduleService {
 
     public void deleteById(Long id) {
         if (!scheduleDao.deleteById(id)) {
-            throw new NotExistEntityException();
+            throw new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS);
         }
     }
 }

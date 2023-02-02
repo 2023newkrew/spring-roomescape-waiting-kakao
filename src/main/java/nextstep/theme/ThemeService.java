@@ -1,6 +1,7 @@
 package nextstep.theme;
 
-import nextstep.support.NotExistEntityException;
+import nextstep.exception.ErrorCode;
+import nextstep.exception.RoomEscapeException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,13 +27,13 @@ public class ThemeService {
 
     public void delete(Long id) {
         if (!themeDao.deleteById(id)) {
-            throw new NotExistEntityException();
+            throw new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS);
         }
     }
 
     public void checkIsExist(Long id) {
         if (themeDao.findById(id).isEmpty()) {
-            throw new NotExistEntityException();
+            throw new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS);
         }
     }
 }

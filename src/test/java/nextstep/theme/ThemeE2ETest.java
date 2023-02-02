@@ -60,7 +60,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
                 .body(body)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @DisplayName("테마 목록을 조회한다")
