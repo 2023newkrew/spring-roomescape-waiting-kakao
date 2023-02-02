@@ -3,6 +3,16 @@ DROP TABLE IF EXISTS THEME;
 DROP TABLE IF EXISTS SCHEDULE;
 DROP TABLE IF EXISTS MEMBER;
 DROP TABLE IF EXISTS RESERVATION_WAITING;
+DROP TABLE IF EXISTS SALES;
+
+CREATE TABLE SALES
+(
+    id          bigint not null auto_increment,
+    member_id   bigint not null,
+    price       int    not null,
+    schedule_id bigint not null
+);
+
 
 CREATE TABLE reservation
 (
