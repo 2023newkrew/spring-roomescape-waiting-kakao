@@ -50,12 +50,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findMyReservations(Member member) {
-        try {
-            return ReservationResponse.from(reservationDao.findAllByMemberId(member.getId()));
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
+        return ReservationResponse.from(reservationDao.findAllByMemberId(member.getId()));
     }
 
     public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
