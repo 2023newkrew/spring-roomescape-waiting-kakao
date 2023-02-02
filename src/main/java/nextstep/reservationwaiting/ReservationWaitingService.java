@@ -7,6 +7,7 @@ import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
 import nextstep.reservation.ReservationStatus;
+import nextstep.sales.SalesDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.ThemeDao;
@@ -25,13 +26,15 @@ public class ReservationWaitingService {
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
+    public final SalesDao salesDao;
 
-    public ReservationWaitingService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationWaitingService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, SalesDao salesDao) {
         this.reservationDao = reservationDao;
         this.reservationWaitingDao = reservationWaitingDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.salesDao = salesDao;
     }
 
     @Transactional
@@ -44,7 +47,9 @@ public class ReservationWaitingService {
         boolean isReserved = reservationDao.countActiveReservationByScheduleId(schedule.getId()) > 0;
         if (!isReserved) {
             // 예약이 존재하지 않으면 대기열에 추가하지 않고 예약 후 id 반환
-            return reservationDao.save(new Reservation(schedule, member, ReservationStatus.UNAPPROVED));
+            long id = reservationDao.save(new Reservation(schedule, member, ReservationStatus.UNAPPROVED));
+            salesDao.save(id, schedule.getTheme().getPrice());
+            return id;
         }
         return reservationWaitingDao.save(new ReservationWaiting(schedule, member));
     }

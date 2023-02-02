@@ -1,5 +1,6 @@
 package nextstep.sales;
 
+import nextstep.reservation.Reservation;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,8 +17,8 @@ public class SalesDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long insertSales(Long reservationId,  int amount) {
-        String sql = "INSERT INTO sales (reservation_id, amount) VALUES (?, ?, ?);";
+    public Long save(Long reservationId, int amount) {
+        String sql = "INSERT INTO sales (reservation_id, amount) VALUES (?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
