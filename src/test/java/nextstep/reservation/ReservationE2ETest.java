@@ -259,6 +259,14 @@ class ReservationE2ETest extends AbstractE2ETest {
     void showReservationWaitings() {
         createReservation();
         createReservationWaiting();
+        createReservationWaiting();
+        createReservationWaiting();
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .auth().oauth2(userToken.getAccessToken())
+                .when().delete("/reservation-waitings/1")
+                .then().log().all();
 
         var response = RestAssured
                 .given().log().all()
@@ -270,7 +278,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
 
         List<ReservationWaiting> reservations = response.jsonPath().getList(".", ReservationWaiting.class);
-        assertThat(reservations).hasSize(1);
+        assertThat(reservations).hasSize(2);
     }
 
     @DisplayName("다른 사람이 예약 대기 삭제")
