@@ -4,7 +4,6 @@ import auth.LoginMember;
 import nextstep.member.Member;
 import nextstep.reservation.ReservationRequest;
 import nextstep.reservation.ReservationService;
-import nextstep.support.DuplicateEntityException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,13 +24,14 @@ public class ReservationWaitingController {
 
     @PostMapping
     public ResponseEntity<Void> create(@LoginMember Member member, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
-        try {
-            Long id = reservationService.create(member, new ReservationRequest(reservationWaitingRequest.getScheduleId()));
+        Long id;
+        ReservationRequest reservationRequest = reservationWaitingRequest.toReservationRequest();
+        if (!reservationService.isReserved(reservationRequest)) {
+            id = reservationService.create(member, reservationRequest);
             return ResponseEntity.created(URI.create("/reservations/" + id)).build();
-        } catch (DuplicateEntityException e) {
-            Long id = reservationWaitingService.create(member, reservationWaitingRequest);
-            return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
         }
+        id = reservationWaitingService.create(member, reservationWaitingRequest);
+        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
     @GetMapping("mine")

@@ -1,5 +1,7 @@
 package nextstep.reservationwaiting;
 
+import nextstep.reservation.ReservationRequest;
+
 public class ReservationWaitingRequest {
     private Long scheduleId;
 
@@ -11,5 +13,9 @@ public class ReservationWaitingRequest {
 
     public Long getScheduleId() {
         return scheduleId;
+    }
+
+    public ReservationRequest toReservationRequest() {
+        return new ReservationRequest(scheduleId);
     }
 }

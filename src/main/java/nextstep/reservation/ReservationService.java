@@ -39,8 +39,7 @@ public class ReservationService {
             throw new NullPointerException();
         }
 
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
+        if (isReserved(reservationRequest)) {
             throw new DuplicateEntityException();
         }
 
@@ -50,6 +49,11 @@ public class ReservationService {
         );
 
         return reservationDao.save(newReservation);
+    }
+
+    public boolean isReserved(ReservationRequest request) {
+        List<Reservation> reservation = reservationDao.findByScheduleId(request.getScheduleId());
+        return !reservation.isEmpty();
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {

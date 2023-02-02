@@ -78,7 +78,7 @@
 - SQL 문
   - [x] 가독성을 위해 대문자로 변환하기
 - ReservationWaiting create
-  - [ ] 로직 상의 분기와 오류로 인한 예외 구분하기 - 예약 존재 여부에 따른 분기처리
+  - [x] 로직 상의 분기와 오류로 인한 예외 구분하기 - 예약 존재 여부에 따른 분기처리
 - ReservationWaiting delete
   - [ ] 애초에 존재하지 않거나, 본인의 것이 아니거나 하는 경우에 대해 따로 분기처리 하기 
   - [ ] NullPointerException -> 의미에 맞게 바꾸기
