@@ -2,6 +2,8 @@ package nextstep.member;
 
 import auth.UserDetails;
 
+import java.util.Objects;
+
 public class Member {
     private Long id;
     private String username;
@@ -56,5 +58,17 @@ public class Member {
 
     public UserDetails toUserDetails() {
         return new UserDetails(id, password, role);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Member member)) return false;
+        return Objects.equals(id, member.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

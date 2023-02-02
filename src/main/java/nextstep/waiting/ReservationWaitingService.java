@@ -41,10 +41,13 @@ public class ReservationWaitingService {
     }
 
     public void deleteById(Long memberId, Long reservationWaitingId) {
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(NotExistEntityException::new);
+
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(reservationWaitingId)
                 .orElseThrow(NotExistEntityException::new);
 
-        if (!reservationWaiting.sameMember(memberId)) {
+        if (!reservationWaiting.sameMember(member)) {
             throw new ForbiddenException();
         }
 
