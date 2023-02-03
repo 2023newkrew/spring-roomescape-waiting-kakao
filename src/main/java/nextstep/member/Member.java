@@ -1,6 +1,8 @@
 package nextstep.member;
 
-public class Member {
+import auth.UserDetails;
+
+public class Member implements UserDetails {
     private Long id;
     private String username;
     private String password;
@@ -32,10 +34,12 @@ public class Member {
         return id;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
@@ -48,11 +52,17 @@ public class Member {
         return phone;
     }
 
+    @Override
     public String getRole() {
         return role;
     }
 
+    @Override
     public boolean checkWrongPassword(String password) {
         return !this.password.equals(password);
+    }
+
+    public boolean isSameMember(Member other) {
+        return id.equals(other.id);
     }
 }
