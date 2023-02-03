@@ -3,7 +3,6 @@ package nextstep.waiting.controller;
 import auth.domain.LoginUser;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.domain.MemberEntity;
-import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.exception.ReservationException;
@@ -41,12 +40,12 @@ public class WaitingController {
     public ResponseEntity<Void> create(
             @LoginUser MemberEntity member,
             @RequestBody ReservationRequest request) {
-        Reservation reservation = reservationMapper.fromRequest(member, request);
+        ReservationEntity reservation = reservationMapper.fromRequest(member, request);
 
         return ResponseEntity.created(createReservationOrWaiting(reservation)).build();
     }
 
-    private URI createReservationOrWaiting(Reservation reservation) {
+    private URI createReservationOrWaiting(ReservationEntity reservation) {
         try {
             ReservationEntity reservationEntity = reservationService.create(reservation);
 

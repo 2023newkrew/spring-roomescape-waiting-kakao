@@ -2,7 +2,6 @@ package nextstep.waiting.service;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.member.domain.MemberEntity;
-import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.repository.ReservationRepository;
 import nextstep.schedule.domain.ScheduleEntity;
@@ -29,12 +28,11 @@ public class WaitingServiceImpl implements WaitingService {
 
     @Transactional
     @Override
-    public WaitingEntity create(Reservation reservation) {
-        ReservationEntity reservationEntity = reservation.toEntity();
-        if (reservationRepository.existsByMemberAndSchedule(reservationEntity)) {
+    public WaitingEntity create(ReservationEntity reservation) {
+        if (reservationRepository.existsByMemberAndSchedule(reservation)) {
             throw new WaitingException(WaitingErrorMessage.ALREADY_RESERVED);
         }
-        return tryInsert(toWaiting(reservationEntity));
+        return tryInsert(toWaiting(reservation));
     }
 
     private WaitingEntity tryInsert(WaitingEntity waiting) {
