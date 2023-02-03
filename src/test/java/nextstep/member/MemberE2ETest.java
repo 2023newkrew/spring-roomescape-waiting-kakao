@@ -1,8 +1,8 @@
 package nextstep.member;
 
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
 import io.restassured.RestAssured;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +23,7 @@ public class MemberE2ETest {
 
     @BeforeEach
     void setUp() {
+        // 관리자 생성
         MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()
@@ -32,6 +33,7 @@ public class MemberE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
+        // 토큰 생성
         TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
         var response = RestAssured
                 .given().log().all()
@@ -48,7 +50,7 @@ public class MemberE2ETest {
     @DisplayName("멤버를 생성한다")
     @Test
     public void create() {
-        MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", "ADMIN");
+        MemberRequest body = new MemberRequest("other", "password", "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +62,7 @@ public class MemberE2ETest {
 
     @DisplayName("내 정보를 조회한다")
     @Test
-    public void showThemes() {
+    public void me() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -69,7 +71,7 @@ public class MemberE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        Member member = response.as(Member.class);
+        MemberResponse member = response.as(MemberResponse.class);
         assertThat(member.getUsername()).isNotNull();
     }
 }

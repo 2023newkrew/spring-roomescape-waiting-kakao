@@ -1,72 +1,72 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import lombok.RequiredArgsConstructor;
+import nextstep.event.ReservationDeleteEvent;
+import nextstep.exception.*;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
-import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    private final ReservationDao reservationDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final MemberDao memberDao;
+    private final ApplicationEventPublisher publisher;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
-        this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
-        this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
-    }
+    public Long create(Long memberId, ReservationRequest reservationRequest) {
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(() -> new MemberException(RoomEscapeExceptionCode.MEMBER_NOT_FOUND));
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(() -> new ScheduleException(RoomEscapeExceptionCode.SCHEDULE_NOT_FOUND));
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+        Reservation newReservation = new Reservation(schedule, member);
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
+            throw new ReservationException(RoomEscapeExceptionCode.RESERVED_SCHEDULE);
         }
-
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
 
         return reservationDao.save(newReservation);
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
+    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, String date) {
+        themeDao.findById(themeId)
+                .orElseThrow(() -> new ThemeException(RoomEscapeExceptionCode.THEME_NOT_FOUND));
 
-        return reservationDao.findAllByThemeIdAndDate(themeId, date);
+        return reservationDao.findAllByThemeIdAndDate(themeId, date)
+                .stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
     }
 
-    public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
-
+    public void deleteById(Long memberId, Long id) {
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(() -> new MemberException(RoomEscapeExceptionCode.MEMBER_NOT_FOUND));
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new ReservationException(RoomEscapeExceptionCode.RESERVATION_NOT_FOUND));
         if (!reservation.sameMember(member)) {
-            throw new AuthenticationException();
+            throw new ReservationException(RoomEscapeExceptionCode.NOT_OWN_RESERVATION);
         }
 
         reservationDao.deleteById(id);
+
+        publisher.publishEvent(new ReservationDeleteEvent(reservation));
+    }
+
+    public List<ReservationResponse> findByMemberId(Long memberId) {
+        return reservationDao.findByMemberId(memberId)
+                .stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
     }
 }

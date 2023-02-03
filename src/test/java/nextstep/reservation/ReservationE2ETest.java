@@ -22,11 +22,12 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     private ReservationRequest request;
     private Long themeId;
-    private Long scheduleId;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
+
+        // 테마 생성
         ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
         var themeResponse = RestAssured
                 .given().log().all()
@@ -40,6 +41,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         String[] themeLocation = themeResponse.header("Location").split("/");
         themeId = Long.parseLong(themeLocation[themeLocation.length - 1]);
 
+        // 스케줄 생성
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
                 .given().log().all()
@@ -51,11 +53,9 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
         String[] scheduleLocation = scheduleResponse.header("Location").split("/");
-        scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
+        Long scheduleId = Long.parseLong(scheduleLocation[scheduleLocation.length - 1]);
 
-        request = new ReservationRequest(
-                scheduleId
-        );
+        request = new ReservationRequest(scheduleId);
     }
 
     @DisplayName("예약을 생성한다")
@@ -73,7 +73,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("비로그인 사용자가 예약을 생성한다")
+    @DisplayName("비로그인 사용자가 예약을 생성할때 401코드가 반환된다.")
     @Test
     void createWithoutLogin() {
         var response = RestAssured
@@ -87,20 +87,38 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
-    @DisplayName("예약을 조회한다")
+    @DisplayName("테마id와 날짜를 통해 예약을 조회한다")
     @Test
     void show() {
         createReservation();
 
         var response = RestAssured
                 .given().log().all()
+                .auth().oauth2(token.getAccessToken())
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        List<Reservation> reservations = response.jsonPath().getList(".", Reservation.class);
+        List<ReservationResponse> reservations = response.jsonPath().getList(".", ReservationResponse.class);
+        assertThat(reservations.size()).isEqualTo(1);
+    }
+
+    @DisplayName("나의 예약을 조회한다")
+    @Test
+    void mine() {
+        createReservation();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .extract();
+
+        List<ReservationResponse> reservations = response.jsonPath().getList(".", ReservationResponse.class);
         assertThat(reservations.size()).isEqualTo(1);
     }
 
@@ -119,7 +137,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("중복 예약을 생성한다")
+    @DisplayName("이미 예약된 스케줄로 예약을 생성할 때 400에러가 반환된다.")
     @Test
     void createDuplicateReservation() {
         createReservation();
@@ -136,11 +154,12 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("예약이 없을 때 예약 목록을 조회한다")
+    @DisplayName("예약이 없을 때 예약 목록을 조회하면 빈 리스트가 반환된다.")
     @Test
     void showEmptyReservations() {
         var response = RestAssured
                 .given().log().all()
+                .auth().oauth2(token.getAccessToken())
                 .param("themeId", themeId)
                 .param("date", DATE)
                 .when().get("/reservations")
@@ -151,7 +170,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(reservations.size()).isEqualTo(0);
     }
 
-    @DisplayName("없는 예약을 삭제한다")
+    @DisplayName("없는 예약을 삭제하면 404코드가 반환된다.")
     @Test
     void createNotExistReservation() {
         var response = RestAssured
@@ -161,10 +180,10 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    @DisplayName("다른 사람이 예약을삭제한다")
+    @DisplayName("유효하지 않은 토큰으로 예약을 삭제하려고 시도하면 401코드가 반환된다.")
     @Test
     void deleteReservationOfOthers() {
         createReservation();

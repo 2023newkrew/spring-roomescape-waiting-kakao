@@ -1,16 +1,12 @@
 package nextstep.reservation;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public class ReservationRequest {
-    private Long scheduleId;
-
-    public ReservationRequest() {
-    }
-
-    public ReservationRequest(Long scheduleId) {
-        this.scheduleId = scheduleId;
-    }
-
-    public Long getScheduleId() {
-        return scheduleId;
-    }
+    @JsonValue
+    private final Long scheduleId;
 }

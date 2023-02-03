@@ -1,5 +1,6 @@
 package nextstep.theme;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,14 +9,12 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class ThemeDao {
-    private JdbcTemplate jdbcTemplate;
-
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
@@ -40,9 +39,11 @@ public class ThemeDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Theme findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, desc, price from theme where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return jdbcTemplate.query(sql, rowMapper, id)
+                .stream()
+                .findAny();
     }
 
     public List<Theme> findAll() {

@@ -1,39 +1,24 @@
 package nextstep.reservation;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
 import java.util.Objects;
 
+@RequiredArgsConstructor
+@Getter
 public class Reservation {
-    private Long id;
-    private Schedule schedule;
-    private Member member;
-
-    public Reservation() {
-    }
+    private final Long id;
+    @NonNull
+    private final Schedule schedule;
+    @NonNull
+    private final Member member;
 
     public Reservation(Schedule schedule, Member member) {
-        this.schedule = schedule;
-        this.member = member;
-    }
-
-    public Reservation(Long id, Schedule schedule, Member member) {
-        this.id = id;
-        this.schedule = schedule;
-        this.member = member;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Schedule getSchedule() {
-        return schedule;
-    }
-
-    public Member getMember() {
-        return member;
+        this(null, schedule, member);
     }
 
     public boolean sameMember(Member member) {
