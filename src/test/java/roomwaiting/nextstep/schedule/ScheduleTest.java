@@ -3,10 +3,9 @@ package roomwaiting.nextstep.schedule;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import roomwaiting.nextstep.RoomEscapeApplication;
-import roomwaiting.AcceptanceTestExecutionListener;
 import roomwaiting.nextstep.member.Member;
 import roomwaiting.nextstep.member.MemberService;
+import roomwaiting.nextstep.reservation.ReservationStatus;
 import roomwaiting.nextstep.reservation.dao.ReservationDao;
 import roomwaiting.nextstep.reservation.domain.Reservation;
 import roomwaiting.nextstep.theme.Theme;
@@ -16,11 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.TestExecutionListeners;
 import roomwaiting.nextstep.AbstractE2ETest;
 
 import java.time.LocalDate;
@@ -28,14 +24,10 @@ import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {RoomEscapeApplication.class})
-@TestExecutionListeners(value = {AcceptanceTestExecutionListener.class,}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class ScheduleTest extends AbstractE2ETest {
 
     private static Long themeId;
     private Reservation reservation;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
     @Autowired
     private ReservationDao reservationDao;
     @Autowired
@@ -45,7 +37,7 @@ public class ScheduleTest extends AbstractE2ETest {
     public void setUp() {
         super.setUp();
 
-        ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
+        ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000L);
         var themeResponse = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -146,11 +138,12 @@ public class ScheduleTest extends AbstractE2ETest {
         reservation = new Reservation(
                 new Schedule(
                         Long.parseLong(location.split("/")[2]),
-                        new Theme(themeId, "테마이름", "테마설명", 22000),
+                        new Theme(themeId, "테마이름", "테마설명", 22000L),
                         LocalDate.parse("2022-08-11"),
                         LocalTime.parse("13:00")
                 ),
-                member
+                member,
+                ReservationStatus.APPROVED
         );
         reservationDao.save(reservation);
         String adminLocation = "/admin" + location;

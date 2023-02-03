@@ -1,6 +1,7 @@
 package roomwaiting.nextstep.reservation.domain;
 
 import roomwaiting.nextstep.member.Member;
+import roomwaiting.nextstep.reservation.ReservationStatus;
 import roomwaiting.nextstep.schedule.Schedule;
 
 import java.util.Objects;
@@ -9,19 +10,23 @@ public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
+    private ReservationStatus status;
+
 
     public Reservation() {
     }
 
-    public Reservation(Schedule schedule, Member member) {
+    public Reservation(Schedule schedule, Member member, ReservationStatus status) {
         this.schedule = schedule;
         this.member = member;
+        this.status = status;
     }
 
-    public Reservation(Long id, Schedule schedule, Member member) {
+    public Reservation(Long id, Schedule schedule, Member member, ReservationStatus status) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+        this.status = status;
     }
 
     public Long getId() {
@@ -34,6 +39,10 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
     }
 
     public boolean sameMember(Member member) {

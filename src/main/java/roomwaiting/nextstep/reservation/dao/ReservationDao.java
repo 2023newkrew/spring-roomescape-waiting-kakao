@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import roomwaiting.nextstep.reservation.ReservationStatus;
 import roomwaiting.nextstep.reservation.domain.Reservation;
 import roomwaiting.nextstep.dbmapper.DatabaseMapper;
 import roomwaiting.nextstep.dbmapper.H2Mapper;
@@ -27,13 +28,14 @@ public class ReservationDao {
     }
 
     public Long save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
+        String sql = "INSERT INTO reservation (schedule_id, member_id, status) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, reservation.getSchedule().getId());
             ps.setLong(2, reservation.getMember().getId());
+            ps.setString(3, reservation.getStatus().name());
             return ps;
 
         }, keyHolder);
@@ -78,9 +80,15 @@ public class ReservationDao {
             "reservation.id, reservation.schedule_id, reservation.member_id, " +
             "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
             "theme.id, theme.name, theme.description, theme.price, " +
-            "member.id, member.username, member.password, member.name, member.phone, member.role " +
+            "member.id, member.username, member.password, member.name, member.phone, member.role, " +
+            "status " +
             "from reservation " +
             "inner join schedule on reservation.schedule_id = schedule.id " +
             "inner join theme on schedule.theme_id = theme.id " +
             "inner join member on reservation.member_id = member.id ";
+
+    public void updateState(ReservationStatus status, Long id) {
+        String sql = "UPDATE reservation SET STATUS=? where id = ?;";
+        jdbcTemplate.update(sql, status.name(), id);
+    }
 }

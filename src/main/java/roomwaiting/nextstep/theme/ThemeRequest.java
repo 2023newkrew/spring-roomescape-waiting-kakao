@@ -3,9 +3,9 @@ package roomwaiting.nextstep.theme;
 public class ThemeRequest {
     private final String name;
     private final String description;
-    private final int price;
+    private final Long price;
 
-    public ThemeRequest(String name, String description, int price) {
+    public ThemeRequest(String name, String description, Long price) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -19,7 +19,7 @@ public class ThemeRequest {
         return description;
     }
 
-    public int getPrice() {
+    public Long getPrice() {
         return price;
     }
 

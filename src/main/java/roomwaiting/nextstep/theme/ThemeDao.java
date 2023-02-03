@@ -32,7 +32,7 @@ public class ThemeDao {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, theme.getName());
             ps.setString(2, theme.getDescription());
-            ps.setInt(3, theme.getPrice());
+            ps.setLong(3, theme.getPrice());
             return ps;
 
         }, keyHolder);
