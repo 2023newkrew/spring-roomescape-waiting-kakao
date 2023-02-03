@@ -26,14 +26,33 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @PostMapping("/reservations")
+    public ResponseEntity createReservation(@LoginUser Member member, @RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.createReservation(reservationRequest.toReservation(member.getId()));
+        return ResponseEntity.created(URI.create("/reservations/" + id)).build();
+    }
+
     @PostMapping("/reservation-waitings")
-    public ResponseEntity create(@LoginUser Member member, @RequestBody ReservationRequest reservationRequest) {
-        Reservation reservation = reservationService.create(reservationRequest.toReservation(member.getId()));
+    public ResponseEntity createWaiting(@LoginUser Member member, @RequestBody ReservationRequest reservationRequest) {
+        Reservation reservation = reservationService.createWaiting(reservationRequest.toReservation(member.getId()));
         if (reservation.isConfirmed()) {
             return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).build();
         }
         return ResponseEntity.created(URI.create("/reservation-waitings/" + reservation.getId())).build();
     }
+
+    @DeleteMapping("/reservations/{id}")
+    public ResponseEntity deleteReservation(@LoginUser Member member, @PathVariable Long id) {
+        reservationService.deleteReservation(id, member.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/reservation-waitings/{id}")
+    public ResponseEntity deleteWaiting(@LoginUser Member member, @PathVariable Long id) {
+        reservationService.deleteWaiting(id, member.getId());
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping(value = "/reservations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> reservations = reservationService.findByThemeIdAndDate(themeId, LocalDate.parse(date));
@@ -42,12 +61,6 @@ public class ReservationController {
             responseBody.add(new ReservationResponse(reservation));
         }
         return ResponseEntity.ok().body(responseBody);
-    }
-
-    @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginUser Member member, @PathVariable Long id) {
-        reservationService.delete(id, member.getId());
-        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(AuthenticationException.class)

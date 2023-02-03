@@ -21,7 +21,16 @@ public class ReservationService {
         return reservationRepository.findByThemeIdAndDate(themeId, date);
     }
 
-    public Reservation create(Reservation reservation) {
+    public Long createReservation(Reservation reservation) {
+        List<Reservation> reservations = reservationRepository.findByScheduleId(reservation.getSchedule().getId());
+        if (!reservations.isEmpty()) {
+            throw new RuntimeException();
+        }
+        reservation.confirmed();
+        return reservationRepository.save(reservation);
+    }
+
+    public Reservation createWaiting(Reservation reservation) {
         reservation.waiting();
         List<Reservation> reservations = reservationRepository.findByScheduleId(reservation.getSchedule().getId());
         if (reservations.isEmpty()) {
@@ -30,16 +39,27 @@ public class ReservationService {
         return new Reservation(reservationRepository.save(reservation), reservation.getStatus());
     }
 
-    public void delete(Long id, Long memberId) {
+    public void deleteReservation(Long id, Long memberId) {
         Reservation reservation = reservationRepository.findById(id);
 
-        if (reservation == null) {
+        if (reservation == null || reservation.getStatus() != "CONFIRMED") {
             throw new EntityNotFoundException();
         }
         if (!reservation.isReservationOf(memberId)) {
             throw new AuthenticationException();
         }
+        reservationRepository.delete(id);
+    }
 
+    public void deleteWaiting(Long id, Long memberId) {
+        Reservation reservation = reservationRepository.findById(id);
+
+        if (reservation == null || reservation.getStatus() != "WAITING") {
+            throw new EntityNotFoundException();
+        }
+        if (!reservation.isReservationOf(memberId)) {
+            throw new AuthenticationException();
+        }
         reservationRepository.delete(id);
     }
 }

@@ -61,13 +61,13 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약을 신청한다")
     @Test
-    void create() {
+    void createReservation() {
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/reservation-waitings")
+                .when().post("/reservations")
                 .then().log().all()
                 .extract();
 
@@ -77,8 +77,23 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("이미 예약된 스케줄을 대상으로 예약을 신청한다")
     @Test
+    void createReservationForNotEmpty() {
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservations")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("이미 예약된 스케줄을 대상으로 예약 대기를 신청한다")
+    @Test
     void createWaiting() {
-        createReservation();
+        create();
 
         var response = RestAssured
                 .given().log().all()
@@ -91,6 +106,22 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location").startsWith("/reservation-waitings/")).isTrue();
+    }
+
+    @DisplayName("예약이 없는 스케줄을 대상으로 예약 대기를 신청한다")
+    @Test
+    void createWaitingForEmpty() {
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location").startsWith("/reservations/")).isTrue();
     }
 
     @DisplayName("비로그인 사용자가 예약을 생성한다")
@@ -110,7 +141,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 조회한다")
     @Test
     void show() {
-        createReservation();
+        create();
 
         RestAssured.given().log().all()
                 .param("themeId", themeId)
@@ -123,13 +154,30 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("예약을 삭제한다")
     @Test
-    void delete() {
-        var reservation = createReservation();
+    void deleteReservation() {
+        var reservation = create();
 
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
                 .when().delete(reservation.header("Location"))
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("예약 대기를 삭제한다")
+    @Test
+    void deleteWaiting() {
+        create();
+        var waiting = create();
+        assertThat(waiting.header("Location")).startsWith("/reservation-waitings/");
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete(waiting.header("Location"))
                 .then().log().all()
                 .extract();
 
@@ -167,7 +215,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("다른 사람이 예약을삭제한다")
     @Test
     void deleteReservationOfOthers() {
-        createReservation();
+        create();
 
         var response = RestAssured
                 .given().log().all()
@@ -179,7 +227,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
-    private ExtractableResponse<Response> createReservation() {
+    private ExtractableResponse<Response> create() {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
