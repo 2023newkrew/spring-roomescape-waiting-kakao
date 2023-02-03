@@ -136,4 +136,9 @@ public class ReservationDao {
         String sql = "DELETE FROM reservation where id = ?;";
         jdbcTemplate.update(sql, id);
     }
+
+    public void updateStatus(long id, ReservationStatus status) {
+        String sql = "UPDATE reservation SET status = ? WHERE id = ?;";
+        jdbcTemplate.update(sql, status, id);
+    }
 }

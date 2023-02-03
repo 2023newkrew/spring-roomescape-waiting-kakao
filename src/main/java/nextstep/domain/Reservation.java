@@ -23,22 +23,6 @@ public class Reservation {
         this.reservationStatus = reservationStatus;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Schedule getSchedule() {
-        return schedule;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public ReservationStatus getReservationStatus() {
-        return reservationStatus;
-    }
-
     public boolean sameMember(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }

@@ -13,10 +13,11 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class ScheduleDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public ScheduleDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -34,7 +35,7 @@ public class ScheduleDao {
             resultSet.getTime("schedule.time").toLocalTime()
     );
 
-    public Long save(Schedule schedule) {
+    public long save(Schedule schedule) {
         String sql = "INSERT INTO schedule (theme_id, date, time) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -47,7 +48,7 @@ public class ScheduleDao {
 
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public Schedule findById(long id) {

@@ -31,7 +31,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<?> readReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<?> readReservations(@RequestParam long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
@@ -43,9 +43,15 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<?> deleteReservation(@LoginMember UserDetails userDetails, @PathVariable long id) {
         reservationService.deleteById(userDetails, id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<?> cancelReservation(@LoginMember UserDetails userDetails, @PathVariable long id) {
+        reservationService.cancelRequestById(userDetails.getRole(), id);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(Exception.class)

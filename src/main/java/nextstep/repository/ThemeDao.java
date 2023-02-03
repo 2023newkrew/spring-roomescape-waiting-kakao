@@ -9,10 +9,11 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class ThemeDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -25,7 +26,7 @@ public class ThemeDao {
             resultSet.getInt("price")
     );
 
-    public Long save(Theme theme) {
+    public long save(Theme theme) {
         String sql = "INSERT INTO theme (name, desc, price) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -38,7 +39,7 @@ public class ThemeDao {
 
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public Theme findById(long id) {

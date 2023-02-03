@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public class WaitingDao {
             )
     );
 
-    public Long save(Waiting waiting) {
+    public long save(Waiting waiting) {
         String sql = "INSERT INTO waiting (schedule_id, member_id) VALUES (?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -55,7 +56,7 @@ public class WaitingDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public Long getPriority(long scheduleId, long waitingId) {

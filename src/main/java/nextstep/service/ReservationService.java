@@ -1,14 +1,12 @@
 package nextstep.service;
 
+import auth.domain.Role;
 import auth.domain.UserDetails;
 import auth.support.AuthenticationException;
 import nextstep.controller.dto.request.ReservationRequest;
 import nextstep.controller.dto.response.ReservationResponse;
 import nextstep.domain.*;
-import nextstep.repository.MemberDao;
-import nextstep.repository.ReservationDao;
-import nextstep.repository.ScheduleDao;
-import nextstep.repository.ThemeDao;
+import nextstep.repository.*;
 import nextstep.support.DuplicateEntityException;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +19,14 @@ public class ReservationService {
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
+    public final SaleHistoryDao saleHistoryDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, SaleHistoryDao saleHistoryDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.saleHistoryDao = saleHistoryDao;
     }
 
     public long create(UserDetails userDetails, ReservationRequest reservationRequest) {
@@ -76,5 +76,72 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+    }
+
+    public void approveReservationById(long id) {
+        reservationDao.updateStatus(id, ReservationStatus.APPROVED);
+        Reservation reservation = reservationDao.findById(id);
+        saleHistoryDao.save(
+                new SaleHistory(
+                        reservation.getSchedule().getTheme().getName(),
+                        reservation.getSchedule().getTheme().getPrice(),
+                        reservation.getSchedule().getDate(),
+                        reservation.getSchedule().getTime(),
+                        reservation.getMember().getUsername(),
+                        reservation.getMember().getPhone(),
+                        id
+                )
+        );
+    }
+
+    public void cancelRequestById(Role role, long id) {
+        Reservation reservation = reservationDao.findById(id);
+        switch (reservation.getReservationStatus()) {
+            case CREATED -> {
+                reservationDao.updateStatus(id, ReservationStatus.CANCELLED);
+                /* 매출 이력을 삭제하지 않고, 역방향 매출 이력을 생성하여 취소한 매출로 처리 */
+                saleHistoryDao.save(
+                        new SaleHistory(
+                                reservation.getSchedule().getTheme().getName(),
+                                reservation.getSchedule().getTheme().getPrice() * -1,
+                                reservation.getSchedule().getDate(),
+                                reservation.getSchedule().getTime(),
+                                reservation.getMember().getUsername(),
+                                reservation.getMember().getPhone(),
+                                id
+                        )
+                );
+            }
+            case APPROVED -> reservationDao.updateStatus(id, ReservationStatus.REQUESTED_CANCEL);
+        }
+    }
+
+    public void updateStatusById(long id, ReservationStatus status) {
+        /* 관리자의 예약 거절과 예약 취소는 같은 동작으로 수행
+         * 승인한 예약 취소 요청(REQUESTED_CANCEL), 예약 승인(APPROVED) → 역방항 매출 기록 후 취소 처리
+         * 예약 요청(CREATED) → 취소 처리
+         */
+        Reservation reservation = reservationDao.findById(id);
+        switch (reservation.getReservationStatus()) {
+            /* 승인한 예약 취소 요청 상태, 예약 승인 상태 */
+            case REQUESTED_CANCEL, APPROVED -> {
+                saleHistoryDao.save(
+                        new SaleHistory(
+                                reservation.getSchedule().getTheme().getName(),
+                                reservation.getSchedule().getTheme().getPrice() * -1,
+                                reservation.getSchedule().getDate(),
+                                reservation.getSchedule().getTime(),
+                                reservation.getMember().getUsername(),
+                                reservation.getMember().getPhone(),
+                                id
+                        )
+                );
+                reservationDao.updateStatus(id, status);
+            }
+            /* 예약 요청 상태 */
+            case CREATED -> {
+                reservationDao.updateStatus(id, status);
+            }
+        }
     }
 }
