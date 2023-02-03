@@ -1,20 +1,19 @@
 package nextstep.member;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
-    private MemberDao memberDao;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
-    }
+    private final MemberDao memberDao;
 
-    public Long create(MemberRequest memberRequest) {
+    public Long create(final MemberRequest memberRequest) {
         return memberDao.save(memberRequest.toEntity());
     }
 
-    public Member findById(Long id) {
+    public Member findById(final Long id) {
         return memberDao.findById(id);
     }
 }

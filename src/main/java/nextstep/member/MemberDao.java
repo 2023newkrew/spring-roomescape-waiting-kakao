@@ -1,28 +1,25 @@
 package nextstep.member;
 
+import java.sql.PreparedStatement;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.sql.PreparedStatement;
-
 @Component
+@RequiredArgsConstructor
 public class MemberDao {
+
     public final JdbcTemplate jdbcTemplate;
-
-    public MemberDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Member> rowMapper = (resultSet, rowNum) -> new Member(
-            resultSet.getLong("id"),
-            resultSet.getString("username"),
-            resultSet.getString("password"),
-            resultSet.getString("name"),
-            resultSet.getString("phone"),
-            resultSet.getString("role")
+        resultSet.getLong("id"),
+        resultSet.getString("username"),
+        resultSet.getString("password"),
+        resultSet.getString("name"),
+        resultSet.getString("phone"),
+        resultSet.getString("role")
     );
 
     public Long save(Member member) {
@@ -40,7 +37,8 @@ public class MemberDao {
 
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return keyHolder.getKey()
+            .longValue();
     }
 
     public Member findById(Long id) {

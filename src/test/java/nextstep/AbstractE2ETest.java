@@ -1,18 +1,22 @@
 package nextstep;
 
 import io.restassured.RestAssured;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
+import auth.login.TokenRequest;
+import auth.login.TokenResponse;
 import nextstep.member.MemberRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AbstractE2ETest {
+    @LocalServerPort
+    int port;
+
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
 
@@ -20,6 +24,7 @@ public class AbstractE2ETest {
 
     @BeforeEach
     protected void setUp() {
+        RestAssured.port = port;
         MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()

@@ -1,4 +1,4 @@
-package nextstep.reservation;
+package nextstep.reservation_waiting;
 
 import java.util.Objects;
 import lombok.AllArgsConstructor;
@@ -12,13 +12,13 @@ import nextstep.schedule.Schedule;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Reservation {
+public class ReservationWaiting {
 
     private Long id;
     private Schedule schedule;
     private Member member;
 
-    public Reservation(Schedule schedule, Member member) {
+    public ReservationWaiting(Schedule schedule, Member member) {
         this.schedule = schedule;
         this.member = member;
     }

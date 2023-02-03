@@ -1,31 +1,32 @@
 package nextstep.schedule;
 
+import static nextstep.exception.ErrorMessage.NOT_EXIST_THEME;
+
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
+@RequiredArgsConstructor
 public class ScheduleService {
-    private ScheduleDao scheduleDao;
-    private ThemeDao themeDao;
 
-    public ScheduleService(ScheduleDao scheduleDao, ThemeDao themeDao) {
-        this.scheduleDao = scheduleDao;
-        this.themeDao = themeDao;
-    }
+    private final ScheduleDao scheduleDao;
+    private final ThemeDao themeDao;
 
-    public Long create(ScheduleRequest scheduleRequest) {
-        Theme theme = themeDao.findById(scheduleRequest.getThemeId());
+    public Long create(final ScheduleRequest scheduleRequest) {
+        Theme theme = themeDao.findById(scheduleRequest.getThemeId())
+            .orElseThrow(() -> new NullPointerException(NOT_EXIST_THEME.getMessage()));
+
         return scheduleDao.save(scheduleRequest.toEntity(theme));
     }
 
-    public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
+    public List<Schedule> findByThemeIdAndDate(final Long themeId, final String date) {
         return scheduleDao.findByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         scheduleDao.deleteById(id);
     }
 }

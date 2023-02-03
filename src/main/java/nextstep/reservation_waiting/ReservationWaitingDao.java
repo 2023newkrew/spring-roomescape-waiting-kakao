@@ -1,11 +1,11 @@
-package nextstep.reservation;
+package nextstep.reservation_waiting;
 
 import java.sql.PreparedStatement;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
+import nextstep.reservation.Reservation;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
 import org.springframework.dao.DataAccessException;
@@ -17,11 +17,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ReservationDao {
+public class ReservationWaitingDao {
 
-    public final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
-        resultSet.getLong("reservation.id"),
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<ReservationWaiting> rowMapper = (resultSet, rowNum) -> new ReservationWaiting(
+        resultSet.getLong("reservation_waiting.id"),
         new Schedule(
             resultSet.getLong("schedule.id"),
             new Theme(
@@ -45,50 +45,33 @@ public class ReservationDao {
         )
     );
 
-    public Long save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
+    public Long save(Reservation reservation, Member member) {
+        String sql = "INSERT INTO reservation_waiting (schedule_id, member_id) VALUES (?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, reservation.getSchedule()
                 .getId());
-            ps.setLong(2, reservation.getMember()
-                .getId());
+            ps.setLong(2, member.getId());
             return ps;
 
         }, keyHolder);
-
         return keyHolder.getKey()
             .longValue();
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
+    public Optional<ReservationWaiting> findById(Long id) {
         String sql = "SELECT " +
-            "reservation.id, reservation.schedule_id, reservation.member_id, " +
+            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
             "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
             "theme.id, theme.name, theme.desc, theme.price, " +
             "member.id, member.username, member.password, member.name, member.phone, member.role " +
-            "from reservation " +
-            "inner join schedule on reservation.schedule_id = schedule.id " +
+            "from reservation_waiting " +
+            "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
             "inner join theme on schedule.theme_id = theme.id " +
-            "inner join member on reservation.member_id = member.id " +
-            "where theme.id = ? and schedule.date = ?;";
-
-        return jdbcTemplate.query(sql, rowMapper, themeId, LocalDate.parse(date));
-    }
-
-    public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT " +
-            "reservation.id, reservation.schedule_id, reservation.member_id, " +
-            "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-            "theme.id, theme.name, theme.desc, theme.price, " +
-            "member.id, member.username, member.password, member.name, member.phone, member.role " +
-            "from reservation " +
-            "inner join schedule on reservation.schedule_id = schedule.id " +
-            "inner join theme on schedule.theme_id = theme.id " +
-            "inner join member on reservation.member_id = member.id " +
-            "where reservation.id = ?;";
+            "inner join member on reservation_waiting.member_id = member.id " +
+            "where reservation_waiting.id = ?;";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (DataAccessException e) {
@@ -96,42 +79,56 @@ public class ReservationDao {
         }
     }
 
-    public Optional<Reservation> findByScheduleId(Long id) {
+    public Optional<ReservationWaiting> findByMemberId(Long memberId) {
         String sql = "SELECT " +
-            "reservation.id, reservation.schedule_id, reservation.member_id, " +
+            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
             "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
             "theme.id, theme.name, theme.desc, theme.price, " +
             "member.id, member.username, member.password, member.name, member.phone, member.role " +
-            "from reservation " +
-            "inner join schedule on reservation.schedule_id = schedule.id " +
+            "from reservation_waiting " +
+            "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
             "inner join theme on schedule.theme_id = theme.id " +
-            "inner join member on reservation.member_id = member.id " +
-            "where schedule.id = ?;";
-
+            "inner join member on reservation_waiting.member_id = member.id " +
+            "where reservation_waiting.member_id = ?;";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, memberId));
         } catch (DataAccessException e) {
             return Optional.empty();
         }
     }
 
-    public void deleteById(Long id) {
-        String sql = "DELETE FROM reservation where id = ?;";
+    public void deleteById(long id) {
+        String sql = "DELETE FROM reservation_waiting where id = ?;";
         jdbcTemplate.update(sql, id);
     }
 
-    public List<Reservation> findAllByMemberId(Long memberId) {
+    public List<ReservationWaiting> findAllByMemberId(Long memberId) {
         String sql = "SELECT " +
-            "reservation.id, reservation.schedule_id, reservation.member_id, " +
+            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
             "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
             "theme.id, theme.name, theme.desc, theme.price, " +
             "member.id, member.username, member.password, member.name, member.phone, member.role " +
-            "from reservation " +
-            "inner join schedule on reservation.schedule_id = schedule.id " +
+            "from reservation_waiting " +
+            "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
             "inner join theme on schedule.theme_id = theme.id " +
-            "inner join member on reservation.member_id = member.id " +
-            "where reservation.member_id = ?;";
+            "inner join member on reservation_waiting.member_id = member.id " +
+            "where reservation_waiting.member_id = ?;";
 
         return jdbcTemplate.query(sql, rowMapper, memberId);
+    }
+
+    public List<ReservationWaiting> findAllByScheduleId(Long scheduleId) {
+        String sql = "SELECT " +
+            "reservation_waiting.id, reservation_waiting.schedule_id, reservation_waiting.member_id, " +
+            "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+            "theme.id, theme.name, theme.desc, theme.price, " +
+            "member.id, member.username, member.password, member.name, member.phone, member.role " +
+            "from reservation_waiting " +
+            "inner join schedule on reservation_waiting.schedule_id = schedule.id " +
+            "inner join theme on schedule.theme_id = theme.id " +
+            "inner join member on reservation_waiting.member_id = member.id " +
+            "where reservation_waiting.schedule_id = ?;";
+
+        return jdbcTemplate.query(sql, rowMapper, scheduleId);
     }
 }
