@@ -4,9 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.AbstractE2ETest;
-import nextstep.waiting.dto.response.ReservationWaitingResponseDto;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
+import nextstep.waiting.dto.response.ReservationWaitingResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
         var themeResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(themeRequest)
                 .when().post("/admin/themes")
@@ -45,7 +45,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(scheduleRequest)
                 .when().post("/admin/schedules")
@@ -134,7 +134,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("내 예약을 조회한다")
     @Test
     void show_my_reservations() {
-        var otherUserToken = generateNewMemberToken("otherUser", "password");
+        var otherUserToken = generateNewMemberToken("otherUser", "password", "USER");
 
         RestAssured
                 .given().log().all()
@@ -168,7 +168,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("내 예약대기를 조회한다")
     @Test
     void show_my_reservation_waitings() {
-        var otherUserToken = generateNewMemberToken("otherUser", "password");
+        var otherUserToken = generateNewMemberToken("otherUser", "password", "USER");
 
         RestAssured
                 .given().log().all()
@@ -202,18 +202,32 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("예약을 삭제한다")
     @Test
     void delete() {
-        var reservation = createReservation();
+        Long reservationId = createReservationAndGetId();
 
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete(reservation.header("Location"))
+                .when().patch("/reservations/" + reservationId + "/cancel")
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("관리자가 예약을 삭제한다")
+    @Test
+    void adminDelete() {
+        Long reservationId = createReservationAndGetId();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/" + reservationId + "/cancel")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 
     @DisplayName("예약대기를 삭제한다")
     @Test
@@ -228,10 +242,18 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .extract();
 
+        long waitingReservationId = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get(waitingReservation.header("Location"))
+                .then().log().all()
+                .extract()
+                .jsonPath().getList(".", ReservationWaitingResponseDto.class).get(0).getId();
+
         var waitingResponse = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete(waitingReservation.header("Location"))
+                .when().delete("/reservation-waitings/" + waitingReservationId)
                 .then().log().all()
                 .extract();
 
@@ -286,12 +308,12 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("다른 사람이 예약을삭제한다")
     @Test
     void deleteReservationOfOthers() {
-        createReservation();
+        Long reservationId = createReservationAndGetId();
 
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2("other-token")
-                .when().delete("/reservations/1")
+                .when().patch("/reservations/" + reservationId + "/cancel")
                 .then().log().all()
                 .extract();
 
@@ -307,5 +329,99 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
+    }
+
+    @DisplayName("예약을 승인한다.")
+    @Test
+    void reservationApprove() {
+        Long reservationId = createReservationAndGetId();
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/reservations/" + reservationId + "/approve")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("관리자가 아닌 사용자의 예약 승인은 실패한다.")
+    @Test
+    void should_canNotReservationApprove_when_notAdmin() {
+        Long reservationId = createReservationAndGetId();
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/reservations/" + reservationId + "/approve")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    private Long createReservationAndGetId() {
+        var reservation = createReservation();
+
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get(reservation.header("Location"))
+                .then().log().all()
+                .extract()
+                .jsonPath().getList(".", Reservation.class).get(0).getId();
+    }
+
+    @DisplayName("관리자가 예약 취소를 승인한다.")
+    @Test
+    void adminCancelApprove() {
+        Long reservationId = createReservationAndGetId();
+
+        RestAssured.given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/reservations/" + reservationId + "/approve")
+                .then().log().all();
+
+        RestAssured.given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/" + reservationId + "/cancel")
+                .then().log().all();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().get("/reservations/" + reservationId + "/cancel-approve")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("관리자가 아닌 사용자의 예약 취소 승인은 실패한다.")
+    @Test
+    void should_failed_when_userCancelApprove() {
+        Long reservationId = createReservationAndGetId();
+
+        RestAssured.given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/reservations/" + reservationId + "/approve")
+                .then().log().all();
+
+        RestAssured.given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().patch("/reservations/" + reservationId + "/cancel")
+                .then().log().all();
+
+        var response = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/" + reservationId + "/cancel-approve")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 }
