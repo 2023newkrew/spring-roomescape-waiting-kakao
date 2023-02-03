@@ -24,13 +24,13 @@ public class AdminController {
 
     @GetMapping("/reservations/{id}/cancel-approve")
     public ResponseEntity<?> cancelApproveReservation(@LoginMember UserDetails userDetails, @PathVariable long id) {
-        reservationService.updateStatusById(id, ReservationStatus.CANCELLED);
+        reservationService.cancelRequestedById(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/reservations/{id}/cancel-reject")
-    public ResponseEntity<?> cancelDenyReservation(@LoginMember UserDetails userDetails, @PathVariable long id) {
-        reservationService.updateStatusById(id, ReservationStatus.REJECTED);
+    public ResponseEntity<?> rejectReservation(@LoginMember UserDetails userDetails, @PathVariable long id) {
+        reservationService.rejectById(id);
         return ResponseEntity.ok().build();
     }
 }

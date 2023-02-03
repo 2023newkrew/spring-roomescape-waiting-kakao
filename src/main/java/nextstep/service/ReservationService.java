@@ -1,6 +1,5 @@
 package nextstep.service;
 
-import auth.domain.Role;
 import auth.domain.UserDetails;
 import auth.support.AuthenticationException;
 import nextstep.controller.dto.request.ReservationRequest;
@@ -11,7 +10,6 @@ import nextstep.support.DuplicateEntityException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +34,7 @@ public class ReservationService {
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
@@ -56,7 +54,7 @@ public class ReservationService {
     public List<Reservation> findAllByThemeIdAndDate(long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
@@ -69,7 +67,7 @@ public class ReservationService {
     public void deleteById(UserDetails userDetails, long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
 
         if (!reservation.sameMember(new Member(userDetails))) {
@@ -80,31 +78,60 @@ public class ReservationService {
     }
 
     public void approveReservationById(long id) {
-        reservationDao.updateStatus(id, ReservationStatus.APPROVED);
+        /*
+         * 예약 요청(CREATED) → 승인 처리
+         */
         Reservation reservation = reservationDao.findById(id);
-        saleHistoryDao.save(
-                new SaleHistory(
-                        reservation.getSchedule().getTheme().getName(),
-                        reservation.getSchedule().getTheme().getPrice(),
-                        reservation.getSchedule().getDate(),
-                        reservation.getSchedule().getTime(),
-                        reservation.getMember().getUsername(),
-                        reservation.getMember().getPhone(),
-                        id
-                )
-        );
-    }
-
-    public void cancelRequestById(long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (Objects.isNull(reservation)) {
+        if (reservation == null) {
             throw new IllegalArgumentException();
         }
 
         switch (reservation.getReservationStatus()) {
             case CREATED -> {
-                reservationDao.updateStatus(id, ReservationStatus.CANCELLED);
-                /* 매출 이력을 삭제하지 않고, 역방향 매출 이력을 생성하여 취소한 매출로 처리 */
+                reservationDao.updateStatus(id, ReservationStatus.APPROVED);
+                saleHistoryDao.save(
+                        new SaleHistory(
+                                reservation.getSchedule().getTheme().getName(),
+                                reservation.getSchedule().getTheme().getPrice(),
+                                reservation.getSchedule().getDate(),
+                                reservation.getSchedule().getTime(),
+                                reservation.getMember().getUsername(),
+                                reservation.getMember().getPhone(),
+                                id
+                        )
+                );
+            }
+        }
+    }
+
+    public void cancelById(long id) {
+        /*
+         * 예약 요청(CREATED) → 취소 처리
+         * 승인된 요청(REQUESTED_CANCEL) → 취소 요청 처리
+         */
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (reservation.getReservationStatus()) {
+            case CREATED -> reservationDao.updateStatus(id, ReservationStatus.CANCELLED);
+            case APPROVED -> reservationDao.updateStatus(id, ReservationStatus.REQUESTED_CANCEL);
+        }
+    }
+
+    public void cancelRequestedById(long id) {
+        /*
+         * 승인한 예약 취소 요청(REQUESTED_CANCEL) → 역방항 매출 기록 후 취소 처리
+         */
+        Reservation reservation = reservationDao.findById(id);
+        if (reservation == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (reservation.getReservationStatus()) {
+            /* 승인한 예약 취소 요청 상태 */
+            case REQUESTED_CANCEL -> {
                 saleHistoryDao.save(
                         new SaleHistory(
                                 reservation.getSchedule().getTheme().getName(),
@@ -116,18 +143,18 @@ public class ReservationService {
                                 id
                         )
                 );
+                reservationDao.updateStatus(id, ReservationStatus.CANCELLED);
             }
-            case APPROVED -> reservationDao.updateStatus(id, ReservationStatus.REQUESTED_CANCEL);
         }
     }
 
-    public void updateStatusById(long id, ReservationStatus status) {
-        /* 관리자의 예약 거절과 예약 취소는 같은 동작으로 수행
-         * 승인한 예약 취소 요청(REQUESTED_CANCEL), 예약 승인(APPROVED) → 역방항 매출 기록 후 취소 처리
-         * 예약 요청(CREATED) → 취소 처리
+    public void rejectById(long id) {
+        /*
+         * 예약 요청(CREATED) → 거절 처리
+         * 승인한 예약 취소 요청(APPROVED) → 역방항 매출 기록 후 거절 처리
          */
         Reservation reservation = reservationDao.findById(id);
-        if (Objects.isNull(reservation)) {
+        if (reservation == null) {
             throw new IllegalArgumentException();
         }
 
@@ -145,11 +172,11 @@ public class ReservationService {
                                 id
                         )
                 );
-                reservationDao.updateStatus(id, status);
+                reservationDao.updateStatus(id, ReservationStatus.REJECTED);
             }
             /* 예약 요청 상태 */
             case CREATED -> {
-                reservationDao.updateStatus(id, status);
+                reservationDao.updateStatus(id, ReservationStatus.REJECTED);
             }
         }
     }
