@@ -1,6 +1,6 @@
 package nextstep.member.mapper;
 
-import nextstep.member.domain.Member;
+import auth.domain.UserRole;
 import nextstep.member.domain.MemberEntity;
 import nextstep.member.dto.MemberRequest;
 import nextstep.member.dto.MemberResponse;
@@ -11,8 +11,7 @@ import org.mapstruct.Mapping;
 public interface MemberMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "role", ignore = true)
-    Member fromRequest(MemberRequest request);
+    MemberEntity fromRequest(MemberRequest request, UserRole role);
 
     MemberResponse toResponse(MemberEntity member);
 }

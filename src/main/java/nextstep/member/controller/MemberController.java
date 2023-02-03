@@ -1,6 +1,7 @@
 package nextstep.member.controller;
 
 import auth.domain.LoginUser;
+import auth.domain.UserRole;
 import auth.dto.TokenRequest;
 import auth.dto.TokenResponse;
 import auth.provider.JwtTokenProvider;
@@ -31,7 +32,7 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody @Validated MemberRequest request) {
-        MemberEntity member = service.create(mapper.fromRequest(request));
+        MemberEntity member = service.create(mapper.fromRequest(request, UserRole.NORMAL));
         URI location = URI.create(MEMBER_PATH + "/" + member.getId());
 
         return ResponseEntity.created(location).build();

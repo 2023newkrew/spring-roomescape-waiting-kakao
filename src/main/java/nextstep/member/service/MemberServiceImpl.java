@@ -1,8 +1,6 @@
 package nextstep.member.service;
 
-import auth.domain.UserRole;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.Member;
 import nextstep.member.domain.MemberEntity;
 import nextstep.member.exception.MemberErrorMessage;
 import nextstep.member.exception.MemberException;
@@ -20,8 +18,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public MemberEntity create(Member member) {
-        return tryInsert(member.toEntityWithRole(UserRole.NORMAL));
+    public MemberEntity create(MemberEntity member) {
+        return tryInsert(member);
     }
 
     private MemberEntity tryInsert(MemberEntity member) {

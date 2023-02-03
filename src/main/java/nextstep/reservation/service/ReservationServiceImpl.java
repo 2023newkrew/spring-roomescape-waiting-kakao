@@ -1,12 +1,14 @@
 package nextstep.reservation.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.reservation.domain.Reservation;
+import nextstep.member.domain.MemberEntity;
 import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.exception.ReservationErrorMessage;
 import nextstep.reservation.exception.ReservationException;
 import nextstep.reservation.repository.ReservationRepository;
-import nextstep.schedule.domain.Schedule;
+import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.schedule.exception.ScheduleErrorMessage;
+import nextstep.schedule.exception.ScheduleException;
 import nextstep.schedule.service.ScheduleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,16 +26,16 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Transactional
     @Override
-    public ReservationEntity create(Reservation reservation) {
-        validateSchedule(reservation.getSchedule());
+    public ReservationEntity create(ReservationEntity reservation) {
+        validateSchedule(reservation.getScheduleId());
 
-        return repository.insert(reservation.toEntity());
+        return repository.insert(reservation);
     }
 
-    private void validateSchedule(Schedule schedule) {
-        Long scheduleId = schedule.getId();
-        if (Objects.isNull(scheduleService.getById(scheduleId))) {
-            throw new ReservationException(ReservationErrorMessage.NOT_EXISTS);
+    private void validateSchedule(Long scheduleId) {
+        ScheduleEntity scheduleEntity = scheduleService.getById(scheduleId);
+        if (Objects.isNull(scheduleEntity)) {
+            throw new ScheduleException(ScheduleErrorMessage.NOT_EXISTS);
         }
         if (repository.existsByScheduleId(scheduleId)) {
             throw new ReservationException(ReservationErrorMessage.CONFLICT);

@@ -1,11 +1,11 @@
 package nextstep.reservation.service;
 
-import nextstep.reservation.domain.Reservation;
+import nextstep.member.domain.MemberEntity;
 import nextstep.reservation.domain.ReservationEntity;
 
 public interface ReservationService {
 
-    ReservationEntity create(Reservation reservation);
+    ReservationEntity create(ReservationEntity reservation);
 
     ReservationEntity getById(Long id);
 

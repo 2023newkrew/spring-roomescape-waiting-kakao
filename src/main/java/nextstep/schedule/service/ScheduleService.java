@@ -1,6 +1,5 @@
 package nextstep.schedule.service;
 
-import nextstep.schedule.domain.Schedule;
 import nextstep.schedule.domain.ScheduleEntity;
 
 import java.time.LocalDate;
@@ -8,7 +7,7 @@ import java.util.List;
 
 public interface ScheduleService {
 
-    ScheduleEntity create(Schedule schedule);
+    ScheduleEntity create(ScheduleEntity schedule);
 
     ScheduleEntity getById(Long id);
 

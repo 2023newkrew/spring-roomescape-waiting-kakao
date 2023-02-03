@@ -31,7 +31,7 @@ public abstract class AbstractControllerTest {
 
     static String SECRET_KEY = "learning-test-spring";
 
-    static int VALIDITY_IN_MILLISECONDS = 3600000;
+    static int VALIDITY_IN_MILLISECONDS = 3_600_000;
 
     static AuthenticationPrincipal PRINCIPAL = username -> new UserDetails() {
 

@@ -1,7 +1,6 @@
 package nextstep.theme.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.theme.domain.Theme;
 import nextstep.theme.domain.ThemeEntity;
 import nextstep.theme.exception.ThemeErrorMessage;
 import nextstep.theme.exception.ThemeException;
@@ -22,8 +21,8 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Transactional
     @Override
-    public ThemeEntity create(Theme theme) {
-        return tryInsert(theme.toEntity());
+    public ThemeEntity create(ThemeEntity theme) {
+        return tryInsert(theme);
     }
 
     private ThemeEntity tryInsert(ThemeEntity theme) {
@@ -47,8 +46,8 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Transactional
     @Override
-    public ThemeEntity update(Long id, Theme theme) {
-        if (!tryUpdate(id, theme.toEntity())) {
+    public ThemeEntity update(Long id, ThemeEntity theme) {
+        if (!tryUpdate(id, theme)) {
             throw new ThemeException(ThemeErrorMessage.NOT_EXISTS);
         }
 

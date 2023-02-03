@@ -28,7 +28,7 @@ public class ReservationController {
     public ResponseEntity<Void> createReservation(
             @LoginUser MemberEntity member,
             @RequestBody ReservationRequest request) {
-        ReservationEntity reservation = service.create(mapper.fromRequest(member.getId(), request));
+        ReservationEntity reservation = service.create(mapper.fromRequest(member, request));
         URI location = URI.create(RESERVATION_PATH + reservation.getId());
 
         return ResponseEntity.created(location).build();
