@@ -1,11 +1,14 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
+import nextstep.reservationwaiting.ReservationWaiting;
+import nextstep.reservationwaiting.ReservationWaitingDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
+import nextstep.support.NoScheduleException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -18,12 +21,14 @@ public class ReservationService {
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
+    private final ReservationWaitingDao reservationWaitingDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, ReservationWaitingDao reservationWaitingDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.reservationWaitingDao = reservationWaitingDao;
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
@@ -32,7 +37,7 @@ public class ReservationService {
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new NoScheduleException("There is no following schedule");
         }
 
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
@@ -57,6 +62,14 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
+    public List<Reservation> findAllByMemberId(Member member) {
+        if (member == null) {
+            throw new AuthenticationException();
+        }
+
+        return reservationDao.findAllByMemberId(member.getId());
+    }
+
     public void deleteById(Member member, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
@@ -68,5 +81,15 @@ public class ReservationService {
         }
 
         reservationDao.deleteById(id);
+
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findByScheduleId(reservation.getSchedule().getId());
+
+        if (reservationWaiting == null) {
+            return;
+        }
+
+        reservationWaitingDao.deleteById(reservationWaiting.getId());
+
+        reservationDao.save(Reservation.of(reservationWaiting));
     }
 }
