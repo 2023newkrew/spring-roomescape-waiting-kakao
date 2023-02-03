@@ -29,6 +29,7 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A-005", "올바르지 않은 형식의 토큰입니다."),
     INVALID_BEARER(HttpStatus.UNAUTHORIZED, "A-006", "올바르지 않은 형식의 전달자입니다."),
     REQUIRE_TOKEN(HttpStatus.UNAUTHORIZED, "A-007", "토큰이 필요합니다."),
+    REQUIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A-008", "해당 요청을 수행하려면 토큰이 필요합니다."),
 
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E-000", "서버의 에러입니다.");
