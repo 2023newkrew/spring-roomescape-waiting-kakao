@@ -1,9 +1,8 @@
-package app.nextstep.schedule;
+package app.nextstep;
 
 import app.nextstep.dto.ScheduleRequest;
-import io.restassured.RestAssured;
-import app.nextstep.AbstractE2ETest;
 import app.nextstep.dto.ThemeRequest;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,13 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class ScheduleE2ETest extends AbstractE2ETest {
     private Long themeId;
 
     @BeforeEach
     public void setUp() {
-        super.setUp();
         ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
         var response = RestAssured
                 .given().log().all()
@@ -52,16 +51,14 @@ public class ScheduleE2ETest extends AbstractE2ETest {
     public void showSchedules() {
         requestCreateSchedule();
 
-        var response = RestAssured
-                .given().log().all()
+        RestAssured.given().log().all()
                 .param("themeId", themeId)
                 .param("date", "2022-08-11")
                 .when().get("/schedules")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("size()", is(1));
     }
 
     @DisplayName("스케줄을 삭제한다")
@@ -79,7 +76,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    public String requestCreateSchedule() {
+    private String requestCreateSchedule() {
         ScheduleRequest body = new ScheduleRequest(1L, "2022-08-11", "13:00");
         return RestAssured
                 .given().log().all()

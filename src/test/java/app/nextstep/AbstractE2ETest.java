@@ -15,12 +15,14 @@ import org.springframework.test.annotation.DirtiesContext;
 public class AbstractE2ETest {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
-
-    protected TokenResponse token;
+    public static final String NAME = "name";
+    public static final String PHONE = "010-0000-0000";
+    public static final String ROLE = "ADMIN";
+    public TokenResponse token;
 
     @BeforeEach
-    protected void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+    public void setUpToken() {
+        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, NAME, PHONE, ROLE);
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

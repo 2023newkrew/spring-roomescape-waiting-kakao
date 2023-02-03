@@ -3,7 +3,9 @@ package app.nextstep.controller;
 import app.auth.support.LoginUser;
 import app.nextstep.domain.Member;
 import app.nextstep.dto.MemberRequest;
+import app.nextstep.dto.MemberResponse;
 import app.nextstep.service.MemberService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +26,9 @@ public class MemberController {
         return ResponseEntity.created(URI.create("/members/" + id)).build();
     }
 
-    @GetMapping("/me")
-    public ResponseEntity me(@LoginUser Member member) {
-        return ResponseEntity.ok(memberService.findById(member.getId()));
+    @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MemberResponse> me(@LoginUser Member member) {
+        new MemberResponse(memberService.findById(member.getId()));
+        return ResponseEntity.ok(new MemberResponse(memberService.findById(member.getId())));
     }
 }

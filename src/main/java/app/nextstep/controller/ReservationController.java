@@ -5,13 +5,16 @@ import app.auth.support.LoginUser;
 import app.nextstep.domain.Member;
 import app.nextstep.domain.Reservation;
 import app.nextstep.dto.ReservationRequest;
+import app.nextstep.dto.ReservationResponse;
 import app.nextstep.service.ReservationService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,28 +26,28 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginUser Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.createReservation(reservationRequest.toReservation(member.getId()));
-        return ResponseEntity.created(URI.create("/reservations/" + id)).build();
+    @PostMapping("/reservation-waitings")
+    public ResponseEntity create(@LoginUser Member member, @RequestBody ReservationRequest reservationRequest) {
+        Reservation reservation = reservationService.create(reservationRequest.toReservation(member.getId()));
+        if (reservation.isConfirmed()) {
+            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).build();
+        }
+        return ResponseEntity.created(URI.create("/reservation-waitings/" + reservation.getId())).build();
     }
-
-    @GetMapping("/reservations")
-    public ResponseEntity getReservations(@RequestParam Long themeId, @RequestParam String date) {
-        List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, LocalDate.parse(date));
-        return ResponseEntity.ok().body(results);
+    @GetMapping(value = "/reservations", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParam Long themeId, @RequestParam String date) {
+        List<Reservation> reservations = reservationService.findByThemeIdAndDate(themeId, LocalDate.parse(date));
+        List<ReservationResponse> responseBody = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            responseBody.add(new ReservationResponse(reservation));
+        }
+        return ResponseEntity.ok().body(responseBody);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity deleteReservation(@LoginUser Member member, @PathVariable Long id) {
         reservationService.delete(id, member.getId());
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/reservation-waitings")
-    public ResponseEntity createWaiting(@LoginUser Member member, @RequestBody ReservationRequest reservationRequest) {
-        Long id = reservationService.createWaiting(reservationRequest.toReservation(member.getId()));
-        return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
     @ExceptionHandler(AuthenticationException.class)

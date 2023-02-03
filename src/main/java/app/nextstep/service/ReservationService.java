@@ -3,7 +3,6 @@ package app.nextstep.service;
 import app.auth.support.AuthenticationException;
 import app.nextstep.domain.Reservation;
 import app.nextstep.repository.ReservationRepository;
-import app.nextstep.support.DuplicateEntityException;
 import app.nextstep.support.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -18,20 +17,17 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, LocalDate date) {
+    public List<Reservation> findByThemeIdAndDate(Long themeId, LocalDate date) {
         return reservationRepository.findByThemeIdAndDate(themeId, date);
     }
 
-    public Long createReservation(Reservation reservation) {
+    public Reservation create(Reservation reservation) {
+        reservation.waiting();
         List<Reservation> reservations = reservationRepository.findByScheduleId(reservation.getSchedule().getId());
-        if (!reservations.isEmpty()) {
-            throw new DuplicateEntityException();
+        if (reservations.isEmpty()) {
+            reservation.confirmed();
         }
-        return reservationRepository.save(reservation);
-    }
-
-    public Long createWaiting(Reservation reservation) {
-        return reservationRepository.save(reservation);
+        return new Reservation(reservationRepository.save(reservation), reservation.getStatus());
     }
 
     public void delete(Long id, Long memberId) {

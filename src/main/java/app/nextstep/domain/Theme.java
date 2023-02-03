@@ -6,10 +6,6 @@ public class Theme {
     private String desc;
     private Integer price;
 
-    public Theme() {
-
-    }
-
     public Theme(Long id, String name, String desc, Integer price) {
         this.id = id;
         this.name = name;

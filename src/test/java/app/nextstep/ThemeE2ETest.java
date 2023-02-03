@@ -1,17 +1,17 @@
-package app.nextstep.theme;
+package app.nextstep;
 
-import app.nextstep.dto.ThemeRequest;
-import io.restassured.RestAssured;
-import app.nextstep.AbstractE2ETest;
 import app.auth.dto.TokenRequest;
 import app.auth.dto.TokenResponse;
 import app.nextstep.dto.MemberRequest;
+import app.nextstep.dto.ThemeRequest;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class ThemeE2ETest extends AbstractE2ETest {
     @DisplayName("테마를 생성한다")
@@ -31,7 +31,6 @@ public class ThemeE2ETest extends AbstractE2ETest {
     @DisplayName("어드민이 아닌 사람이 테마를 생성한다")
     @Test
     public void createFromNormalUser() {
-
         MemberRequest memberBody = new MemberRequest(USERNAME+1, PASSWORD, "name", "010-1234-5678", "");
         RestAssured
                 .given().log().all()
@@ -69,14 +68,13 @@ public class ThemeE2ETest extends AbstractE2ETest {
     public void showThemes() {
         createTheme();
 
-        var response = RestAssured
-                .given().log().all()
+        RestAssured.given().log().all()
                 .param("date", "2022-08-11")
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .extract();
-        assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("size()", is(1));
     }
 
     @DisplayName("테마를 삭제한다")

@@ -81,14 +81,15 @@ public class ReservationDao {
         }
     }
 
-    public Long saveConfirmed(Long scheduleId, Long memberId) {
-        String sql = "INSERT INTO reservation (schedule_id, member_id, status) VALUES (?, ?, 'CONFIRMED');";
+    public Long save(Long scheduleId, Long memberId, String status) {
+        String sql = "INSERT INTO reservation (schedule_id, member_id, status) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, scheduleId);
             ps.setLong(2, memberId);
+            ps.setString(3, status);
             return ps;
 
         }, keyHolder);

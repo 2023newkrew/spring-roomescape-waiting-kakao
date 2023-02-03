@@ -6,10 +6,6 @@ public class Member extends User {
     private String name;
     private String phone;
 
-    public Member() {
-
-    }
-
     public Member(Long id, String username, String password, String role, String name, String phone) {
         super(id, username, password, role);
         this.name = name;

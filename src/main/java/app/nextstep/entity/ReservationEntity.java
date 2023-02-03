@@ -16,6 +16,6 @@ public class ReservationEntity {
     }
 
     public Reservation toReservation() {
-        return new Reservation(id, schedule.toSchedule(), member.toMember());
+        return new Reservation(id, schedule.toSchedule(), member.toMember(), status);
     }
 }
