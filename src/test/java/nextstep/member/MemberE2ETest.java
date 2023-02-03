@@ -1,8 +1,8 @@
 package nextstep.member;
 
+import auth.TokenRequest;
+import auth.TokenResponse;
 import io.restassured.RestAssured;
-import nextstep.auth.TokenRequest;
-import nextstep.auth.TokenResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("멤버 E2E 테스트")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class MemberE2ETest {
@@ -48,7 +49,7 @@ public class MemberE2ETest {
     @DisplayName("멤버를 생성한다")
     @Test
     public void create() {
-        MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", "ADMIN");
+        MemberRequest body = new MemberRequest("other", "password", "name", "010-1234-5678", "ADMIN");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

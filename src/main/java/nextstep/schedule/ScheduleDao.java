@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,14 +13,12 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class ScheduleDao {
-    private JdbcTemplate jdbcTemplate;
-
-    public ScheduleDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Schedule> rowMapper = (resultSet, rowNum) -> new Schedule(
             resultSet.getLong("schedule.id"),
@@ -49,13 +48,15 @@ public class ScheduleDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Schedule findById(Long id) {
+    public Optional<Schedule> findById(Long id) {
         String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
                 "from schedule " +
                 "inner join theme on schedule.theme_id = theme.id " +
                 "where schedule.id = ?;";
 
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return jdbcTemplate.query(sql, rowMapper, id)
+                .stream()
+                .findAny();
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {

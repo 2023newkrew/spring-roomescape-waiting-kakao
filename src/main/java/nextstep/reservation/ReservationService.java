@@ -1,36 +1,39 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import auth.AuthenticationException;
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.support.DoesNotExistEntityException;
 import nextstep.support.DuplicateEntityException;
-import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationService {
-    public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
-    public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    private final ReservationDao reservationDao;
+    private final ThemeDao themeDao;
+    private final ScheduleDao scheduleDao;
+    private final MemberDao memberDao;
+    private final ApplicationEventPublisher publisher;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
-        this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
-        this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
-    }
+    public Long create(Long memberId, ReservationRequest reservationRequest) {
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(AuthenticationException::new);
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(DoesNotExistEntityException::new);
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
+        Reservation newReservation = new Reservation(
+                schedule,
+                member
+        );
         if (schedule == null) {
             throw new NullPointerException();
         }
@@ -40,33 +43,34 @@ public class ReservationService {
             throw new DuplicateEntityException();
         }
 
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
-
         return reservationDao.save(newReservation);
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
+        themeDao.findById(themeId)
+                .orElseThrow(DoesNotExistEntityException::new);
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
-
+    public void deleteById(Long memberId, Long id) {
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(AuthenticationException::new);
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(DoesNotExistEntityException::new);
         if (!reservation.sameMember(member)) {
             throw new AuthenticationException();
         }
 
         reservationDao.deleteById(id);
+
+        publisher.publishEvent(new ReservationDeleteEvent(reservation));
+    }
+
+    public List<ReservationResponse> findByMemberId(Long memberId) {
+        return reservationDao.findByMemberId(memberId)
+                .stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
     }
 }

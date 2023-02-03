@@ -1,5 +1,6 @@
 package nextstep.reservation;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.theme.Theme;
@@ -13,15 +14,13 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class ReservationDao {
 
-    public final JdbcTemplate jdbcTemplate;
-
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation.id"),
@@ -76,7 +75,21 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(date));
     }
 
-    public Reservation findById(Long id) {
+    public List<Reservation> findByMemberId(Long id) {
+        String sql = "SELECT " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "from reservation " +
+                "inner join schedule on reservation.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on reservation.member_id = member.id " +
+                "where member.id = ?;";
+        return jdbcTemplate.query(sql, rowMapper, id);
+    }
+
+    public Optional<Reservation> findById(Long id) {
         String sql = "SELECT " +
                 "reservation.id, reservation.schedule_id, reservation.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -87,11 +100,10 @@ public class ReservationDao {
                 "inner join theme on schedule.theme_id = theme.id " +
                 "inner join member on reservation.member_id = member.id " +
                 "where reservation.id = ?;";
-        try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (Exception e) {
-            return null;
-        }
+
+        return jdbcTemplate.query(sql, rowMapper, id)
+                .stream()
+                .findAny();
     }
 
     public List<Reservation> findByScheduleId(Long id) {
