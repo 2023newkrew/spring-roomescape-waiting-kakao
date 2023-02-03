@@ -3,7 +3,7 @@ package nextstep.presentation.admin;
 import lombok.RequiredArgsConstructor;
 import nextstep.dto.request.TransitionReservationStatusRequest;
 import nextstep.dto.response.SalesStatisticsResponse;
-import nextstep.service.ReservationApproveBatchService;
+import nextstep.service.ReservationTransitionBatchService;
 import nextstep.service.ReservationSalesStatisticsService;
 import nextstep.service.ReservationService;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminReservationController {
 
     private final ReservationService reservationService;
-    private final ReservationApproveBatchService reservationApproveBatchService;
+    private final ReservationTransitionBatchService reservationTransitionBatchService;
     private final ReservationSalesStatisticsService reservationSalesStatisticsService;
 
     @PutMapping("/{reservationId}/approve")
@@ -44,7 +44,7 @@ public class AdminReservationController {
 
     @PutMapping("/batch/transition")
     public ResponseEntity<Void> transitReservations(@RequestBody TransitionReservationStatusRequest transitionReservationStatusRequest) {
-        reservationApproveBatchService.transitReservationStatus(transitionReservationStatusRequest.getStatus());
+        reservationTransitionBatchService.transitionReservationStatus(transitionReservationStatusRequest.getStatus());
 
         return ResponseEntity.ok()
                 .build();

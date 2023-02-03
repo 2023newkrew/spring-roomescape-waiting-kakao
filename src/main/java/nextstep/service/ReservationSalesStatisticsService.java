@@ -50,7 +50,7 @@ public class ReservationSalesStatisticsService {
 
             salesHistorySearch.setLastHistoryId(salesHistories.get(salesHistories.size() - 1).getId());
             return salesHistories.size();
-        }, false);
+        });
     }
 
     private void process(List<SalesHistory> salesHistories, List<Theme> themes, SalesStatisticsResponse salesStatisticsResponse) {

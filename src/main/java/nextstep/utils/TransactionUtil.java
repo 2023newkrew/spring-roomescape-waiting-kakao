@@ -29,7 +29,15 @@ public class TransactionUtil {
     }
 
 
-    public <T> T executeTask(Supplier<T> supplier, boolean isReadOnly) {
+    public <T> T executeTask(Supplier<T> supplier) {
+        return execute(supplier, false);
+    }
+
+    public <T> T executeReadOnlyTask(Supplier<T> supplier) {
+        return execute(supplier, true);
+    }
+
+    private <T> T execute(Supplier<T> supplier, boolean isReadOnly) {
         DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
         transactionDefinition.setReadOnly(isReadOnly);
         TransactionStatus transaction = transactionManager.getTransaction(transactionDefinition);
@@ -43,10 +51,6 @@ public class TransactionUtil {
             transactionManager.rollback(transaction);
             throw e;
         }
-    }
-
-    public <T> T executeReadOnlyTask(Supplier<T> supplier) {
-        return executeTask(supplier, true);
     }
 
 }

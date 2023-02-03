@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Repository
 public class ReservationTransitionSnapshotDao {
@@ -16,10 +16,10 @@ public class ReservationTransitionSnapshotDao {
         failedReservationSearches.add(reservationTransitionSnapshot);
     }
 
-    public List<ReservationTransitionSnapshot> findIsAfterPrevStartTime(LocalDateTime prevStartTime) {
+    public Optional<ReservationTransitionSnapshot> findPrevSnapshotIfExists(LocalDateTime prevStartTime) {
         return failedReservationSearches.stream()
                 .filter(reservationTransitionSnapshot -> reservationTransitionSnapshot.isCreatedAfter(prevStartTime))
-                .collect(Collectors.toList());
+                .findAny();
     }
 
 }

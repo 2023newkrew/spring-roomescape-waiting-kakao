@@ -16,11 +16,11 @@ public class SalesHistoryService {
     private final SalesHistoryDao salesHistoryDao;
 
     public void savePaymentHistory(Reservation reservation) {
-        salesHistoryDao.save(new SalesHistory(reservation.getThemeId(), reservation.getDeposit(), PAYMENT));
+        salesHistoryDao.save(new SalesHistory(reservation.getThemeId(), reservation.getId(), reservation.getDeposit(), PAYMENT));
     }
 
     public void saveRefundHistory(Reservation reservation) {
-        salesHistoryDao.save(new SalesHistory(reservation.getThemeId(), reservation.getDeposit(), REFUND));
+        salesHistoryDao.save(new SalesHistory(reservation.getThemeId(), reservation.getId(), reservation.getDeposit(), REFUND));
     }
 
 }

@@ -49,10 +49,11 @@ CREATE TABLE reservation_waiting
 );
 
 CREATE TABLE sales_history (
-    id          bigint      not null auto_increment,
-    theme_id    bigint      not null,
-    amount      int         not null,
-    status      varchar(20) not null,
-    created_at  datetime    not null,
+    id              bigint      not null auto_increment,
+    theme_id        bigint      not null,
+    reservation_id  bigint      not null,
+    amount          int         not null,
+    status          varchar(20) not null,
+    created_at      datetime    not null,
     primary key(id)
 );

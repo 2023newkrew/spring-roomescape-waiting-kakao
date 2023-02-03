@@ -1,20 +1,19 @@
 package nextstep.domain.reservation;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class ReservationTransitionSnapshot {
 
-    private List<ReservationProjection> reservationProjections;
+    private LocalDateTime startTime;
     private LocalDateTime createdAt;
 
-    public ReservationTransitionSnapshot(List<ReservationProjection> reservationProjections) {
-        this.reservationProjections = reservationProjections;
+    public ReservationTransitionSnapshot(LocalDateTime startTime) {
+        this.startTime = startTime;
         this.createdAt = LocalDateTime.now();
     }
 
-    public List<ReservationProjection> getReservationProjections() {
-        return reservationProjections;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
     public boolean isCreatedAfter(LocalDateTime localDateTime) {
