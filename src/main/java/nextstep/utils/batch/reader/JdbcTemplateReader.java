@@ -1,4 +1,4 @@
-package nextstep.utils.batch;
+package nextstep.utils.batch.reader;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -16,6 +16,24 @@ public class JdbcTemplateReader<T> implements Reader<T> {
     private RowMapper<T> rowMapper;
     private Object[] args;
 
+    public void setQuery(String queryString, RowMapper<T> rowMapper, Object... args) {
+        setQueryString(queryString);
+        setRowMapper(rowMapper);
+        setArgs(args);
+    }
+
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+
+    public void setRowMapper(RowMapper<T> rowMapper) {
+        this.rowMapper = rowMapper;
+    }
+
+    public void setArgs(Object... args) {
+        this.args = args;
+    }
+
     @Override
     public List<T> read() {
         try {
@@ -23,11 +41,5 @@ public class JdbcTemplateReader<T> implements Reader<T> {
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
-    }
-
-    public void setQuery(String queryString, RowMapper<T> rowMapper, Object... args) {
-        this.queryString = queryString;
-        this.rowMapper = rowMapper;
-        this.args = args;
     }
 }

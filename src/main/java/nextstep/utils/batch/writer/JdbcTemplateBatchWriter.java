@@ -1,4 +1,4 @@
-package nextstep.utils.batch;
+package nextstep.utils.batch.writer;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,15 +12,15 @@ public class JdbcTemplateBatchWriter<T, V> implements Writer<T> {
     private final JdbcTemplate jdbcTemplate;
     private String queryString;
     private List<Object[]> batchArgs;
-    private Function<List<T>, List<?>> batchArgsFunction;
+    private Function<List<T>, List<Object[]>> batchArgsFunction;
 
-    public void setQuery(String queryString, Function<List<T>, List<?>> batchArgsFunction) {
+    public void setQuery(String queryString, Function<List<T>, List<Object[]>> batchArgsFunction) {
         this.queryString = queryString;
         this.batchArgsFunction = batchArgsFunction;
     }
 
     public void preWrite(List<T> items) {
-        this.batchArgs = (List<Object[]>) batchArgsFunction.apply(items);
+        this.batchArgs = batchArgsFunction.apply(items);
     }
 
     @Override

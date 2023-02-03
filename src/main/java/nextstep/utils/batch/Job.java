@@ -1,5 +1,8 @@
 package nextstep.utils.batch;
 
+import nextstep.utils.batch.step.Step;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class Job {
@@ -14,18 +17,17 @@ public class Job {
         return new JobBuilder();
     }
 
-    public Job addStep(Step step) {
-        steps.add(step);
-        return this;
-    }
-
     public void run() {
-
         steps.forEach(Step::start);
     }
 
+    public void runWithCallback(Runnable runnable) {
+        run();
+        runnable.run();
+    }
+
     public static class JobBuilder {
-        private List<Step> steps;
+        private List<Step> steps = new ArrayList<>();
 
         public JobBuilder step(Step step) {
             steps.add(step);

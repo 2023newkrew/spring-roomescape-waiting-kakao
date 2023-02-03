@@ -93,7 +93,6 @@ public class ReservationService {
 
         if (reservation.isUnapproved()) {
             reservationDao.updateReservationStatus(reservationId, CANCELED.name());
-            salesHistoryService.saveRefundHistory(reservation);
             return;
         }
 
@@ -115,7 +114,9 @@ public class ReservationService {
         validateTransition(reservation.getStatus(), UNAPPROVED, APPROVED);
 
         reservationDao.updateReservationStatus(reservationId, REJECTED.name());
-        salesHistoryService.saveRefundHistory(reservation);
+        if (!reservation.isUnapproved()) {
+            salesHistoryService.saveRefundHistory(reservation);
+        }
     }
 
     private void validateTransition(ReservationStatus actualStatus, ReservationStatus... expectedStatuses) {

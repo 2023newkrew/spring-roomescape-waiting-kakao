@@ -1,4 +1,4 @@
-package nextstep.utils.batch;
+package nextstep.utils.batch.processor;
 
 @FunctionalInterface
 public interface Processor<T, V> {

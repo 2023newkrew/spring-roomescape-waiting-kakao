@@ -2,7 +2,6 @@ package nextstep.presentation.admin;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.dto.request.TransitionReservationStatusRequest;
-import nextstep.dto.response.SalesStatisticsResponse;
 import nextstep.service.ReservationTransitionBatchService;
 import nextstep.service.ReservationSalesStatisticsService;
 import nextstep.service.ReservationService;
@@ -50,11 +49,12 @@ public class AdminReservationController {
                 .build();
     }
 
-    @GetMapping("/batch/daily-sales")
-    public ResponseEntity<SalesStatisticsResponse> getDailySales() {
-        SalesStatisticsResponse salesStatisticsResponse = reservationSalesStatisticsService.calculateSalesStatistics();
+    @PostMapping("/batch/daily-sales")
+    public ResponseEntity<Void> getDailySales() {
+        reservationSalesStatisticsService.calculateSalesStatistics();
 
-        return ResponseEntity.ok(salesStatisticsResponse);
+        return ResponseEntity.ok()
+                .build();
     }
 
 }

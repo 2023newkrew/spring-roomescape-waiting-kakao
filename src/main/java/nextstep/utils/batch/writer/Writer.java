@@ -1,4 +1,4 @@
-package nextstep.utils.batch;
+package nextstep.utils.batch.writer;
 
 import java.util.List;
 

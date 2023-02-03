@@ -57,3 +57,12 @@ CREATE TABLE sales_history (
     created_at      datetime    not null,
     primary key(id)
 );
+
+CREATE TABLE reservation_sales_statistics
+(
+    id               bigint        not null auto_increment,
+    total_sales      int           not null,
+    sales_per_theme  varchar(255)  not null,
+    date             datetime      not null,
+    primary key(id)
+);

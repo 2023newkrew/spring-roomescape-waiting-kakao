@@ -15,6 +15,7 @@ public enum ErrorType {
     INVALID_PASSWORD_ERROR(HttpStatus.BAD_REQUEST.value()),
     UNAUTHORIZED_ERROR(HttpStatus.UNAUTHORIZED.value()),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+    JSON_CONVERT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value()),
     ;
 
     private int httpStatus;

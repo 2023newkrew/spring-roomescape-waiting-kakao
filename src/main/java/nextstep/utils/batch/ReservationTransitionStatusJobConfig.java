@@ -2,10 +2,17 @@ package nextstep.utils.batch;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.domain.reservation.Reservation;
-import nextstep.domain.reservation.ReservationProjection;
 import nextstep.domain.saleshistory.SalesHistory;
 import nextstep.domain.saleshistory.SalesHistoryStatus;
-import org.springframework.context.annotation.Bean;
+import nextstep.utils.TransactionUtil;
+import nextstep.utils.batch.model.ReservationProjection;
+import nextstep.utils.batch.processor.Processor;
+import nextstep.utils.batch.reader.JdbcTemplateReader;
+import nextstep.utils.batch.reader.Reader;
+import nextstep.utils.batch.step.Step;
+import nextstep.utils.batch.writer.CompositeWriter;
+import nextstep.utils.batch.writer.JdbcTemplateBatchWriter;
+import nextstep.utils.batch.writer.Writer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,6 +29,7 @@ import static nextstep.domain.saleshistory.SalesHistoryStatus.REFUND;
 public class ReservationTransitionStatusJobConfig {
 
     private final JdbcTemplate jdbcTemplate;
+    private final TransactionUtil transactionUtil;
     private String statusName;
     private LocalDateTime startTime;
 
@@ -30,47 +38,43 @@ public class ReservationTransitionStatusJobConfig {
         this.startTime = startTime;
     }
 
-    @Bean
     public Job transitionReservationStatusJob() {
         return Job.builder()
                 .step(transitionReservationStatusStep())
                 .build();
     }
 
-    @Bean
     public Step transitionReservationStatusStep() {
         return Step.builder()
                 .reader(reader())
                 .processor(processor())
                 .writer(writer())
+                .transactionUtil(transactionUtil)
                 .build();
     }
 
-    @Bean
     public Reader<ReservationProjection> reader() {
         JdbcTemplateReader<ReservationProjection> reader = new JdbcTemplateReader<>(jdbcTemplate);
         String readQueryString = "SELECT reservation.id, reservation.status, reservation.deposit, theme.id " +
-                "FROM reservation" +
-                "INNER JOIN schedule ON reservation.schedule_id = schedule.id" +
-                "INNER JOIN theme ON schedule.theme_id = theme.id" +
+                "FROM reservation " +
+                "INNER JOIN schedule ON reservation.schedule_id = schedule.id " +
+                "INNER JOIN theme ON schedule.theme_id = theme.id " +
                 "WHERE reservation.status = ? AND ? < created_at";
         RowMapper<ReservationProjection> rowMapper = (rs, rowNum) -> new ReservationProjection(
-                rs.getLong("id"),
-                rs.getLong("theme_id"),
-                rs.getString("status"),
-                rs.getInt("deposit")
+                rs.getLong("reservation.id"),
+                rs.getLong("theme.id"),
+                rs.getString("reservation.status"),
+                rs.getInt("reservation.deposit")
         );
 
         reader.setQuery(readQueryString, rowMapper, statusName, startTime);
         return reader;
     }
 
-    @Bean
     public Processor<ReservationProjection, ReservationProjection> processor() {
         return ReservationProjection::transitStatus;
     }
 
-    @Bean
     public Writer<ReservationProjection> writer() {
         CompositeWriter<ReservationProjection> compositeWriter = new CompositeWriter<>();
         compositeWriter.setWriters(reservationWriter(), salesHistoryWriter());
@@ -78,7 +82,6 @@ public class ReservationTransitionStatusJobConfig {
         return compositeWriter;
     }
 
-    @Bean
     public JdbcTemplateBatchWriter<ReservationProjection, Reservation> reservationWriter() {
         JdbcTemplateBatchWriter<ReservationProjection, Reservation> reservationWriter = new JdbcTemplateBatchWriter<>(jdbcTemplate);
         reservationWriter.setQuery("UPDATE reservation SET status = ? WHERE id = ?", items -> {
@@ -94,15 +97,14 @@ public class ReservationTransitionStatusJobConfig {
         return reservationWriter;
     }
 
-    @Bean
     public JdbcTemplateBatchWriter<ReservationProjection, SalesHistory> salesHistoryWriter() {
         JdbcTemplateBatchWriter<ReservationProjection, SalesHistory> salesHistoryWriter = new JdbcTemplateBatchWriter<>(jdbcTemplate);
-        salesHistoryWriter.setQuery("INSERT INTO sales_history (theme_id, reservation_id, amount, status, created_at) VALUES (?, ?, ?, ?, ?", items -> {
+        salesHistoryWriter.setQuery("INSERT INTO sales_history (theme_id, reservation_id, amount, status, created_at) VALUES (?, ?, ?, ?, ?)", items -> {
             List<Object[]> batchArgs = new ArrayList<>();
-            SalesHistoryStatus salesHistoryStatus = items.get(0).isApproved() ? PAYMENT : REFUND;
+            SalesHistoryStatus salesHistoryStatus = !items.isEmpty() && items.get(0).isApproved() ? PAYMENT : REFUND;
 
             for (ReservationProjection item : items) {
-                batchArgs.add(new Object[]{ item.getThemeId(), item.getId(), item.getDeposit(), salesHistoryStatus, LocalDateTime.now() });
+                batchArgs.add(new Object[]{ item.getThemeId(), item.getId(), item.getDeposit(), salesHistoryStatus.name(), LocalDateTime.now() });
             }
 
             return batchArgs;

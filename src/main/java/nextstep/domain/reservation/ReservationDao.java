@@ -3,7 +3,6 @@ package nextstep.domain.reservation;
 import nextstep.domain.member.Member;
 import nextstep.domain.schedule.Schedule;
 import nextstep.domain.theme.Theme;
-import nextstep.error.ApplicationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Component;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
-
-import static nextstep.error.ErrorType.INTERNAL_SERVER_ERROR;
 
 @Component
 public class ReservationDao {
@@ -71,7 +68,7 @@ public class ReservationDao {
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, reservation.deposit " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -90,7 +87,7 @@ public class ReservationDao {
 
     public Optional<Reservation> findById(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, reservation.deposit " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -122,7 +119,7 @@ public class ReservationDao {
 
     public List<Reservation> findByMemberId(Long memberId) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, reservation.deposit " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -143,38 +140,4 @@ public class ReservationDao {
         String sql = "UPDATE reservation SET status = ? WHERE id = ?";
         jdbcTemplate.update(sql, status, id);
     }
-
-    public List<ReservationProjection> findAllByStatusAndCreatedAt(ReservationSearch reservationSearch) {
-        String sql = Objects.nonNull(reservationSearch.getLastReservationId())
-                ? "SELECT id, deposit, status FROM reservation WHERE status = ? AND ? < created_at AND ? > id LIMIT ?"
-                : "SELECT id, deposit, status FROM reservation WHERE status = ? AND ? < created_at LIMIT ?";
-        Object[] args = Objects.nonNull(reservationSearch.getLastReservationId())
-                ? new Object[] { reservationSearch.getStatus().name(), reservationSearch.getStart(), reservationSearch.getLastReservationId(), reservationSearch.getChunkSize() }
-                : new Object[] { reservationSearch.getStatus().name(), reservationSearch.getStart(), reservationSearch.getChunkSize() };
-
-        try {
-            return jdbcTemplate.query(
-                    sql,
-                    (resultSet, rowNum) -> new ReservationProjection(resultSet.getLong("id"), resultSet.getString("status"), resultSet.getInt("deposit")),
-                    args
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return Collections.emptyList();
-        } catch (Exception e) {
-            throw new ApplicationException(INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-
-    public void batchUpdateReservationStatus(String updatedStatus, List<ReservationProjection> unapprovedReservations) {
-        String sql = "UPDATE reservation SET status = ? WHERE id = ?";
-        List<Object[]> batchArgs = new ArrayList<>();
-        for (ReservationProjection unapprovedReservation : unapprovedReservations) {
-            batchArgs.add(new Object[]{ updatedStatus, unapprovedReservation.getId() });
-        }
-
-        jdbcTemplate.batchUpdate(sql, batchArgs);
-    }
-
 }
