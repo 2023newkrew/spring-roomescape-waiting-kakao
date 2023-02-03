@@ -1,10 +1,11 @@
 package nextstep.member;
 
+import nextstep.member.dto.MemberRequest;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private final MemberDao memberDao;
 
     public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;

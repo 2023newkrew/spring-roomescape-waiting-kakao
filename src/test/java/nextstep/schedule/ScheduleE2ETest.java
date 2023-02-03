@@ -1,15 +1,16 @@
 package nextstep.schedule;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.theme.ThemeRequest;
+import nextstep.schedule.dto.ScheduleRequest;
+import nextstep.theme.dto.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScheduleE2ETest extends AbstractE2ETest {
     private Long themeId;
