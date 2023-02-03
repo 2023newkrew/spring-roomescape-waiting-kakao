@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS sale;
+DROP TABLE IF EXISTS sale_history;
 DROP TABLE IF EXISTS waiting;
 DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS schedule;
