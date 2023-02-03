@@ -50,7 +50,7 @@ public class ReservationController {
 
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<?> cancelReservation(@LoginMember UserDetails userDetails, @PathVariable long id) {
-        reservationService.cancelRequestById(userDetails.getRole(), id);
+        reservationService.cancelRequestById(id);
         return ResponseEntity.ok().build();
     }
 

@@ -11,6 +11,7 @@ import nextstep.support.DuplicateEntityException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,8 +95,12 @@ public class ReservationService {
         );
     }
 
-    public void cancelRequestById(Role role, long id) {
+    public void cancelRequestById(long id) {
         Reservation reservation = reservationDao.findById(id);
+        if (Objects.isNull(reservation)) {
+            throw new IllegalArgumentException();
+        }
+
         switch (reservation.getReservationStatus()) {
             case CREATED -> {
                 reservationDao.updateStatus(id, ReservationStatus.CANCELLED);
@@ -122,6 +127,10 @@ public class ReservationService {
          * 예약 요청(CREATED) → 취소 처리
          */
         Reservation reservation = reservationDao.findById(id);
+        if (Objects.isNull(reservation)) {
+            throw new IllegalArgumentException();
+        }
+
         switch (reservation.getReservationStatus()) {
             /* 승인한 예약 취소 요청 상태, 예약 승인 상태 */
             case REQUESTED_CANCEL, APPROVED -> {
