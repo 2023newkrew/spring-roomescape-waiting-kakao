@@ -1,5 +1,6 @@
 package nextstep.schedule;
 
+import nextstep.proxy.ObjectOrNull;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -49,26 +50,27 @@ public class ScheduleDao {
         return keyHolder.getKey().longValue();
     }
 
+    @ObjectOrNull
     public Schedule findById(Long id) {
         String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
-                "from schedule " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "where schedule.id = ?;";
+                "FROM schedule " +
+                "INNER JOIN theme ON schedule.theme_id = theme.id " +
+                "WHERE schedule.id = ?;";
 
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
         String sql = "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price " +
-                "from schedule " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "where schedule.theme_id = ? and schedule.date = ?;";
+                "FROM schedule " +
+                "INNER JOIN theme ON schedule.theme_id = theme.id " +
+                "WHERE schedule.theme_id = ? AND schedule.date = ?;";
 
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(LocalDate.parse(date)));
     }
 
     public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM schedule where id = ?;", id);
+        jdbcTemplate.update("DELETE FROM schedule WHERE id = ?;", id);
     }
 
 }

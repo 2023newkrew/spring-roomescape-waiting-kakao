@@ -70,3 +70,20 @@
     - 하지만 미래 예약에 관한 건만 있다고 하면 member 가 탈퇴하면 예약과 대기는 취소되어야 함.
     - 따라서 member 의 삭제 시 예약과 대기가 취소되도록 on delete cascade 적용함.
     - 테스트는 기존 member 에 삭제가 제공되지 않고 있고, 만들려면 복잡해서 일단 생략..
+
+
+## 리팩토링
+
+### 리팩토링 목록
+- SQL 문
+  - [x] 가독성을 위해 대문자로 변환하기
+- ReservationWaiting create
+  - [x] 로직 상의 분기와 오류로 인한 예외 구분하기 - 예약 존재 여부에 따른 분기처리
+- ReservationWaiting delete
+  - [x] 애초에 존재하지 않거나, 본인의 것이 아니거나 하는 경우에 대해 따로 분기처리 하기 
+  - [x] NullPointerException -> 의미에 맞게 바꾸기
+- 예외처리
+  - [x] Dao 에서 queryForObject 관련 try catch 부분 어떤 예외인지에 따라 별도 처리하기
+    - record 가 없어서 발생하는 에러라면 null return
+    - 문법 오류라면 예외 발생 & 로그 동반
+    - 비슷하게 사용된 부분에 공통으로 사용할 수 있도록 고민해보기 - Spring AOP 적용

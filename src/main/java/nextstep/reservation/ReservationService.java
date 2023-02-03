@@ -8,6 +8,7 @@ import nextstep.reservationwaiting.ReservationWaitingDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.support.DuplicateEntityException;
+import nextstep.support.NotFoundException;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -36,11 +37,10 @@ public class ReservationService {
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
         if (schedule == null) {
-            throw new NullPointerException();
+            throw new NotFoundException();
         }
 
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
+        if (isReserved(reservationRequest)) {
             throw new DuplicateEntityException();
         }
 
@@ -52,10 +52,15 @@ public class ReservationService {
         return reservationDao.save(newReservation);
     }
 
+    public boolean isReserved(ReservationRequest request) {
+        List<Reservation> reservation = reservationDao.findByScheduleId(request.getScheduleId());
+        return !reservation.isEmpty();
+    }
+
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
         if (theme == null) {
-            throw new NullPointerException();
+            throw new NotFoundException();
         }
 
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
@@ -64,7 +69,7 @@ public class ReservationService {
     public void deleteById(Member member, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (reservation == null) {
-            throw new NullPointerException();
+            throw new NotFoundException();
         }
 
         if (!reservation.sameMember(member)) {

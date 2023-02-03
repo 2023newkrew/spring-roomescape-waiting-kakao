@@ -134,7 +134,7 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
 
         Response response = delete(givenWithAuth(), DEFAULT_PATH + "/1");
         then(response)
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("다른 사용자가 등록한 예약 대기는 취소할 수 없어야 한다.")
@@ -149,7 +149,7 @@ class ReservationWaitingControllerTest extends AbstractE2ETest {
         Response response = delete(givenWithAuth(), othersReservationWaiting.header("Location"));
 
         then(response)
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
     @DisplayName("예약을 삭제하면 가장 빠른 예약 대기가 예약되어야 한다.")

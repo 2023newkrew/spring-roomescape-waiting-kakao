@@ -1,48 +1,48 @@
 CREATE TABLE member
 (
-    id       bigint      not null auto_increment,
-    username varchar(20) not null,
-    password varchar(20) not null,
-    name     varchar(20) not null,
-    phone    varchar(20) not null,
-    role     varchar(20) not null,
-    primary key (id)
+    id       bigint      NOT NULL auto_increment,
+    username varchar(20) NOT NULL,
+    password varchar(20) NOT NULL,
+    name     varchar(20) NOT NULL,
+    phone    varchar(20) NOT NULL,
+    role     varchar(20) NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE theme
 (
-    id    bigint       not null auto_increment,
-    name  varchar(20)  not null,
-    desc  varchar(255) not null,
-    price int          not null,
-    primary key (id)
+    id    bigint       NOT NULL auto_increment,
+    name  varchar(20)  NOT NULL,
+    desc  varchar(255) NOT NULL,
+    price int          NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE schedule
 (
-    id       bigint not null auto_increment,
-    theme_id bigint not null,
-    date     date   not null,
-    time     time   not null,
-    primary key (id)
+    id       bigint NOT NULL auto_increment,
+    theme_id bigint NOT NULL,
+    date     date   NOT NULL,
+    time     time   NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE reservation
 (
-    id          bigint not null auto_increment,
-    schedule_id bigint not null,
-    member_id   bigint not null,
-    primary key (id),
-    foreign key (member_id) references member(id) on delete cascade
+    id          bigint NOT NULL auto_increment,
+    schedule_id bigint NOT NULL,
+    member_id   bigint NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE
 );
 
 CREATE TABLE reservation_waiting
 (
-    id          bigint not null auto_increment,
-    schedule_id bigint not null,
-    member_id   bigint not null,
-    wait_num    bigint not null,
-    primary key (id),
-    foreign key (member_id) references member(id) on delete cascade
+    id          bigint NOT NULL auto_increment,
+    schedule_id bigint NOT NULL,
+    member_id   bigint NOT NULL,
+    wait_num    bigint NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE
 );
 

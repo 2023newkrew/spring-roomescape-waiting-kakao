@@ -1,12 +1,15 @@
 package nextstep.reservationwaiting;
 
+import auth.AuthenticationException;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
+import nextstep.support.NotFoundException;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ReservationWaitingService {
@@ -37,9 +40,14 @@ public class ReservationWaitingService {
     }
 
     public void deleteById(Member member, Long id) {
-        if (!reservationWaitingDao.existById(id, member.getId())) {
-            throw new NullPointerException();
+        ReservationWaiting waiting = reservationWaitingDao.findById(id);
+        if (Objects.isNull(waiting)) {
+            throw new NotFoundException();
         }
+        if (!Objects.equals(waiting.getMemberId(), member.getId())) {
+            throw new AuthenticationException();
+        }
+
         reservationWaitingDao.deleteById(id);
     }
 }

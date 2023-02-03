@@ -45,12 +45,12 @@ public class MemberDao implements LoginMemberDao {
     }
 
     public Member findById(Long id) {
-        String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
+        String sql = "SELECT id, username, password, name, phone, role FROM member WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     public Member findByUsername(String username) {
-        String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
+        String sql = "SELECT id, username, password, name, phone, role FROM member WHERE username = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, username);
     }
 }
