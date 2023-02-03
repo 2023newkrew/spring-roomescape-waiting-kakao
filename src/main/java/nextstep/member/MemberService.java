@@ -1,5 +1,8 @@
 package nextstep.member;
 
+import auth.AuthenticationException;
+import auth.login.LoginRequestEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,5 +19,14 @@ public class MemberService {
 
     public Member findById(Long id) {
         return memberDao.findById(id);
+    }
+
+    @EventListener
+    public void resolveLogin(LoginRequestEvent loginRequestEvent) {
+        Member member = memberDao.findByUsername(loginRequestEvent.getUsername());
+        if (member == null || member.checkWrongPassword(loginRequestEvent.getPassword())) {
+            throw new AuthenticationException();
+        }
+        loginRequestEvent.setMemberInformation(member.getId(), member.getRole());
     }
 }
