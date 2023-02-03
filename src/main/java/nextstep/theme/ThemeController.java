@@ -1,5 +1,6 @@
 package nextstep.theme;
 
+import nextstep.support.DataResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 public class ThemeController {
-    private ThemeService themeService;
+    private final ThemeService themeService;
 
     public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
@@ -26,9 +27,9 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<Theme>> showThemes() {
-        List<Theme> results = themeService.findAll();
-        return ResponseEntity.ok().body(results);
+    public ResponseEntity<DataResponse<List<ThemeResponse>>> showThemes() {
+        List<ThemeResponse> results = themeService.findAll();
+        return ResponseEntity.ok().body(DataResponse.of(results));
     }
 
     @DeleteMapping("/admin/themes/{id}")

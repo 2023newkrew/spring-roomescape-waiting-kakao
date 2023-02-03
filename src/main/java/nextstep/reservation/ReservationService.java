@@ -1,72 +1,67 @@
 package nextstep.reservation;
 
-import nextstep.auth.AuthenticationException;
+import nextstep.exception.ErrorCode;
+import nextstep.exception.RoomEscapeException;
 import nextstep.member.Member;
-import nextstep.member.MemberDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
-import nextstep.support.DuplicateEntityException;
-import nextstep.theme.Theme;
-import nextstep.theme.ThemeDao;
+import nextstep.theme.ThemeService;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
     public final ReservationDao reservationDao;
-    public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
-    public final MemberDao memberDao;
+    public final ThemeService themeService;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ScheduleDao scheduleDao, ThemeService themeService) {
         this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
-        this.memberDao = memberDao;
+        this.themeService = themeService;
     }
 
-    public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
-            throw new NullPointerException();
-        }
+    public Long reserve(Member member, ReservationRequest reservationRequest) {
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
+                .orElseThrow(() -> new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS));
 
-        List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
-        if (!reservation.isEmpty()) {
-            throw new DuplicateEntityException();
-        }
+        checkIsNotExistByScheduleId(schedule.getId());
 
-        Reservation newReservation = new Reservation(
-                schedule,
-                member
-        );
-
+        Reservation newReservation = new Reservation(schedule, member);
         return reservationDao.save(newReservation);
     }
 
-    public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
-            throw new NullPointerException();
-        }
+    public List<ReservationResponse> findMemberReservations(Member member) {
+        return reservationDao.findAllByMemberId(member.getId()).stream()
+                .map(ReservationResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
 
-        return reservationDao.findAllByThemeIdAndDate(themeId, date);
+    public List<ReservationResponse> findAllByThemeIdAndDate(Long themeId, Date date) {
+        themeService.checkIsExist(themeId);
+        return reservationDao.findAllByThemeIdAndDate(themeId, date).stream()
+                .map(ReservationResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Member member, Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if (reservation == null) {
-            throw new NullPointerException();
-        }
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS));
 
-        if (!reservation.sameMember(member)) {
-            throw new AuthenticationException();
+        if (!reservation.isReservedBy(member)) {
+            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
         }
+        if (!reservationDao.deleteById(id)) {
+            throw new RoomEscapeException(ErrorCode.ENTITY_NOT_EXISTS);
+        }
+    }
 
-        reservationDao.deleteById(id);
+    public void checkIsNotExistByScheduleId(Long scheduleId) {
+        if (reservationDao.findByScheduleId(scheduleId).isPresent()) {
+            throw new RoomEscapeException(ErrorCode.SCHEDULE_ALREADY_EXISTS);
+        }
     }
 }

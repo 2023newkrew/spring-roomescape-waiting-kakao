@@ -1,0 +1,33 @@
+package nextstep.reservationwaiting;
+
+import nextstep.schedule.Schedule;
+
+public class ReservationWaitingResponse {
+    private Long id;
+    private Schedule schedule;
+    private Long waitNum;
+
+    public ReservationWaitingResponse() {}
+
+    public ReservationWaitingResponse(Long id, Schedule schedule, Long waitNum) {
+        this.id = id;
+        this.schedule = schedule;
+        this.waitNum = waitNum;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public Long getWaitNum() {
+        return waitNum;
+    }
+
+    public static ReservationWaitingResponse fromEntity(ReservationWaiting reservationWaiting) {
+        return new ReservationWaitingResponse(reservationWaiting.getId(), reservationWaiting.getSchedule(), reservationWaiting.getWaitingNum());
+    }
+}

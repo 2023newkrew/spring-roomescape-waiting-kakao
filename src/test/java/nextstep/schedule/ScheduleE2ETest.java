@@ -60,7 +60,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        assertThat(response.jsonPath().getList(".").size()).isEqualTo(1);
+        assertThat(response.jsonPath().getList("data").size()).isEqualTo(1);
     }
 
     @DisplayName("예약을 삭제한다")

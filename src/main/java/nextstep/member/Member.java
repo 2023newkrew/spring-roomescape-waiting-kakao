@@ -1,6 +1,8 @@
 package nextstep.member;
 
-public class Member {
+import auth.UserDetails;
+
+public class Member implements UserDetails {
     private Long id;
     private String username;
     private String password;
@@ -52,7 +54,7 @@ public class Member {
         return role;
     }
 
-    public boolean checkWrongPassword(String password) {
-        return !this.password.equals(password);
+    public boolean checkPassword(String password) {
+        return this.password.equals(password);
     }
 }

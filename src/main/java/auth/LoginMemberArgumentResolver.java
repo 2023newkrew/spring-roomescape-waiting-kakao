@@ -1,5 +1,7 @@
-package nextstep.auth;
+package auth;
 
+import nextstep.exception.ErrorCode;
+import nextstep.exception.RoomEscapeException;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -8,7 +10,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private LoginService loginService;
+    private final LoginService loginService;
 
     public LoginMemberArgumentResolver(LoginService loginService) {
         this.loginService = loginService;
@@ -20,12 +22,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         try {
             String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
             return loginService.extractMember(credential);
         } catch (Exception e) {
-            return null;
+            throw new RoomEscapeException(ErrorCode.INVALID_TOKEN);
         }
     }
 }
