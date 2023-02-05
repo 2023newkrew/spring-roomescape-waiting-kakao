@@ -60,21 +60,23 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void cancel(Member member, Long reservationId) {
+    public void reject(Long reservationId) {
         Reservation reservation = reservationDao.findById(reservationId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.RESERVATION_NOT_FOUND));
 
-        if (isAdmin(member)) {
-            if (reservation.getStatus() == Reservation.Status.WAITING_APPROVAL) {
-                reservation.changeStatus(Reservation.Status.REJECT);
-                reservationDao.save(reservation);
-            } else if (reservation.getStatus() == Reservation.Status.APPROVAL) {
-                reservation.changeStatus(Reservation.Status.REJECT);
-                reservationDao.save(reservation);
-                revenueDao.save(new Revenue(reservationId, -reservation.getSchedule().getTheme().getPrice()));
-            }
-            return;
+        if (reservation.getStatus() == Reservation.Status.WAITING_APPROVAL) {
+            reservation.changeStatus(Reservation.Status.REJECT);
+            reservationDao.save(reservation);
+        } else if (reservation.getStatus() == Reservation.Status.APPROVAL) {
+            reservation.changeStatus(Reservation.Status.REJECT);
+            reservationDao.save(reservation);
+            revenueDao.save(new Revenue(reservationId, -reservation.getSchedule().getTheme().getPrice()));
         }
+    }
+
+    public void cancel(Member member, Long reservationId) {
+        Reservation reservation = reservationDao.findById(reservationId)
+                .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.RESERVATION_NOT_FOUND));
 
         if (!reservation.isSameMember(member)) {
             throw new BusinessException(BusinessErrorCode.DELETE_FAILED_WHEN_NOT_MY_RESERVATION);
@@ -88,10 +90,6 @@ public class ReservationService {
             reservationDao.save(reservation);
             revenueDao.save(new Revenue(reservationId, -reservation.getSchedule().getTheme().getPrice()));
         }
-    }
-
-    private static boolean isAdmin(Member member) {
-        return Objects.equals(member.getRole(), "ADMIN");
     }
 
     public List<Reservation> getReservationsByMember(Member member) {

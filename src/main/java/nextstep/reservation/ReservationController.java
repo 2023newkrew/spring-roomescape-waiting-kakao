@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -50,8 +51,16 @@ public class ReservationController {
 
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<Void> cancelReservation(@PathVariable long id, @LoginMember Member member) {
-        reservationService.cancel(member, id);
+        if (isAdmin(member)) {
+            reservationService.reject(id);
+        } else {
+            reservationService.cancel(member, id);
+        }
         return ResponseEntity.ok().build();
+    }
+
+    private static boolean isAdmin(Member member) {
+        return Objects.equals(member.getRole(), "ADMIN");
     }
 
     @GetMapping("/{id}/cancel-approve")
