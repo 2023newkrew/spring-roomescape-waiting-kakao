@@ -8,7 +8,6 @@ import nextstep.exception.dataaccess.DataAccessException;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
-import nextstep.reservation.ReservationService;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.waiting.dto.response.ReservationWaitingResponseDto;
@@ -23,7 +22,6 @@ public class WaitingService {
 
     private final ReservationDao reservationDao;
     private final ScheduleDao scheduleDao;
-    private final ReservationService reservationService;
 
     public Long createWaiting(Member member, Long scheduleId) {
         if (member == null) {
@@ -35,10 +33,6 @@ public class WaitingService {
         Reservation newReservation = new Reservation(schedule, member, Reservation.Status.WAITING_APPROVAL);
 
         return reservationDao.save(newReservation);
-    }
-
-    public void cancelWaitingById(Member member, Long id) {
-        reservationService.cancel(member, id);
     }
 
     public List<ReservationWaitingResponseDto> getReservationWaitingsByMember(Member member) {
@@ -56,7 +50,17 @@ public class WaitingService {
         return result;
     }
 
-    private static boolean isWaitingReservation(Long waitNum) {
+    public boolean isWaitingReservation(Reservation reservation) {
+        Long scheduleId = reservation.getSchedule().getId();
+        Long waitTicketNumber = reservation.getWaitTicketNumber();
+        return !isReservationNotWaiting(scheduleId, waitTicketNumber);
+    }
+
+    public boolean isReservationNotWaiting(Long scheduleId, Long waitTicketNum) {
+        return !isWaitingReservation(reservationDao.getPriority(scheduleId, waitTicketNum));
+    }
+
+    private boolean isWaitingReservation(Long waitNum) {
         return waitNum > 0;
     }
 }
