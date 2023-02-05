@@ -6,11 +6,14 @@ import nextstep.member.Member;
 import nextstep.member.MemberDao;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
+import nextstep.reservation.ReservationStatus;
+import nextstep.sales.SalesDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.ThemeDao;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,52 +26,39 @@ public class ReservationWaitingService {
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
+    public final SalesDao salesDao;
 
-    public ReservationWaitingService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao) {
+    public ReservationWaitingService(ReservationDao reservationDao, ReservationWaitingDao reservationWaitingDao, ThemeDao themeDao, ScheduleDao scheduleDao, MemberDao memberDao, SalesDao salesDao) {
         this.reservationDao = reservationDao;
         this.reservationWaitingDao = reservationWaitingDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.memberDao = memberDao;
+        this.salesDao = salesDao;
     }
 
+    @Transactional
     public Long create(Member member, ReservationWaitingRequest reservationRequest) {
         if (member == null) {
             throw new AuthenticationException();
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
-                .orElseThrow(() -> new NotExistEntityException(ScheduleDao.class));
-        ReservationWaitingStatus currentStatus = ReservationWaitingStatus.WAITING;
-        if (tryInsertReservation(schedule, member)) {
-            currentStatus = ReservationWaitingStatus.RESERVED;
+                .orElseThrow(() -> new NotExistEntityException(Schedule.class));
+        boolean isReserved = reservationDao.countActiveReservationByScheduleId(schedule.getId()) > 0;
+        if (!isReserved) {
+            // 예약이 존재하지 않으면 대기열에 추가하지 않고 예약 후 id 반환
+            long id = reservationDao.save(new Reservation(schedule, member, ReservationStatus.UNAPPROVED));
+            salesDao.save(id, schedule.getTheme().getPrice());
+            return id;
         }
-        return reservationWaitingDao.save(new ReservationWaiting(schedule, member, currentStatus));
-    }
-
-    private boolean tryInsertReservation(Schedule schedule, Member member) {
-        try {
-            reservationDao.save(new Reservation(schedule, member));
-        } catch (DuplicateKeyException e) {
-            // 예약이 이미 존재할 때
-            System.out.println("예약이 이미 존재합니다. 예약 대기 상태로 등록합니다.");
-            return false;
-        }
-        return true;
+        return reservationWaitingDao.save(new ReservationWaiting(schedule, member));
     }
 
     public List<ReservationWaitingResponse> findMyReservationWaitings(Member member) {
-        try {
-            return reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()).stream()
-                    .map(ReservationWaitingResponse::from)
-                    .collect(Collectors.toList());
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
+            return ReservationWaitingResponse.from(reservationWaitingDao.findAllByMemberIdWithOrder(member.getId()));
     }
 
     public void cancelById(Member member, Long id) {
-        ReservationWaitingStatus status = ReservationWaitingStatus.CANCELED;
         ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id)
                 .orElseThrow(() -> new NotExistEntityException(Reservation.class));
 
@@ -76,6 +66,6 @@ public class ReservationWaitingService {
             throw new AuthenticationException();
         }
 
-        reservationWaitingDao.updateStatusById(id, status);
+        reservationWaitingDao.deleteById(id);
     }
 }

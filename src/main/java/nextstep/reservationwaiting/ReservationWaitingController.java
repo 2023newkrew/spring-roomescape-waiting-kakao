@@ -23,6 +23,9 @@ public class ReservationWaitingController {
     @PostMapping
     public ResponseEntity<Void> createReservationWaiting(@LoginMember Member member, @RequestBody ReservationWaitingRequest reservationWaitingRequest) {
         Long id = reservationWaitingService.create(member, reservationWaitingRequest);
+        if(id == null) {
+            return ResponseEntity.created(URI.create("/reservation/" + id)).build();
+        }
         return ResponseEntity.created(URI.create("/reservation-waitings/" + id)).build();
     }
 
@@ -46,7 +49,7 @@ public class ReservationWaitingController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> runtimeException(RuntimeException e) {
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

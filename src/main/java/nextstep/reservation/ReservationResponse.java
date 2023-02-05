@@ -1,12 +1,16 @@
 package nextstep.reservation;
 
 import nextstep.schedule.Schedule;
+import nextstep.schedule.ScheduleResponse;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReservationResponse {
     private final Long id;
-    private final Schedule schedule;
+    private final ScheduleResponse schedule;
 
-    public ReservationResponse(Long id, Schedule schedule) {
+    public ReservationResponse(Long id, ScheduleResponse schedule) {
         this.id = id;
         this.schedule = schedule;
     }
@@ -15,14 +19,20 @@ public class ReservationResponse {
         return id;
     }
 
-    public Schedule getSchedule() {
+    public ScheduleResponse getSchedule() {
         return schedule;
+    }
+
+    public static List<ReservationResponse> from(List<Reservation> reservations) {
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
     }
 
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getSchedule()
+                ScheduleResponse.from(reservation.getSchedule())
         );
     }
 }

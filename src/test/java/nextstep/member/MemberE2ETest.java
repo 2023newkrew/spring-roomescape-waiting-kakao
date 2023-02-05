@@ -48,7 +48,7 @@ public class MemberE2ETest {
     @DisplayName("멤버 생성 성공 시 CREATED 응답")
     @Test
     public void create() {
-        MemberRequest body = new MemberRequest("username", "password", "name", "010-1234-5678", "ADMIN");
+        MemberRequest body = new MemberRequest("username2", "password", "name", "010-1234-5678", "NORMAL");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

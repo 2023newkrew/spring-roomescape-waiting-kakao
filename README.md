@@ -31,3 +31,32 @@
   - [x] 예약은 reservation을 조회하고 예약 대기는 reservation-waiting을 조회
   - [x] 예약 대기의 경우 대기 순번도 함께 조회
   - [x] 예약 순번 조회시 해당 scheduleId 중 몇 번째 대기자인지 반환
+
+
+### 리팩토링 목록
+- [x] Reservation List 를 ReservationResponse List로 변환하는 메서드 추가
+- [x] ReservationService의 findMyReservations에서 예외 처리 개선
+  - [x] ReservationWaiting에도 같은 작업 수행
+- [x] ReservationResponse DTO에서 Schedule 대신 ScheduleResponse를 의존하도록 개선
+- [x] ReservationWaitingService의 예약 대기 생성 기능에 트랜잭션 처리
+  - [x] Waiting 상태 제거 
+
+
+### 3단계 기능 구현 목록
+- [x] 예약 상태 구현 
+  - `예약 미승인`
+  - `예약 승인`
+  - `예약 취소`
+  - `예약 취소 대기`
+  - `예약 거절`
+- [x] 예약 승인 기능 구현 (사용자)
+  - [x] 예약 상태는 `예약 승인`으로
+- [x] 예약 취소 기능 구현 (사용자/관리자)
+  - [x] `예약 미승인` 상태인 경우 - `예약 취소`
+  - [x] `예약 승인` 상태인 경우 - `예약 취소 대기`
+- [x] 예약 거절 기능 구현 (관리자)가
+  - [x] `예약 미승인` 상태인 경우 -> `예약 거절`
+  - [x] `예약 승인` 상태인 경우 -> `예약 거절`
+- [x] 예약 취소 승인 기능 (관리자)
+  - [x] `예약 취소 대기` -> `예약 취소`
+- [x] 매출 기록 기능 구현

@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS reservation
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
-    primary key (id),
-    unique (schedule_id)
+    status      varchar(20) not null,
+    primary key (id)
 );
 
 CREATE TABLE IF NOT EXISTS theme
@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS member
     name     varchar(20) not null,
     phone    varchar(20) not null,
     role     varchar(20) not null,
-    primary key (id)
+    primary key (id),
+    unique(username)
 );
 
 CREATE TABLE IF NOT EXISTS reservation_waiting
@@ -41,6 +42,16 @@ CREATE TABLE IF NOT EXISTS reservation_waiting
     id          bigint not null auto_increment,
     schedule_id bigint not null,
     member_id   bigint not null,
-    status      varchar(20) not null,
+    reg_time    datetime not null,
     primary key (id)
 );
+
+CREATE TABLE IF NOT EXISTS sales
+(
+    id          bigint not null auto_increment,
+    reservation_id bigint not null,
+    amount      int not null,
+    primary key (id)
+);
+
+
