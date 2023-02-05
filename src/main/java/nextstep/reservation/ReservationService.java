@@ -1,7 +1,5 @@
 package nextstep.reservation;
 
-import auth.exception.AuthErrorCode;
-import auth.exception.AuthException;
 import lombok.RequiredArgsConstructor;
 import nextstep.exception.business.BusinessErrorCode;
 import nextstep.exception.business.BusinessException;
@@ -19,7 +17,6 @@ import nextstep.waiting.WaitingService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,9 +32,6 @@ public class ReservationService {
     private final WaitingService waitingService;
 
     public Reservation create(Member member, Long scheduleId) {
-        if (member == null) {
-            throw new AuthException(AuthErrorCode.INVALID_USER);
-        }
         Schedule schedule = scheduleDao.findById(scheduleId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.SCHEDULE_NOT_FOUND));
 
@@ -93,9 +87,6 @@ public class ReservationService {
     }
 
     public List<Reservation> getReservationsByMember(Member member) {
-        if (member == null) {
-            throw new AuthException(AuthErrorCode.INVALID_USER);
-        }
         List<Reservation> reservations = reservationDao.findByMemberId(member.getId());
         return reservations.stream()
                 .filter(reservation -> {

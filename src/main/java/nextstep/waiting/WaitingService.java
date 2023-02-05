@@ -1,7 +1,5 @@
 package nextstep.waiting;
 
-import auth.exception.AuthErrorCode;
-import auth.exception.AuthException;
 import lombok.RequiredArgsConstructor;
 import nextstep.exception.dataaccess.DataAccessErrorCode;
 import nextstep.exception.dataaccess.DataAccessException;
@@ -24,9 +22,6 @@ public class WaitingService {
     private final ScheduleDao scheduleDao;
 
     public Long createWaiting(Member member, Long scheduleId) {
-        if (member == null) {
-            throw new AuthException(AuthErrorCode.INVALID_USER);
-        }
         Schedule schedule = scheduleDao.findById(scheduleId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.SCHEDULE_NOT_FOUND));
 
@@ -36,9 +31,6 @@ public class WaitingService {
     }
 
     public List<ReservationWaitingResponseDto> getReservationWaitingsByMember(Member member) {
-        if (member == null) {
-            throw new AuthException(AuthErrorCode.INVALID_USER);
-        }
         List<Reservation> reservationsByMemberId = reservationDao.findByMemberId(member.getId());
         List<ReservationWaitingResponseDto> result = new ArrayList<>();
         for (Reservation reservation : reservationsByMemberId) {
