@@ -1,7 +1,7 @@
 package nextstep.theme.controller;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.theme.domain.ThemeEntity;
+import nextstep.theme.domain.Theme;
 import nextstep.theme.dto.ThemeRequest;
 import nextstep.theme.dto.ThemeResponse;
 import nextstep.theme.mapper.ThemeMapper;
@@ -26,7 +26,7 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> create(@RequestBody @Validated ThemeRequest request) {
-        ThemeEntity theme = service.create(mapper.fromRequest(request));
+        Theme theme = service.create(mapper.fromRequest(request));
         URI location = URI.create(THEME_PATH + theme.getId());
 
         return ResponseEntity.created(location).build();
@@ -36,7 +36,7 @@ public class AdminThemeController {
     public ResponseEntity<ThemeResponse> update(
             @PathVariable("theme_id") Long themeId,
             @RequestBody @Validated ThemeRequest request) {
-        ThemeEntity theme = service.update(themeId, mapper.fromRequest(request));
+        Theme theme = service.update(themeId, mapper.fromRequest(request));
 
         return ResponseEntity.ok(mapper.toResponse(theme));
     }

@@ -1,17 +1,17 @@
 package nextstep.schedule.service;
 
-import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.schedule.domain.Schedule;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface ScheduleService {
 
-    ScheduleEntity create(ScheduleEntity schedule);
+    Schedule create(Schedule schedule);
 
-    ScheduleEntity getById(Long id);
+    Schedule getById(Long id);
 
-    List<ScheduleEntity> getByThemeIdAndDate(Long themeId, LocalDate date);
+    List<Schedule> getByThemeIdAndDate(Long themeId, LocalDate date);
 
     boolean deleteById(Long id);
 }

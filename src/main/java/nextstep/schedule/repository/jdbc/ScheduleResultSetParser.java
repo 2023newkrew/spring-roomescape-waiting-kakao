@@ -1,7 +1,7 @@
 package nextstep.schedule.repository.jdbc;
 
-import nextstep.schedule.domain.ScheduleEntity;
-import nextstep.theme.domain.ThemeEntity;
+import nextstep.schedule.domain.Schedule;
+import nextstep.theme.domain.Theme;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
@@ -15,9 +15,9 @@ import java.util.Objects;
 @Component
 public class ScheduleResultSetParser {
 
-    public List<ScheduleEntity> parseSchedules(ResultSet resultSet) throws SQLException {
-        List<ScheduleEntity> schedules = new ArrayList<>();
-        ScheduleEntity schedule = parseSchedule(resultSet);
+    public List<Schedule> parseSchedules(ResultSet resultSet) throws SQLException {
+        List<Schedule> schedules = new ArrayList<>();
+        Schedule schedule = parseSchedule(resultSet);
         while (Objects.nonNull(schedule)) {
             schedules.add(schedule);
             schedule = parseSchedule(resultSet);
@@ -26,7 +26,7 @@ public class ScheduleResultSetParser {
         return schedules;
     }
 
-    public ScheduleEntity parseSchedule(ResultSet resultSet) throws SQLException {
+    public Schedule parseSchedule(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {
             return null;
         }
@@ -34,7 +34,7 @@ public class ScheduleResultSetParser {
         Date date = resultSet.getDate("schedule.date");
         Time time = resultSet.getTime("schedule.time");
 
-        return new ScheduleEntity(
+        return new Schedule(
                 resultSet.getLong("schedule.id"),
                 date.toLocalDate(),
                 time.toLocalTime(),
@@ -42,8 +42,8 @@ public class ScheduleResultSetParser {
         );
     }
 
-    private ThemeEntity parseTheme(ResultSet resultSet) throws SQLException {
-        return new ThemeEntity(
+    private Theme parseTheme(ResultSet resultSet) throws SQLException {
+        return new Theme(
                 resultSet.getLong("theme.id"),
                 resultSet.getString("theme.name"),
                 resultSet.getString("theme.desc"),

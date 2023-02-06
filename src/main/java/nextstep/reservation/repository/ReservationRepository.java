@@ -1,22 +1,22 @@
 package nextstep.reservation.repository;
 
-import nextstep.member.domain.MemberEntity;
-import nextstep.reservation.domain.ReservationEntity;
-import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.member.domain.Member;
+import nextstep.reservation.domain.Reservation;
+import nextstep.schedule.domain.Schedule;
 
 import java.util.List;
 
 public interface ReservationRepository {
 
-    boolean existsBySchedule(ScheduleEntity schedule);
+    boolean existsBySchedule(Schedule schedule);
 
-    boolean existsByMemberAndSchedule(ReservationEntity reservation);
+    boolean existsByMemberAndSchedule(Reservation reservation);
 
-    ReservationEntity insert(ReservationEntity reservation);
+    Reservation insert(Reservation reservation);
 
-    ReservationEntity getById(Long id);
+    Reservation getById(Long id);
 
-    List<ReservationEntity> getByMember(MemberEntity member);
+    List<Reservation> getByMember(Member member);
 
     boolean updateById(Long id, Long memberId);
 

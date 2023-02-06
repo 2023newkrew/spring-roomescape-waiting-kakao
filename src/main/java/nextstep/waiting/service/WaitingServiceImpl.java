@@ -1,11 +1,11 @@
 package nextstep.waiting.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.MemberEntity;
-import nextstep.reservation.domain.ReservationEntity;
+import nextstep.member.domain.Member;
+import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.repository.ReservationRepository;
-import nextstep.schedule.domain.ScheduleEntity;
-import nextstep.waiting.domain.WaitingEntity;
+import nextstep.schedule.domain.Schedule;
+import nextstep.waiting.domain.Waiting;
 import nextstep.waiting.exception.WaitingErrorMessage;
 import nextstep.waiting.exception.WaitingException;
 import nextstep.waiting.repository.WaitingRepository;
@@ -28,14 +28,14 @@ public class WaitingServiceImpl implements WaitingService {
 
     @Transactional
     @Override
-    public WaitingEntity create(ReservationEntity reservation) {
+    public Waiting create(Reservation reservation) {
         if (reservationRepository.existsByMemberAndSchedule(reservation)) {
             throw new WaitingException(WaitingErrorMessage.ALREADY_RESERVED);
         }
         return tryInsert(toWaiting(reservation));
     }
 
-    private WaitingEntity tryInsert(WaitingEntity waiting) {
+    private Waiting tryInsert(Waiting waiting) {
         try {
             return repository.insert(waiting);
         }
@@ -44,31 +44,31 @@ public class WaitingServiceImpl implements WaitingService {
         }
     }
 
-    private static WaitingEntity toWaiting(ReservationEntity reservation) {
-        return new WaitingEntity(null, reservation.getMember(), reservation.getSchedule(), null);
+    private static Waiting toWaiting(Reservation reservation) {
+        return new Waiting(null, reservation.getMember(), reservation.getSchedule(), null);
     }
 
 
     @Override
-    public WaitingEntity getById(Long id) {
+    public Waiting getById(Long id) {
         return repository.getById(id);
     }
 
     @Override
-    public List<WaitingEntity> getByMember(MemberEntity member) {
+    public List<Waiting> getByMember(Member member) {
         return repository.getByMember(member);
     }
 
     @Transactional
     @Override
-    public boolean deleteById(MemberEntity member, Long id) {
-        WaitingEntity waiting = repository.getById(id);
+    public boolean deleteById(Member member, Long id) {
+        Waiting waiting = repository.getById(id);
         validateWaiting(waiting, member);
 
         return repository.deleteById(id);
     }
 
-    private void validateWaiting(WaitingEntity waiting, MemberEntity member) {
+    private void validateWaiting(Waiting waiting, Member member) {
         if (Objects.isNull(waiting)) {
             throw new WaitingException(WaitingErrorMessage.NOT_EXISTS);
         }
@@ -80,11 +80,11 @@ public class WaitingServiceImpl implements WaitingService {
     @Transactional
     @EventListener
     @Override
-    public void onReservationDeleted(ReservationEntity reservation) {
-        ScheduleEntity schedule = reservation.getSchedule();
-        WaitingEntity waiting = repository.getFirstBySchedule(schedule);
+    public void onReservationDeleted(Reservation reservation) {
+        Schedule schedule = reservation.getSchedule();
+        Waiting waiting = repository.getFirstBySchedule(schedule);
         if (Objects.nonNull(waiting)) {
-            ReservationEntity newReservation = new ReservationEntity(null, waiting.getMember(), schedule);
+            Reservation newReservation = new Reservation(null, waiting.getMember(), schedule);
             repository.deleteById(waiting.getId());
             reservationRepository.insert(newReservation);
         }

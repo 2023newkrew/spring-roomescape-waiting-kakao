@@ -1,7 +1,7 @@
 package nextstep.schedule.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.schedule.domain.Schedule;
 import nextstep.schedule.exception.ScheduleErrorMessage;
 import nextstep.schedule.exception.ScheduleException;
 import nextstep.schedule.repository.ScheduleRepository;
@@ -28,7 +28,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Transactional
     @Override
-    public ScheduleEntity create(ScheduleEntity schedule) {
+    public Schedule create(Schedule schedule) {
         validateTheme(schedule.getThemeId());
 
         return tryInsert(schedule);
@@ -40,7 +40,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
     }
 
-    private ScheduleEntity tryInsert(ScheduleEntity schedule) {
+    private Schedule tryInsert(Schedule schedule) {
         try {
             return repository.insert(schedule);
         }
@@ -50,12 +50,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ScheduleEntity getById(Long id) {
+    public Schedule getById(Long id) {
         return repository.getById(id);
     }
 
     @Override
-    public List<ScheduleEntity> getByThemeIdAndDate(Long themeId, LocalDate date) {
+    public List<Schedule> getByThemeIdAndDate(Long themeId, LocalDate date) {
         return repository.getByThemeIdAndDate(themeId, Date.valueOf(date));
     }
 

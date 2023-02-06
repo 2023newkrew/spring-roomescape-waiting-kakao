@@ -2,8 +2,8 @@ package nextstep.reservation.controller;
 
 import auth.domain.LoginUser;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.MemberEntity;
-import nextstep.reservation.domain.ReservationEntity;
+import nextstep.member.domain.Member;
+import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
 import nextstep.reservation.mapper.ReservationMapper;
@@ -28,9 +28,9 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<Void> createReservation(
-            @LoginUser MemberEntity member,
+            @LoginUser Member member,
             @RequestBody ReservationRequest request) {
-        ReservationEntity reservation = service.create(mapper.fromRequest(member, request));
+        Reservation reservation = service.create(mapper.fromRequest(member, request));
         URI location = URI.create(RESERVATION_PATH + reservation.getId());
 
         return ResponseEntity.created(location).build();
@@ -38,17 +38,17 @@ public class ReservationController {
 
     @GetMapping("/{reservation_id}")
     public ResponseEntity<ReservationResponse> getReservation(@PathVariable("reservation_id") Long reservationId) {
-        ReservationEntity reservation = service.getById(reservationId);
+        Reservation reservation = service.getById(reservationId);
 
         return ResponseEntity.ok(mapper.toResponse(reservation));
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<ReservationResponse>> getByMemberId(@LoginUser MemberEntity member) {
+    public ResponseEntity<List<ReservationResponse>> getByMemberId(@LoginUser Member member) {
         return ResponseEntity.ok(getReservations(member));
     }
 
-    private List<ReservationResponse> getReservations(MemberEntity member) {
+    private List<ReservationResponse> getReservations(Member member) {
         return service.getByMember(member)
                 .stream()
                 .map(mapper::toResponse)
@@ -57,7 +57,7 @@ public class ReservationController {
 
     @DeleteMapping("/{reservation_id}")
     public ResponseEntity<Boolean> deleteReservation(
-            @LoginUser MemberEntity member,
+            @LoginUser Member member,
             @PathVariable("reservation_id") Long reservationId) {
         return ResponseEntity.ok(service.deleteById(member, reservationId));
     }

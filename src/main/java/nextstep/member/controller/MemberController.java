@@ -6,7 +6,7 @@ import auth.dto.TokenRequest;
 import auth.dto.TokenResponse;
 import auth.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.MemberEntity;
+import nextstep.member.domain.Member;
 import nextstep.member.dto.MemberRequest;
 import nextstep.member.dto.MemberResponse;
 import nextstep.member.mapper.MemberMapper;
@@ -32,7 +32,7 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody @Validated MemberRequest request) {
-        MemberEntity member = service.create(mapper.fromRequest(request, UserRole.NORMAL));
+        Member member = service.create(mapper.fromRequest(request, UserRole.NORMAL));
         URI location = URI.create(MEMBER_PATH + "/" + member.getId());
 
         return ResponseEntity.created(location).build();
@@ -40,7 +40,7 @@ public class MemberController {
 
     @GetMapping("/{member_id}")
     public ResponseEntity<MemberResponse> getById(@PathVariable("member_id") Long id) {
-        MemberEntity member = service.getById(id);
+        Member member = service.getById(id);
 
         return ResponseEntity.ok(mapper.toResponse(member));
     }
@@ -51,7 +51,7 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<MemberResponse> me(@LoginUser MemberEntity member) {
+    public ResponseEntity<MemberResponse> me(@LoginUser Member member) {
         return ResponseEntity.ok(mapper.toResponse(member));
     }
 }

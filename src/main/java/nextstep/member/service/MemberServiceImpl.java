@@ -1,7 +1,7 @@
 package nextstep.member.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.MemberEntity;
+import nextstep.member.domain.Member;
 import nextstep.member.exception.MemberErrorMessage;
 import nextstep.member.exception.MemberException;
 import nextstep.member.repository.MemberRepository;
@@ -18,11 +18,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public MemberEntity create(MemberEntity member) {
+    public Member create(Member member) {
         return tryInsert(member);
     }
 
-    private MemberEntity tryInsert(MemberEntity member) {
+    private Member tryInsert(Member member) {
         try {
             return repository.insert(member);
         }
@@ -32,7 +32,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberEntity getById(Long id) {
+    public Member getById(Long id) {
         return repository.getById(id);
     }
 }

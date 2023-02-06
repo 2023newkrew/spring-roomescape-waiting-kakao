@@ -1,6 +1,6 @@
 package nextstep.schedule.repository.jdbc;
 
-import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.schedule.domain.Schedule;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
@@ -27,14 +27,14 @@ public class ScheduleStatementCreator {
             "DELETE FROM schedule WHERE id = ?;";
 
     public PreparedStatement createInsert(
-            Connection connection, ScheduleEntity reservation) throws SQLException {
+            Connection connection, Schedule reservation) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
         setSchedule(ps, reservation);
 
         return ps;
     }
 
-    private void setSchedule(PreparedStatement ps, ScheduleEntity schedule) throws SQLException {
+    private void setSchedule(PreparedStatement ps, Schedule schedule) throws SQLException {
         LocalDate date = schedule.getDate();
         LocalTime time = schedule.getTime();
         ps.setDate(1, Date.valueOf(date));

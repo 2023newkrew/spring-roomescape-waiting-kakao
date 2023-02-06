@@ -1,7 +1,7 @@
 package nextstep.member.repository.jdbc;
 
 import auth.domain.UserRole;
-import nextstep.member.domain.MemberEntity;
+import nextstep.member.domain.Member;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
@@ -10,12 +10,12 @@ import java.sql.SQLException;
 @Component
 public class MemberResultSetParser {
 
-    public MemberEntity parseMember(ResultSet resultSet) throws SQLException {
+    public Member parseMember(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {
             return null;
         }
 
-        return new MemberEntity(
+        return new Member(
                 resultSet.getLong("id"),
                 resultSet.getString("username"),
                 resultSet.getString("password"),

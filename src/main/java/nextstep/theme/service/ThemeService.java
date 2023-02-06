@@ -1,18 +1,18 @@
 package nextstep.theme.service;
 
-import nextstep.theme.domain.ThemeEntity;
+import nextstep.theme.domain.Theme;
 
 import java.util.List;
 
 public interface ThemeService {
 
-    ThemeEntity create(ThemeEntity theme);
+    Theme create(Theme theme);
 
-    ThemeEntity getById(Long id);
+    Theme getById(Long id);
 
-    List<ThemeEntity> getAll();
+    List<Theme> getAll();
 
-    ThemeEntity update(Long id, ThemeEntity theme);
+    Theme update(Long id, Theme theme);
 
     boolean deleteById(Long id);
 }

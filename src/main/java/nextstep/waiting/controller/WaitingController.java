@@ -2,13 +2,13 @@ package nextstep.waiting.controller;
 
 import auth.domain.LoginUser;
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.MemberEntity;
-import nextstep.reservation.domain.ReservationEntity;
+import nextstep.member.domain.Member;
+import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.exception.ReservationException;
 import nextstep.reservation.mapper.ReservationMapper;
 import nextstep.reservation.service.ReservationService;
-import nextstep.waiting.domain.WaitingEntity;
+import nextstep.waiting.domain.Waiting;
 import nextstep.waiting.dto.WaitingResponse;
 import nextstep.waiting.mapper.WaitingMapper;
 import nextstep.waiting.service.WaitingService;
@@ -38,39 +38,39 @@ public class WaitingController {
 
     @PostMapping
     public ResponseEntity<Void> create(
-            @LoginUser MemberEntity member,
+            @LoginUser Member member,
             @RequestBody ReservationRequest request) {
-        ReservationEntity reservation = reservationMapper.fromRequest(member, request);
+        Reservation reservation = reservationMapper.fromRequest(member, request);
 
         return ResponseEntity.created(createReservationOrWaiting(reservation)).build();
     }
 
-    private URI createReservationOrWaiting(ReservationEntity reservation) {
+    private URI createReservationOrWaiting(Reservation reservation) {
         try {
-            ReservationEntity reservationEntity = reservationService.create(reservation);
+            reservation = reservationService.create(reservation);
 
-            return URI.create(RESERVATION_PATH + reservationEntity.getId());
+            return URI.create(RESERVATION_PATH + reservation.getId());
         }
         catch (ReservationException e) {
-            WaitingEntity waitingEntity = service.create(reservation);
+            Waiting waiting = service.create(reservation);
 
-            return URI.create(WAITING_PATH + waitingEntity.getId());
+            return URI.create(WAITING_PATH + waiting.getId());
         }
     }
 
     @GetMapping("/{waiting_id}")
     public ResponseEntity<WaitingResponse> getById(@PathVariable("waiting_id") Long waitingId) {
-        WaitingEntity waiting = service.getById(waitingId);
+        Waiting waiting = service.getById(waitingId);
 
         return ResponseEntity.ok(mapper.toResponse(waiting));
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<WaitingResponse>> getByMember(@LoginUser MemberEntity member) {
+    public ResponseEntity<List<WaitingResponse>> getByMember(@LoginUser Member member) {
         return ResponseEntity.ok(getWaitings(member));
     }
 
-    private List<WaitingResponse> getWaitings(MemberEntity member) {
+    private List<WaitingResponse> getWaitings(Member member) {
         return service.getByMember(member)
                 .stream()
                 .map(mapper::toResponse)
@@ -79,7 +79,7 @@ public class WaitingController {
 
     @DeleteMapping("/{waiting_id}")
     public ResponseEntity<Boolean> deleteById(
-            @LoginUser MemberEntity member,
+            @LoginUser Member member,
             @PathVariable("waiting_id") Long waitingId) {
         return ResponseEntity.ok(service.deleteById(member, waitingId));
     }

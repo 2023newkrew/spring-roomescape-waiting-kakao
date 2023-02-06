@@ -1,12 +1,12 @@
 package nextstep.reservation.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.MemberEntity;
-import nextstep.reservation.domain.ReservationEntity;
+import nextstep.member.domain.Member;
+import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.exception.ReservationErrorMessage;
 import nextstep.reservation.exception.ReservationException;
 import nextstep.reservation.repository.ReservationRepository;
-import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.schedule.domain.Schedule;
 import nextstep.schedule.exception.ScheduleErrorMessage;
 import nextstep.schedule.exception.ScheduleException;
 import nextstep.schedule.service.ScheduleService;
@@ -30,36 +30,36 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Transactional
     @Override
-    public ReservationEntity create(ReservationEntity reservation) {
+    public Reservation create(Reservation reservation) {
         validateSchedule(reservation.getScheduleId());
 
         return repository.insert(reservation);
     }
 
     private void validateSchedule(Long scheduleId) {
-        ScheduleEntity scheduleEntity = scheduleService.getById(scheduleId);
-        if (Objects.isNull(scheduleEntity)) {
+        Schedule schedule = scheduleService.getById(scheduleId);
+        if (Objects.isNull(schedule)) {
             throw new ScheduleException(ScheduleErrorMessage.NOT_EXISTS);
         }
-        if (repository.existsBySchedule(scheduleEntity)) {
+        if (repository.existsBySchedule(schedule)) {
             throw new ReservationException(ReservationErrorMessage.CONFLICT);
         }
     }
 
     @Override
-    public ReservationEntity getById(Long id) {
+    public Reservation getById(Long id) {
         return repository.getById(id);
     }
 
     @Override
-    public List<ReservationEntity> getByMember(MemberEntity member) {
+    public List<Reservation> getByMember(Member member) {
         return repository.getByMember(member);
     }
 
     @Transactional
     @Override
-    public boolean deleteById(MemberEntity member, Long id) {
-        ReservationEntity reservation = getValidReservation(member, id);
+    public boolean deleteById(Member member, Long id) {
+        Reservation reservation = getValidReservation(member, id);
         boolean deleted = repository.deleteById(id);
         if (deleted) {
             publisher.publishEvent(reservation);
@@ -68,18 +68,18 @@ public class ReservationServiceImpl implements ReservationService {
         return deleted;
     }
 
-    private ReservationEntity getValidReservation(MemberEntity member, Long id) {
-        ReservationEntity reservation = repository.getById(id);
+    private Reservation getValidReservation(Member member, Long id) {
+        Reservation reservation = repository.getById(id);
         validateReservation(member, reservation);
 
         return reservation;
     }
 
-    private void validateReservation(MemberEntity memberEntity, ReservationEntity reservation) {
+    private void validateReservation(Member member, Reservation reservation) {
         if (Objects.isNull(reservation)) {
             throw new ReservationException(ReservationErrorMessage.NOT_EXISTS);
         }
-        if (!Objects.equals(memberEntity.getId(), reservation.getMemberId())) {
+        if (!Objects.equals(member.getId(), reservation.getMemberId())) {
             throw new ReservationException(ReservationErrorMessage.NOT_OWNER);
         }
     }

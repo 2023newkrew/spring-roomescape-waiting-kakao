@@ -3,14 +3,14 @@ package nextstep.schedule.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import nextstep.theme.domain.ThemeEntity;
+import nextstep.theme.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 
 @AllArgsConstructor
-public class ScheduleEntity {
+public class Schedule {
 
     @Getter
     @Setter
@@ -23,7 +23,7 @@ public class ScheduleEntity {
     private final LocalTime time;
 
     @Getter
-    private final ThemeEntity theme;
+    private final Theme theme;
 
     public Long getThemeId() {
         if (Objects.isNull(theme)) {

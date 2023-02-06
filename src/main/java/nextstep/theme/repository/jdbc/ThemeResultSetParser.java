@@ -1,6 +1,6 @@
 package nextstep.theme.repository.jdbc;
 
-import nextstep.theme.domain.ThemeEntity;
+import nextstep.theme.domain.Theme;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
@@ -12,7 +12,7 @@ import java.util.List;
 public class ThemeResultSetParser {
 
 
-    public ThemeEntity parseSingleTheme(ResultSet resultSet) throws SQLException {
+    public Theme parseSingleTheme(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {
             return null;
         }
@@ -20,8 +20,8 @@ public class ThemeResultSetParser {
         return parseTheme(resultSet);
     }
 
-    private ThemeEntity parseTheme(ResultSet resultSet) throws SQLException {
-        return new ThemeEntity(
+    private Theme parseTheme(ResultSet resultSet) throws SQLException {
+        return new Theme(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("desc"),
@@ -29,8 +29,8 @@ public class ThemeResultSetParser {
         );
     }
 
-    public List<ThemeEntity> parseAllThemes(ResultSet resultSet) throws SQLException {
-        List<ThemeEntity> themes = new ArrayList<>();
+    public List<Theme> parseAllThemes(ResultSet resultSet) throws SQLException {
+        List<Theme> themes = new ArrayList<>();
         while (resultSet.next()) {
             themes.add(parseTheme(resultSet));
         }

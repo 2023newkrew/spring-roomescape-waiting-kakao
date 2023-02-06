@@ -1,7 +1,7 @@
 package nextstep.theme.controller;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.theme.domain.ThemeEntity;
+import nextstep.theme.domain.Theme;
 import nextstep.theme.dto.ThemeResponse;
 import nextstep.theme.mapper.ThemeMapper;
 import nextstep.theme.service.ThemeService;
@@ -25,7 +25,7 @@ public class ThemeController {
 
     @GetMapping("/{theme_id}")
     public ResponseEntity<ThemeResponse> getById(@PathVariable("theme_id") Long themeId) {
-        ThemeEntity theme = service.getById(themeId);
+        Theme theme = service.getById(themeId);
 
         return ResponseEntity.ok(mapper.toResponse(theme));
     }

@@ -1,7 +1,7 @@
 package nextstep.schedule.controller;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.schedule.domain.Schedule;
 import nextstep.schedule.dto.ScheduleResponse;
 import nextstep.schedule.dto.ScheduleSearchRequest;
 import nextstep.schedule.mapper.ScheduleMapper;
@@ -24,7 +24,7 @@ public class ScheduleController {
 
     @GetMapping("/{schedule_id}")
     public ResponseEntity<ScheduleResponse> getById(@PathVariable("schedule_id") Long id) {
-        ScheduleEntity schedule = service.getById(id);
+        Schedule schedule = service.getById(id);
 
         return ResponseEntity.ok(mapper.toResponse(schedule));
     }

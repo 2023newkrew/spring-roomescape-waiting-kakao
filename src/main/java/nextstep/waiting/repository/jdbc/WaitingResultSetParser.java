@@ -1,9 +1,9 @@
 package nextstep.waiting.repository.jdbc;
 
-import nextstep.member.domain.MemberEntity;
-import nextstep.schedule.domain.ScheduleEntity;
-import nextstep.theme.domain.ThemeEntity;
-import nextstep.waiting.domain.WaitingEntity;
+import nextstep.member.domain.Member;
+import nextstep.schedule.domain.Schedule;
+import nextstep.theme.domain.Theme;
+import nextstep.waiting.domain.Waiting;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
@@ -15,9 +15,9 @@ import java.util.Objects;
 @Component
 public class WaitingResultSetParser {
 
-    public List<WaitingEntity> parseWaitings(ResultSet resultSet) throws SQLException {
-        List<WaitingEntity> waitings = new ArrayList<>();
-        WaitingEntity waiting = parseWaiting(resultSet);
+    public List<Waiting> parseWaitings(ResultSet resultSet) throws SQLException {
+        List<Waiting> waitings = new ArrayList<>();
+        Waiting waiting = parseWaiting(resultSet);
         while (Objects.nonNull(waiting)) {
             waitings.add(waiting);
             waiting = parseWaiting(resultSet);
@@ -26,12 +26,12 @@ public class WaitingResultSetParser {
         return waitings;
     }
 
-    public WaitingEntity parseWaiting(ResultSet resultSet) throws SQLException {
+    public Waiting parseWaiting(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {
             return null;
         }
 
-        return new WaitingEntity(
+        return new Waiting(
                 resultSet.getLong("waiting.id"),
                 parseSimpleMember(resultSet),
                 parseSchedule(resultSet),
@@ -39,15 +39,15 @@ public class WaitingResultSetParser {
         );
     }
 
-    private MemberEntity parseSimpleMember(ResultSet resultSet) throws SQLException {
-        return new MemberEntity(
+    private Member parseSimpleMember(ResultSet resultSet) throws SQLException {
+        return new Member(
                 resultSet.getLong("waiting.member_id"),
                 null, null, null, null, null
         );
     }
 
-    private ScheduleEntity parseSchedule(ResultSet resultSet) throws SQLException {
-        return new ScheduleEntity(
+    private Schedule parseSchedule(ResultSet resultSet) throws SQLException {
+        return new Schedule(
                 resultSet.getLong("schedule.id"),
                 resultSet.getDate("schedule.date").toLocalDate(),
                 resultSet.getTime("schedule.time").toLocalTime(),
@@ -55,8 +55,8 @@ public class WaitingResultSetParser {
         );
     }
 
-    private ThemeEntity parseTheme(ResultSet resultSet) throws SQLException {
-        return new ThemeEntity(
+    private Theme parseTheme(ResultSet resultSet) throws SQLException {
+        return new Theme(
                 resultSet.getLong("theme.id"),
                 resultSet.getString("theme.name"),
                 resultSet.getString("theme.desc"),

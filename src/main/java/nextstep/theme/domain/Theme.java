@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @AllArgsConstructor
-public class ThemeEntity {
+public class Theme {
 
     @Getter
     @Setter

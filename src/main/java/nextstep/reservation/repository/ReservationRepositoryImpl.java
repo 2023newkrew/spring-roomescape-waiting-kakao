@@ -1,11 +1,11 @@
 package nextstep.reservation.repository;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.MemberEntity;
-import nextstep.reservation.domain.ReservationEntity;
+import nextstep.member.domain.Member;
+import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.repository.jdbc.ReservationResultSetParser;
 import nextstep.reservation.repository.jdbc.ReservationStatementCreator;
-import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.schedule.domain.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -25,7 +25,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     private final ReservationResultSetParser resultSetParser;
 
     @Override
-    public boolean existsBySchedule(ScheduleEntity schedule) {
+    public boolean existsBySchedule(Schedule schedule) {
         return Boolean.TRUE.equals(
                 jdbcTemplate.query(
                         connection -> statementCreator.createSelectByScheduleId(connection, schedule.getId()),
@@ -34,7 +34,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByMemberAndSchedule(ReservationEntity reservation) {
+    public boolean existsByMemberAndSchedule(Reservation reservation) {
         return Boolean.TRUE.equals(
                 jdbcTemplate.query(
                         connection -> statementCreator.selectByMemberIdAndScheduleId(
@@ -47,7 +47,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public ReservationEntity insert(ReservationEntity reservation) {
+    public Reservation insert(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> statementCreator.createInsert(connection, reservation),
@@ -59,7 +59,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public ReservationEntity getById(Long id) {
+    public Reservation getById(Long id) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectById(connection, id),
                 resultSetParser::parseReservation
@@ -67,7 +67,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationEntity> getByMember(MemberEntity member) {
+    public List<Reservation> getByMember(Member member) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectByMemberId(connection, member.getId()),
                 resultSetParser::parseReservations
