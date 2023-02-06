@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 @RequiredArgsConstructor
 @Service
@@ -40,6 +41,10 @@ public class WaitingService {
             }
         }
         return result;
+    }
+
+    public void cancelWaitingById(BiConsumer<Member, Long> reservationCancel, Member member, Long id) {
+        reservationCancel.accept(member, id);
     }
 
     public boolean isWaitingReservation(Reservation reservation) {

@@ -28,7 +28,7 @@ public class WaitingController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity cancelReservationWaiting(@LoginMember Member member, @PathVariable Long id) {
-        reservationService.cancel(member, id);
+        waitingService.cancelWaitingById(reservationService::cancel, member, id);
 
         return ResponseEntity.noContent().build();
     }
