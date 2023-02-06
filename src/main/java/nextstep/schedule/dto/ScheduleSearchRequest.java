@@ -1,29 +1,23 @@
 package nextstep.schedule.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 
 
-@RequiredArgsConstructor
-@Data
-@Setter(AccessLevel.NONE)
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class ScheduleSearchRequest {
 
-    @Pattern(
-            regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$",
-            message = "일자가 형식에 맞지 않습니다."
-    )
-    private final String date;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "일자가 없습니다.")
+    private LocalDate date;
 
     @NotNull
-    private final Long themeId;
-
-    public ScheduleSearchRequest() {
-        this(null, null);
-    }
+    private Long themeId;
 }

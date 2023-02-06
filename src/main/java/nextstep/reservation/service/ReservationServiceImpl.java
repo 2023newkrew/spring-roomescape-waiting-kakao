@@ -1,14 +1,14 @@
 package nextstep.reservation.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.exception.ErrorMessage;
-import nextstep.etc.exception.ReservationException;
-import nextstep.reservation.domain.Reservation;
-import nextstep.reservation.dto.ReservationRequest;
-import nextstep.reservation.dto.ReservationResponse;
-import nextstep.reservation.mapper.ReservationMapper;
+import nextstep.member.domain.MemberEntity;
+import nextstep.reservation.domain.ReservationEntity;
+import nextstep.reservation.exception.ReservationErrorMessage;
+import nextstep.reservation.exception.ReservationException;
 import nextstep.reservation.repository.ReservationRepository;
-import nextstep.schedule.dto.ScheduleResponse;
+import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.schedule.exception.ScheduleErrorMessage;
+import nextstep.schedule.exception.ScheduleException;
 import nextstep.schedule.service.ScheduleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,49 +24,44 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final ScheduleService scheduleService;
 
-    private final ReservationMapper mapper;
-
     @Transactional
     @Override
-    public ReservationResponse create(Long memberId, ReservationRequest request) {
-        ScheduleResponse schedule = scheduleService.getById(request.getScheduleId());
-        validateSchedule(schedule);
-        Reservation reservation = mapper.fromRequest(memberId, request);
+    public ReservationEntity create(ReservationEntity reservation) {
+        validateSchedule(reservation.getScheduleId());
 
-        return mapper.toResponse(repository.insert(reservation));
+        return repository.insert(reservation);
     }
 
-    private void validateSchedule(ScheduleResponse schedule) {
-        if (Objects.isNull(schedule)) {
-            throw new ReservationException(ErrorMessage.SCHEDULE_NOT_EXISTS);
+    private void validateSchedule(Long scheduleId) {
+        ScheduleEntity scheduleEntity = scheduleService.getById(scheduleId);
+        if (Objects.isNull(scheduleEntity)) {
+            throw new ScheduleException(ScheduleErrorMessage.NOT_EXISTS);
         }
-        if (repository.existsByScheduleId(schedule.getId())) {
-            throw new ReservationException(ErrorMessage.RESERVATION_CONFLICT);
+        if (repository.existsByScheduleId(scheduleId)) {
+            throw new ReservationException(ReservationErrorMessage.CONFLICT);
         }
     }
 
     @Override
-    public ReservationResponse getById(Long id) {
-        Reservation reservation = repository.getById(id);
-
-        return mapper.toResponse(reservation);
+    public ReservationEntity getById(Long id) {
+        return repository.getById(id);
     }
 
     @Transactional
     @Override
     public boolean deleteById(Long memberId, Long id) {
-        Reservation reservation = repository.getById(id);
+        ReservationEntity reservation = repository.getById(id);
         validateReservation(reservation, memberId);
 
         return repository.deleteById(id);
     }
 
-    private void validateReservation(Reservation reservation, Long memberId) {
+    private void validateReservation(ReservationEntity reservation, Long memberId) {
         if (Objects.isNull(reservation)) {
-            throw new ReservationException(ErrorMessage.RESERVATION_NOT_EXISTS);
+            throw new ReservationException(ReservationErrorMessage.NOT_EXISTS);
         }
         if (!memberId.equals(reservation.getMemberId())) {
-            throw new ReservationException(ErrorMessage.NOT_RESERVER);
+            throw new ReservationException(ReservationErrorMessage.NOT_OWNER);
         }
     }
 }

@@ -1,6 +1,7 @@
 package nextstep.reservation.mapper;
 
-import nextstep.reservation.domain.Reservation;
+import nextstep.member.domain.MemberEntity;
+import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
 import org.mapstruct.Mapper;
@@ -10,9 +11,8 @@ import org.mapstruct.Mapping;
 public interface ReservationMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "member.id", source = "memberId")
     @Mapping(target = "schedule.id", source = "request.scheduleId")
-    Reservation fromRequest(Long memberId, ReservationRequest request);
+    ReservationEntity fromRequest(MemberEntity member, ReservationRequest request);
 
-    ReservationResponse toResponse(Reservation reservation);
+    ReservationResponse toResponse(ReservationEntity reservation);
 }

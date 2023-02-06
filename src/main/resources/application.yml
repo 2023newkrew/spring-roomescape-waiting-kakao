@@ -4,3 +4,4 @@ security:
       secret-key: learning-test-spring
       expire-length: 3600000
       access-token-name: authorization
+      login-user-name: loginUser

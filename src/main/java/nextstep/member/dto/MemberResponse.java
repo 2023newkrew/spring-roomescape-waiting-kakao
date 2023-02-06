@@ -1,25 +1,14 @@
 package nextstep.member.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import nextstep.member.domain.MemberRole;
+import auth.domain.UserRole;
+import lombok.Value;
 
-@RequiredArgsConstructor
-@Data
-@Setter(AccessLevel.NONE)
+@Value
 public class MemberResponse {
-
-    private final Long id;
-
-    private final String username;
-
-    private final String password;
-
-    private final String name;
-
-    private final String phone;
-
-    private final MemberRole role;
+    Long id;
+    String username;
+    String password;
+    String name;
+    String phone;
+    UserRole role;
 }

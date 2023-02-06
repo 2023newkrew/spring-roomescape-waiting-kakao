@@ -1,10 +1,10 @@
 package nextstep.reservation.repository.jdbc;
 
-import nextstep.member.domain.Member;
-import nextstep.member.domain.MemberRole;
-import nextstep.reservation.domain.Reservation;
-import nextstep.schedule.domain.Schedule;
-import nextstep.theme.domain.Theme;
+import auth.domain.UserRole;
+import nextstep.member.domain.MemberEntity;
+import nextstep.reservation.domain.ReservationEntity;
+import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.theme.domain.ThemeEntity;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
@@ -13,30 +13,30 @@ import java.sql.SQLException;
 @Component
 public class ReservationResultSetParser {
 
-    public Reservation parseReservation(ResultSet resultSet) throws SQLException {
+    public ReservationEntity parseReservation(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {
             return null;
         }
 
-        return new Reservation(
+        return new ReservationEntity(
                 resultSet.getLong("reservation.id"),
                 parseMember(resultSet), parseSchedule(resultSet)
         );
     }
 
-    private Member parseMember(ResultSet resultSet) throws SQLException {
-        return new Member(
+    private MemberEntity parseMember(ResultSet resultSet) throws SQLException {
+        return new MemberEntity(
                 resultSet.getLong("member.id"),
                 resultSet.getString("member.username"),
                 resultSet.getString("member.password"),
                 resultSet.getString("member.name"),
                 resultSet.getString("member.phone"),
-                MemberRole.valueOf(resultSet.getString("member.role"))
+                UserRole.valueOf(resultSet.getString("member.role"))
         );
     }
 
-    private Schedule parseSchedule(ResultSet resultSet) throws SQLException {
-        return new Schedule(
+    private ScheduleEntity parseSchedule(ResultSet resultSet) throws SQLException {
+        return new ScheduleEntity(
                 resultSet.getLong("schedule.id"),
                 resultSet.getDate("schedule.date").toLocalDate(),
                 resultSet.getTime("schedule.time").toLocalTime(),
@@ -44,8 +44,8 @@ public class ReservationResultSetParser {
         );
     }
 
-    private Theme parseTheme(ResultSet resultSet) throws SQLException {
-        return new Theme(
+    private ThemeEntity parseTheme(ResultSet resultSet) throws SQLException {
+        return new ThemeEntity(
                 resultSet.getLong("theme.id"),
                 resultSet.getString("theme.name"),
                 resultSet.getString("theme.desc"),

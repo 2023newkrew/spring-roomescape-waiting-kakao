@@ -1,20 +1,12 @@
 package nextstep.reservation.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 import nextstep.member.dto.MemberResponse;
 import nextstep.schedule.dto.ScheduleResponse;
 
-@RequiredArgsConstructor
-@Data
-@Setter(AccessLevel.NONE)
+@Value
 public class ReservationResponse {
-
-    private final Long id;
-
-    private final MemberResponse member;
-
-    private final ScheduleResponse schedule;
+    Long id;
+    MemberResponse member;
+    ScheduleResponse schedule;
 }

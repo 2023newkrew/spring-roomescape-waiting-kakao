@@ -1,18 +1,13 @@
 package nextstep.reservation.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
-@Data
-@Setter(AccessLevel.NONE)
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class ReservationRequest {
 
-    private final Long scheduleId;
-
-    public ReservationRequest() {
-        this(null);
-    }
+    private Long scheduleId;
 }

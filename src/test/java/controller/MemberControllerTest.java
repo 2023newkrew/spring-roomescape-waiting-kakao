@@ -1,7 +1,7 @@
 package controller;
 
-import nextstep.etc.exception.ErrorMessage;
 import nextstep.member.dto.MemberRequest;
+import nextstep.member.exception.MemberErrorMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,13 +32,13 @@ public class MemberControllerTest extends AbstractControllerTest {
 
             then(response)
                     .statusCode(HttpStatus.CREATED.value())
-                    .header("Location", "/members/1");
+                    .header("Location", "/members/2");
         }
 
         @DisplayName("username이 중복될 경우 예외 발생")
         @Test
         void should_throwException_when_usernameDuplicate() {
-            var expectedException = ErrorMessage.MEMBER_CONFLICT;
+            var expectedException = MemberErrorMessage.CONFLICT;
             var request = createRequest();
 
             post(MemberControllerTest.this.given(), DEFAULT_PATH, request);
@@ -66,7 +66,7 @@ public class MemberControllerTest extends AbstractControllerTest {
 
         List<Arguments> should_throwException_when_invalidRequest() {
             return List.of(
-                    Arguments.of(new MemberRequest()),
+                    Arguments.of(new MemberRequest(null, null, null, null)),
                     Arguments.of(new MemberRequest("", "", "", "")),
                     Arguments.of(new MemberRequest(" ", " ", " ", " "))
             );
@@ -89,25 +89,22 @@ public class MemberControllerTest extends AbstractControllerTest {
         @DisplayName("멤버 조회 성공")
         @Test
         void should_returnMember_when_memberExists() {
-            var request = createRequest();
-            post(MemberControllerTest.this.given(), DEFAULT_PATH, request);
-
             var response = get(MemberControllerTest.this.given(), DEFAULT_PATH + "/1");
 
             then(response)
                     .statusCode(HttpStatus.OK.value())
                     .body("id", equalTo(1))
-                    .body("username", equalTo(request.getUsername()))
-                    .body("password", equalTo(request.getPassword()))
-                    .body("name", equalTo(request.getName()))
-                    .body("phone", equalTo(request.getPhone()))
-                    .body("role", equalTo("NORMAL"));
+                    .body("username", equalTo("admin"))
+                    .body("password", equalTo("admin"))
+                    .body("name", equalTo("admin"))
+                    .body("phone", equalTo("-"))
+                    .body("role", equalTo("ADMIN"));
         }
 
         @DisplayName("멤버가 없을 경우 빈 body 반환")
         @Test
         void should_returnNull_when_memberNotExists() {
-            var response = get(MemberControllerTest.this.given(), DEFAULT_PATH + "/1");
+            var response = get(MemberControllerTest.this.given(), DEFAULT_PATH + "/2");
 
             then(response)
                     .statusCode(HttpStatus.OK.value())

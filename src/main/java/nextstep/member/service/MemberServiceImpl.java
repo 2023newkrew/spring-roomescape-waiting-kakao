@@ -1,13 +1,9 @@
 package nextstep.member.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.etc.exception.ErrorMessage;
-import nextstep.etc.exception.MemberException;
-import nextstep.member.domain.Member;
-import nextstep.member.domain.MemberRole;
-import nextstep.member.dto.MemberRequest;
-import nextstep.member.dto.MemberResponse;
-import nextstep.member.mapper.MemberMapper;
+import nextstep.member.domain.MemberEntity;
+import nextstep.member.exception.MemberErrorMessage;
+import nextstep.member.exception.MemberException;
 import nextstep.member.repository.MemberRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -20,32 +16,23 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository repository;
 
-    private final MemberMapper mapper;
-
     @Transactional
     @Override
-    public MemberResponse create(MemberRequest request) {
-        Member member = mapper.fromRequest(request, MemberRole.NORMAL);
-
-        return mapper.toResponse(tryInsert(member));
+    public MemberEntity create(MemberEntity member) {
+        return tryInsert(member);
     }
 
-    private Member tryInsert(Member member) {
+    private MemberEntity tryInsert(MemberEntity member) {
         try {
             return repository.insert(member);
         }
         catch (DataIntegrityViolationException ignore) {
-            throw new MemberException(ErrorMessage.MEMBER_CONFLICT);
+            throw new MemberException(MemberErrorMessage.CONFLICT);
         }
     }
 
     @Override
-    public MemberResponse getById(Long id) {
-        return mapper.toResponse(repository.getById(id));
-    }
-
-    @Override
-    public MemberResponse getByUsername(String username) {
-        return mapper.toResponse(repository.getByUsername(username));
+    public MemberEntity getById(Long id) {
+        return repository.getById(id);
     }
 }

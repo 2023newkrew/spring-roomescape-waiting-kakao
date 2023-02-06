@@ -1,9 +1,12 @@
 package nextstep.reservation.controller;
 
+import auth.domain.LoginUser;
 import lombok.RequiredArgsConstructor;
-import nextstep.auth.resolver.MemberId;
+import nextstep.member.domain.MemberEntity;
+import nextstep.reservation.domain.ReservationEntity;
 import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.dto.ReservationResponse;
+import nextstep.reservation.mapper.ReservationMapper;
 import nextstep.reservation.service.ReservationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +22,13 @@ public class ReservationController {
 
     private final ReservationService service;
 
+    private final ReservationMapper mapper;
+
     @PostMapping
     public ResponseEntity<Void> createReservation(
-            @MemberId Long memberId,
+            @LoginUser MemberEntity member,
             @RequestBody ReservationRequest request) {
-        ReservationResponse reservation = service.create(memberId, request);
+        ReservationEntity reservation = service.create(mapper.fromRequest(member, request));
         URI location = URI.create(RESERVATION_PATH + reservation.getId());
 
         return ResponseEntity.created(location).build();
@@ -31,13 +36,14 @@ public class ReservationController {
 
     @GetMapping("/{reservation_id}")
     public ResponseEntity<ReservationResponse> getReservation(@PathVariable("reservation_id") Long reservationId) {
-        return ResponseEntity.ok(service.getById(reservationId));
+        ReservationEntity reservation = service.getById(reservationId);
+        return ResponseEntity.ok(mapper.toResponse(reservation));
     }
 
     @DeleteMapping("/{reservation_id}")
     public ResponseEntity<Boolean> deleteReservation(
-            @MemberId Long memberId,
+            @LoginUser MemberEntity member,
             @PathVariable("reservation_id") Long reservationId) {
-        return ResponseEntity.ok(service.deleteById(memberId, reservationId));
+        return ResponseEntity.ok(service.deleteById(member.getId(), reservationId));
     }
 }

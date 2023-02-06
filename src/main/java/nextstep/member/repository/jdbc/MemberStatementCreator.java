@@ -1,6 +1,6 @@
 package nextstep.member.repository.jdbc;
 
-import nextstep.member.domain.Member;
+import nextstep.member.domain.MemberEntity;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -23,14 +23,14 @@ public class MemberStatementCreator {
             "SELECT id, username, password, name, phone, role from member where username = ?;";
 
     public PreparedStatement createInsert(
-            Connection connection, Member reservation) throws SQLException {
+            Connection connection, MemberEntity reservation) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
         setMember(ps, reservation);
 
         return ps;
     }
 
-    private void setMember(PreparedStatement ps, Member member) throws SQLException {
+    private void setMember(PreparedStatement ps, MemberEntity member) throws SQLException {
         ps.setString(1, member.getUsername());
         ps.setString(2, member.getPassword());
         ps.setString(3, member.getName());
