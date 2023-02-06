@@ -52,7 +52,7 @@ public class WaitingRepositoryImpl implements WaitingRepository {
     }
 
     @Override
-    public List<Waiting> getByMember(Member member) {
+    public List<Waiting> getAllByMember(Member member) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectByMemberId(connection, member.getId()),
                 resultSetParser::parseWaitings

@@ -5,6 +5,7 @@ import nextstep.schedule.domain.Schedule;
 import nextstep.schedule.exception.ScheduleErrorMessage;
 import nextstep.schedule.exception.ScheduleException;
 import nextstep.schedule.repository.ScheduleRepository;
+import nextstep.theme.domain.Theme;
 import nextstep.theme.exception.ThemeErrorMessage;
 import nextstep.theme.exception.ThemeException;
 import nextstep.theme.repository.ThemeRepository;
@@ -29,13 +30,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional
     @Override
     public Schedule create(Schedule schedule) {
-        validateTheme(schedule.getThemeId());
+        Theme theme = themeRepository.getById(schedule.getThemeId());
+        validateTheme(theme);
 
         return tryInsert(schedule);
     }
 
-    private void validateTheme(Long themeId) {
-        if (Objects.isNull(themeRepository.getById(themeId))) {
+    private void validateTheme(Theme theme) {
+        if (Objects.isNull(theme)) {
             throw new ThemeException(ThemeErrorMessage.NOT_EXISTS);
         }
     }
@@ -55,8 +57,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<Schedule> getByThemeIdAndDate(Long themeId, LocalDate date) {
-        return repository.getByThemeIdAndDate(themeId, Date.valueOf(date));
+    public List<Schedule> getAllByThemeAndDate(Theme theme, LocalDate date) {
+        return repository.getAllByThemeAndDate(theme, Date.valueOf(date));
     }
 
     @Override

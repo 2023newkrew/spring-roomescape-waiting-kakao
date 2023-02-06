@@ -34,13 +34,13 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByMemberAndSchedule(Reservation reservation) {
+    public boolean existsByMemberAndSchedule(Member member, Schedule schedule) {
         return Boolean.TRUE.equals(
                 jdbcTemplate.query(
                         connection -> statementCreator.selectByMemberIdAndScheduleId(
                                 connection,
-                                reservation.getMemberId(),
-                                reservation.getScheduleId()
+                                member.getId(),
+                                schedule.getId()
                         ),
                         ResultSet::next
                 ));
@@ -67,7 +67,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> getByMember(Member member) {
+    public List<Reservation> getAllByMember(Member member) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectByMemberId(connection, member.getId()),
                 resultSetParser::parseReservations

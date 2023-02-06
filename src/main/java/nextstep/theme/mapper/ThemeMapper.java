@@ -6,6 +6,8 @@ import nextstep.theme.dto.ThemeResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "Spring")
 public interface ThemeMapper {
 
@@ -13,4 +15,6 @@ public interface ThemeMapper {
     Theme fromRequest(ThemeRequest request);
 
     ThemeResponse toResponse(Theme theme);
+
+    List<ThemeResponse> toResponses(List<Theme> themes);
 }

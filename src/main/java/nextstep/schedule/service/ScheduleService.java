@@ -1,6 +1,7 @@
 package nextstep.schedule.service;
 
 import nextstep.schedule.domain.Schedule;
+import nextstep.theme.domain.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,7 +12,7 @@ public interface ScheduleService {
 
     Schedule getById(Long id);
 
-    List<Schedule> getByThemeIdAndDate(Long themeId, LocalDate date);
+    List<Schedule> getAllByThemeAndDate(Theme theme, LocalDate date);
 
     boolean deleteById(Long id);
 }

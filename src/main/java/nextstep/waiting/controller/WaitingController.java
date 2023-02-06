@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import nextstep.member.domain.Member;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.dto.ReservationRequest;
-import nextstep.reservation.exception.ReservationException;
 import nextstep.reservation.mapper.ReservationMapper;
 import nextstep.reservation.service.ReservationService;
 import nextstep.waiting.domain.Waiting;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/reservation-waitings")
@@ -46,16 +44,14 @@ public class WaitingController {
     }
 
     private URI createReservationOrWaiting(Reservation reservation) {
-        try {
+        if (!reservationService.existsBySchedule(reservation.getSchedule())) {
             reservation = reservationService.create(reservation);
 
             return URI.create(RESERVATION_PATH + reservation.getId());
         }
-        catch (ReservationException e) {
-            Waiting waiting = service.create(reservation);
+        Waiting waiting = service.create(reservation);
 
-            return URI.create(WAITING_PATH + waiting.getId());
-        }
+        return URI.create(WAITING_PATH + waiting.getId());
     }
 
     @GetMapping("/{waiting_id}")
@@ -66,15 +62,8 @@ public class WaitingController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<WaitingResponse>> getByMember(@LoginUser Member member) {
-        return ResponseEntity.ok(getWaitings(member));
-    }
-
-    private List<WaitingResponse> getWaitings(Member member) {
-        return service.getByMember(member)
-                .stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<WaitingResponse>> getAllByMember(@LoginUser Member member) {
+        return ResponseEntity.ok(mapper.toResponses(service.getAllByMember(member)));
     }
 
     @DeleteMapping("/{waiting_id}")

@@ -11,9 +11,7 @@ public interface WaitingService {
 
     Waiting getById(Long id);
 
-    List<Waiting> getByMember(Member member);
+    List<Waiting> getAllByMember(Member member);
 
     boolean deleteById(Member member, Long id);
-
-    void onReservationDeleted(Reservation reservation);
 }

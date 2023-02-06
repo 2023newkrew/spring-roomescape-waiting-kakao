@@ -14,7 +14,7 @@ public interface WaitingRepository {
 
     Waiting getFirstBySchedule(Schedule schedule);
 
-    List<Waiting> getByMember(Member member);
+    List<Waiting> getAllByMember(Member member);
 
     boolean deleteById(Long id);
 }

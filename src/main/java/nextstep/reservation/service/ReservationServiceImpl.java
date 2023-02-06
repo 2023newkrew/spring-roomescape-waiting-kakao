@@ -31,19 +31,24 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     @Override
     public Reservation create(Reservation reservation) {
-        validateSchedule(reservation.getScheduleId());
+        Schedule schedule = scheduleService.getById(reservation.getScheduleId());
+        validateSchedule(schedule);
 
         return repository.insert(reservation);
     }
 
-    private void validateSchedule(Long scheduleId) {
-        Schedule schedule = scheduleService.getById(scheduleId);
+    private void validateSchedule(Schedule schedule) {
         if (Objects.isNull(schedule)) {
             throw new ScheduleException(ScheduleErrorMessage.NOT_EXISTS);
         }
-        if (repository.existsBySchedule(schedule)) {
+        if (existsBySchedule(schedule)) {
             throw new ReservationException(ReservationErrorMessage.CONFLICT);
         }
+    }
+
+    @Override
+    public boolean existsBySchedule(Schedule schedule) {
+        return repository.existsBySchedule(schedule);
     }
 
     @Override
@@ -52,14 +57,15 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getByMember(Member member) {
-        return repository.getByMember(member);
+    public List<Reservation> getAllByMember(Member member) {
+        return repository.getAllByMember(member);
     }
 
     @Transactional
     @Override
     public boolean deleteById(Member member, Long id) {
-        Reservation reservation = getValidReservation(member, id);
+        Reservation reservation = repository.getById(id);
+        validateReservation(member, reservation);
         boolean deleted = repository.deleteById(id);
         if (deleted) {
             publisher.publishEvent(reservation);
@@ -68,18 +74,11 @@ public class ReservationServiceImpl implements ReservationService {
         return deleted;
     }
 
-    private Reservation getValidReservation(Member member, Long id) {
-        Reservation reservation = repository.getById(id);
-        validateReservation(member, reservation);
-
-        return reservation;
-    }
-
     private void validateReservation(Member member, Reservation reservation) {
         if (Objects.isNull(reservation)) {
             throw new ReservationException(ReservationErrorMessage.NOT_EXISTS);
         }
-        if (!Objects.equals(member.getId(), reservation.getMemberId())) {
+        if (reservation.isNotOwner(member)) {
             throw new ReservationException(ReservationErrorMessage.NOT_OWNER);
         }
     }

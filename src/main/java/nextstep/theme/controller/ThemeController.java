@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/themes")
@@ -20,6 +19,7 @@ import java.util.stream.Collectors;
 public class ThemeController {
 
     private final ThemeService service;
+
     private final ThemeMapper mapper;
 
 
@@ -32,15 +32,7 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAll() {
-        List<ThemeResponse> themes = getAllThemes();
-
-        return ResponseEntity.ok(themes);
+        return ResponseEntity.ok(mapper.toResponses(service.getAll()));
     }
 
-    private List<ThemeResponse> getAllThemes() {
-        return service.getAll()
-                .stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
-    }
 }

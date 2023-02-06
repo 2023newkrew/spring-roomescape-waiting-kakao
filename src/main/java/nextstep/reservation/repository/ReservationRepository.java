@@ -10,13 +10,13 @@ public interface ReservationRepository {
 
     boolean existsBySchedule(Schedule schedule);
 
-    boolean existsByMemberAndSchedule(Reservation reservation);
+    boolean existsByMemberAndSchedule(Member member, Schedule schedule);
 
     Reservation insert(Reservation reservation);
 
     Reservation getById(Long id);
 
-    List<Reservation> getByMember(Member member);
+    List<Reservation> getAllByMember(Member member);
 
     boolean updateById(Long id, Long memberId);
 

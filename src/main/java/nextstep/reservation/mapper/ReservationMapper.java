@@ -7,6 +7,8 @@ import nextstep.reservation.dto.ReservationResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "Spring")
 public interface ReservationMapper {
 
@@ -15,4 +17,6 @@ public interface ReservationMapper {
     Reservation fromRequest(Member member, ReservationRequest request);
 
     ReservationResponse toResponse(Reservation reservation);
+
+    List<ReservationResponse> toResponses(List<Reservation> reservations);
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nextstep.schedule.domain.Schedule;
 import nextstep.schedule.repository.jdbc.ScheduleResultSetParser;
 import nextstep.schedule.repository.jdbc.ScheduleStatementCreator;
+import nextstep.theme.domain.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -43,9 +44,9 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     }
 
     @Override
-    public List<Schedule> getByThemeIdAndDate(Long themeId, Date date) {
+    public List<Schedule> getAllByThemeAndDate(Theme theme, Date date) {
         return jdbcTemplate.query(
-                connection -> statementCreator.createSelectByThemeIdAndDate(connection, themeId, date),
+                connection -> statementCreator.createSelectByThemeIdAndDate(connection, theme.getId(), date),
                 resultSetParser::parseSchedules
         );
     }

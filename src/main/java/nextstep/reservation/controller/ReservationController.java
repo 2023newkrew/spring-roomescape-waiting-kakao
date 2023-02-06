@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/reservations")
@@ -45,14 +44,7 @@ public class ReservationController {
 
     @GetMapping("/mine")
     public ResponseEntity<List<ReservationResponse>> getByMemberId(@LoginUser Member member) {
-        return ResponseEntity.ok(getReservations(member));
-    }
-
-    private List<ReservationResponse> getReservations(Member member) {
-        return service.getByMember(member)
-                .stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
+        return ResponseEntity.ok(mapper.toResponses(service.getAllByMember(member)));
     }
 
     @DeleteMapping("/{reservation_id}")

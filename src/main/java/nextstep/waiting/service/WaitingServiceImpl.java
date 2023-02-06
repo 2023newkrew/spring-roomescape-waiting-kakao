@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import nextstep.member.domain.Member;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.repository.ReservationRepository;
-import nextstep.schedule.domain.Schedule;
 import nextstep.waiting.domain.Waiting;
 import nextstep.waiting.exception.WaitingErrorMessage;
 import nextstep.waiting.exception.WaitingException;
@@ -29,9 +28,14 @@ public class WaitingServiceImpl implements WaitingService {
     @Transactional
     @Override
     public Waiting create(Reservation reservation) {
-        if (reservationRepository.existsByMemberAndSchedule(reservation)) {
+        boolean reservationExists = reservationRepository.existsByMemberAndSchedule(
+                reservation.getMember(),
+                reservation.getSchedule()
+        );
+        if (reservationExists) {
             throw new WaitingException(WaitingErrorMessage.ALREADY_RESERVED);
         }
+
         return tryInsert(toWaiting(reservation));
     }
 
@@ -55,8 +59,8 @@ public class WaitingServiceImpl implements WaitingService {
     }
 
     @Override
-    public List<Waiting> getByMember(Member member) {
-        return repository.getByMember(member);
+    public List<Waiting> getAllByMember(Member member) {
+        return repository.getAllByMember(member);
     }
 
     @Transactional
@@ -72,21 +76,23 @@ public class WaitingServiceImpl implements WaitingService {
         if (Objects.isNull(waiting)) {
             throw new WaitingException(WaitingErrorMessage.NOT_EXISTS);
         }
-        if (!Objects.equals(waiting.getMemberId(), member.getId())) {
+        if (waiting.isNotOwner(member)) {
             throw new WaitingException(WaitingErrorMessage.NOT_OWNER);
         }
     }
 
     @Transactional
     @EventListener
-    @Override
     public void onReservationDeleted(Reservation reservation) {
-        Schedule schedule = reservation.getSchedule();
-        Waiting waiting = repository.getFirstBySchedule(schedule);
+        Waiting waiting = repository.getFirstBySchedule(reservation.getSchedule());
         if (Objects.nonNull(waiting)) {
-            Reservation newReservation = new Reservation(null, waiting.getMember(), schedule);
-            repository.deleteById(waiting.getId());
-            reservationRepository.insert(newReservation);
+            changeToReservation(waiting);
         }
+    }
+
+    private void changeToReservation(Waiting waiting) {
+        Reservation newReservation = new Reservation(null, waiting.getMember(), waiting.getSchedule());
+        repository.deleteById(waiting.getId());
+        reservationRepository.insert(newReservation);
     }
 }

@@ -36,4 +36,8 @@ public class Reservation {
 
         return schedule.getId();
     }
+
+    public boolean isNotOwner(Member member) {
+        return !Objects.equals(this.member.getId(), member.getId());
+    }
 }
