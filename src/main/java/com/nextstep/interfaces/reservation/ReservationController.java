@@ -1,8 +1,14 @@
 package com.nextstep.interfaces.reservation;
 
+import com.authorizationserver.domains.authorization.enums.RoleType;
+import com.authorizationserver.domains.authorization.exceptions.AuthenticationErrorMessageType;
+import com.authorizationserver.domains.authorization.exceptions.AuthenticationException;
 import com.authorizationserver.infrastructures.jwt.TokenData;
 import com.nextstep.application.ReservationAndSalesService;
+import com.nextstep.domains.reservation.Reservation;
 import com.nextstep.infrastructures.web.UseContext;
+import com.nextstep.interfaces.exceptions.ReservationException;
+import com.nextstep.interfaces.reservation.dtos.ReservationMapper;
 import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
 import com.nextstep.interfaces.reservation.dtos.ReservationResponse;
 import com.nextstep.domains.reservation.ReservationService;
@@ -36,6 +42,8 @@ public class ReservationController {
 
     private final WaitingService waitingService;
 
+    private final ReservationMapper reservationMapper;
+
     @PostMapping
     public ResponseEntity<Void> createReservation(
             @UseContext TokenData tokenData,
@@ -64,11 +72,14 @@ public class ReservationController {
     public ResponseEntity<Boolean> deleteReservation(
             @UseContext TokenData tokenData,
             @PathVariable("reservation_id") Long reservationId) {
+        Reservation reservation = reservationMapper.fromResponse(service.getById(reservationId));
         Waiting waiting = waitingService.getFirstByScheduleId(reservationId);
         if (!Objects.isNull(waiting)){
             waitingService.deleteById(waiting.getMemberId(),waiting.getScheduleId());
         }
-        return ResponseEntity.ok(service.deleteById(tokenData, reservationId, waiting));
+        validateReservation(reservation);
+        validateReservationMine(reservation, tokenData);
+        return ResponseEntity.ok(service.deleteById(reservationId, waiting));
     }
 
     @PatchMapping("/{reservation_id}/approve")
@@ -76,7 +87,10 @@ public class ReservationController {
             @UseContext TokenData tokenData,
             @PathVariable("reservation_id") Long reservationId
     ){
-        return ResponseEntity.ok(reservationAndSalesService.approveById(tokenData, reservationId));
+        Reservation reservation = reservationMapper.fromResponse(service.getById(reservationId));
+        validateReservation(reservation);
+        validateReservationAdmin(tokenData);
+        return ResponseEntity.ok(reservationAndSalesService.approve(reservation));
     }
 
     @PatchMapping("/{reservation_id}/cancel")
@@ -84,7 +98,15 @@ public class ReservationController {
             @UseContext TokenData tokenData,
             @PathVariable("reservation_id") Long reservationId
     ){
-        return ResponseEntity.ok(reservationAndSalesService.cancelByReservationId(tokenData, reservationId));
+        Reservation reservation = reservationMapper.fromResponse(service.getById(reservationId));
+        validateReservation(reservation);
+        try {
+            validateReservationAdmin(tokenData);
+            return ResponseEntity.ok(reservationAndSalesService.cancelByReservationAdmin(reservation));
+        } catch (AuthenticationException e){
+            validateReservationMine(reservation, tokenData);
+            return ResponseEntity.ok(reservationAndSalesService.cancelByReservationMember(reservation));
+        }
     }
 
     @PatchMapping("/{reservation_id}/cancel-approve")
@@ -92,12 +114,32 @@ public class ReservationController {
             @UseContext TokenData tokenData,
             @PathVariable("reservation_id") Long reservationId
     ){
-        return ResponseEntity.ok(reservationAndSalesService.cancelApproveByReservationId(tokenData, reservationId));
+        Reservation reservation = reservationMapper.fromResponse(service.getById(reservationId));
+        validateReservation(reservation);
+        validateReservationAdmin(tokenData);
+        return ResponseEntity.ok(reservationAndSalesService.cancelApproveByReservation(reservation));
     }
 
     private void validateSchedule(ScheduleResponse schedule) {
         if (Objects.isNull(schedule)) {
             throw new ScheduleException(ErrorMessageType.SCHEDULE_NOT_EXISTS);
+        }
+    }
+
+    private void validateReservationMine(Reservation reservation, TokenData tokenData) {
+        if (!tokenData.getId().equals(reservation.getMemberId())) {
+            throw new ReservationException(ErrorMessageType.NOT_RESERVATION_OWNER);
+        }
+    }
+    private void validateReservationAdmin(TokenData tokenData) {
+        if (!tokenData.getRole().equals(RoleType.ADMIN.name())) {
+            throw new AuthenticationException(AuthenticationErrorMessageType.NOT_ADMIN);
+        }
+    }
+
+    private void validateReservation(Reservation reservation){
+        if (Objects.isNull(reservation)) {
+            throw new ReservationException(ErrorMessageType.RESERVATION_NOT_EXISTS);
         }
     }
 

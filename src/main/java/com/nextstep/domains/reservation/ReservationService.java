@@ -1,6 +1,5 @@
 package com.nextstep.domains.reservation;
 
-import com.authorizationserver.infrastructures.jwt.TokenData;
 import com.nextstep.domains.reservation.enums.ReservationStatus;
 import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
 import com.nextstep.interfaces.reservation.dtos.ReservationResponse;
@@ -57,9 +56,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public boolean deleteById(TokenData tokenData, Long id, Waiting waiting) {
+    public boolean deleteById(Long id, Waiting waiting) {
         Reservation reservation = repository.getById(id);
-        validateReservationMine(reservation, tokenData);
         Reservation nextReservation = mapper.fromRequest(waiting.getMemberId(), new ReservationRequest(reservation.getScheduleId()));
         if (!Objects.isNull(waiting)) {
             repository.insert(nextReservation);
@@ -89,12 +87,5 @@ public class ReservationService {
         return repository.deleteById(id);
     }
 
-    private void validateReservationMine(Reservation reservation, TokenData tokenData) {
-        if (Objects.isNull(reservation)) {
-            throw new ReservationException(ErrorMessageType.RESERVATION_NOT_EXISTS);
-        }
-        if (!tokenData.getId().equals(reservation.getMemberId())) {
-            throw new ReservationException(ErrorMessageType.NOT_RESERVATION_OWNER);
-        }
-    }
+
 }
