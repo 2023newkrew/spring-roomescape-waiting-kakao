@@ -2,42 +2,29 @@ package nextstep.schedule;
 
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.DatabaseCleaner;
 import nextstep.domain.dto.request.ScheduleRequest;
-import nextstep.domain.dto.request.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import static nextstep.util.RequestBuilder.scheduleRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScheduleE2ETest extends AbstractE2ETest {
     private Long themeId;
+
     @BeforeEach
     public void setUp() {
         super.setUp();
-        ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
-        var response = RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(themeRequest)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract();
-
-        String[] themeLocation = response.header("Location").split("/");
-        themeId = Long.parseLong(themeLocation[themeLocation.length - 1]);
+        themeId = super.createTheme();
     }
 
     @DisplayName("스케줄을 생성한다")
     @Test
     public void Should_ResponseCreated_When_ValidRequest() {
-        ScheduleRequest body = new ScheduleRequest(themeId, "2022-08-11", "13:00");
+        ScheduleRequest body = scheduleRequest(themeId);
         RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
@@ -51,7 +38,7 @@ public class ScheduleE2ETest extends AbstractE2ETest {
     @DisplayName("스케줄을 조회한다")
     @Test
     public void Should_GetSchedules_When_Request() {
-        requestCreateSchedule();
+        createSchedule(themeId);
 
         var response = RestAssured
                 .given().log().all()
@@ -68,29 +55,16 @@ public class ScheduleE2ETest extends AbstractE2ETest {
     @DisplayName("스케줄을 삭제한다")
     @Test
     void Should_DeleteSchedule_When_Request() {
-        String location = requestCreateSchedule();
+        Long scheduleId = createSchedule(themeId);
 
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
-                .when().delete("/admin" + location)
+                .when().delete("/admin/schedules/" + scheduleId)
                 .then().log().all()
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    public String requestCreateSchedule() {
-        ScheduleRequest body = new ScheduleRequest(1L, "2022-08-11", "13:00");
-        return RestAssured
-                .given().log().all()
-                .auth().oauth2(token.getAccessToken())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(body)
-                .when().post("/admin/schedules")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .header("Location");
-    }
 }

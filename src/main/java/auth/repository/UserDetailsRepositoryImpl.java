@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class UserDetailsRepositoryImpl implements UserDetailsRepository{
+public class UserDetailsRepositoryImpl implements UserDetailsRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<UserDetails> rowMapper = (resultSet, rowNum) -> new UserDetails(

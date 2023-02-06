@@ -1,0 +1,6 @@
+security:
+  jwt:
+    token:
+      secret-key: learning-test-spring
+      expire-length: 3_600_000
+      

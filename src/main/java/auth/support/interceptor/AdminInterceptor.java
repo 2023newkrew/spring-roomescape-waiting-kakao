@@ -1,5 +1,7 @@
-package auth.support;
+package auth.support.interceptor;
 
+import auth.support.AuthorizationException;
+import auth.support.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -16,6 +18,7 @@ public class AdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String credential = request.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
         String role = jwtTokenProvider.getRole(credential);
+
         if (!Objects.equals(role, "ADMIN")) {
             throw new AuthorizationException();
         }

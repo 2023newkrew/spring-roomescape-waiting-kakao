@@ -6,14 +6,15 @@ import auth.repository.UserDetailsRepositoryImpl;
 import auth.service.LoginService;
 import auth.support.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @RequiredArgsConstructor
+@PropertySource("/application.yml")
 @ConfigurationProperties(prefix = "security.jwt.token")
 public class AuthConfig {
     private String secretKey;
@@ -26,7 +27,9 @@ public class AuthConfig {
     }
 
     @Bean
-    public LoginController loginController() { return new LoginController(loginService()); }
+    public LoginController loginController() {
+        return new LoginController(loginService());
+    }
 
     @Bean
     public UserDetailsRepository userDetailsRepository() {
@@ -34,7 +37,9 @@ public class AuthConfig {
     }
 
     @Bean
-    public LoginService loginService() { return new LoginService(userDetailsRepository(), jwtTokenProvider()); }
+    public LoginService loginService() {
+        return new LoginService(userDetailsRepository(), jwtTokenProvider());
+    }
 
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;

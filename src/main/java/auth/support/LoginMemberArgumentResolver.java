@@ -1,6 +1,6 @@
 package auth.support;
 
-import auth.domain.template.LoginMember;
+import auth.domain.annotation.LoginMember;
 import auth.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

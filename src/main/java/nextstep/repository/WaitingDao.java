@@ -1,6 +1,7 @@
 package nextstep.repository;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.domain.annotation.JdbcRepository;
 import nextstep.domain.persist.Member;
 import nextstep.domain.persist.Schedule;
 import nextstep.domain.persist.Theme;
@@ -9,16 +10,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 
-@Component
+@JdbcRepository
 @RequiredArgsConstructor
 public class WaitingDao {
-    public final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Waiting> rowMapper = (resultSet, rowNum) -> new Waiting(
             resultSet.getLong("waiting.id"),
@@ -92,7 +92,16 @@ public class WaitingDao {
     }
 
     public Waiting findById(Long id) {
-        String sql = "SELECT * FROM waiting WHERE id = ?";
+        String sql = "SELECT " +
+                "waiting.id, waiting.schedule_id, waiting.member_id, " +
+                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
+                "theme.id, theme.name, theme.desc, theme.price, " +
+                "member.id, member.username, member.password, member.name, member.phone, member.role " +
+                "FROM waiting " +
+                "inner join schedule on waiting.schedule_id = schedule.id " +
+                "inner join theme on schedule.theme_id = theme.id " +
+                "inner join member on waiting.member_id = member.id " +
+                "where waiting.id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 }

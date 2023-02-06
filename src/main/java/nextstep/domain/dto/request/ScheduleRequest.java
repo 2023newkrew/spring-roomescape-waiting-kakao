@@ -1,36 +1,27 @@
 package nextstep.domain.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.domain.persist.Schedule;
 import nextstep.domain.persist.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ScheduleRequest {
+    @Schema(description = "테마 아이디")
     private Long themeId;
+    @Schema(description = "테마 날짜")
     private String date;
+    @Schema(description = "테마 시간")
     private String time;
-
-    public ScheduleRequest() {
-    }
-
-    public ScheduleRequest(Long themeId, String date, String time) {
-        this.themeId = themeId;
-        this.date = date;
-        this.time = time;
-    }
-
-    public Long getThemeId() {
-        return themeId;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getTime() {
-        return time;
-    }
 
     public Schedule toEntity(Theme theme) {
         return new Schedule(

@@ -1,22 +1,20 @@
-package nextstep;
+package nextstep.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Objects;
 
 @Component
+@Profile("test")
 public class DatabaseCleaner {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private final List<String> tableNames = List.of("member", "schedule", "reservation", "theme", "waiting");
+    private final List<String> tableNames = List.of("member", "schedule", "reservation", "theme", "waiting", "profit");
 
     @Transactional
     public void execute() {

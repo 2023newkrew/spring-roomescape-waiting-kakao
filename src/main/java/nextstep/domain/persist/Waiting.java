@@ -1,23 +1,20 @@
 package nextstep.domain.persist;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Waiting {
     private Long id;
     private Schedule schedule;
     private Member member;
 
     public Waiting(Schedule schedule, Member member) {
-        this.schedule = schedule;
-        this.member = member;
-    }
-
-    public Waiting(Long id, Schedule schedule, Member member) {
-        this.id = id;
         this.schedule = schedule;
         this.member = member;
     }

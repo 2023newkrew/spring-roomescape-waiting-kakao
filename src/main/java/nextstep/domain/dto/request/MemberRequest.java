@@ -1,41 +1,25 @@
 package nextstep.domain.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import nextstep.domain.persist.Member;
 
+@Getter
+@AllArgsConstructor
+@Builder
 public class MemberRequest {
+    @Schema(description = "유저 아이디")
     private String username;
+    @Schema(description = "유저 패스워드")
     private String password;
+    @Schema(description = "유저 이름")
     private String name;
+    @Schema(description = "유저 전화번호")
     private String phone;
+    @Schema(description = "유저 권한")
     private String role;
-
-    public MemberRequest(String username, String password, String name, String phone, String role) {
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.phone = phone;
-        this.role = role;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getRole() {
-        return role;
-    }
 
     public Member toEntity() {
         return new Member(username, password, name, phone, role);
