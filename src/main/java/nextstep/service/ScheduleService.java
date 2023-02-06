@@ -4,11 +4,13 @@ import nextstep.domain.schedule.Schedule;
 import nextstep.domain.schedule.ScheduleDao;
 import nextstep.dto.request.ScheduleRequest;
 import nextstep.domain.theme.Theme;
+import nextstep.dto.response.ScheduleResponse;
 import nextstep.error.ApplicationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.error.ErrorType.SCHEDULE_NOT_FOUND;
 
@@ -36,8 +38,11 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
-        return scheduleDao.findByThemeIdAndDate(themeId, date);
+    public List<ScheduleResponse> findByThemeIdAndDate(Long themeId, String date) {
+        return scheduleDao.findByThemeIdAndDate(themeId, date)
+                .stream()
+                .map(ScheduleResponse::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional

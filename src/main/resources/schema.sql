@@ -1,8 +1,11 @@
 CREATE TABLE reservation
 (
-    id          bigint not null auto_increment,
-    schedule_id bigint not null,
-    member_id   bigint not null,
+    id          bigint      not null auto_increment,
+    schedule_id bigint      not null,
+    member_id   bigint      not null,
+    status      varchar(20) not null,
+    deposit     int         not null,
+    created_at  datetime    not null,
     primary key (id)
 );
 
@@ -41,5 +44,25 @@ CREATE TABLE reservation_waiting
     member_id   bigint not null,
     schedule_id bigint not null,
     wait_num    int    not null,
+    deposit     int    not null,
     primary key (id)
-)
+);
+
+CREATE TABLE sales_history (
+    id              bigint      not null auto_increment,
+    theme_id        bigint      not null,
+    reservation_id  bigint      not null,
+    amount          int         not null,
+    status          varchar(20) not null,
+    created_at      datetime    not null,
+    primary key(id)
+);
+
+CREATE TABLE reservation_sales_statistics
+(
+    id               bigint        not null auto_increment,
+    total_sales      int           not null,
+    sales_per_theme  varchar(255)  not null,
+    date             datetime      not null,
+    primary key(id)
+);

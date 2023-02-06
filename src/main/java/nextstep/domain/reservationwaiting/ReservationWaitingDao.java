@@ -3,6 +3,7 @@ package nextstep.domain.reservationwaiting;
 import nextstep.domain.member.Member;
 import nextstep.domain.schedule.Schedule;
 import nextstep.domain.theme.Theme;
+import nextstep.error.ApplicationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +15,8 @@ import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static nextstep.error.ErrorType.INTERNAL_SERVER_ERROR;
 
 @Component
 public class ReservationWaitingDao {
@@ -49,7 +52,7 @@ public class ReservationWaitingDao {
     );
 
     public Long save(ReservationWaiting reservationWaiting) {
-        String sql = "INSERT INTO reservation_waiting (member_id, schedule_id, wait_num) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO reservation_waiting (member_id, schedule_id, wait_num, deposit) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -57,6 +60,7 @@ public class ReservationWaitingDao {
             ps.setLong(1, reservationWaiting.getMember().getId());
             ps.setLong(2, reservationWaiting.getSchedule().getId());
             ps.setInt(3, reservationWaiting.getWaitNum());
+            ps.setInt(4, reservationWaiting.getDeposit());
             return ps;
 
         }, keyHolder);
@@ -69,8 +73,10 @@ public class ReservationWaitingDao {
 
         try {
             return jdbcTemplate.queryForObject(sql, Integer.class, scheduleId);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return 0;
+        } catch (Exception e) {
+            throw new ApplicationException(INTERNAL_SERVER_ERROR);
         }
     }
 

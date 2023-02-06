@@ -3,25 +3,35 @@ package nextstep.domain.reservation;
 import nextstep.domain.member.Member;
 import nextstep.domain.schedule.Schedule;
 
-import java.util.Objects;
+import java.time.LocalDateTime;
+
+import static nextstep.domain.reservation.ReservationStatus.UNAPPROVED;
 
 public class Reservation {
     private Long id;
     private Schedule schedule;
     private Member member;
+    private ReservationStatus status;
+    private int deposit;
+    private LocalDateTime createdAt;
 
     public Reservation() {
     }
 
-    public Reservation(Schedule schedule, Member member) {
+    public Reservation(Schedule schedule, Member member, int deposit) {
         this.schedule = schedule;
         this.member = member;
+        this.status = UNAPPROVED;
+        this.deposit = deposit;
+        this.createdAt = LocalDateTime.now();
     }
 
-    public Reservation(Long id, Schedule schedule, Member member) {
+    public Reservation(Long id, Schedule schedule, Member member, String status, int deposit) {
         this.id = id;
         this.schedule = schedule;
         this.member = member;
+        this.status = ReservationStatus.valueOf(status);
+        this.deposit = deposit;
     }
 
     public Long getId() {
@@ -36,7 +46,31 @@ public class Reservation {
         return member;
     }
 
-    public boolean sameMember(Member member) {
-        return member != null && Objects.equals(this.member.getId(), member.getId());
+    public ReservationStatus getStatus() {
+        return status;
+    }
+
+    public ReservationStatus getTransitionedStatus() {
+        return status.getNextStatus();
+    }
+
+    public int getDeposit() {
+        return deposit;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public Long getThemeId() {
+        return schedule.getThemeId();
+    }
+
+    public boolean isUnapproved() {
+        return status.equals(UNAPPROVED);
+    }
+
+    public boolean isLessThanDepositPolicy(int depositPolicy) {
+        return deposit < depositPolicy;
     }
 }

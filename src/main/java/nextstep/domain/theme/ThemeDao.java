@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +54,11 @@ public class ThemeDao {
         }
     }
 
+    public Boolean existsById(Long id) {
+        String sql = "SELECT 1 FROM theme WHERE id = ?;";
+        return jdbcTemplate.query(sql, ResultSet::next, id);
+    }
+
     public List<Theme> findAll() {
         try {
             String sql = "SELECT id, name, desc, price from theme;";
@@ -63,7 +69,16 @@ public class ThemeDao {
     }
 
     public void delete(Long id) {
-        String sql = "DELETE FROM reservation where id = ?;";
+        String sql = "DELETE FROM theme where id = ?;";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<Theme> findByIds(List<Long> ids) {
+        try {
+            String sql = String.format("SELECT name FROM theme WHERE id IN(%s)", String.join(",", Collections.nCopies(ids.size(), "?")));
+            return jdbcTemplate.query(sql, rowMapper, ids.toArray());
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
     }
 }

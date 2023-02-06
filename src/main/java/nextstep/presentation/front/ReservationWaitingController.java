@@ -1,4 +1,4 @@
-package nextstep.presentation;
+package nextstep.presentation.front;
 
 import auth.dto.request.LoginMember;
 import auth.presentation.argumentresolver.AuthenticationPricipal;
@@ -28,7 +28,7 @@ public class ReservationWaitingController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity findMyReservationsWaitings(@AuthenticationPricipal LoginMember loginMember) {
+    public ResponseEntity<List<ReservationWaitingResponse>> findMyReservationsWaitings(@AuthenticationPricipal LoginMember loginMember) {
         List<ReservationWaitingResponse> reservationWaitings = reservationWaitingService.findMyReservationWaitings(loginMember.getId());
 
         return ResponseEntity.ok(reservationWaitings);

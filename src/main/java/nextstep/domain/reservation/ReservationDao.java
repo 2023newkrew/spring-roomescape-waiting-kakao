@@ -10,12 +10,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.*;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class ReservationDao {
@@ -46,17 +43,22 @@ public class ReservationDao {
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
                     resultSet.getString("member.role")
-            )
+            ),
+            resultSet.getString("reservation.status"),
+            resultSet.getInt("reservation.deposit")
     );
 
     public Long save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (schedule_id, member_id) VALUES (?, ?);";
+        String sql = "INSERT INTO reservation (schedule_id, member_id, status, deposit, created_at) VALUES (?, ?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, reservation.getSchedule().getId());
             ps.setLong(2, reservation.getMember().getId());
+            ps.setString(3, reservation.getStatus().name());
+            ps.setInt(4, reservation.getDeposit());
+            ps.setTimestamp(5, Timestamp.valueOf(reservation.getCreatedAt()));
             return ps;
 
         }, keyHolder);
@@ -66,7 +68,7 @@ public class ReservationDao {
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, reservation.deposit " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -85,7 +87,7 @@ public class ReservationDao {
 
     public Optional<Reservation> findById(Long id) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, reservation.deposit " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -117,7 +119,7 @@ public class ReservationDao {
 
     public List<Reservation> findByMemberId(Long memberId) {
         String sql = "SELECT " +
-                "reservation.id, reservation.schedule_id, reservation.member_id, " +
+                "reservation.id, reservation.schedule_id, reservation.member_id, reservation.status, reservation.deposit " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
                 "theme.id, theme.name, theme.desc, theme.price, " +
                 "member.id, member.username, member.password, member.name, member.phone, member.role " +
@@ -134,4 +136,8 @@ public class ReservationDao {
         }
     }
 
+    public void updateReservationStatus(Long id, String status) {
+        String sql = "UPDATE reservation SET status = ? WHERE id = ?";
+        jdbcTemplate.update(sql, status, id);
+    }
 }
