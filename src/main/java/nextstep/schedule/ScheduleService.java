@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class ScheduleService {
     private ScheduleDao scheduleDao;
     private ThemeDao themeDao;
@@ -28,7 +29,6 @@ public class ScheduleService {
         this.reservationWaitingDao = reservationWaitingDao;
     }
 
-    @Transactional
     public Long create(ScheduleRequest scheduleRequest) {
         Theme theme = themeDao.findById(scheduleRequest.getThemeId());
         return scheduleDao.save(scheduleRequest.toEntity(theme));
@@ -39,7 +39,6 @@ public class ScheduleService {
         return scheduleDao.findByThemeIdAndDate(themeId, date);
     }
 
-    @Transactional
     public void deleteById(Long id) {
         Schedule schedule = scheduleDao.findById(id);
         if (Objects.isNull(schedule)) {

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class ThemeService {
     private ThemeDao themeDao;
     private ScheduleDao scheduleDao;
@@ -28,7 +29,6 @@ public class ThemeService {
         return themeDao.findAll();
     }
 
-    @Transactional
     public void delete(Long id) {
         Theme theme = themeDao.findById(id);
         if (Objects.isNull(theme)) {

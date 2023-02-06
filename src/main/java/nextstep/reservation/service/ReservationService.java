@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
@@ -32,7 +33,6 @@ public class ReservationService {
         this.reservationWaitingDao = reservationWaitingDao;
     }
 
-    @Transactional
     public Long create(Member member, ReservationRequest reservationRequest) {
         if (Objects.isNull(member)) {
             throw new RoomReservationException(ErrorCode.AUTHENTICATION_REQUIRED);
@@ -64,7 +64,6 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    @Transactional
     public void deleteById(Member member, Long id) {
         Reservation reservation = reservationDao.findById(id);
         if (Objects.isNull(reservation)) {

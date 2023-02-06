@@ -7,7 +7,9 @@ import auth.dto.TokenResponse;
 import auth.domain.UserDetails;
 import auth.dao.UserDetailsDao;
 import java.util.Objects;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 public class LoginService {
     private UserDetailsDao userDetailsDao;
     private JwtTokenProvider jwtTokenProvider;
