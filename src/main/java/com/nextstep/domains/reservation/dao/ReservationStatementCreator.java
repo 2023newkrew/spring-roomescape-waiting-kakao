@@ -1,6 +1,7 @@
 package com.nextstep.domains.reservation.dao;
 
 import com.nextstep.domains.reservation.Reservation;
+import com.nextstep.domains.reservation.enums.ReservationStatus;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -10,7 +11,7 @@ import java.sql.SQLException;
 @Component
 public class ReservationStatementCreator {
 
-    private static final String SELECT_BY_SCHEDULE_ID_SQL = "SELECT * FROM reservation WHERE schedule_id = ?";
+    private static final String SELECT_BY_SCHEDULE_ID_SQL = "SELECT * FROM reservation WHERE schedule_id = ? AND deleted = false";
 
     private static final String
             SELECT_BY_MEMBER_ID_AND_SCHEDULE_ID_SQL =
@@ -20,7 +21,7 @@ public class ReservationStatementCreator {
 
     private static final String
             SELECT_BY_ID_SQL =
-            "SELECT reservation.id, " +
+            "SELECT reservation.id, reservation.status, " +
                     "member.id, member.username, member.password, member.name, member.phone, member.role, " +
                     "schedule.id, schedule.date, schedule.time, " +
                     "   theme.id, theme.name, theme.desc, theme.price " +
@@ -28,11 +29,11 @@ public class ReservationStatementCreator {
                     "inner join member on reservation.member_id = member.id " +
                     "inner join schedule on reservation.schedule_id = schedule.id " +
                     "inner join theme on schedule.theme_id = theme.id " +
-                    "where reservation.id = ?;";
+                    "where reservation.id = ? AND reservation.deleted = false;";
 
     private static final String
             SELECT_BY_MEMBER_ID_SQL =
-            "SELECT reservation.id, " +
+            "SELECT reservation.id, reservation.status,  " +
                     "member.id, member.username, member.password, member.name, member.phone, member.role, " +
                     "schedule.id, schedule.date, schedule.time, " +
                     "   theme.id, theme.name, theme.desc, theme.price " +
@@ -42,9 +43,9 @@ public class ReservationStatementCreator {
                     "inner join theme on schedule.theme_id = theme.id " +
                     "where reservation.member_id = ?;";
 
-    private static final String UPDATE_BY_ID_SQL = "UPDATE reservation SET member_id = ? WHERE id = ?";
+    private static final String UPDATE_STATUS_BY_ID_SQL = "UPDATE reservation SET status = ? WHERE id = ?";
     
-    private static final String DELETE_BY_ID_SQL = "DELETE FROM reservation WHERE id = ?";
+    private static final String DELETE_BY_ID_SQL = "UPDATE reservation SET deleted = true WHERE id = ?";
 
     public PreparedStatement createSelectByScheduleId(
             Connection connection, Long scheduleId) throws SQLException {
@@ -86,10 +87,10 @@ public class ReservationStatementCreator {
         return ps;
     }
 
-    public PreparedStatement createUpdateById(Connection connection, Long id, Long memberId) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(UPDATE_BY_ID_SQL);
+    public PreparedStatement createUpdateById(Connection connection, Long id, ReservationStatus status) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(UPDATE_STATUS_BY_ID_SQL);
         ps.setLong(2, id);
-        ps.setLong(1, memberId);
+        ps.setString(1, status.name());
 
         return ps;
     }

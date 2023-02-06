@@ -26,9 +26,9 @@ public class UseContextArgumentResolver implements HandlerMethodArgumentResolver
     public boolean supportsParameter(MethodParameter parameter) {
 
         UseContext useContext = parameter.getParameterAnnotation(UseContext.class);
-        boolean isLong = Long.class.equals(parameter.getParameterType());
+        boolean isTokenData = TokenData.class.equals(parameter.getParameterType());
 
-        return Objects.nonNull(useContext) && isLong;
+        return Objects.nonNull(useContext) && isTokenData;
     }
 
     @Override
@@ -39,8 +39,7 @@ public class UseContextArgumentResolver implements HandlerMethodArgumentResolver
             WebDataBinderFactory binderFactory) {
         String bearerToken = webRequest.getHeader(accessTokenName);
         String accessToken = provider.getValidToken(bearerToken);
-        TokenData tokenData = provider.getTokenData(accessToken);
 
-        return tokenData.getId();
+        return provider.getTokenData(accessToken);
     }
 }

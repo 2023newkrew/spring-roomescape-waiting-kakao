@@ -1,5 +1,6 @@
 package com.nextstep.interfaces.reservation.dtos;
 
+import com.nextstep.domains.reservation.enums.ReservationStatus;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -17,4 +18,6 @@ public class ReservationResponse {
     private final MemberResponse member;
 
     private final ScheduleResponse schedule;
+
+    private final ReservationStatus status;
 }

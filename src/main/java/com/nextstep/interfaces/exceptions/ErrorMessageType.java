@@ -15,7 +15,9 @@ public enum ErrorMessageType {
     RESERVATION_NOT_EXISTS(HttpStatus.BAD_REQUEST, "존재하지 않는 예약입니다."),
     WAITING_NOT_EXISTS(HttpStatus.BAD_REQUEST, "존재하지 않는 예약 대기입니다."),
     NOT_RESERVATION_OWNER(HttpStatus.FORBIDDEN, "예약한 사용자가 아닙니다."),
-    NOT_WAITING_OWNER(HttpStatus.FORBIDDEN, "예약 대기한 사용자가 아닙니다.");
+    NOT_WAITING_OWNER(HttpStatus.FORBIDDEN, "예약 대기한 사용자가 아닙니다."),
+    RESERVATION_STATUS_CONFLICT(HttpStatus.BAD_REQUEST, "예약 상태가 알맞자 않습니다.");
+
 
     @Getter
     final HttpStatus httpStatus;

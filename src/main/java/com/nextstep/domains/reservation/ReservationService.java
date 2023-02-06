@@ -1,5 +1,6 @@
 package com.nextstep.domains.reservation;
 
+import com.nextstep.domains.reservation.enums.ReservationStatus;
 import com.nextstep.interfaces.reservation.dtos.ReservationRequest;
 import com.nextstep.interfaces.reservation.dtos.ReservationResponse;
 import com.nextstep.interfaces.reservation.dtos.ReservationMapper;
@@ -55,21 +56,36 @@ public class ReservationService {
     }
 
     @Transactional
-    public boolean deleteById(Long memberId, Long id, Waiting waiting) {
+    public boolean deleteById(Long id, Waiting waiting) {
         Reservation reservation = repository.getById(id);
-        validateReservation(reservation, memberId);
-        if (Objects.isNull(waiting)) {
-            return repository.deleteById(id);
+        Reservation nextReservation = mapper.fromRequest(waiting.getMemberId(), new ReservationRequest(reservation.getScheduleId()));
+        if (!Objects.isNull(waiting)) {
+            repository.insert(nextReservation);
         }
-        return repository.updateById(id, waiting.getMemberId());
+        return repository.deleteById(id);
     }
 
-    private void validateReservation(Reservation reservation, Long memberId) {
-        if (Objects.isNull(reservation)) {
-            throw new ReservationException(ErrorMessageType.RESERVATION_NOT_EXISTS);
-        }
-        if (!memberId.equals(reservation.getMemberId())) {
-            throw new ReservationException(ErrorMessageType.NOT_RESERVATION_OWNER);
-        }
+    @Transactional
+    public boolean approveById(Long id) {
+        return repository.updateById(id, ReservationStatus.APPROVED);
     }
+
+    @Transactional
+    public boolean cancelById(Long id) {
+        repository.updateById(id, ReservationStatus.REJECTED);
+        return repository.deleteById(id);
+    }
+
+    @Transactional
+    public boolean cancelWaitById(Long id) {
+        return repository.updateById(id, ReservationStatus.CANCELED_WAIT);
+    }
+
+    @Transactional
+    public boolean cancelApproveById(Long id) {
+        repository.updateById(id, ReservationStatus.CANCELED);
+        return repository.deleteById(id);
+    }
+
+
 }

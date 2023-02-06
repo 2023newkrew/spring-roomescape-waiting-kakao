@@ -1,5 +1,6 @@
 package com.nextstep.interfaces.waiting;
 
+import com.authorizationserver.infrastructures.jwt.TokenData;
 import com.nextstep.infrastructures.web.UseContext;
 import com.nextstep.interfaces.exceptions.ErrorMessageType;
 import com.nextstep.interfaces.exceptions.ReservationException;
@@ -35,21 +36,21 @@ public class WaitingController {
 
     @PostMapping
     public ResponseEntity<Void> create(
-            @UseContext Long memberId,
+            @UseContext TokenData tokenData,
             @RequestBody WaitingRequest request) {
         URI location;
         ScheduleResponse scheduleResponse = scheduleService.getById(request.getScheduleId());
         validateSchedule(scheduleResponse);
         try {
             ReservationRequest reservationRequest = new ReservationRequest(request.getScheduleId());
-            ReservationResponse reservation = reservationService.create(memberId, reservationRequest, scheduleResponse);
+            ReservationResponse reservation = reservationService.create(tokenData.getId(), reservationRequest, scheduleResponse);
             location = URI.create("/reservations/" + reservation.getId());
         }
         catch (ReservationException e) {
-            if (reservationService.existsByMemberIdAndScheduleId(memberId, request.getScheduleId())) {
+            if (reservationService.existsByMemberIdAndScheduleId(tokenData.getId(), request.getScheduleId())) {
                 throw new ReservationException(ErrorMessageType.RESERVATION_CONFLICT);
             }
-            WaitingResponse waiting = service.create(memberId, request);
+            WaitingResponse waiting = service.create(tokenData.getId(), request);
             location = URI.create(WAITING_PATH + waiting.getId());
         }
         return ResponseEntity.created(location).build();
@@ -61,15 +62,15 @@ public class WaitingController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<WaitingResponse>> getByMemberId(@UseContext Long memberId) {
-        return ResponseEntity.ok(service.getByMemberId(memberId));
+    public ResponseEntity<List<WaitingResponse>> getByMemberId(@UseContext TokenData tokenData) {
+        return ResponseEntity.ok(service.getByMemberId(tokenData.getId()));
     }
 
     @DeleteMapping("/{waiting_id}")
     public ResponseEntity<Boolean> deleteById(
-            @UseContext Long memberId,
+            @UseContext TokenData tokenData,
             @PathVariable("waiting_id") Long waitingId) {
-        return ResponseEntity.ok(service.deleteById(memberId, waitingId));
+        return ResponseEntity.ok(service.deleteById(tokenData.getId(), waitingId));
     }
 
     private void validateSchedule(ScheduleResponse schedule) {

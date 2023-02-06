@@ -1,9 +1,11 @@
-package com.nextstep.domains.reservation.dao;
+package com.nextstep.domains.sales.dao;
 
 import com.authorizationserver.domains.authorization.enums.RoleType;
-import com.nextstep.domains.reservation.Reservation;
 import com.nextstep.domains.member.Member;
+import com.nextstep.domains.reservation.Reservation;
 import com.nextstep.domains.reservation.enums.ReservationStatus;
+import com.nextstep.domains.sales.Sales;
+import com.nextstep.domains.sales.enums.SalesStatus;
 import com.nextstep.domains.schedule.Schedule;
 import com.nextstep.domains.theme.Theme;
 import org.springframework.stereotype.Component;
@@ -15,24 +17,33 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
-public class ReservationResultSetParser {
+public class SalesResultSetParser {
 
-    public List<Reservation> parseReservations(ResultSet resultSet) throws SQLException {
-        List<Reservation> reservations = new ArrayList<>();
-        Reservation reservation = parseReservation(resultSet);
-        while (Objects.nonNull(reservation)) {
-            reservations.add(reservation);
-            reservation = parseReservation(resultSet);
+    public List<Sales> parseSalesList(ResultSet resultSet) throws SQLException {
+        List<Sales> salesList = new ArrayList<>();
+        Sales sales = parseSales(resultSet);
+        while (Objects.nonNull(sales)) {
+            salesList.add(sales);
+            sales = parseSales(resultSet);
         }
 
-        return reservations;
+        return salesList;
     }
 
-    public Reservation parseReservation(ResultSet resultSet) throws SQLException {
+    public Sales parseSales(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {
             return null;
         }
 
+        return new Sales(
+                resultSet.getLong("sales.id"),
+                parseReservation(resultSet),
+                resultSet.getInt("sales.amount"),
+                SalesStatus.valueOf(resultSet.getString("sales.status"))
+        );
+    }
+
+    public Reservation parseReservation(ResultSet resultSet) throws SQLException {
         return new Reservation(
                 resultSet.getLong("reservation.id"),
                 parseMember(resultSet),
