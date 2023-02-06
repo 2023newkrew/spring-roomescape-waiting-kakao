@@ -1,4 +1,4 @@
-package auth.domain.persist;
+package auth.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +15,14 @@ public class UserDetails {
     private String password;
     private String name;
     private String phone;
-    private String role;
+    private Role role;
 
-    public boolean checkWrongPassword(String password) {
-        return !this.password.equals(password);
+    public boolean isAdmin() {
+        return Role.ADMIN.equals(this.role);
+    }
+
+    public boolean isValidPassword(String password) {
+        return this.password.equals(password);
     }
 
 }

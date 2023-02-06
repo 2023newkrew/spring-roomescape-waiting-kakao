@@ -1,7 +1,7 @@
 package nextstep.controller;
 
-import nextstep.domain.dto.ThemeRequest;
-import nextstep.domain.persist.Theme;
+import nextstep.controller.dto.request.ThemeRequest;
+import nextstep.domain.Theme;
 import nextstep.service.ThemeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +18,8 @@ public class ThemeController {
     }
 
     @PostMapping("/admin/themes")
-    public ResponseEntity<Void> createTheme(@RequestBody ThemeRequest themeRequest) {
-        Long id = themeService.create(themeRequest);
+    public ResponseEntity<?> createTheme(@RequestBody ThemeRequest themeRequest) {
+        long id = themeService.create(themeRequest);
         return ResponseEntity.created(URI.create("/themes/" + id)).build();
     }
 

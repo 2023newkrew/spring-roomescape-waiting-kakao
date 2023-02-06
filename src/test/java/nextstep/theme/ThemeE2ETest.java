@@ -1,11 +1,11 @@
 package nextstep.theme;
 
-import auth.domain.dto.TokenRequest;
-import auth.domain.dto.TokenResponse;
+import auth.controller.dto.TokenRequest;
+import auth.controller.dto.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.AbstractE2ETest;
-import nextstep.domain.dto.MemberRequest;
-import nextstep.domain.dto.ThemeRequest;
+import nextstep.controller.dto.request.MemberRequest;
+import nextstep.controller.dto.request.ThemeRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -14,6 +14,9 @@ import org.springframework.http.MediaType;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ThemeE2ETest extends AbstractE2ETest {
+    private final String USERNAME = "username";
+    private final String PASSWORD = "password";
+
     @DisplayName("테마를 생성한다")
     @Test
     public void create() {
@@ -31,8 +34,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
     @DisplayName("어드민이 아닌 사람이 테마를 생성한다")
     @Test
     public void createFromNormalUser() {
-
-        MemberRequest memberBody = new MemberRequest(USERNAME + 1, PASSWORD, "name", "010-1234-5678", "");
+        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678");
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -41,7 +43,7 @@ public class ThemeE2ETest extends AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        TokenRequest tokenBody = new TokenRequest(USERNAME + 1, PASSWORD);
+        TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
         var response = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

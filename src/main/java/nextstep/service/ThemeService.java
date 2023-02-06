@@ -1,7 +1,7 @@
 package nextstep.service;
 
-import nextstep.domain.dto.ThemeRequest;
-import nextstep.domain.persist.Theme;
+import nextstep.controller.dto.request.ThemeRequest;
+import nextstep.domain.Theme;
 import nextstep.repository.ThemeDao;
 import org.springframework.stereotype.Service;
 

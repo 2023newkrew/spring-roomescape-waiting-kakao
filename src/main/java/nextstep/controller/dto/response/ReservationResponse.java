@@ -1,14 +1,14 @@
-package nextstep.domain.dto;
+package nextstep.controller.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import nextstep.domain.persist.Reservation;
-import nextstep.domain.persist.Schedule;
+import lombok.RequiredArgsConstructor;
+import nextstep.domain.Reservation;
+import nextstep.domain.Schedule;
 
 @Getter
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
 public class ReservationResponse {
     private long id;
     private Schedule schedule;

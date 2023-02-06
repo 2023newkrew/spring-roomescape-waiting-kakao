@@ -1,7 +1,7 @@
 package auth.support;
 
-import auth.domain.template.LoginMember;
 import auth.service.LoginService;
+import auth.support.template.LoginMember;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -9,8 +9,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.util.Objects;
+
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private LoginService loginService;
+    private final LoginService loginService;
 
     public LoginMemberArgumentResolver(LoginService loginService) {
         this.loginService = loginService;
@@ -24,8 +26,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         try {
-            String credential = webRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
-            return loginService.extractMember(credential);
+            String credential = Objects.requireNonNull(webRequest.getHeader(HttpHeaders.AUTHORIZATION)).split(" ")[1];
+            return loginService.extractUserDetails(credential);
         } catch (Exception e) {
             throw new AuthenticationException();
         }

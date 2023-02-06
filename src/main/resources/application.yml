@@ -1,0 +1,19 @@
+security:
+  jwt:
+    token:
+      secret-key: learning-test-spring
+      expire-length: 3600000
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+    driverClassName: org.h2.Driver
+    username: sa
+    password: ""
+  h2:
+    console:
+      enabled: true
+  sql:
+    init:
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+      mode: always

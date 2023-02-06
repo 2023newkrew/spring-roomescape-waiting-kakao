@@ -1,10 +1,11 @@
 package nextstep.repository;
 
+import auth.domain.Role;
 import lombok.RequiredArgsConstructor;
-import nextstep.domain.persist.Member;
-import nextstep.domain.persist.Schedule;
-import nextstep.domain.persist.Theme;
-import nextstep.domain.persist.Waiting;
+import nextstep.domain.Member;
+import nextstep.domain.Schedule;
+import nextstep.domain.Theme;
+import nextstep.domain.Waiting;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -39,11 +41,11 @@ public class WaitingDao {
                     resultSet.getString("member.password"),
                     resultSet.getString("member.name"),
                     resultSet.getString("member.phone"),
-                    resultSet.getString("member.role")
+                    Role.valueOf(resultSet.getString("member.role"))
             )
     );
 
-    public Long save(Waiting waiting) {
+    public long save(Waiting waiting) {
         String sql = "INSERT INTO waiting (schedule_id, member_id) VALUES (?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -54,10 +56,10 @@ public class WaitingDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public Long getPriority(Long scheduleId, Long waitingId) {
+    public Long getPriority(long scheduleId, long waitingId) {
         String sql = "SELECT COUNT(waiting.id)" +
                 "FROM waiting " +
                 "WHERE waiting.schedule_id = ? AND waiting.id <= ?";
@@ -68,7 +70,7 @@ public class WaitingDao {
         }
     }
 
-    public List<Waiting> findAll(Long id) {
+    public List<Waiting> findAll(long id) {
         String sql = "SELECT " +
                 "waiting.id, waiting.schedule_id, waiting.member_id, " +
                 "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
@@ -86,12 +88,12 @@ public class WaitingDao {
         }
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "DELETE FROM waiting WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public Waiting findById(Long id) {
+    public Waiting findById(long id) {
         String sql = "SELECT * FROM waiting WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }

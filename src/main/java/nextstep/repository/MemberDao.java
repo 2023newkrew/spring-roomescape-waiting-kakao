@@ -1,6 +1,7 @@
 package nextstep.repository;
 
-import nextstep.domain.persist.Member;
+import auth.domain.Role;
+import nextstep.domain.Member;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,6 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.Objects;
 
 @Component
 public class MemberDao {
@@ -23,10 +25,10 @@ public class MemberDao {
             resultSet.getString("password"),
             resultSet.getString("name"),
             resultSet.getString("phone"),
-            resultSet.getString("role")
+            Role.valueOf(resultSet.getString("role"))
     );
 
-    public Long save(Member member) {
+    public long save(Member member) {
         String sql = "INSERT INTO member (username, password, name, phone, role) VALUES (?, ?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -36,15 +38,15 @@ public class MemberDao {
             ps.setString(2, member.getPassword());
             ps.setString(3, member.getName());
             ps.setString(4, member.getPhone());
-            ps.setString(5, member.getRole());
+            ps.setString(5, member.getRole().name());
             return ps;
 
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public Member findById(Long id) {
+    public Member findById(long id) {
         String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }

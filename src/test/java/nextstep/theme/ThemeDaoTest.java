@@ -1,7 +1,8 @@
 package nextstep.theme;
 
-import nextstep.domain.persist.Theme;
+import nextstep.domain.Theme;
 import nextstep.repository.ThemeDao;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -14,6 +15,7 @@ public class ThemeDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @DisplayName("테마를 생성한다")
     @Test
     void save() {
         ThemeDao themeDao = new ThemeDao(jdbcTemplate);

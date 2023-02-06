@@ -1,13 +1,14 @@
 package nextstep.service;
 
-import auth.domain.persist.UserDetails;
+import auth.domain.UserDetails;
 import auth.support.AuthenticationException;
 import lombok.RequiredArgsConstructor;
-import nextstep.domain.dto.WaitingRequest;
-import nextstep.domain.dto.WaitingResponse;
-import nextstep.domain.persist.Member;
-import nextstep.domain.persist.Reservation;
-import nextstep.domain.persist.Waiting;
+import nextstep.controller.dto.request.WaitingRequest;
+import nextstep.controller.dto.response.WaitingResponse;
+import nextstep.domain.Member;
+import nextstep.domain.Reservation;
+import nextstep.domain.ReservationStatus;
+import nextstep.domain.Waiting;
 import nextstep.repository.ReservationDao;
 import nextstep.repository.ScheduleDao;
 import nextstep.repository.WaitingDao;
@@ -30,7 +31,7 @@ public class WaitingService {
         long scheduleId = waitingRequest.getScheduleId();
         List<Reservation> reservations = reservationDao.findByScheduleId(scheduleId);
         if (reservations.isEmpty()) {
-            long id = reservationDao.save(new Reservation(scheduleDao.findById(scheduleId), new Member(userDetails)));
+            long id = reservationDao.save(new Reservation(scheduleDao.findById(scheduleId), new Member(userDetails), ReservationStatus.CREATED));
             return RESERVATION + "/" + id;
         }
         long id = waitingDao.save(new Waiting(scheduleDao.findById(scheduleId), new Member(userDetails)));
