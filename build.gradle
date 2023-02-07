@@ -2,28 +2,58 @@ plugins {
     id 'org.springframework.boot' version '2.7.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'com.google.cloud.tools.jib' version '3.3.1'
 }
 
 group 'nextstep'
 version '1.0-SNAPSHOT'
+sourceCompatibility = 18
+targetCompatibility = 18
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    // spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    // JWT
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'javax.xml.bind:jaxb-api'
 
+    // log
     implementation 'net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.7.1'
 
+    testImplementation 'io.rest-assured:rest-assured:4.4.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.rest-assured:rest-assured:3.3.0'
 
     runtimeOnly 'com.h2database:h2'
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+
+    implementation 'info.picocli:picocli:4.7.0'
 }
+
 test {
     useJUnitPlatform()
+}
+
+jib {
+    from {
+        image = 'adoptopenjdk/openjdk11'
+    }
+    to {
+        image = 'idock.daumkakao.io/onboarding2023/kane.woz'
+        tags = ['latest']
+    }
+    container {
+        mainClass = "roomescape.SpringWebApplication"
+        ports = ["8080"]
+    }
 }
