@@ -1,15 +1,16 @@
 package nextstep.member;
 
+import auth.domain.UserDetails;
+import auth.dao.UserDetailsDao;
+import java.sql.PreparedStatement;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.sql.PreparedStatement;
-
 @Component
-public class MemberDao {
+public class MemberDao implements UserDetailsDao {
     public final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
@@ -22,7 +23,7 @@ public class MemberDao {
             resultSet.getString("password"),
             resultSet.getString("name"),
             resultSet.getString("phone"),
-            resultSet.getString("role")
+            Role.valueOf(resultSet.getString("role"))
     );
 
     public Long save(Member member) {
@@ -35,7 +36,7 @@ public class MemberDao {
             ps.setString(2, member.getPassword());
             ps.setString(3, member.getName());
             ps.setString(4, member.getPhone());
-            ps.setString(5, member.getRole());
+            ps.setString(5, member.getRole().toString());
             return ps;
 
         }, keyHolder);
@@ -51,5 +52,15 @@ public class MemberDao {
     public Member findByUsername(String username) {
         String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
         return jdbcTemplate.queryForObject(sql, rowMapper, username);
+    }
+
+    @Override
+    public UserDetails findUserDetailsByUsername(String username) {
+        return findByUsername(username).convertToUserDetails();
+    }
+
+    @Override
+    public UserDetails findUserDetailsById(Long id) {
+        return findById(id).convertToUserDetails();
     }
 }

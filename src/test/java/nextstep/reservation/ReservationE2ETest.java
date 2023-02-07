@@ -1,9 +1,15 @@
 package nextstep.reservation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.AbstractE2ETest;
+import nextstep.reservation.domain.Reservation;
+import nextstep.reservation.domain.ReservationWaiting;
+import nextstep.reservation.dto.ReservationRequest;
 import nextstep.schedule.ScheduleRequest;
 import nextstep.theme.ThemeRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,10 +17,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class ReservationE2ETest extends AbstractE2ETest {
     public static final String DATE = "2022-08-11";
@@ -177,6 +179,51 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @DisplayName("예약 취소 시 첫번째 예약 대기가 자동으로 예약된다.")
+    @Test
+    void deleteReservationAndReserveNext() {
+        // given
+        var reservation = createReservation();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/reservation-waitings")
+                .then().log().all()
+                .extract();
+
+        // when
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().delete(reservation.header("Location"))
+                .then().log().all()
+                .extract();
+
+        // then
+        var responseReserve = RestAssured
+                .given().log().all()
+                .param("themeId", themeId)
+                .param("date", DATE)
+                .when().get("/reservations")
+                .then().log().all()
+                .extract();
+        List<Reservation> reservations = responseReserve.jsonPath().getList(".", Reservation.class);
+        assertThat(reservations.size()).isEqualTo(1);
+
+        var responseWaiting = RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .param("themeId", themeId)
+                .param("date", DATE)
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .extract();
+        List<ReservationWaiting> waitingList = responseWaiting.jsonPath().getList(".", ReservationWaiting.class);
+        assertThat(waitingList.size()).isEqualTo(0);
     }
 
     private ExtractableResponse<Response> createReservation() {

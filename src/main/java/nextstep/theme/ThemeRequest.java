@@ -1,8 +1,16 @@
 package nextstep.theme;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class ThemeRequest {
+    @NotBlank
     private String name;
+    @NotBlank
     private String desc;
+    @Min(0)
+    @NotNull
     private int price;
 
     public ThemeRequest(String name, String desc, int price) {
