@@ -1,9 +1,8 @@
 package nextstep.revenue;
 
+import nextstep.reservation.Reservation;
 import nextstep.support.NotExistEntityException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class RevenueService {
@@ -17,8 +16,12 @@ public class RevenueService {
         return revenueDao.save(revenue);
     }
 
-    public void deleteByReservationId(Long reservationId) {
-        Revenue revenue = revenueDao.findByReservationId(reservationId).orElseThrow(NotExistEntityException::new);
-        revenueDao.deleteById(revenue.getId());
+    public void refund(Reservation reservation) {
+        Revenue revenue = revenueDao.findByReservationId(reservation.getId()).orElseThrow(NotExistEntityException::new);
+        revenueDao.save(Revenue.builder()
+                .id(revenue.getId())
+                .reservationId(revenue.getReservationId())
+                .price(-revenue.getPrice())
+                .build());
     }
 }

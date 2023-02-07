@@ -125,7 +125,8 @@ public class ReservationService {
 
     public void cancelApproveReservation(final Long id) {
         reservationDao.updateState(id, ReservationState.CANCELED);
-        revenueService.deleteByReservationId(id);
+        Reservation reservation = findById(id).orElseThrow(NotExistEntityException::new);
+        revenueService.refund(reservation);
     }
 
     public void rejectReservation(final Long id) {
