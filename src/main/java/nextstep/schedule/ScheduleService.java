@@ -3,6 +3,7 @@ package nextstep.schedule;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import nextstep.common.Lock;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.reservation.dao.ReservationDao;
@@ -22,7 +23,7 @@ public class ScheduleService {
     private ThemeDao themeDao;
     private ReservationDao reservationDao;
     private ReservationWaitingDao reservationWaitingDao;
-    public static final AtomicInteger scheduleListLock = new AtomicInteger(0);
+    public static final Lock scheduleListLock = new Lock();
 
     public ScheduleService(ScheduleDao scheduleDao, ThemeDao themeDao, ReservationDao reservationDao,
                            ReservationWaitingDao reservationWaitingDao) {
@@ -47,14 +48,14 @@ public class ScheduleService {
         if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
-        while(!ReservationService.reservationListLock.compareAndSet(0, 1)) {}
+        ReservationService.reservationListLock.lock();
         List<Reservation> reservationList = reservationDao.findByScheduleId(id);
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(id);
         if (reservationList.size() > 0 || reservationWaitingList.size() > 0) {
-            ReservationService.reservationListLock.set(0);
+            ReservationService.reservationListLock.unlock();
             throw new RoomReservationException(ErrorCode.SCHEDULE_CANT_BE_DELETED);
         }
         scheduleDao.deleteById(id);
-        ReservationService.reservationListLock.set(0);
+        ReservationService.reservationListLock.unlock();
     }
 }

@@ -3,6 +3,7 @@ package nextstep.reservation.service;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import nextstep.common.Lock;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
@@ -21,7 +22,7 @@ public class ReservationWaitingService {
     private final ReservationWaitingDao reservationWaitingDao;
     private final ReservationDao reservationDao;
     private final ScheduleDao scheduleDao;
-    public static final AtomicInteger reservationWaitingListLock = new AtomicInteger(0);
+    public static final Lock reservationWaitingListLock = new Lock();
 
     public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ReservationDao reservationDao,
                                      ScheduleDao scheduleDao) {
@@ -36,7 +37,7 @@ public class ReservationWaitingService {
         if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
-        while(!ReservationService.reservationListLock.compareAndSet(0, 1)) {}
+        ReservationService.reservationListLock.lock();
         List<Reservation> reservationList = reservationDao.findByScheduleId(schedule.getId());
         if (reservationList.isEmpty()) {
             Reservation newReservation = new Reservation(
@@ -44,22 +45,22 @@ public class ReservationWaitingService {
                     member
             );
             reservationDao.save(newReservation);
-            ReservationService.reservationListLock.set(0);
+            ReservationService.reservationListLock.unlock();
             return newReservation.getId();
         }
-        while(!reservationWaitingListLock.compareAndSet(0, 1)) {}
+        reservationWaitingListLock.lock();
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
         boolean isDuplicated = reservationWaitingList.stream()
                 .anyMatch(reservationWaiting -> reservationWaiting.isMine(member));
         if (isDuplicated) {
-            reservationWaitingListLock.set(0);
-            ReservationService.reservationListLock.set(0);
+            reservationWaitingListLock.unlock();
+            ReservationService.reservationListLock.unlock();
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION_WAITING);
         }
         long waitNum = reservationWaitingList.stream().mapToLong(ReservationWaiting::getWaitingNum).max().orElse(0) + 1;
         long savedId = reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
-        reservationWaitingListLock.set(0);
-        ReservationService.reservationListLock.set(0);
+        reservationWaitingListLock.unlock();
+        ReservationService.reservationListLock.unlock();
         return savedId;
     }
 

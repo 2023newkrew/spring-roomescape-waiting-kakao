@@ -8,6 +8,7 @@ public enum ErrorCode {
     API_NOT_FOUND(HttpStatus.NOT_FOUND, "잘못된 API 요청입니다."),
     INVALID_BODY_FIELD(HttpStatus.BAD_REQUEST, "바디의 필드가 잘못된 형식이거나 누락되었습니다."),
     INVALID_PATH_VAR_OR_QUERY_PARAMETER(HttpStatus.BAD_REQUEST, "경로 변수나 쿼리 파라미터가 잘못된 형식이거나 누락되었습니다."),
+    INVALID_UNLOCK(HttpStatus.INTERNAL_SERVER_ERROR, "잘못된 동기화 처리입니다. 관리자에게 문의해주세요."),
 
     // 인증 에러
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "유저네임 또는 패스워드가 틀렸습니다."),

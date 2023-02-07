@@ -3,6 +3,7 @@ package nextstep.reservation.service;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import nextstep.common.Lock;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
@@ -25,7 +26,7 @@ public class ReservationService {
     private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
     private final ReservationWaitingDao reservationWaitingDao;
-    public static final AtomicInteger reservationListLock = new AtomicInteger(0);
+    public static final Lock reservationListLock = new Lock();
 
     public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao,
                               ReservationWaitingDao reservationWaitingDao) {
@@ -43,10 +44,10 @@ public class ReservationService {
         if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
-        while(!reservationListLock.compareAndSet(0, 1)) {}
+        reservationListLock.lock();
         List<Reservation> reservation = reservationDao.findByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
-            reservationListLock.set(0);
+            reservationListLock.unlock();
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION);
         }
         Reservation newReservation = new Reservation(
@@ -54,7 +55,7 @@ public class ReservationService {
                 member
         );
         long savedId = reservationDao.save(newReservation);
-        reservationListLock.set(0);
+        reservationListLock.unlock();
         return savedId;
     }
 
