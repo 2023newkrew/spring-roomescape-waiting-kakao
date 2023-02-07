@@ -47,25 +47,29 @@ public class ReservationController {
 
     @PatchMapping("/reservations/{id}/cancel")
     public ResponseEntity<ReservationResponse> cancelReservation(@LoginMember Member member, @PathVariable Long id) {
-        ReservationResponse reservationResponse = reservationService.cancelReservation(member, id);
+        ReservationResponse reservationResponse = reservationService
+                .updateReservationStatus(id, member, ReservationStatus.CANCEL);
         return ResponseEntity.ok(reservationResponse);
     }
 
     @PatchMapping("/admin/reservations/{id}/cancel")
-    public ResponseEntity<ReservationResponse> adminCancelReservation(@PathVariable Long id) {
-        ReservationResponse reservationResponse = reservationService.cancelReservationFromAdmin(id);
+    public ResponseEntity<ReservationResponse> adminCancelReservation(@LoginMember Member member, @PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService
+                .updateReservationStatus(id, member, ReservationStatus.CANCEL);
         return ResponseEntity.ok(reservationResponse);
     }
 
     @PatchMapping("/admin/reservations/{id}/approve")
-    public ResponseEntity<ReservationResponse> approveReservation(@PathVariable Long id) {
-        ReservationResponse reservationResponse = reservationService.approveReservationFromAdmin(id);
+    public ResponseEntity<ReservationResponse> approveReservation(@LoginMember Member member, @PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService
+                .updateReservationStatus(id, member, ReservationStatus.APPROVE);
         return ResponseEntity.ok(reservationResponse);
     }
 
     @PatchMapping("/admin/reservations/{id}/reject")
-    public ResponseEntity<ReservationResponse> rejectReservation(@PathVariable Long id) {
-        ReservationResponse reservationResponse = reservationService.rejectReservationFromAdmin(id);
+    public ResponseEntity<ReservationResponse> rejectReservation(@LoginMember Member member, @PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService
+                .updateReservationStatus(id, member, ReservationStatus.REJECT);
         return ResponseEntity.ok(reservationResponse);
     }
 

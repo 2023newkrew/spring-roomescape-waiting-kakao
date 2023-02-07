@@ -61,49 +61,17 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse cancelReservation(Member member, Long id) {
+    public ReservationResponse updateReservationStatus(Long id, Member member, ReservationStatus status) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(NullPointerException::new);
-        if (!reservation.sameMember(member)) {
-            throw new AuthorizationException();
+        if (!reservation.sameMember(member) && !"admin".equalsIgnoreCase(member.getRole())) {
+            throw new AuthenticationException();
         }
-        ReservationStatus status = reservation.getStatus().changeToCancelFromMember();
-        ReservationStatusHistory history = new ReservationStatusHistory(reservation, status);
-        reservationDao.updateStatus(id, status);
-        reservationDao.saveStatusHistory(history);
-        return new ReservationResponse(reservation, status);
-    }
-    
-    public ReservationResponse cancelReservationFromAdmin(Long id) {
-        Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(NullPointerException::new);
-        ReservationStatus status = reservation.getStatus().changeToCancelFromAdmin();
-        ReservationStatusHistory history = new ReservationStatusHistory(reservation, status);
 
-        reservationDao.updateStatus(id, status);
+        reservationDao.updateStatus(id, reservation.getStatus().transitStatus(status, member.getRole()));
+        ReservationStatusHistory history = new ReservationStatusHistory(reservation, status);
         reservationDao.saveStatusHistory(history);
         return new ReservationResponse(reservation, status);
     }
 
-    public ReservationResponse approveReservationFromAdmin(Long id) {
-        Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(NotFoundObjectException::new);
-        ReservationStatus status = reservation.getStatus().changeToApprove();
-        ReservationStatusHistory history = new ReservationStatusHistory(reservation, status);
-
-        reservationDao.updateStatus(id, status);
-        reservationDao.saveStatusHistory(history);
-        return new ReservationResponse(reservation, status);
-    }
-
-    public ReservationResponse rejectReservationFromAdmin(Long id) {
-        Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(NotFoundObjectException::new);
-        ReservationStatus status = reservation.getStatus().changeToReject();
-        ReservationStatusHistory history = new ReservationStatusHistory(reservation, status);
-
-        reservationDao.updateStatus(id, status);
-        reservationDao.saveStatusHistory(history);
-        return new ReservationResponse(reservation, status);
-    }
 }
