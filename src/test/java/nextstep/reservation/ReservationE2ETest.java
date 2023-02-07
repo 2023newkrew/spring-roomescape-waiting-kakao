@@ -234,7 +234,7 @@ class ReservationE2ETest extends AbstractE2ETest {
                 .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
-    @DisplayName("관리자가 예약 취소 신청한다")
+    @DisplayName("관리자가 예약 취소 시 거절된다")
     @Test
     void adminCancelReservation() {
         createReservation();

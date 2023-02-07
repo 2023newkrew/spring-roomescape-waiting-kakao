@@ -4,7 +4,8 @@ public enum ReservationState {
     NOT_APPROVED("NOT_APPROVED"),
     APPROVED("APPROVED"),
     CANCEL_WAITING("CANCEL_WAITING"),
-    CANCELED("CANCELED");
+    CANCELED("CANCELED"),
+    REJECT("REJECT");
 
     private final String value;
 

@@ -48,3 +48,12 @@ CREATE TABLE reservation
     foreign key (schedule_id) references schedule(id),
     foreign key (member_id) references member(id)
 );
+
+CREATE TABLE revenue
+(
+    id              bigint  not null auto_increment,
+    reservation_id  bigint  not null,
+    price           int     not null,
+    primary key (id),
+    foreign key (reservation_id) references reservation(id)
+);
