@@ -1,5 +1,6 @@
-drop table reservation if exists;
+drop table sales if exists;
 drop table waiting if exists;
+drop table reservation if exists;
 drop table theme if exists;
 drop table member if exists;
 
