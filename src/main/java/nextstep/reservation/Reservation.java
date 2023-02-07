@@ -2,7 +2,6 @@ package nextstep.reservation;
 
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.Objects;
 

@@ -9,9 +9,7 @@ import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleService;
 import nextstep.support.DuplicateEntityException;
 import nextstep.support.NotExistEntityException;
-import nextstep.theme.ThemeService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +20,12 @@ import java.util.stream.Collectors;
 @Service
 public class ReservationService {
     private final ReservationDao reservationDao;
-    private final ThemeService themeService;
     private final ScheduleService scheduleService;
     private final MemberService memberService;
     private final RevenueService revenueService;
 
-    public ReservationService(final ReservationDao reservationDao, final ThemeService themeService, final ScheduleService scheduleService, final MemberService memberService, final RevenueService revenueService) {
+    public ReservationService(final ReservationDao reservationDao, final ScheduleService scheduleService, final MemberService memberService, final RevenueService revenueService) {
         this.reservationDao = reservationDao;
-        this.themeService = themeService;
         this.scheduleService = scheduleService;
         this.memberService = memberService;
         this.revenueService = revenueService;
@@ -118,7 +114,7 @@ public class ReservationService {
     }
 
     public void cancelReservation(final Long id) {
-        Reservation reservation = reservationDao.findById(id).orElseThrow(NotExistEntityException::new);
+        Reservation reservation = findById(id).orElseThrow(NotExistEntityException::new);
         if (reservation.getState() == ReservationState.NOT_APPROVED) {
             reservationDao.updateState(id, ReservationState.CANCELED);
         }
@@ -129,6 +125,7 @@ public class ReservationService {
 
     public void cancelApproveReservation(final Long id) {
         reservationDao.updateState(id, ReservationState.CANCELED);
+        revenueService.deleteByReservationId(id);
     }
 
     public void rejectReservation(final Long id) {

@@ -268,6 +268,20 @@ class ReservationE2ETest extends AbstractE2ETest {
         RestAssured
                 .given().log().all()
                 .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(normalToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().patch("/reservations/1/cancel-approve")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
@@ -277,6 +291,20 @@ class ReservationE2ETest extends AbstractE2ETest {
     @Test
     void normalUserCannotCancelApproveReservation() {
         createReservation();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(normalToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
 
         RestAssured
                 .given().log().all()

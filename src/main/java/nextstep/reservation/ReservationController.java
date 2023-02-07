@@ -54,7 +54,7 @@ public class ReservationController {
 
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<Void> cancelReservation(@LoginMember UserDetails userDetails, @PathVariable Long id) {
-        if (userDetails.getRole() == "ADMIN") {
+        if (userDetails.getRole().equals("ADMIN")) {
             reservationService.rejectReservation(id);
         }
         else {
