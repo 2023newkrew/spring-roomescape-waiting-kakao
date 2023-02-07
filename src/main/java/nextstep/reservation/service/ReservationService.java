@@ -74,6 +74,7 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
+    @Transactional(readOnly = true)
     public Reservation findById(Member member, Long id) {
         Reservation reservation = getReservation(id);
         checkAuthorizationOfReservation(reservation, member);
