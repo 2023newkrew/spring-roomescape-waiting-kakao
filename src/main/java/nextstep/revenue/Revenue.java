@@ -39,6 +39,5 @@ public class Revenue {
             throw new RoomReservationException(ErrorCode.REVENUE_ALREADY_REFUND);
         }
         status = RevenueStatus.REFUND;
-        System.out.println("리베뉴");
     }
 }
