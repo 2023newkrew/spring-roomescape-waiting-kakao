@@ -34,6 +34,10 @@ public class Reservation {
         return member;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public boolean sameMember(Member member) {
         return Objects.nonNull(member) && Objects.equals(this.member.getId(), member.getId());
     }

@@ -2,6 +2,7 @@ package nextstep.reservation.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
@@ -20,6 +21,7 @@ public class ReservationWaitingService {
     private final ReservationWaitingDao reservationWaitingDao;
     private final ReservationDao reservationDao;
     private final ScheduleDao scheduleDao;
+    public final AtomicInteger waitNumLock = new AtomicInteger(0);
 
     public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ReservationDao reservationDao,
                                      ScheduleDao scheduleDao) {
@@ -42,6 +44,7 @@ public class ReservationWaitingService {
             );
             return reservationDao.save(newReservation);
         }
+        while(!waitNumLock.compareAndSet(0, 1)) {}
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
         boolean isDuplicated = reservationWaitingList.stream()
                 .anyMatch(reservationWaiting -> reservationWaiting.isMine(member));
@@ -49,7 +52,9 @@ public class ReservationWaitingService {
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION_WAITING);
         }
         long waitNum = reservationWaitingList.stream().mapToLong(ReservationWaiting::getWaitingNum).max().orElse(0) + 1;
-        return reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
+        long savedId = reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
+        waitNumLock.set(0);
+        return savedId;
     }
 
 
