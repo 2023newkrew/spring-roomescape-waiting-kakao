@@ -2,12 +2,14 @@ package nextstep.schedule;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.reservation.dao.ReservationDao;
 import nextstep.reservation.dao.ReservationWaitingDao;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationWaiting;
+import nextstep.reservation.service.ReservationService;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class ScheduleService {
     private ThemeDao themeDao;
     private ReservationDao reservationDao;
     private ReservationWaitingDao reservationWaitingDao;
+    public static final AtomicInteger scheduleListLock = new AtomicInteger(0);
 
     public ScheduleService(ScheduleDao scheduleDao, ThemeDao themeDao, ReservationDao reservationDao,
                            ReservationWaitingDao reservationWaitingDao) {
@@ -44,11 +47,14 @@ public class ScheduleService {
         if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
+        while(!ReservationService.reservationListLock.compareAndSet(0, 1)) {}
         List<Reservation> reservationList = reservationDao.findByScheduleId(id);
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(id);
         if (reservationList.size() > 0 || reservationWaitingList.size() > 0) {
+            ReservationService.reservationListLock.set(0);
             throw new RoomReservationException(ErrorCode.SCHEDULE_CANT_BE_DELETED);
         }
         scheduleDao.deleteById(id);
+        ReservationService.reservationListLock.set(0);
     }
 }

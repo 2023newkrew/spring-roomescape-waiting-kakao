@@ -21,7 +21,7 @@ public class ReservationWaitingService {
     private final ReservationWaitingDao reservationWaitingDao;
     private final ReservationDao reservationDao;
     private final ScheduleDao scheduleDao;
-    public final AtomicInteger waitNumLock = new AtomicInteger(0);
+    public static final AtomicInteger reservationWaitingListLock = new AtomicInteger(0);
 
     public ReservationWaitingService(ReservationWaitingDao reservationWaitingDao, ReservationDao reservationDao,
                                      ScheduleDao scheduleDao) {
@@ -36,24 +36,30 @@ public class ReservationWaitingService {
         if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
+        while(!ReservationService.reservationListLock.compareAndSet(0, 1)) {}
         List<Reservation> reservationList = reservationDao.findByScheduleId(schedule.getId());
         if (reservationList.isEmpty()) {
             Reservation newReservation = new Reservation(
                     schedule,
                     member
             );
-            return reservationDao.save(newReservation);
+            reservationDao.save(newReservation);
+            ReservationService.reservationListLock.set(0);
+            return newReservation.getId();
         }
-        while(!waitNumLock.compareAndSet(0, 1)) {}
+        while(!reservationWaitingListLock.compareAndSet(0, 1)) {}
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
         boolean isDuplicated = reservationWaitingList.stream()
                 .anyMatch(reservationWaiting -> reservationWaiting.isMine(member));
         if (isDuplicated) {
+            reservationWaitingListLock.set(0);
+            ReservationService.reservationListLock.set(0);
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION_WAITING);
         }
         long waitNum = reservationWaitingList.stream().mapToLong(ReservationWaiting::getWaitingNum).max().orElse(0) + 1;
         long savedId = reservationWaitingDao.save(new ReservationWaiting(schedule, member, waitNum));
-        waitNumLock.set(0);
+        reservationWaitingListLock.set(0);
+        ReservationService.reservationListLock.set(0);
         return savedId;
     }
 
