@@ -1,13 +1,20 @@
 package nextstep.reservation.service;
 
-import nextstep.member.domain.MemberEntity;
-import nextstep.reservation.domain.ReservationEntity;
+import nextstep.member.domain.Member;
+import nextstep.reservation.domain.Reservation;
+import nextstep.schedule.domain.Schedule;
+
+import java.util.List;
 
 public interface ReservationService {
 
-    ReservationEntity create(ReservationEntity reservation);
+    Reservation create(Reservation reservation);
 
-    ReservationEntity getById(Long id);
+    boolean existsBySchedule(Schedule schedule);
 
-    boolean deleteById(Long memberId, Long id);
+    Reservation getById(Long id);
+
+    List<Reservation> getAllByMember(Member member);
+
+    boolean deleteById(Member member, Long id);
 }

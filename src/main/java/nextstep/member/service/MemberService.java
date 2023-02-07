@@ -1,10 +1,10 @@
 package nextstep.member.service;
 
-import nextstep.member.domain.MemberEntity;
+import nextstep.member.domain.Member;
 
 public interface MemberService {
 
-    MemberEntity create(MemberEntity member);
+    Member create(Member member);
 
-    MemberEntity getById(Long id);
+    Member getById(Long id);
 }

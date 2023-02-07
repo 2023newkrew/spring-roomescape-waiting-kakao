@@ -1,7 +1,7 @@
 package nextstep.member.repository;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.member.domain.MemberEntity;
+import nextstep.member.domain.Member;
 import nextstep.member.repository.jdbc.MemberResultSetParser;
 import nextstep.member.repository.jdbc.MemberStatementCreator;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,7 +20,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     private final MemberResultSetParser resultSetParser;
 
     @Override
-    public MemberEntity insert(MemberEntity reservation) {
+    public Member insert(Member reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> statementCreator.createInsert(connection, reservation),
@@ -32,7 +32,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public MemberEntity getById(Long id) {
+    public Member getById(Long id) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectById(connection, id),
                 resultSetParser::parseMember
@@ -40,7 +40,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public MemberEntity getByUsername(String username) {
+    public Member getByUsername(String username) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectByUsername(connection, username),
                 resultSetParser::parseMember

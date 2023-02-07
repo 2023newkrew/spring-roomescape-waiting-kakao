@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.util.Objects;
 
 @AllArgsConstructor
-public class MemberEntity implements UserDetails {
+public class Member implements UserDetails {
 
     @Getter
     @Setter

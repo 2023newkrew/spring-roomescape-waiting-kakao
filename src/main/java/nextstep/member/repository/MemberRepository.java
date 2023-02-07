@@ -1,12 +1,12 @@
 package nextstep.member.repository;
 
-import nextstep.member.domain.MemberEntity;
+import nextstep.member.domain.Member;
 
 public interface MemberRepository {
 
-    MemberEntity insert(MemberEntity member);
+    Member insert(Member member);
 
-    MemberEntity getById(Long id);
+    Member getById(Long id);
 
-    MemberEntity getByUsername(String username);
+    Member getByUsername(String username);
 }

@@ -1,7 +1,7 @@
 package nextstep.schedule.controller;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.schedule.domain.Schedule;
 import nextstep.schedule.dto.ScheduleResponse;
 import nextstep.schedule.dto.ScheduleSearchRequest;
 import nextstep.schedule.mapper.ScheduleMapper;
@@ -11,7 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/schedules")
@@ -24,21 +23,17 @@ public class ScheduleController {
 
     @GetMapping("/{schedule_id}")
     public ResponseEntity<ScheduleResponse> getById(@PathVariable("schedule_id") Long id) {
-        ScheduleEntity schedule = service.getById(id);
+        Schedule schedule = service.getById(id);
 
         return ResponseEntity.ok(mapper.toResponse(schedule));
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<ScheduleResponse>> search(@RequestBody @Validated ScheduleSearchRequest request) {
+        Schedule schedule = mapper.fromRequest(request);
+        List<Schedule> schedules = service.getAllByThemeAndDate(schedule.getTheme(), schedule.getDate());
 
-        return ResponseEntity.ok(getSchedules(request));
+        return ResponseEntity.ok(mapper.toResponses(schedules));
     }
 
-    private List<ScheduleResponse> getSchedules(ScheduleSearchRequest request) {
-        return service.getByThemeIdAndDate(request.getThemeId(), request.getDate())
-                .stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
-    }
 }

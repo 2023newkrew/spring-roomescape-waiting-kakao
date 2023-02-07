@@ -1,9 +1,10 @@
 package nextstep.schedule.repository;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.schedule.domain.Schedule;
 import nextstep.schedule.repository.jdbc.ScheduleResultSetParser;
 import nextstep.schedule.repository.jdbc.ScheduleStatementCreator;
+import nextstep.theme.domain.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,7 +24,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     private final ScheduleResultSetParser resultSetParser;
 
     @Override
-    public ScheduleEntity insert(ScheduleEntity reservation) {
+    public Schedule insert(Schedule reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> statementCreator.createInsert(connection, reservation),
@@ -35,7 +36,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     }
 
     @Override
-    public ScheduleEntity getById(Long id) {
+    public Schedule getById(Long id) {
         return jdbcTemplate.query(
                 connection -> statementCreator.createSelectById(connection, id),
                 resultSetParser::parseSchedule
@@ -43,9 +44,9 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     }
 
     @Override
-    public List<ScheduleEntity> getByThemeIdAndDate(Long themeId, Date date) {
+    public List<Schedule> getAllByThemeAndDate(Theme theme, Date date) {
         return jdbcTemplate.query(
-                connection -> statementCreator.createSelectByThemeIdAndDate(connection, themeId, date),
+                connection -> statementCreator.createSelectByThemeIdAndDate(connection, theme.getId(), date),
                 resultSetParser::parseSchedules
         );
     }

@@ -1,25 +1,28 @@
-package nextstep.reservation.domain;
+package nextstep.waiting.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import nextstep.member.domain.MemberEntity;
-import nextstep.schedule.domain.ScheduleEntity;
+import nextstep.member.domain.Member;
+import nextstep.schedule.domain.Schedule;
 
 import java.util.Objects;
 
 @AllArgsConstructor
-public class ReservationEntity {
+public class Waiting {
 
     @Getter
     @Setter
     private Long id;
 
     @Getter
-    private final MemberEntity member;
+    private final Member member;
 
     @Getter
-    private final ScheduleEntity schedule;
+    private final Schedule schedule;
+
+    @Getter
+    private final Integer waitNum;
 
     public Long getMemberId() {
         if (Objects.isNull(member)) {
@@ -35,5 +38,9 @@ public class ReservationEntity {
         }
 
         return schedule.getId();
+    }
+
+    public boolean isNotOwner(Member member) {
+        return !Objects.equals(this.member.getId(), member.getId());
     }
 }

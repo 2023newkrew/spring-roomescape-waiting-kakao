@@ -1,7 +1,7 @@
 package nextstep.theme.controller;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.theme.domain.ThemeEntity;
+import nextstep.theme.domain.Theme;
 import nextstep.theme.dto.ThemeResponse;
 import nextstep.theme.mapper.ThemeMapper;
 import nextstep.theme.service.ThemeService;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/themes")
@@ -20,27 +19,20 @@ import java.util.stream.Collectors;
 public class ThemeController {
 
     private final ThemeService service;
+
     private final ThemeMapper mapper;
 
 
     @GetMapping("/{theme_id}")
     public ResponseEntity<ThemeResponse> getById(@PathVariable("theme_id") Long themeId) {
-        ThemeEntity theme = service.getById(themeId);
+        Theme theme = service.getById(themeId);
 
         return ResponseEntity.ok(mapper.toResponse(theme));
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAll() {
-        List<ThemeResponse> themes = getAllThemes();
-
-        return ResponseEntity.ok(themes);
+        return ResponseEntity.ok(mapper.toResponses(service.getAll()));
     }
 
-    private List<ThemeResponse> getAllThemes() {
-        return service.getAll()
-                .stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
-    }
 }
