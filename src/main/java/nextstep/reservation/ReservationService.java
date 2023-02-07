@@ -131,11 +131,8 @@ public class ReservationService {
 
     public void rejectReservation(final Long id) {
         Reservation reservation = reservationDao.findById(id).orElseThrow(NotExistEntityException::new);
-        if (reservation.getState() == ReservationState.NOT_APPROVED) {
-
-        }
-        else {
-
+        if (reservation.getState() == ReservationState.APPROVED) {
+            revenueService.refund(reservation);
         }
         reservationDao.updateState(id, ReservationState.REJECT);
     }

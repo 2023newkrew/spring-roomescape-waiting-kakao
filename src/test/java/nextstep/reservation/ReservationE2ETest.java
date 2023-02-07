@@ -236,7 +236,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
     @DisplayName("관리자가 예약 취소 시 거절된다")
     @Test
-    void adminCancelReservation() {
+    void adminRejectReservation() {
         createReservation();
 
         RestAssured
