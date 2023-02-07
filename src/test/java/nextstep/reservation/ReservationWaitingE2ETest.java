@@ -138,6 +138,7 @@ public class ReservationWaitingE2ETest extends AbstractE2ETest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
                 .extract();
 
         // then

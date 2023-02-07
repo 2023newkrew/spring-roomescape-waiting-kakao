@@ -2,8 +2,8 @@ package nextstep.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import auth.TokenRequest;
-import auth.TokenResponse;
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;

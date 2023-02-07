@@ -3,6 +3,7 @@ package nextstep.reservation.service;
 import java.util.List;
 import java.util.Objects;
 import nextstep.common.annotation.AdminRequired;
+import nextstep.common.Lock;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
@@ -19,13 +20,17 @@ import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@Transactional
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
     private final ReservationWaitingDao reservationWaitingDao;
     private final RevenueDao revenueDao;
+    public static final Lock reservationListLock = new Lock();
 
     public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao,
                               ReservationWaitingDao reservationWaitingDao, RevenueDao revenueDao) {
@@ -37,29 +42,32 @@ public class ReservationService {
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
+        if (Objects.isNull(member)) {
             throw new RoomReservationException(ErrorCode.AUTHENTICATION_REQUIRED);
         }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (schedule == null) {
+        if (Objects.isNull(schedule)) {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
-        List<Reservation> reservation = reservationDao.findAllByScheduleId(schedule.getId());
+        reservationListLock.lock();
+        List<Reservation> reservation = reservationDao.findValidByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
+            reservationListLock.unlock();
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION);
         }
-
         Reservation newReservation = new Reservation(
                 schedule,
                 member
         );
-
-        return reservationDao.save(newReservation);
+        long savedId = reservationDao.save(newReservation);
+        reservationListLock.unlock();
+        return savedId;
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
         Theme theme = themeDao.findById(themeId);
-        if (theme == null) {
+        if (Objects.isNull(theme)) {
             throw new RoomReservationException(ErrorCode.THEME_NOT_FOUND);
         }
 
@@ -79,6 +87,7 @@ public class ReservationService {
         passNextWaiting(reservation);
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> lookUp(Member member) {
         return reservationDao.findByMemberId(member.getId());
     }

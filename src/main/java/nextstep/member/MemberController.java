@@ -1,7 +1,7 @@
 package nextstep.member;
 
-import auth.LoginMember;
-import auth.UserDetails;
+import auth.annotation.LoginMember;
+import auth.domain.UserDetails;
 import java.net.URI;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;

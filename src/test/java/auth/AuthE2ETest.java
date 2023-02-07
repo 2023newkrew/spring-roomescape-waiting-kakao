@@ -2,6 +2,8 @@ package auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import auth.dto.TokenRequest;
+import auth.dto.TokenResponse;
 import io.restassured.RestAssured;
 import nextstep.RoomEscapeApplication;
 import nextstep.member.MemberRequest;

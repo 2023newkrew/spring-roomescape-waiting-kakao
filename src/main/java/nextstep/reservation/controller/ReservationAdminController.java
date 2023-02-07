@@ -1,7 +1,7 @@
 package nextstep.reservation.controller;
 
-import auth.LoginMember;
-import auth.UserDetails;
+import auth.annotation.LoginMember;
+import auth.domain.UserDetails;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import nextstep.member.Member;

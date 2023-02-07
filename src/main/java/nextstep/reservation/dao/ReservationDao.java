@@ -63,11 +63,11 @@ public class ReservationDao {
                     Role.valueOf(resultSet.getString("member.role"))
             ),
             resultSet.getLong("revenue.id") == 0 ? null :
-            new Revenue(
-                    resultSet.getLong("revenue.id"),
-                    resultSet.getInt("revenue.amount"),
-                    RevenueStatus.valueOf(resultSet.getString("revenue.status"))
-            ),
+                    new Revenue(
+                            resultSet.getLong("revenue.id"),
+                            resultSet.getInt("revenue.amount"),
+                            RevenueStatus.valueOf(resultSet.getString("revenue.status"))
+                    ),
             ReservationStatus.valueOf(resultSet.getString("reservation.status"))
     );
 

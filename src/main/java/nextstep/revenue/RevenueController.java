@@ -1,7 +1,7 @@
 package nextstep.revenue;
 
-import auth.LoginMember;
-import auth.UserDetails;
+import auth.annotation.LoginMember;
+import auth.domain.UserDetails;
 import java.util.List;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

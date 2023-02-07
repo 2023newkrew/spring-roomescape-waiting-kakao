@@ -11,6 +11,7 @@ public enum ErrorCode {
 
     // DB 에러
     RECORD_NOT_UPDATED(HttpStatus.INTERNAL_SERVER_ERROR, "수정이 저장되지 않았습니다. 관리자에게 문의해 주세요."),
+    INVALID_UNLOCK(HttpStatus.INTERNAL_SERVER_ERROR, "잘못된 동기화 처리입니다. 관리자에게 문의해주세요."),
 
     // 인증 에러
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "유저네임 또는 패스워드가 틀렸습니다."),
@@ -30,7 +31,6 @@ public enum ErrorCode {
     RESERVATION_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "이미 취소된 예약입니다."),
     RESERVATION_WAIT_CANCEL(HttpStatus.BAD_REQUEST, "취소 대기중인 예약입니다."),
     RESERVATION_ALREADY_REFUSED(HttpStatus.BAD_REQUEST, "이미 거절된 예약입니다."),
-
 
     // 예약 대기 에러
     DUPLICATE_RESERVATION_WAITING(HttpStatus.BAD_REQUEST, "해당 시간에 대한 예약 대기 요청이 존재합니다."),
