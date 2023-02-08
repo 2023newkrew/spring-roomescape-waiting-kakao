@@ -30,6 +30,7 @@ public class ReservationControllerGetMineResponse {
                                 reservation.getDate(),
                                 reservation.getTime(),
                                 reservation.getName(),
+                                reservation.getStatus(),
                                 reservation.getTheme().getId(),
                                 reservation.getTheme().getName(),
                                 reservation.getTheme().getDesc(),
@@ -58,6 +59,9 @@ public class ReservationControllerGetMineResponse {
 
         @NotBlank
         private String name;
+
+        @NotNull
+        private Reservation.Status status;
 
         @JsonProperty("theme_id")
         @NotBlank

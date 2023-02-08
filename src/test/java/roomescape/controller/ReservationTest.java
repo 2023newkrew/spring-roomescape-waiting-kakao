@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.SpringWebApplication;
 import roomescape.controller.dto.ReservationsControllerPostBody;
+import roomescape.entity.Reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -42,12 +43,24 @@ public class ReservationTest {
     @Autowired
     private MockMvc mvc;
 
+    private String adminToken;
     private String ownerToken;
     private String otherToken;
 
 
     @BeforeAll
     void setup() throws Exception {
+        adminToken = mapper.readValue(
+                                   mvc.perform(post("/api/login/token")
+                                              .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                              .content(mapper.writeValueAsString(new LoginControllerTokenPostBody("admin", "1q2w3e4r!")))
+                                      )
+                                      .andExpect(status().isCreated())
+                                      .andReturn()
+                                      .getResponse()
+                                      .getContentAsString(),
+                                   LoginControllerTokenPostResponse.class)
+                           .getAccessToken();
         ownerToken = mapper.readValue(
                                    mvc.perform(post("/api/login/token")
                                               .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -98,6 +111,7 @@ public class ReservationTest {
            .andExpect(jsonPath("$.name").value("예약예약0"))
            .andExpect(jsonPath("$.date").value("1970-01-01"))
            .andExpect(jsonPath("$.time").value("12:00"))
+           .andExpect(jsonPath("$.status").value(Reservation.Status.Unapproved.into()))
            .andExpect(jsonPath("$.theme_id").value(1L))
            .andExpect(jsonPath("$.theme_name").value("기본테마"))
            .andExpect(jsonPath("$.theme_desc").value("테마설명"))
@@ -115,6 +129,7 @@ public class ReservationTest {
            .andExpect(jsonPath("$.items.size()").value(1))
         ;
     }
+
 
     @DisplayName("내 예약이 아닌 경우에 대한 조회")
     @Test
@@ -135,6 +150,78 @@ public class ReservationTest {
                    .header("Authorization", "Bearer " + ownerToken)
            )
            .andExpect(status().isNoContent());
+    }
+
+    @DisplayName("예약 미승인 -> 승인")
+    @Transactional
+    @Test
+    void approve() throws Exception {
+        mvc.perform(patch("/api/reservations/1/approve").header("Authorization", "Bearer " + adminToken))
+           .andExpect(status().isNoContent());
+        mvc.perform(get("/api/reservations/1"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.status").value(Reservation.Status.Approved.into()))
+        ;
+    }
+
+    @DisplayName("예약 미승인 -> 취소")
+    @Transactional
+    @Test
+    void cancel() throws Exception {
+        mvc.perform(patch("/api/reservations/1/cancel").header("Authorization", "Bearer " + ownerToken))
+           .andExpect(status().isNoContent());
+        mvc.perform(get("/api/reservations/1"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.status").value(Reservation.Status.Canceled.into()))
+        ;
+    }
+
+    @DisplayName("예약 미승인 -> 승인 -> 취소요청 -> 취소")
+    @Transactional
+    @Test
+    void cancelRequestAndCancel() throws Exception {
+        mvc.perform(patch("/api/reservations/1/approve").header("Authorization", "Bearer " + adminToken))
+           .andExpect(status().isNoContent());
+        mvc.perform(patch("/api/reservations/1/cancel").header("Authorization", "Bearer " + ownerToken))
+           .andExpect(status().isNoContent());
+        mvc.perform(get("/api/reservations/1"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.status").value(Reservation.Status.CancelRequested.into()))
+        ;
+        mvc.perform(patch("/api/reservations/1/cancel-accept").header("Authorization", "Bearer " + adminToken))
+           .andExpect(status().isNoContent());
+        mvc.perform(get("/api/reservations/1"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.status").value(Reservation.Status.Canceled.into()))
+        ;
+    }
+
+
+    @DisplayName("예약 미승인 -> 거부")
+    @Transactional
+    @Test
+    void disapprove() throws Exception {
+        mvc.perform(patch("/api/reservations/1/disapprove").header("Authorization", "Bearer " + adminToken))
+           .andExpect(status().isNoContent());
+        mvc.perform(get("/api/reservations/1"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.status").value(Reservation.Status.Disapprove.into()))
+        ;
+    }
+
+
+    @DisplayName("예약 미승인 -> 승인 -> 거부")
+    @Transactional
+    @Test
+    void approveAndDisapprove() throws Exception {
+        mvc.perform(patch("/api/reservations/1/approve").header("Authorization", "Bearer " + adminToken))
+           .andExpect(status().isNoContent());
+        mvc.perform(patch("/api/reservations/1/disapprove").header("Authorization", "Bearer " + adminToken))
+           .andExpect(status().isNoContent());
+        mvc.perform(get("/api/reservations/1"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.status").value(Reservation.Status.Disapprove.into()))
+        ;
     }
 
     //

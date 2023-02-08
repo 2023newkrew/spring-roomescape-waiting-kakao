@@ -1,5 +1,6 @@
-drop table reservation if exists;
+drop table sales if exists;
 drop table waiting if exists;
+drop table reservation if exists;
 drop table theme if exists;
 drop table member if exists;
 
@@ -31,11 +32,13 @@ create table reservation
     name      varchar(20) not null,
     theme_id  bigint      not null,
     member_id bigint      not null,
+    status    int         not null,
     primary key (id),
     unique (theme_id, date, time),
     foreign key (theme_id) references theme (id),
     foreign key (member_id) references member (id)
 );
+
 create table waiting
 (
     id        bigint      not null auto_increment,
@@ -47,4 +50,14 @@ create table waiting
     primary key (id),
     foreign key (theme_id) references theme (id),
     foreign key (member_id) references member (id)
+);
+
+
+create table sales
+(
+    created_at      datetime          not null default now(),
+    change          numeric(19, 4)    not null,
+    reason          varchar(128)      ,
+    reservation_id  varchar(128)      ,
+    foreign key (reservation_id) references reservation (id)
 );
