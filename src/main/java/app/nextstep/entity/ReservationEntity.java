@@ -15,6 +15,18 @@ public class ReservationEntity {
         this.status = status;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public ScheduleEntity getSchedule() {
+        return schedule;
+    }
+
+    public MemberEntity getMember() {
+        return member;
+    }
+
     public Reservation toReservation() {
         return new Reservation(id, schedule.toSchedule(), member.toMember(), status);
     }

@@ -4,8 +4,10 @@ import app.auth.support.AuthenticationException;
 import app.auth.support.LoginUser;
 import app.nextstep.domain.Member;
 import app.nextstep.domain.Reservation;
+import app.nextstep.domain.ReservationWaiting;
 import app.nextstep.dto.ReservationRequest;
 import app.nextstep.dto.ReservationResponse;
+import app.nextstep.dto.ReservationWaitingResponse;
 import app.nextstep.service.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,6 +61,26 @@ public class ReservationController {
         List<ReservationResponse> responseBody = new ArrayList<>();
         for (Reservation reservation : reservations) {
             responseBody.add(new ReservationResponse(reservation));
+        }
+        return ResponseEntity.ok().body(responseBody);
+    }
+
+    @GetMapping(value = "/reservations/mine", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ReservationResponse>> getMyReservations(@LoginUser Member member) {
+        List<Reservation> reservations = reservationService.findMyReservations(member.getId());
+        List<ReservationResponse> responseBody = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            responseBody.add(new ReservationResponse(reservation));
+        }
+        return ResponseEntity.ok().body(responseBody);
+    }
+
+    @GetMapping(value = "/reservation-waitings/mine", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ReservationWaitingResponse>> getMyWaitings(@LoginUser Member member) {
+        List<ReservationWaiting> waitings = reservationService.findMyWaitings(member.getId());
+        List<ReservationWaitingResponse> responseBody = new ArrayList<>();
+        for (ReservationWaiting waiting : waitings) {
+            responseBody.add(new ReservationWaitingResponse(waiting));
         }
         return ResponseEntity.ok().body(responseBody);
     }

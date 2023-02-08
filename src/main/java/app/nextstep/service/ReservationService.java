@@ -2,6 +2,7 @@ package app.nextstep.service;
 
 import app.auth.support.AuthenticationException;
 import app.nextstep.domain.Reservation;
+import app.nextstep.domain.ReservationWaiting;
 import app.nextstep.repository.ReservationRepository;
 import app.nextstep.support.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,14 @@ public class ReservationService {
 
     public List<Reservation> findByThemeIdAndDate(Long themeId, LocalDate date) {
         return reservationRepository.findByThemeIdAndDate(themeId, date);
+    }
+
+    public List<Reservation> findMyReservations(Long memberId) {
+        return reservationRepository.findConfirmedByMemberId(memberId);
+    }
+
+    public List<ReservationWaiting> findMyWaitings(Long memberId) {
+        return reservationRepository.findWaitingByMemberId(memberId);
     }
 
     public Long createReservation(Reservation reservation) {

@@ -229,6 +229,53 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    @DisplayName("내 예약을 조회한다")
+    @Test
+    void findMyReservations() {
+        // 0 rsv, 0 waiting
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("size()", is(0));
+
+        // 1 rsv, 0 waiting
+        create();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservations/mine")
+                .then().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("size()", is(1));
+    }
+
+    @DisplayName("내 예약 대기를 조회한다")
+    @Test
+    void findMyWaitings() {
+        // 1 rsv, 0 waiting
+        create();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("size()", is(0));
+
+        // 1 rsv, 1 waiting
+        create();
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(token.getAccessToken())
+                .when().get("/reservation-waitings/mine")
+                .then().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("size()", is(1));
+    }
+
     private ExtractableResponse<Response> create() {
         return RestAssured
                 .given().log().all()
