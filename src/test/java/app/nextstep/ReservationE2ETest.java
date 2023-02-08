@@ -78,6 +78,8 @@ class ReservationE2ETest extends AbstractE2ETest {
     @DisplayName("이미 예약된 스케줄을 대상으로 예약을 신청한다")
     @Test
     void createReservationForNotEmpty() {
+        create();
+
         var response = RestAssured
                 .given().log().all()
                 .auth().oauth2(token.getAccessToken())
