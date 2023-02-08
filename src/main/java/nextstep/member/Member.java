@@ -1,6 +1,7 @@
 package nextstep.member;
 
 import auth.UserDetails;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,5 +32,10 @@ public class Member implements UserDetails {
     @Override
     public boolean checkWrongPassword(String password) {
         return !Objects.equals(this.password, password);
+    }
+
+    @JsonIgnore
+    public boolean isAdmin() {
+        return Objects.equals(this.getRole(), "ADMIN");
     }
 }

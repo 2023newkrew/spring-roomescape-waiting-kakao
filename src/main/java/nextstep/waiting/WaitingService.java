@@ -1,14 +1,11 @@
 package nextstep.waiting;
 
-import auth.exception.AuthErrorCode;
-import auth.exception.AuthException;
 import lombok.RequiredArgsConstructor;
 import nextstep.exception.dataaccess.DataAccessErrorCode;
 import nextstep.exception.dataaccess.DataAccessException;
 import nextstep.member.Member;
 import nextstep.reservation.Reservation;
 import nextstep.reservation.ReservationDao;
-import nextstep.reservation.ReservationService;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.waiting.dto.response.ReservationWaitingResponseDto;
@@ -16,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 @RequiredArgsConstructor
 @Service
@@ -23,12 +21,8 @@ public class WaitingService {
 
     private final ReservationDao reservationDao;
     private final ScheduleDao scheduleDao;
-    private final ReservationService reservationService;
 
     public Long createWaiting(Member member, Long scheduleId) {
-        if (member == null) {
-            throw new AuthException(AuthErrorCode.INVALID_USER);
-        }
         Schedule schedule = scheduleDao.findById(scheduleId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.SCHEDULE_NOT_FOUND));
 
@@ -37,14 +31,7 @@ public class WaitingService {
         return reservationDao.save(newReservation);
     }
 
-    public void cancelWaitingById(Member member, Long id) {
-        reservationService.cancel(member, id);
-    }
-
     public List<ReservationWaitingResponseDto> getReservationWaitingsByMember(Member member) {
-        if (member == null) {
-            throw new AuthException(AuthErrorCode.INVALID_USER);
-        }
         List<Reservation> reservationsByMemberId = reservationDao.findByMemberId(member.getId());
         List<ReservationWaitingResponseDto> result = new ArrayList<>();
         for (Reservation reservation : reservationsByMemberId) {
@@ -56,7 +43,21 @@ public class WaitingService {
         return result;
     }
 
-    private static boolean isWaitingReservation(Long waitNum) {
+    public void cancelWaitingById(BiConsumer<Member, Long> reservationCancel, Member member, Long id) {
+        reservationCancel.accept(member, id);
+    }
+
+    public boolean isWaitingReservation(Reservation reservation) {
+        Long scheduleId = reservation.getSchedule().getId();
+        Long waitTicketNumber = reservation.getWaitTicketNumber();
+        return !isReservationNotWaiting(scheduleId, waitTicketNumber);
+    }
+
+    public boolean isReservationNotWaiting(Long scheduleId, Long waitTicketNum) {
+        return !isWaitingReservation(reservationDao.getPriority(scheduleId, waitTicketNum));
+    }
+
+    private boolean isWaitingReservation(Long waitNum) {
         return waitNum > 0;
     }
 }

@@ -1,7 +1,5 @@
 package nextstep.reservation;
 
-import auth.exception.AuthErrorCode;
-import auth.exception.AuthException;
 import lombok.RequiredArgsConstructor;
 import nextstep.exception.business.BusinessErrorCode;
 import nextstep.exception.business.BusinessException;
@@ -15,10 +13,10 @@ import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import nextstep.waiting.WaitingService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,11 +29,9 @@ public class ReservationService {
     public final ScheduleDao scheduleDao;
     public final MemberDao memberDao;
     private final RevenueDao revenueDao;
+    private final WaitingService waitingService;
 
     public Reservation create(Member member, Long scheduleId) {
-        if (member == null) {
-            throw new AuthException(AuthErrorCode.INVALID_USER);
-        }
         Schedule schedule = scheduleDao.findById(scheduleId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.SCHEDULE_NOT_FOUND));
 
@@ -58,21 +54,23 @@ public class ReservationService {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public void cancel(Member member, Long reservationId) {
+    public void reject(Long reservationId) {
         Reservation reservation = reservationDao.findById(reservationId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.RESERVATION_NOT_FOUND));
 
-        if (isAdmin(member)) {
-            if (reservation.getStatus() == Reservation.Status.WAITING_APPROVAL) {
-                reservation.changeStatus(Reservation.Status.REJECT);
-                reservationDao.save(reservation);
-            } else if (reservation.getStatus() == Reservation.Status.APPROVAL) {
-                reservation.changeStatus(Reservation.Status.REJECT);
-                reservationDao.save(reservation);
-                revenueDao.save(new Revenue(reservationId, -reservation.getSchedule().getTheme().getPrice()));
-            }
-            return;
+        if (reservation.getStatus() == Reservation.Status.WAITING_APPROVAL) {
+            reservation.changeStatus(Reservation.Status.REJECT);
+            reservationDao.save(reservation);
+        } else if (reservation.getStatus() == Reservation.Status.APPROVAL) {
+            reservation.changeStatus(Reservation.Status.REJECT);
+            reservationDao.save(reservation);
+            revenueDao.save(new Revenue(reservationId, -reservation.getSchedule().getTheme().getPrice()));
         }
+    }
+
+    public void cancel(Member member, Long reservationId) {
+        Reservation reservation = reservationDao.findById(reservationId)
+                .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.RESERVATION_NOT_FOUND));
 
         if (!reservation.isSameMember(member)) {
             throw new BusinessException(BusinessErrorCode.DELETE_FAILED_WHEN_NOT_MY_RESERVATION);
@@ -88,33 +86,22 @@ public class ReservationService {
         }
     }
 
-    private static boolean isAdmin(Member member) {
-        return Objects.equals(member.getRole(), "ADMIN");
-    }
-
     public List<Reservation> getReservationsByMember(Member member) {
-        if (member == null) {
-            throw new AuthException(AuthErrorCode.INVALID_USER);
-        }
         List<Reservation> reservations = reservationDao.findByMemberId(member.getId());
         return reservations.stream()
                 .filter(reservation -> {
                     Long scheduleId = reservation.getSchedule().getId();
                     Long waitTicketNumber = reservation.getWaitTicketNumber();
-                    return isReservationNotWaiting(reservationDao.getPriority(scheduleId, waitTicketNumber));
+                    return waitingService.isReservationNotWaiting(scheduleId, waitTicketNumber);
                 })
                 .collect(Collectors.toList());
-    }
-
-    private static boolean isReservationNotWaiting(Long waitNum) {
-        return waitNum == 0;
     }
 
     public void approve(long reservationId) {
         Reservation reservation = reservationDao.findById(reservationId)
                 .orElseThrow(() -> new DataAccessException(DataAccessErrorCode.RESERVATION_NOT_FOUND));
 
-        if (isWaitingReservation(reservation)) {
+        if (waitingService.isWaitingReservation(reservation)) {
             throw new BusinessException(BusinessErrorCode.RESERVATION_WAITING_CANNOT_APPROVE);
         }
 
@@ -123,13 +110,6 @@ public class ReservationService {
 
         reservationDao.save(reservation);
         revenueDao.save(revenueLog);
-    }
-
-    private boolean isWaitingReservation(Reservation reservation) {
-        Long scheduleId = reservation.getSchedule().getId();
-        Long waitTicketNumber = reservation.getWaitTicketNumber();
-        Long waitNum = reservationDao.getPriority(scheduleId, waitTicketNumber);
-        return !isReservationNotWaiting(waitNum);
     }
 
     public void cancelApprove(long reservationId) {
