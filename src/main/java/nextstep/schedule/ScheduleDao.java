@@ -6,6 +6,8 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import nextstep.error.ErrorCode;
+import nextstep.error.exception.RoomReservationException;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -45,7 +47,9 @@ public class ScheduleDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, schedule.getTheme().getId());
+            ps.setLong(1, schedule.getTheme().getId().orElseThrow(() -> {
+                throw new RoomReservationException(ErrorCode.INVALID_THEME);
+            }));
             ps.setDate(2, Date.valueOf(schedule.getDate()));
             ps.setTime(3, Time.valueOf(schedule.getTime()));
             return ps;

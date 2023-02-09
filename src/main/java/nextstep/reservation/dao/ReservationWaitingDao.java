@@ -69,7 +69,9 @@ public class ReservationWaitingDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, reservationWaiting.getSchedule().getId());
+            ps.setLong(1, reservationWaiting.getSchedule().getId().orElseThrow(() -> {
+                throw new RoomReservationException(ErrorCode.INVALID_SCHEDULE);
+            }));
             ps.setLong(2, reservationWaiting.getMember().getId().orElseThrow(() -> {
                 throw new RoomReservationException(ErrorCode.INVALID_MEMBER);
             }));

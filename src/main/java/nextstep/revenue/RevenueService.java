@@ -2,6 +2,7 @@ package nextstep.revenue;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import nextstep.common.annotation.AdminRequired;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
@@ -44,20 +45,19 @@ public class RevenueService {
 
     @EventListener
     public void handleReservationRefuseEvent(ReservationRefuseEvent event) {
-        Revenue revenue = event.getReservation().getRevenue();
-        if (Objects.isNull(revenue)) {
+        Optional<Revenue> revenue = event.getReservation().getRevenue();
+        if (revenue.isEmpty()) {
             return;
         }
-        revenue.refund();
-        revenueDao.save(revenue);
+        revenue.get().refund();
+        revenueDao.save(revenue.get());
     }
 
     @EventListener
     public void handleReservationApproveCancelEvent(ReservationApproveCancelEvent event) {
-        Revenue revenue = event.getReservation().getRevenue();
-        if (Objects.isNull(revenue)) {
+        Revenue revenue = event.getReservation().getRevenue().orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.REVENUE_NOT_FOUND);
-        }
+        });
         revenue.refund();
         revenueDao.save(revenue);
     }

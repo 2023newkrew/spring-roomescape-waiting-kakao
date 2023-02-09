@@ -31,7 +31,7 @@ public class RevenueDao {
     }
 
     public long save(Revenue revenue) {
-        if (Objects.isNull(revenue.getId())) {
+        if (revenue.getId().isEmpty()) {
             return create(revenue);
         }
         return update(revenue);
@@ -47,17 +47,22 @@ public class RevenueDao {
             ps.setString(2, revenue.getStatus().toString());
             return ps;
         }, keyHolder);
-        revenue.setId(keyHolder.getKey().longValue());
-        return revenue.getId();
+        long savedId = keyHolder.getKey().longValue();
+        revenue.setId(savedId);
+        return savedId;
     }
 
     public long update(Revenue revenue) {
         String sql = "update revenue set status = ? where id = ?;";
-        int updatedCount = jdbcTemplate.update(sql, revenue.getStatus().toString(), revenue.getId());
+        int updatedCount = jdbcTemplate.update(sql, revenue.getStatus().toString(), revenue.getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_REVENUE);
+        }));
         if (updatedCount != 1) {
             throw new RoomReservationException(ErrorCode.RECORD_NOT_UPDATED);
         }
-        return revenue.getId();
+        return revenue.getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_REVENUE);
+        });
     }
 
     public List<Revenue> findAll() {

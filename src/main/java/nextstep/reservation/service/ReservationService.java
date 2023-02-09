@@ -48,14 +48,13 @@ public class ReservationService {
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (Objects.isNull(member)) {
-            throw new RoomReservationException(ErrorCode.AUTHENTICATION_REQUIRED);
-        }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId()).orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         });
         reservationListLock.lock();
-        List<Reservation> reservation = reservationDao.findValidByScheduleId(schedule.getId());
+        List<Reservation> reservation = reservationDao.findValidByScheduleId(schedule.getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_SCHEDULE);
+        }));
         if (!reservation.isEmpty()) {
             reservationListLock.unlock();
             throw new RoomReservationException(ErrorCode.DUPLICATE_RESERVATION);
@@ -74,7 +73,9 @@ public class ReservationService {
         Theme theme = themeDao.findById(themeId).orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.THEME_NOT_FOUND);
         });
-        return reservationDao.findAllByThemeIdAndDate(theme.getId(), date);
+        return reservationDao.findAllByThemeIdAndDate(theme.getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_THEME);
+        }), date);
     }
 
     @Transactional(readOnly = true)
@@ -149,7 +150,9 @@ public class ReservationService {
     private void passNextWaiting(Reservation reservation) {
         Optional<ReservationWaiting> reservationWaiting = reservationWaitingDao
                 .findFirstByScheduleId(
-                        reservation.getSchedule().getId()
+                        reservation.getSchedule().getId().orElseThrow(() -> {
+                            throw new RoomReservationException(ErrorCode.INVALID_SCHEDULE);
+                        })
                 );
         if (reservationWaiting.isEmpty()) {
             return;

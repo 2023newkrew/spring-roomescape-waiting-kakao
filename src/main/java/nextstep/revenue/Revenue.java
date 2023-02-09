@@ -1,15 +1,16 @@
 package nextstep.revenue;
 
+import java.util.Optional;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 
 public class Revenue {
-    private Long id;
+    private Optional<Long> id;
     private Integer amount;
     private RevenueStatus status;
 
     public Revenue(Long id, Integer amount, RevenueStatus status) {
-        this.id = id;
+        this.id = Optional.ofNullable(id);
         this.amount = amount;
         this.status = status;
     }
@@ -18,7 +19,7 @@ public class Revenue {
         this(null, amount, RevenueStatus.OK);
     }
 
-    public Long getId() {
+    public Optional<Long> getId() {
         return id;
     }
 
@@ -31,7 +32,7 @@ public class Revenue {
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.id = Optional.ofNullable(id);
     }
 
     public void refund() {

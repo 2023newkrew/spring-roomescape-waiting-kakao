@@ -6,7 +6,7 @@ import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
 public class ReservationWaiting {
-    private Long id;
+    private Optional<Long> id;
     private Schedule schedule;
     private Member member;
     private Long waitingNum;
@@ -15,7 +15,7 @@ public class ReservationWaiting {
     }
 
     public ReservationWaiting(Long id, Schedule schedule, Member member, Long waitingNum) {
-        this.id = id;
+        this.id = Optional.ofNullable(id);
         this.schedule = schedule;
         this.member = member;
         this.waitingNum = waitingNum;
@@ -26,7 +26,7 @@ public class ReservationWaiting {
     }
 
     public Optional<Long> getId() {
-        return Optional.ofNullable(id);
+        return id;
     }
 
     public Schedule getSchedule() {

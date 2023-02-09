@@ -9,10 +9,10 @@ import nextstep.revenue.Revenue;
 import nextstep.schedule.Schedule;
 
 public class Reservation {
-    private Long id;
+    private Optional<Long> id;
     private Schedule schedule;
     private Member member;
-    private Revenue revenue;
+    private Optional<Revenue> revenue;
     private ReservationStatus status;
 
     public Reservation() {
@@ -23,15 +23,15 @@ public class Reservation {
     }
 
     public Reservation(Long id, Schedule schedule, Member member, Revenue revenue, ReservationStatus status) {
-        this.id = id;
+        this.id = Optional.ofNullable(id);
         this.schedule = schedule;
         this.member = member;
-        this.revenue = revenue;
+        this.revenue = Optional.ofNullable(revenue);
         this.status = status;
     }
 
     public Optional<Long> getId() {
-        return Optional.ofNullable(id);
+        return id;
     }
 
     public Schedule getSchedule() {
@@ -42,7 +42,7 @@ public class Reservation {
         return member;
     }
 
-    public Revenue getRevenue() {
+    public Optional<Revenue> getRevenue() {
         return revenue;
     }
 
@@ -51,7 +51,7 @@ public class Reservation {
     }
 
     public void setRevenue(Revenue revenue) {
-        this.revenue = revenue;
+        this.revenue = Optional.ofNullable(revenue);
     }
 
     public boolean isMine(Member member) {
@@ -64,7 +64,7 @@ public class Reservation {
         checkWaitingCancel();
         checkRefused();
         status = ReservationStatus.APPROVED;
-        if (Objects.nonNull(revenue)) {
+        if (revenue.isPresent()) {
             throw new RoomReservationException(ErrorCode.DUPLICATED_REVENUE);
         }
     }

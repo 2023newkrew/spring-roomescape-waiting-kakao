@@ -56,7 +56,9 @@ public class ScheduleService {
             ReservationService.reservationListLock.unlock();
             throw new RoomReservationException(ErrorCode.SCHEDULE_CANT_BE_DELETED);
         }
-        scheduleDao.deleteById(schedule.getId());
+        scheduleDao.deleteById(schedule.getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_SCHEDULE);
+        }));
         ReservationService.reservationListLock.unlock();
     }
 }

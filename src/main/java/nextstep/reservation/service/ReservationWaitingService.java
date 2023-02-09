@@ -36,7 +36,9 @@ public class ReservationWaitingService {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
         });
         ReservationService.reservationListLock.lock();
-        List<Reservation> reservationList = reservationDao.findValidByScheduleId(schedule.getId());
+        List<Reservation> reservationList = reservationDao.findValidByScheduleId(schedule.getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_SCHEDULE);
+        }));
         if (reservationList.isEmpty()) {
             Reservation newReservation = new Reservation(
                     schedule,
@@ -47,7 +49,9 @@ public class ReservationWaitingService {
             return savedId;
         }
         reservationWaitingListLock.lock();
-        List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());
+        List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_SCHEDULE);
+        }));
         boolean isDuplicated = reservationWaitingList.stream()
                 .anyMatch(reservationWaiting -> reservationWaiting.isMine(member));
         if (isDuplicated) {

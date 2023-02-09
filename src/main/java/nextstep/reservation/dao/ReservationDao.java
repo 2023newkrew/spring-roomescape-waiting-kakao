@@ -85,11 +85,15 @@ public class ReservationDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, reservation.getSchedule().getId());
+            ps.setLong(1, reservation.getSchedule().getId().orElseThrow(() -> {
+                throw new RoomReservationException(ErrorCode.INVALID_SCHEDULE);
+            }));
             ps.setLong(2, reservation.getMember().getId().orElseThrow(() -> {
                 throw new RoomReservationException(ErrorCode.INVALID_MEMBER);
             }));
-            ps.setObject(3, Objects.isNull(reservation.getRevenue()) ? null : reservation.getRevenue().getId());
+            ps.setObject(3, reservation.getRevenue().isEmpty() ? null : reservation.getRevenue().get().getId().orElseThrow(() -> {
+                throw new RoomReservationException(ErrorCode.INVALID_REVENUE);
+            }));
             ps.setString(4, reservation.getStatus().toString());
             return ps;
         }, keyHolder);
@@ -103,7 +107,9 @@ public class ReservationDao {
         int updatedCount = jdbcTemplate.update(
                 sql,
                 reservation.getStatus().toString(),
-                Objects.isNull(reservation.getRevenue()) ? null : reservation.getRevenue().getId(),
+                reservation.getRevenue().isEmpty() ? null : reservation.getRevenue().get().getId().orElseThrow(() -> {
+                    throw new RoomReservationException(ErrorCode.INVALID_REVENUE);
+                }),
                 reservation.getId().orElseThrow(() -> {
                     throw new RoomReservationException(ErrorCode.INVALID_RESERVATION);
                 })
