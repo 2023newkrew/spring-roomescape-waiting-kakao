@@ -2,7 +2,6 @@ package nextstep.revenue;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;

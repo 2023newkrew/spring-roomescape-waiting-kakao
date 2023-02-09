@@ -61,7 +61,7 @@ public class ScheduleDao {
 
     public Optional<Schedule> findById(Long id) {
         String sql = SELECT_SQL +
-                        "where schedule.id = ?;";
+                "where schedule.id = ?;";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (Exception e) {
@@ -71,14 +71,14 @@ public class ScheduleDao {
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
         String sql = SELECT_SQL +
-                        "where schedule.theme_id = ? and schedule.date = ?;";
+                "where schedule.theme_id = ? and schedule.date = ?;";
 
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(LocalDate.parse(date)));
     }
 
     public List<Schedule> findByThemeId(Long themeId) {
-        String sql =  SELECT_SQL +
-                        "where schedule.theme_id = ?;";
+        String sql = SELECT_SQL +
+                "where schedule.theme_id = ?;";
 
         return jdbcTemplate.query(sql, rowMapper, themeId);
     }

@@ -16,7 +16,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AuthAspect {
     @Pointcut("@annotation(nextstep.common.annotation.AdminRequired)")
-    private void adminRequired() {}
+    private void adminRequired() {
+    }
 
     @Before("adminRequired() && args(member, ..)")
     public void beforeAdminRequired(JoinPoint joinPoint, final Member member) {

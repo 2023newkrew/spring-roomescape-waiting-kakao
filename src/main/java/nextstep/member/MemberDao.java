@@ -1,7 +1,7 @@
 package nextstep.member;
 
-import auth.domain.UserDetails;
 import auth.dao.UserDetailsDao;
+import auth.domain.UserDetails;
 import java.sql.PreparedStatement;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;

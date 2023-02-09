@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
@@ -91,9 +90,10 @@ public class ReservationDao {
             ps.setLong(2, reservation.getMember().getId().orElseThrow(() -> {
                 throw new RoomReservationException(ErrorCode.INVALID_MEMBER);
             }));
-            ps.setObject(3, reservation.getRevenue().isEmpty() ? null : reservation.getRevenue().get().getId().orElseThrow(() -> {
-                throw new RoomReservationException(ErrorCode.INVALID_REVENUE);
-            }));
+            ps.setObject(3, reservation.getRevenue().isEmpty() ? null
+                    : reservation.getRevenue().get().getId().orElseThrow(() -> {
+                        throw new RoomReservationException(ErrorCode.INVALID_REVENUE);
+                    }));
             ps.setString(4, reservation.getStatus().toString());
             return ps;
         }, keyHolder);
@@ -153,7 +153,8 @@ public class ReservationDao {
         String sql = SELECT_SQL +
                 "where schedule.id = ? and reservation.status != ? and reservation.status != ?;";
         try {
-            return jdbcTemplate.query(sql, rowMapper, id, ReservationStatus.REFUSED.toString(), ReservationStatus.CANCELLED.toString());
+            return jdbcTemplate.query(sql, rowMapper, id, ReservationStatus.REFUSED.toString(),
+                    ReservationStatus.CANCELLED.toString());
         } catch (Exception e) {
             return Collections.emptyList();
         }

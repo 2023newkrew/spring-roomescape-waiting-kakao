@@ -1,9 +1,9 @@
 package nextstep;
 
-import auth.support.JwtTokenProvider;
 import auth.controller.LoginController;
-import auth.service.LoginService;
 import auth.dao.UserDetailsDao;
+import auth.service.LoginService;
+import auth.support.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

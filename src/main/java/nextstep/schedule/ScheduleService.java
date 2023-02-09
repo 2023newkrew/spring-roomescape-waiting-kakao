@@ -1,7 +1,6 @@
 package nextstep.schedule;
 
 import java.util.List;
-import java.util.Objects;
 import nextstep.common.Lock;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
@@ -9,10 +8,10 @@ import nextstep.reservation.dao.ReservationDao;
 import nextstep.reservation.dao.ReservationWaitingDao;
 import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationWaiting;
+import nextstep.reservation.service.ReservationService;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.stereotype.Service;
-import nextstep.reservation.service.ReservationService;
 import org.springframework.transaction.annotation.Transactional;
 
 

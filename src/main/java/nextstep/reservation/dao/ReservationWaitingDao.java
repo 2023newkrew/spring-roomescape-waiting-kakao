@@ -1,6 +1,5 @@
 package nextstep.reservation.dao;
 
-import auth.exception.AuthenticationException;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;

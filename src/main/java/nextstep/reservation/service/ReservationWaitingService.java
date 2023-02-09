@@ -1,7 +1,6 @@
 package nextstep.reservation.service;
 
 import java.util.List;
-import java.util.Objects;
 import nextstep.common.Lock;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
@@ -49,9 +48,10 @@ public class ReservationWaitingService {
             return savedId;
         }
         reservationWaitingListLock.lock();
-        List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId().orElseThrow(() -> {
-            throw new RoomReservationException(ErrorCode.INVALID_SCHEDULE);
-        }));
+        List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(
+                schedule.getId().orElseThrow(() -> {
+                    throw new RoomReservationException(ErrorCode.INVALID_SCHEDULE);
+                }));
         boolean isDuplicated = reservationWaitingList.stream()
                 .anyMatch(reservationWaiting -> reservationWaiting.isMine(member));
         if (isDuplicated) {

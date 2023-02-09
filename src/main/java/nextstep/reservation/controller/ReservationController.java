@@ -49,7 +49,8 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Reservation> readReservation(@LoginMember UserDetails member, @PathVariable @NotNull @Min(1L) Long id) {
+    public ResponseEntity<Reservation> readReservation(@LoginMember UserDetails member,
+                                                       @PathVariable @NotNull @Min(1L) Long id) {
         Reservation reservation = reservationService.findById(new Member(member), id);
         return ResponseEntity.ok(reservation);
     }

@@ -1,12 +1,11 @@
 package auth.service;
 
-import auth.exception.AuthenticationException;
-import auth.support.JwtTokenProvider;
+import auth.dao.UserDetailsDao;
+import auth.domain.UserDetails;
 import auth.dto.TokenRequest;
 import auth.dto.TokenResponse;
-import auth.domain.UserDetails;
-import auth.dao.UserDetailsDao;
-import java.util.Objects;
+import auth.exception.AuthenticationException;
+import auth.support.JwtTokenProvider;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
@@ -20,9 +19,10 @@ public class LoginService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        UserDetails userDetails = userDetailsDao.findUserDetailsByUsername(tokenRequest.getUsername()).orElseThrow(() -> {
-            throw new AuthenticationException("아이디 혹은 패스워드가 틀렸습니다.");
-        });
+        UserDetails userDetails = userDetailsDao.findUserDetailsByUsername(tokenRequest.getUsername())
+                .orElseThrow(() -> {
+                    throw new AuthenticationException("아이디 혹은 패스워드가 틀렸습니다.");
+                });
         if (userDetails.checkWrongPassword(tokenRequest.getPassword())) {
             throw new AuthenticationException("아이디 혹은 패스워드가 틀렸습니다.");
         }

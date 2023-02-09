@@ -1,10 +1,9 @@
 package nextstep.reservation.service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import nextstep.common.annotation.AdminRequired;
 import nextstep.common.Lock;
+import nextstep.common.annotation.AdminRequired;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
@@ -17,14 +16,12 @@ import nextstep.reservation.dto.ReservationRequest;
 import nextstep.reservation.event.ReservationApproveCancelEvent;
 import nextstep.reservation.event.ReservationApproveEvent;
 import nextstep.reservation.event.ReservationRefuseEvent;
-import nextstep.revenue.RevenueDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
