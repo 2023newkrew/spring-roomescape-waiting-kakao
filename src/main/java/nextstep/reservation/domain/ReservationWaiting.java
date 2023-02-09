@@ -1,6 +1,7 @@
 package nextstep.reservation.domain;
 
 import java.util.Objects;
+import java.util.Optional;
 import nextstep.member.Member;
 import nextstep.schedule.Schedule;
 
@@ -24,8 +25,8 @@ public class ReservationWaiting {
         this(null, schedule, member, waitingNum);
     }
 
-    public Long getId() {
-        return id;
+    public Optional<Long> getId() {
+        return Optional.ofNullable(id);
     }
 
     public Schedule getSchedule() {

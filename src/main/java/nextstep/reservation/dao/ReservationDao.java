@@ -73,7 +73,7 @@ public class ReservationDao {
     );
 
     public Long save(Reservation reservation) {
-        if (Objects.isNull(reservation.getId())) {
+        if (reservation.getId().isEmpty()) {
             return create(reservation);
         }
         return update(reservation);
@@ -104,12 +104,16 @@ public class ReservationDao {
                 sql,
                 reservation.getStatus().toString(),
                 Objects.isNull(reservation.getRevenue()) ? null : reservation.getRevenue().getId(),
-                reservation.getId()
+                reservation.getId().orElseThrow(() -> {
+                    throw new RoomReservationException(ErrorCode.INVALID_RESERVATION);
+                })
         );
         if (updatedCount != 1) {
             throw new RoomReservationException(ErrorCode.RECORD_NOT_UPDATED);
         }
-        return reservation.getId();
+        return reservation.getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_RESERVATION);
+        });
     }
 
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {

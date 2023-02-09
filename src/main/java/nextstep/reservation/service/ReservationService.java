@@ -154,7 +154,9 @@ public class ReservationService {
         if (reservationWaiting.isEmpty()) {
             return;
         }
-        reservationWaitingDao.deleteById(reservationWaiting.get().getId());
+        reservationWaitingDao.deleteById(reservationWaiting.get().getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_RESERVATION_WAITING);
+        }));
         reservationDao.save(reservationWaiting.get().convertToReservation());
     }
 }

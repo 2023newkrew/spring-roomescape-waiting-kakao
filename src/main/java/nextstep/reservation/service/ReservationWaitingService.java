@@ -42,9 +42,9 @@ public class ReservationWaitingService {
                     schedule,
                     member
             );
-            reservationDao.save(newReservation);
+            long savedId = reservationDao.save(newReservation);
             ReservationService.reservationListLock.unlock();
-            return newReservation.getId();
+            return savedId;
         }
         reservationWaitingListLock.lock();
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(schedule.getId());

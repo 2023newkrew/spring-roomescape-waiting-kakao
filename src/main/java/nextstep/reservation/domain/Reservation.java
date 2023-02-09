@@ -1,6 +1,7 @@
 package nextstep.reservation.domain;
 
 import java.util.Objects;
+import java.util.Optional;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
@@ -29,8 +30,8 @@ public class Reservation {
         this.status = status;
     }
 
-    public Long getId() {
-        return id;
+    public Optional<Long> getId() {
+        return Optional.ofNullable(id);
     }
 
     public Schedule getSchedule() {
