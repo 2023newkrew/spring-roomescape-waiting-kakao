@@ -1,5 +1,7 @@
 package nextstep.member;
 
+import nextstep.error.ErrorCode;
+import nextstep.error.exception.RoomReservationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,8 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public Member findById(Long id) {
-        return memberDao.findById(id);
+        return memberDao.findById(id).orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.MEMBER_NOT_FOUND);
+        });
     }
 }

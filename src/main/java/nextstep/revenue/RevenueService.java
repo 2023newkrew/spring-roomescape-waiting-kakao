@@ -30,11 +30,9 @@ public class RevenueService {
 
     @AdminRequired
     public Revenue findById(Member member, Long id) {
-        Revenue revenue = revenueDao.findById(id);
-        if (Objects.isNull(revenue)) {
+        return revenueDao.findById(id).orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.REVENUE_NOT_FOUND);
-        }
-        return revenue;
+        });
     }
 
     @EventListener

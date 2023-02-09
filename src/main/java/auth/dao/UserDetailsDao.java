@@ -1,9 +1,10 @@
 package auth.dao;
 
 import auth.domain.UserDetails;
+import java.util.Optional;
 
 public interface UserDetailsDao {
-    UserDetails findUserDetailsByUsername(String username);
+    Optional<UserDetails> findUserDetailsByUsername(String username);
 
-    UserDetails findUserDetailsById(Long id);
+    Optional<UserDetails> findUserDetailsById(Long id);
 }

@@ -31,10 +31,9 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
-        Theme theme = themeDao.findById(id);
-        if (Objects.isNull(theme)) {
+        Theme theme = themeDao.findById(id).orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.THEME_NOT_FOUND);
-        }
+        });
         ScheduleService.scheduleListLock.lock();
         List<Schedule> schedules = scheduleDao.findByThemeId(id);
         if (schedules.size() > 0) {

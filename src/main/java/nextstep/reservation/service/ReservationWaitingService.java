@@ -32,10 +32,9 @@ public class ReservationWaitingService {
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (Objects.isNull(schedule)) {
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId()).orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
-        }
+        });
         ReservationService.reservationListLock.lock();
         List<Reservation> reservationList = reservationDao.findValidByScheduleId(schedule.getId());
         if (reservationList.isEmpty()) {
@@ -70,10 +69,9 @@ public class ReservationWaitingService {
     }
 
     public void delete(Member member, Long id) {
-        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id);
-        if (Objects.isNull(reservationWaiting)) {
+        ReservationWaiting reservationWaiting = reservationWaitingDao.findById(id).orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.RESERVATION_WAITING_NOT_FOUND);
-        }
+        });
         if (!reservationWaiting.getMember().getId().equals(member.getId())) {
             throw new RoomReservationException(ErrorCode.RESERVATION_WAITING_NOT_FOUND);
         }

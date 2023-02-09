@@ -34,7 +34,9 @@ public class ScheduleService {
     }
 
     public Long create(ScheduleRequest scheduleRequest) {
-        Theme theme = themeDao.findById(scheduleRequest.getThemeId());
+        Theme theme = themeDao.findById(scheduleRequest.getThemeId()).orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.THEME_NOT_FOUND);
+        });
         return scheduleDao.save(scheduleRequest.toEntity(theme));
     }
 
@@ -44,10 +46,9 @@ public class ScheduleService {
     }
 
     public void deleteById(Long id) {
-        Schedule schedule = scheduleDao.findById(id);
-        if (Objects.isNull(schedule)) {
+        Schedule schedule = scheduleDao.findById(id).orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
-        }
+        });
         ReservationService.reservationListLock.lock();
         List<Reservation> reservationList = reservationDao.findAllByScheduleId(id);
         List<ReservationWaiting> reservationWaitingList = reservationWaitingDao.findByScheduleId(id);
@@ -55,7 +56,7 @@ public class ScheduleService {
             ReservationService.reservationListLock.unlock();
             throw new RoomReservationException(ErrorCode.SCHEDULE_CANT_BE_DELETED);
         }
-        scheduleDao.deleteById(id);
+        scheduleDao.deleteById(schedule.getId());
         ReservationService.reservationListLock.unlock();
     }
 }

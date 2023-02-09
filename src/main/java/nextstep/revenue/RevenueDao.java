@@ -3,6 +3,7 @@ package nextstep.revenue;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import nextstep.error.ErrorCode;
 import nextstep.error.exception.RoomReservationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,13 +18,13 @@ public class RevenueDao {
 
     private static final String SELECT_SQL = "select revenue.id, revenue.amount, revenue.status, " +
             "from revenue ";
+    private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Revenue> rowMapper = (resultSet, rowNum) -> new Revenue(
             resultSet.getLong("revenue.id"),
             resultSet.getInt("revenue.amount"),
             RevenueStatus.valueOf(resultSet.getString("revenue.status"))
     );
-    private final JdbcTemplate jdbcTemplate;
 
     public RevenueDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -64,13 +65,13 @@ public class RevenueDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Revenue findById(Long id) {
+    public Optional<Revenue> findById(Long id) {
         String sql = SELECT_SQL
                 + "where id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return Optional.empty();
         }
     }
 }

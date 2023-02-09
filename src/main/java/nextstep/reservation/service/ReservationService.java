@@ -2,6 +2,7 @@ package nextstep.reservation.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import nextstep.common.annotation.AdminRequired;
 import nextstep.common.Lock;
 import nextstep.error.ErrorCode;
@@ -52,10 +53,9 @@ public class ReservationService {
         if (Objects.isNull(member)) {
             throw new RoomReservationException(ErrorCode.AUTHENTICATION_REQUIRED);
         }
-        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId());
-        if (Objects.isNull(schedule)) {
+        Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId()).orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.SCHEDULE_NOT_FOUND);
-        }
+        });
         reservationListLock.lock();
         List<Reservation> reservation = reservationDao.findValidByScheduleId(schedule.getId());
         if (!reservation.isEmpty()) {
@@ -73,12 +73,10 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<Reservation> findAllByThemeIdAndDate(Long themeId, String date) {
-        Theme theme = themeDao.findById(themeId);
-        if (Objects.isNull(theme)) {
+        Theme theme = themeDao.findById(themeId).orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.THEME_NOT_FOUND);
-        }
-
-        return reservationDao.findAllByThemeIdAndDate(themeId, date);
+        });
+        return reservationDao.findAllByThemeIdAndDate(theme.getId(), date);
     }
 
     @Transactional(readOnly = true)
@@ -137,11 +135,9 @@ public class ReservationService {
     }
 
     private Reservation getReservation(Long id) {
-        Reservation reservation = reservationDao.findById(id);
-        if(Objects.isNull(reservation)) {
+        return reservationDao.findById(id).orElseThrow(() -> {
             throw new RoomReservationException(ErrorCode.RESERVATION_NOT_FOUND);
-        }
-        return reservation;
+        });
     }
 
     private void checkAuthorizationOfReservation(Reservation reservation, Member member) {
@@ -151,14 +147,14 @@ public class ReservationService {
     }
 
     private void passNextWaiting(Reservation reservation) {
-        ReservationWaiting reservationWaiting = reservationWaitingDao
+        Optional<ReservationWaiting> reservationWaiting = reservationWaitingDao
                 .findFirstByScheduleId(
                         reservation.getSchedule().getId()
                 );
-        if (Objects.isNull(reservationWaiting)) {
+        if (reservationWaiting.isEmpty()) {
             return;
         }
-        reservationWaitingDao.deleteById(reservationWaiting.getId());
-        reservationDao.save(reservationWaiting.convertToReservation());
+        reservationWaitingDao.deleteById(reservationWaiting.get().getId());
+        reservationDao.save(reservationWaiting.get().convertToReservation());
     }
 }
