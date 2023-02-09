@@ -34,18 +34,16 @@ public class ReservationService {
     private final ThemeDao themeDao;
     private final ScheduleDao scheduleDao;
     private final ReservationWaitingDao reservationWaitingDao;
-    private final RevenueDao revenueDao;
     private final ApplicationEventPublisher applicationEventPublisher;
     public static final Lock reservationListLock = new Lock();
 
     public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao,
-                              ReservationWaitingDao reservationWaitingDao, RevenueDao revenueDao,
+                              ReservationWaitingDao reservationWaitingDao,
                               ApplicationEventPublisher applicationEventPublisher) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.reservationWaitingDao = reservationWaitingDao;
-        this.revenueDao = revenueDao;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -95,7 +93,9 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<Reservation> lookUp(Member member) {
-        return reservationDao.findByMemberId(member.getId());
+        return reservationDao.findByMemberId(member.getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_MEMBER);
+        }));
     }
 
     @AdminRequired

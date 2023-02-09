@@ -65,7 +65,9 @@ public class ReservationWaitingService {
 
     @Transactional(readOnly = true)
     public List<ReservationWaiting> lookUp(Member member) {
-        return reservationWaitingDao.findByMemberId(member.getId());
+        return reservationWaitingDao.findByMemberId(member.getId().orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_MEMBER);
+        }));
     }
 
     public void delete(Member member, Long id) {

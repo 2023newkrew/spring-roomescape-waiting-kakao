@@ -22,6 +22,7 @@ public enum ErrorCode {
     // 회원 에러
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 ID의 회원이 존재하지 않습니다."),
     MEMBER_CANT_BE_DELETED(HttpStatus.BAD_REQUEST, "회원 삭제 전 예약이 먼저 삭제되어야 합니다."),
+    INVALID_MEMBER(HttpStatus.INTERNAL_SERVER_ERROR, "유효하지 않은 회원입니다. 관리자에게 문의해주세요."),
 
     // 예약 에러
     DUPLICATE_RESERVATION(HttpStatus.BAD_REQUEST, "해당 시간에 예약이 존재합니다."),
