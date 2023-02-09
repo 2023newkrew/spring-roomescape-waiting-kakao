@@ -13,11 +13,15 @@ import nextstep.reservation.domain.Reservation;
 import nextstep.reservation.domain.ReservationStatus;
 import nextstep.reservation.domain.ReservationWaiting;
 import nextstep.reservation.dto.ReservationRequest;
+import nextstep.reservation.event.ReservationApproveCancelEvent;
+import nextstep.reservation.event.ReservationApproveEvent;
+import nextstep.reservation.event.ReservationRefuseEvent;
 import nextstep.revenue.RevenueDao;
 import nextstep.schedule.Schedule;
 import nextstep.schedule.ScheduleDao;
 import nextstep.theme.Theme;
 import nextstep.theme.ThemeDao;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -30,15 +34,18 @@ public class ReservationService {
     private final ScheduleDao scheduleDao;
     private final ReservationWaitingDao reservationWaitingDao;
     private final RevenueDao revenueDao;
+    private final ApplicationEventPublisher applicationEventPublisher;
     public static final Lock reservationListLock = new Lock();
 
     public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, ScheduleDao scheduleDao,
-                              ReservationWaitingDao reservationWaitingDao, RevenueDao revenueDao) {
+                              ReservationWaitingDao reservationWaitingDao, RevenueDao revenueDao,
+                              ApplicationEventPublisher applicationEventPublisher) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.scheduleDao = scheduleDao;
         this.reservationWaitingDao = reservationWaitingDao;
         this.revenueDao = revenueDao;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
@@ -97,7 +104,7 @@ public class ReservationService {
     public void approveReservation(Member member, Long id) {
         Reservation reservation = getReservation(id);
         reservation.approve();
-        revenueDao.save(reservation.getRevenue());
+        applicationEventPublisher.publishEvent(new ReservationApproveEvent(reservation));
         reservationDao.save(reservation);
     }
 
@@ -115,9 +122,7 @@ public class ReservationService {
     public void refuseReservation(Member member, Long id) {
         Reservation reservation = getReservation(id);
         reservation.refuse();
-        if (Objects.nonNull(reservation.getRevenue())) {
-            revenueDao.save(reservation.getRevenue());
-        }
+        applicationEventPublisher.publishEvent(new ReservationRefuseEvent(reservation));
         reservationDao.save(reservation);
         passNextWaiting(reservation);
     }
@@ -126,7 +131,7 @@ public class ReservationService {
     public void approveCancelOfReservation(Member member, Long id) {
         Reservation reservation = getReservation(id);
         reservation.approveCancel();
-        revenueDao.save(reservation.getRevenue());
+        applicationEventPublisher.publishEvent(new ReservationApproveCancelEvent(reservation));
         reservationDao.save(reservation);
         passNextWaiting(reservation);
     }

@@ -49,6 +49,10 @@ public class Reservation {
         return status;
     }
 
+    public void setRevenue(Revenue revenue) {
+        this.revenue = revenue;
+    }
+
     public boolean isMine(Member member) {
         return member != null && Objects.equals(this.member.getId(), member.getId());
     }
@@ -62,7 +66,6 @@ public class Reservation {
         if (Objects.nonNull(revenue)) {
             throw new RoomReservationException(ErrorCode.DUPLICATED_REVENUE);
         }
-        revenue = new Revenue(schedule.getTheme().getPrice());
     }
 
     public void cancel() {
@@ -80,15 +83,7 @@ public class Reservation {
         checkRefused();
         checkCancelled();
         checkWaitingCancel();
-        if (status == ReservationStatus.UNAPPROVED) {
-            status = ReservationStatus.REFUSED;
-            return;
-        }
         status = ReservationStatus.REFUSED;
-        if (Objects.isNull(revenue)) {
-            throw new RoomReservationException(ErrorCode.REVENUE_NOT_FOUND);
-        }
-        revenue.refund();
     }
 
     public void approveCancel() {
@@ -99,10 +94,6 @@ public class Reservation {
             throw new RoomReservationException(ErrorCode.RESERVATION_CANT_BE_CANCELLED);
         }
         status = ReservationStatus.CANCELLED;
-        if (Objects.isNull(revenue)) {
-            throw new RoomReservationException(ErrorCode.REVENUE_NOT_FOUND);
-        }
-        revenue.refund();
     }
 
     private void checkApproved() {
