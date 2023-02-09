@@ -20,19 +20,19 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<Void> createReservation(@LoginMember Member member, @RequestBody ReservationRequest reservationRequest) {
         Long id = reservationService.create(member, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + id)).build();
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity readReservations(@RequestParam Long themeId, @RequestParam String date) {
+    public ResponseEntity<List<Reservation>> readReservations(@RequestParam Long themeId, @RequestParam String date) {
         List<Reservation> results = reservationService.findAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(results);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity deleteReservation(@LoginMember Member member, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@LoginMember Member member, @PathVariable Long id) {
         reservationService.deleteById(member, id);
 
         return ResponseEntity.noContent().build();
@@ -41,7 +41,36 @@ public class ReservationController {
     @GetMapping("/reservations/mine")
     public ResponseEntity<List<ReservationResponse>> showMyReservations(@LoginMember Member member) {
         List<ReservationResponse> reservations = reservationService.findAllByMember(member);
-        return ResponseEntity.ok(reservations);
+        return ResponseEntity.ok().body(reservations);
+    }
+
+
+    @PatchMapping("/reservations/{id}/cancel")
+    public ResponseEntity<ReservationResponse> cancelReservation(@LoginMember Member member, @PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService
+                .updateReservationStatus(id, member, ReservationStatus.CANCEL);
+        return ResponseEntity.ok(reservationResponse);
+    }
+
+    @PatchMapping("/admin/reservations/{id}/cancel")
+    public ResponseEntity<ReservationResponse> adminCancelReservation(@LoginMember Member member, @PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService
+                .updateReservationStatus(id, member, ReservationStatus.CANCEL);
+        return ResponseEntity.ok(reservationResponse);
+    }
+
+    @PatchMapping("/admin/reservations/{id}/approve")
+    public ResponseEntity<ReservationResponse> approveReservation(@LoginMember Member member, @PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService
+                .updateReservationStatus(id, member, ReservationStatus.APPROVE);
+        return ResponseEntity.ok(reservationResponse);
+    }
+
+    @PatchMapping("/admin/reservations/{id}/reject")
+    public ResponseEntity<ReservationResponse> rejectReservation(@LoginMember Member member, @PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService
+                .updateReservationStatus(id, member, ReservationStatus.REJECT);
+        return ResponseEntity.ok(reservationResponse);
     }
 
     @ExceptionHandler(Exception.class)

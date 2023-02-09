@@ -1,6 +1,7 @@
 package nextstep.reservation;
 
 import auth.AuthenticationException;
+import nextstep.exceptions.exception.AuthorizationException;
 import nextstep.exceptions.exception.DuplicatedReservationException;
 import nextstep.member.Member;
 import nextstep.member.MemberDao;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Service
 public class ReservationService {
+
     public final ReservationDao reservationDao;
     public final ThemeDao themeDao;
     public final ScheduleDao scheduleDao;
@@ -27,9 +29,6 @@ public class ReservationService {
     }
 
     public Long create(Member member, ReservationRequest reservationRequest) {
-        if (member == null) {
-            throw new AuthenticationException();
-        }
         Schedule schedule = scheduleDao.findById(reservationRequest.getScheduleId())
                 .orElseThrow(NotFoundObjectException::new);
 
@@ -61,4 +60,18 @@ public class ReservationService {
                 .map(ReservationResponse::new)
                 .toList();
     }
+
+    public ReservationResponse updateReservationStatus(Long id, Member member, ReservationStatus status) {
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(NullPointerException::new);
+        if (!reservation.sameMember(member) && !"admin".equalsIgnoreCase(member.getRole())) {
+            throw new AuthenticationException();
+        }
+
+        reservationDao.updateStatus(id, reservation.getStatus().transitStatus(status, member.getRole()));
+        ReservationStatusHistory history = new ReservationStatusHistory(reservation, status);
+        reservationDao.saveStatusHistory(history);
+        return new ReservationResponse(reservation, status);
+    }
+
 }

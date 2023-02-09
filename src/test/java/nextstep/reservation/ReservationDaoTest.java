@@ -2,7 +2,6 @@ package nextstep.reservation;
 
 import nextstep.member.MemberDao;
 import nextstep.schedule.ScheduleDao;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,5 +79,30 @@ public class ReservationDaoTest {
         assertThat(reservationDao.findAllByMemberId(2L).size()).isEqualTo(1);
 
         assertThat(reservationDao.findAllByMemberId(3L).size()).isEqualTo(0);
+    }
+
+    @DisplayName("예약 상태를 변경할 수 있다.")
+    @Test
+    void updateStatus() {
+        reservationDao.updateStatus(1L, ReservationStatus.APPROVE);
+        assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.APPROVE);
+        reservationDao.updateStatus(1L, ReservationStatus.CANCEL);
+        assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.CANCEL);
+        reservationDao.updateStatus(1L, ReservationStatus.CANCEL_WAIT);
+        assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.CANCEL_WAIT);
+        reservationDao.updateStatus(1L, ReservationStatus.REJECT);
+        assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.REJECT);
+        reservationDao.updateStatus(1L, ReservationStatus.UN_APPROVE);
+        assertThat(reservationDao.findById(1L).get().getStatus()).isEqualTo(ReservationStatus.UN_APPROVE);
+    }
+
+    @DisplayName("예약 상태 변경 기록을 할 수 있다.")
+    @Test
+    void saveStatusHistory() {
+        Reservation reservation = reservationDao.findById(1L).get();
+        ReservationStatusHistory history = new ReservationStatusHistory(reservation, ReservationStatus.APPROVE);
+        reservationDao.saveStatusHistory(history);
+        assertThat(reservationDao.findStatusHistoryById(1L).get())
+                .isInstanceOf(ReservationStatusHistory.class);
     }
 }

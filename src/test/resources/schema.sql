@@ -5,8 +5,20 @@ CREATE TABLE reservation
     schedule_id bigint not null,
     member_id   bigint not null,
     created_datetime datetime not null default now(),
+    status       varchar(20) not null default 'UN_APPROVE',
     primary key (id)
 );
+DROP TABLE IF EXISTS reservation_status_history;
+CREATE TABLE reservation_status_history
+(
+    id               bigint       not null auto_increment,
+    reservation_id   bigint       not null,
+    before_status    varchar(20),
+    after_status     varchar(20),
+    changed_datetime datetime     not null default now(),
+    primary key (id)
+);
+
 DROP TABLE IF EXISTS theme;
 CREATE TABLE theme
 (
