@@ -1,9 +1,12 @@
 package nextstep.member;
 
 import auth.domain.UserDetails;
+import java.util.Optional;
+import nextstep.error.ErrorCode;
+import nextstep.error.exception.RoomReservationException;
 
 public class Member {
-    private Long id;
+    private Optional<Long> id;
     private String username;
     private String password;
     private String name;
@@ -14,7 +17,7 @@ public class Member {
     }
 
     public Member(Long id, String username, String password, String name, String phone, Role role) {
-        this.id = id;
+        this.id = Optional.ofNullable(id);
         this.username = username;
         this.password = password;
         this.name = name;
@@ -36,7 +39,7 @@ public class Member {
         );
     }
 
-    public Long getId() {
+    public Optional<Long> getId() {
         return id;
     }
 
@@ -60,11 +63,9 @@ public class Member {
         return role;
     }
 
-    public boolean checkWrongPassword(String password) {
-        return !this.password.equals(password);
-    }
-
     public UserDetails convertToUserDetails() {
-        return new UserDetails(id, username, password, name, phone, role);
+        return new UserDetails(id.orElseThrow(() -> {
+            throw new RoomReservationException(ErrorCode.INVALID_MEMBER);
+        }), username, password, name, phone, role);
     }
 }

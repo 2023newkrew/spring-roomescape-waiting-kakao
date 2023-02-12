@@ -1,7 +1,9 @@
 package nextstep.theme;
 
+import java.util.Optional;
+
 public class Theme {
-    private Long id;
+    private Optional<Long> id;
     private String name;
     private String desc;
     private int price;
@@ -10,7 +12,7 @@ public class Theme {
     }
 
     public Theme(Long id, String name, String desc, int price) {
-        this.id = id;
+        this.id = Optional.ofNullable(id);
         this.name = name;
         this.desc = desc;
         this.price = price;
@@ -22,7 +24,7 @@ public class Theme {
         this.price = price;
     }
 
-    public Long getId() {
+    public Optional<Long> getId() {
         return id;
     }
 

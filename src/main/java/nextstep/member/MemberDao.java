@@ -1,8 +1,9 @@
 package nextstep.member;
 
-import auth.domain.UserDetails;
 import auth.dao.UserDetailsDao;
+import auth.domain.UserDetails;
 import java.sql.PreparedStatement;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MemberDao implements UserDetailsDao {
+
+    private static final String SELECT_SQL = "SELECT id, username, password, name, phone, role from member ";
     public final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
@@ -44,23 +47,23 @@ public class MemberDao implements UserDetailsDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Member findById(Long id) {
-        String sql = "SELECT id, username, password, name, phone, role from member where id = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    public Optional<Member> findById(Long id) {
+        String sql = SELECT_SQL + "where id = ?;";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
     }
 
-    public Member findByUsername(String username) {
-        String sql = "SELECT id, username, password, name, phone, role from member where username = ?;";
-        return jdbcTemplate.queryForObject(sql, rowMapper, username);
-    }
-
-    @Override
-    public UserDetails findUserDetailsByUsername(String username) {
-        return findByUsername(username).convertToUserDetails();
+    public Optional<Member> findByUsername(String username) {
+        String sql = SELECT_SQL + "where username = ?;";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, username));
     }
 
     @Override
-    public UserDetails findUserDetailsById(Long id) {
-        return findById(id).convertToUserDetails();
+    public Optional<UserDetails> findUserDetailsByUsername(String username) {
+        return findByUsername(username).map(Member::convertToUserDetails);
+    }
+
+    @Override
+    public Optional<UserDetails> findUserDetailsById(Long id) {
+        return findById(id).map(Member::convertToUserDetails);
     }
 }

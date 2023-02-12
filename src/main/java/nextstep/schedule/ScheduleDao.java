@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import nextstep.error.ErrorCode;
+import nextstep.error.exception.RoomReservationException;
 import nextstep.theme.Theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,7 +17,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ScheduleDao {
-    private JdbcTemplate jdbcTemplate;
+
+    private static final String SELECT_SQL =
+            "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price "
+                    +
+                    "from schedule " +
+                    "inner join theme on schedule.theme_id = theme.id ";
+    private final JdbcTemplate jdbcTemplate;
 
     public ScheduleDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -38,7 +47,9 @@ public class ScheduleDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, schedule.getTheme().getId());
+            ps.setLong(1, schedule.getTheme().getId().orElseThrow(() -> {
+                throw new RoomReservationException(ErrorCode.INVALID_THEME);
+            }));
             ps.setDate(2, Date.valueOf(schedule.getDate()));
             ps.setTime(3, Time.valueOf(schedule.getTime()));
             return ps;
@@ -48,38 +59,26 @@ public class ScheduleDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Schedule findById(Long id) {
-        String sql =
-                "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price "
-                        +
-                        "from schedule " +
-                        "inner join theme on schedule.theme_id = theme.id " +
-                        "where schedule.id = ?;";
+    public Optional<Schedule> findById(Long id) {
+        String sql = SELECT_SQL +
+                "where schedule.id = ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (Exception e) {
-            return null;
+            return Optional.empty();
         }
     }
 
     public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
-        String sql =
-                "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price "
-                        +
-                        "from schedule " +
-                        "inner join theme on schedule.theme_id = theme.id " +
-                        "where schedule.theme_id = ? and schedule.date = ?;";
+        String sql = SELECT_SQL +
+                "where schedule.theme_id = ? and schedule.date = ?;";
 
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(LocalDate.parse(date)));
     }
 
     public List<Schedule> findByThemeId(Long themeId) {
-        String sql =
-                "SELECT schedule.id, schedule.theme_id, schedule.date, schedule.time, theme.id, theme.name, theme.desc, theme.price "
-                        +
-                        "from schedule " +
-                        "inner join theme on schedule.theme_id = theme.id " +
-                        "where schedule.theme_id = ? for update ;";
+        String sql = SELECT_SQL +
+                "where schedule.theme_id = ?;";
 
         return jdbcTemplate.query(sql, rowMapper, themeId);
     }

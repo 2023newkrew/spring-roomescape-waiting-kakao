@@ -4,6 +4,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import nextstep.error.ErrorCode;
+import nextstep.error.exception.RoomReservationException;
 import nextstep.member.Member;
 import nextstep.member.Role;
 import nextstep.reservation.domain.ReservationWaiting;
@@ -65,8 +68,12 @@ public class ReservationWaitingDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, reservationWaiting.getSchedule().getId());
-            ps.setLong(2, reservationWaiting.getMember().getId());
+            ps.setLong(1, reservationWaiting.getSchedule().getId().orElseThrow(() -> {
+                throw new RoomReservationException(ErrorCode.INVALID_SCHEDULE);
+            }));
+            ps.setLong(2, reservationWaiting.getMember().getId().orElseThrow(() -> {
+                throw new RoomReservationException(ErrorCode.INVALID_MEMBER);
+            }));
             ps.setLong(3, reservationWaiting.getWaitingNum());
             return ps;
 
@@ -82,19 +89,19 @@ public class ReservationWaitingDao {
         return jdbcTemplate.query(sql, rowMapper, themeId, Date.valueOf(date));
     }
 
-    public ReservationWaiting findById(Long id) {
+    public Optional<ReservationWaiting> findById(Long id) {
         String sql = SELECT_SQL +
                 "where reservation_waiting.id = ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
     public List<ReservationWaiting> findByScheduleId(Long id) {
         String sql = SELECT_SQL +
-                "where schedule.id = ? for update;";
+                "where schedule.id = ?;";
         try {
             return jdbcTemplate.query(sql, rowMapper, id);
         } catch (Exception e) {
@@ -108,13 +115,13 @@ public class ReservationWaitingDao {
         return jdbcTemplate.query(sql, rowMapper, id);
     }
 
-    public ReservationWaiting findFirstByScheduleId(Long id) {
+    public Optional<ReservationWaiting> findFirstByScheduleId(Long id) {
         String sql = SELECT_SQL +
                 "where schedule.id = ? limit 1;";
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return Optional.empty();
         }
     }
 

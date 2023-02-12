@@ -48,6 +48,13 @@ public class ReservationController {
         return ResponseEntity.ok().body(results);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Reservation> readReservation(@LoginMember UserDetails member,
+                                                       @PathVariable @NotNull @Min(1L) Long id) {
+        Reservation reservation = reservationService.findById(new Member(member), id);
+        return ResponseEntity.ok(reservation);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity deleteReservation(@LoginMember UserDetails member, @PathVariable @NotNull @Min(1L) Long id) {
         reservationService.deleteById(new Member(member), id);
@@ -59,5 +66,12 @@ public class ReservationController {
     public ResponseEntity<List<Reservation>> lookUpReservationWaitingList(@LoginMember UserDetails member) {
         List<Reservation> reservationList = reservationService.lookUp(new Member(member));
         return ResponseEntity.ok().body(reservationList);
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelReservation(@LoginMember UserDetails member,
+                                                  @PathVariable @NotNull @Min(1L) Long id) {
+        reservationService.cancelReservation(new Member(member), id);
+        return ResponseEntity.ok().build();
     }
 }
