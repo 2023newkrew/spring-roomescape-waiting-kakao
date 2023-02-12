@@ -1,28 +1,49 @@
 package nextstep.schedule;
 
+import nextstep.support.NotExistEntityException;
 import nextstep.theme.Theme;
-import nextstep.theme.ThemeDao;
+import nextstep.theme.ThemeService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ScheduleService {
     private final ScheduleDao scheduleDao;
-    private final ThemeDao themeDao;
+    private final ThemeService themeService;
 
-    public ScheduleService(ScheduleDao scheduleDao, ThemeDao themeDao) {
+    public ScheduleService(ScheduleDao scheduleDao, ThemeService themeService) {
         this.scheduleDao = scheduleDao;
-        this.themeDao = themeDao;
+        this.themeService = themeService;
     }
 
     public Long create(ScheduleRequest scheduleRequest) {
-        Theme theme = themeDao.findById(scheduleRequest.getThemeId());
+        Theme theme = themeService.findById(scheduleRequest.getThemeId()).orElseThrow(NotExistEntityException::new);
         return scheduleDao.save(scheduleRequest.toEntity(theme));
     }
 
-    public List<Schedule> findByThemeIdAndDate(Long themeId, String date) {
-        return scheduleDao.findByThemeIdAndDate(themeId, date);
+    public Optional<Schedule> findById(Long id) {
+        Schedule schedule = scheduleDao.findById(id).orElseThrow(NotExistEntityException::new);
+        return Optional.of(Schedule.builder()
+                .id(id)
+                .theme(themeService.findById(schedule.getTheme().getId()).orElseThrow(NotExistEntityException::new))
+                .date(schedule.getDate())
+                .time(schedule.getTime())
+                .build());
+    }
+
+    public List<Schedule> findAllByThemeIdAndDate(Long themeId, String date) {
+        List<Schedule> schedules = scheduleDao.findByThemeIdAndDate(themeId, date);
+        return schedules.stream()
+                .map(schedule -> Schedule.builder()
+                        .id(schedule.getId())
+                        .theme(themeService.findById(schedule.getTheme().getId()).orElseThrow(NotExistEntityException::new))
+                        .date(schedule.getDate())
+                        .time(schedule.getTime())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {

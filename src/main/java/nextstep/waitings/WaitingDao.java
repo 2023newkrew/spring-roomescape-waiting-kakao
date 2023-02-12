@@ -1,7 +1,6 @@
 package nextstep.waitings;
 
 import nextstep.schedule.Schedule;
-import nextstep.theme.Theme;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -21,21 +21,13 @@ public class WaitingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Waiting> rowMapper = (resultSet, rowNum) -> new Waiting(
-            resultSet.getLong("waiting.id"),
-            new Schedule(
-                    resultSet.getLong("schedule.id"),
-                    new Theme(
-                            resultSet.getLong("theme.id"),
-                            resultSet.getString("theme.name"),
-                            resultSet.getString("theme.desc"),
-                            resultSet.getInt("theme.price")
-                    ),
-                    resultSet.getDate("schedule.date").toLocalDate(),
-                    resultSet.getTime("schedule.time").toLocalTime()
-            ),
-            resultSet.getLong("waiting.member_id")
-    );
+    private final RowMapper<Waiting> rowMapper = (resultSet, rowNum) -> Waiting.builder()
+            .id(resultSet.getLong("waiting.id"))
+            .schedule(Schedule.builder()
+                    .id(resultSet.getLong("waiting.schedule_id"))
+                    .build())
+            .memberId(resultSet.getLong("waiting.member_id"))
+            .build();
 
     public long save(final Long scheduleId, final Long memberId) {
         String sql = "INSERT INTO waiting (schedule_id, member_id) VALUES (?, ?);";
@@ -56,19 +48,12 @@ public class WaitingDao {
         return jdbcTemplate.queryForObject(sql, Long.class, scheduleId);
     }
 
-    public Waiting findById(final Long waitingId) {
-        String sql = "SELECT " +
-                "waiting.id, waiting.schedule_id, waiting.member_id, " +
-                "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                "theme.id, theme.name, theme.desc, theme.price, " +
-                "from waiting " +
-                "inner join schedule on waiting.schedule_id = schedule.id " +
-                "inner join theme on schedule.theme_id = theme.id " +
-                "where waiting.id = ?;";
+    public Optional<Waiting> findById(final Long id) {
+        String sql = "SELECT * FROM waiting WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, waitingId);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch(DataAccessException e){
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -77,16 +62,9 @@ public class WaitingDao {
         jdbcTemplate.update(sql, waitingId);
     }
 
-    public List<Waiting> findByMemberId(Long memberId) {
+    public List<Waiting> findAllByMemberId(Long memberId) {
         try {
-            String sql = "SELECT " +
-                    "waiting.id, waiting.schedule_id, waiting.member_id, " +
-                    "schedule.id, schedule.theme_id, schedule.date, schedule.time, " +
-                    "theme.id, theme.name, theme.desc, theme.price, " +
-                    "from waiting " +
-                    "inner join schedule on waiting.schedule_id = schedule.id " +
-                    "inner join theme on schedule.theme_id = theme.id " +
-                    "where waiting.member_id = ?;";
+            String sql = "SELECT * FROM waiting WHERE member_id = ?";
             return jdbcTemplate.query(sql, rowMapper, memberId);
         } catch(DataAccessException e){
             return null;

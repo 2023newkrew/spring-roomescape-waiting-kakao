@@ -14,13 +14,19 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AbstractE2ETest {
     public static final String USERNAME = "username";
+    public static final String ADMIN_USERNAME = "admin";
     public static final String PASSWORD = "password";
-
-    protected TokenResponse token;
+    protected TokenResponse adminToken;
+    protected TokenResponse normalToken;
 
     @BeforeEach
     protected void setUp() {
-        MemberRequest memberBody = new MemberRequest(USERNAME, PASSWORD, "name", "010-1234-5678", "ADMIN");
+        adminToken = getToken(USERNAME, "ADMIN");
+        normalToken = getToken(ADMIN_USERNAME, "NORMAL");
+    }
+
+    private TokenResponse getToken(String username, String role) {
+        MemberRequest memberBody = new MemberRequest(username, PASSWORD, "name", "010-1234-5678", role);
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -29,7 +35,7 @@ public class AbstractE2ETest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        TokenRequest tokenBody = new TokenRequest(USERNAME, PASSWORD);
+        TokenRequest tokenBody = new TokenRequest(username, PASSWORD);
         var response = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -39,6 +45,6 @@ public class AbstractE2ETest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
 
-        token = response.as(TokenResponse.class);
+        return response.as(TokenResponse.class);
     }
 }

@@ -30,7 +30,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
         ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
         var themeResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(themeRequest)
                 .when().post("/admin/themes")
@@ -43,7 +43,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(scheduleRequest)
                 .when().post("/admin/schedules")
@@ -62,7 +62,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @Test
     void createWaitingWhenReserved() {
         RestAssured.given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
@@ -71,7 +71,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
@@ -87,7 +87,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     void createReservationWhenNotReserved(){
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservation-waitings")
@@ -101,10 +101,10 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @DisplayName("자신의 예약 대기를 취소할 수 있다")
     @Test
     void deleteMyReservation() {
-        createReservationAndWaiting(token, request);
+        createReservationAndWaiting(adminToken, request);
 
         RestAssured.given().log().all() // delete reservation waiting
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/reservation-waitings/1")
@@ -116,7 +116,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @Test
     void cannotDeleteMyNotExistReservation() {
         RestAssured.given().log().all() // delete reservation waiting
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/reservation-waitings/1")
@@ -127,7 +127,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @DisplayName("자신의 예약 대기가 아닌 경우 취소할 수 없다.")
     @Test
     void cannotDeleteOtherReservation() {
-        createReservationAndWaiting(token, request);
+        createReservationAndWaiting(adminToken, request);
 
         TokenResponse otherToken = createMemberAndToken("otherUser", "otherPassword");
 
@@ -143,10 +143,10 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @DisplayName("나의 예약 대기 목록을 조회할 수 있다")
     @Test
     void showMyWaitings() {
-        createReservationAndWaiting(token, request);
+        createReservationAndWaiting(adminToken, request);
 
         var response = RestAssured.given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().get("/reservation-waitings/mine")
                 .then().log().all()
                 .extract();
@@ -158,7 +158,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @DisplayName("예약 대기 목록이 두 개 이상인 경우 waitNum이 정상적으로 출력된다")
     @Test
     void showSameScheduleWaitings() {
-        createReservationAndWaiting(token, request);
+        createReservationAndWaiting(adminToken, request);
         TokenResponse otherTokenResponse = createMemberAndToken("guest1", "guest1");
         createWaiting(otherTokenResponse,request);
 
@@ -176,7 +176,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @DisplayName("스케줄이 다른 경우 waitNum이 각 스케줄에 대해 독립적으로 적용된다")
     @Test
     void showDifferentScheduleWaitings() {
-        createReservationAndWaiting(token, request);
+        createReservationAndWaiting(adminToken, request);
         TokenResponse otherToken = createMemberAndToken(GUEST_ID, GUEST_PASSWORD);
         ReservationRequest otherRequest = makeAnotherSchedule();
         createReservationAndWaiting(otherToken, otherRequest);
@@ -196,7 +196,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
     @Test
     void showMyEmptyWaitings() {
         var response = RestAssured.given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().get("/reservation-waitings/mine")
                 .then().log().all()
                 .extract();
@@ -254,7 +254,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
         ThemeRequest themeRequest = new ThemeRequest("other_테마이름", "other_테마설명", 22000);
         var themeResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(themeRequest)
                 .when().post("/admin/themes")
@@ -267,7 +267,7 @@ public class WaitingE2ETest extends AbstractE2ETest {
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(scheduleRequest)
                 .when().post("/admin/schedules")

@@ -9,7 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LoginService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsRepository userDetailsRepository;
-    private final Map<Long, UserDetails> cache = new ConcurrentHashMap<>();
+    private final Map<Long, UserDetails> cache = new ConcurrentHashMap<>(); //사용자 정보 캐시값
+    private final Map<Long, Long> cacheLoadTime = new ConcurrentHashMap<>(); //캐시가 로드된 시간
+    private final long cacheMaxAge = 60 * 1000L; //1분 설정
+
 
     public LoginService(final JwtTokenProvider jwtTokenProvider, final UserDetailsRepository userDetailsRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
@@ -22,6 +25,7 @@ public class LoginService {
         try {
             userDetails = userDetailsRepository.findByUsername(tokenRequest.getUsername());
             cache.put(userDetails.getId(), userDetails);
+            cacheLoadTime.put(userDetails.getId(), System.currentTimeMillis());
         } catch(Exception e){
             throw new AuthenticationException();
         }
@@ -39,9 +43,22 @@ public class LoginService {
         return Long.parseLong(jwtTokenProvider.getPrincipal(credential));
     }
 
-    /* DB에 접근하지 않기 위해 cache 사용 */
+    /* DB에 접근하지 않기 위해 cache 사용 (lazy loading) */
     public UserDetails extractMember(String credential) {
         Long id = extractPrincipal(credential);
-        return cache.get(id);
+        long now = System.currentTimeMillis();
+        /* 캐시 만료 */
+        if (now > cacheLoadTime.get(id) + cacheMaxAge) {
+            cache.remove(id);
+        }
+        /* 캐시 히트 */
+        if (cache.containsKey(id)) {
+            return cache.get(id);
+        }
+        /* 캐시 미스 */
+        UserDetails userDetails = userDetailsRepository.findById(id);
+        cache.put(id, userDetails);
+        cacheLoadTime.put(userDetails.getId(), System.currentTimeMillis());
+        return userDetails;
     }
 }

@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserDetailsRepository {
+    UserDetails findById(Long id);
     UserDetails findByUsername(String username);
 }

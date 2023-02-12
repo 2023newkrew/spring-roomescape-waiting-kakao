@@ -29,7 +29,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         ThemeRequest themeRequest = new ThemeRequest("테마이름", "테마설명", 22000);
         var themeResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(themeRequest)
                 .when().post("/admin/themes")
@@ -42,7 +42,7 @@ class ReservationE2ETest extends AbstractE2ETest {
         ScheduleRequest scheduleRequest = new ScheduleRequest(themeId, DATE, TIME);
         var scheduleResponse = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(scheduleRequest)
                 .when().post("/admin/schedules")
@@ -62,7 +62,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void create() {
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
@@ -110,7 +110,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().delete(reservation.header("Location"))
                 .then().log().all()
                 .extract();
@@ -125,7 +125,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")
@@ -155,7 +155,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void createNotExistReservation() {
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();
@@ -185,7 +185,7 @@ class ReservationE2ETest extends AbstractE2ETest {
 
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().get("/reservations/mine")
                 .then().log().all()
                 .extract();
@@ -199,7 +199,7 @@ class ReservationE2ETest extends AbstractE2ETest {
     void showMyEmptyReservation() {
         var response = RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .when().get("/reservations/mine")
                 .then().log().all()
                 .extract();
@@ -208,10 +208,116 @@ class ReservationE2ETest extends AbstractE2ETest {
         assertThat(response.jsonPath().getList(".").size()).isEqualTo(0);
     }
 
+    @DisplayName("관리자가 예약을 승인한다")
+    @Test
+    void approveReservation() {
+        createReservation();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("일반 사용자는 예약을 승인할 수 없다")
+    @Test
+    void normalUserCannotApproveReservation() {
+        createReservation();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(normalToken.getAccessToken())
+                .when().patch("/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @DisplayName("관리자가 예약 취소 시 거절된다")
+    @Test
+    void adminRejectReservation() {
+        createReservation();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("일반 사용자가 예약 취소 신청한다")
+    @Test
+    void normalUserCancelReservation() {
+        createReservation();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(normalToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("관리자가 예약 취소를 승인한다")
+    @Test
+    void adminCancelApporveReservation() {
+        createReservation();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(normalToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/cancel-approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("일반 사용자가 예약 취소를 승인할 수 없다")
+    @Test
+    void normalUserCannotCancelApproveReservation() {
+        createReservation();
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(adminToken.getAccessToken())
+                .when().patch("/reservations/1/approve")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(normalToken.getAccessToken())
+                .when().patch("/reservations/1/cancel")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        RestAssured
+                .given().log().all()
+                .auth().oauth2(normalToken.getAccessToken())
+                .when().patch("/reservations/1/cancel-approve")
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
     private ExtractableResponse<Response> createReservation() {
         return RestAssured
                 .given().log().all()
-                .auth().oauth2(token.getAccessToken())
+                .auth().oauth2(adminToken.getAccessToken())
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/reservations")

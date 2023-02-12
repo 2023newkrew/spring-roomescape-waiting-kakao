@@ -60,4 +60,54 @@ public class Member {
     public String getRole() {
         return role;
     }
+
+    public static MemberBuilder builder() {
+        return new MemberBuilder();
+    }
+
+    public static class MemberBuilder {
+        private Long id;
+        private String username;
+        private String password;
+        private String name;
+        private String phone;
+        private String role;
+
+        private MemberBuilder() {
+        }
+
+        public MemberBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public MemberBuilder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public MemberBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public MemberBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public MemberBuilder phone(String phone) {
+            this.phone = phone;
+            return this;
+        }
+
+        public MemberBuilder role(String role) {
+            this.role = role;
+            return this;
+        }
+
+        public Member build() {
+            return new Member(id, username, password, name, phone, role);
+        }
+    }
 }
